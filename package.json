@@ -1,0 +1,34 @@
+{
+  "name": "monopoly-russia-prototype",
+  "version": "1.0.0",
+  "description": "A browser-based Monopoly game with Russian cultural specifics",
+  "main": "src/index.html",
+  "scripts": {
+    "build": "node build.js",
+    "dev": "python3 -m http.server 8000 -d src",
+    "serve": "python3 -m http.server 8000 -d dist",
+    "test": "echo \"No tests specified\" && exit 0",
+    "optimize": "npm run build && npm run analyze",
+    "analyze": "node -e \"console.log('Bundle analysis:', require('./dist/build-info.json'))\""
+  },
+  "keywords": [
+    "monopoly",
+    "game",
+    "javascript",
+    "browser",
+    "russia"
+  ],
+  "author": "Developer",
+  "license": "MIT",
+  "devDependencies": {
+    "http-server": "^14.0.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "browserslist": [
+    "last 2 versions",
+    "> 1%",
+    "not dead"
+  ]
+}

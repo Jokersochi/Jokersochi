@@ -8,6 +8,14 @@ export const players = [
 ];
 let currentPlayerIndex = 0;
 let language = 'ru';
+// global modifiers affected by events
+let rentModifier = 1;
+let priceModifier = 1;
+
+function applyModifiers(mod) {
+  if (mod.rentModifier) rentModifier *= mod.rentModifier;
+  if (mod.priceModifier) priceModifier *= mod.priceModifier;
+}
 
 // DOM helpers
 const boardEl = document.getElementById('board');
@@ -62,18 +70,25 @@ function handleSquare(player) {
   } else if (square.type === 'chance') {
     const card = drawCard(chanceCards);
     alert(card[language]);
-    card.action(player, boardData);
+    const pos = player.position;
+    const result = card.action(player, boardData);
+    if (result) applyModifiers(result);
+    if (player.position !== pos) handleSquare(player);
   } else if (square.type === 'treasury') {
     const card = drawCard(treasuryCards);
     alert(card[language]);
-    card.action(player, boardData);
+    const pos = player.position;
+    const result = card.action(player, boardData);
+    if (result) applyModifiers(result);
+    if (player.position !== pos) handleSquare(player);
   }
   renderBoard();
 }
 
 function offerPurchase(player, square) {
-  if (player.money < square.price) return;
-  if (confirm(`${player.name}: ${square.name[language]} - ${square.price}₽?`)) {
+  const price = square.price * priceModifier;
+  if (player.money < price) return;
+  if (confirm(`${player.name}: ${square.name[language]} - ${price}₽?`)) {
     buyProperty(player, square);
   } else {
     auction(square);
@@ -81,18 +96,31 @@ function offerPurchase(player, square) {
 }
 
 function buyProperty(player, square) {
-  player.money -= square.price;
+  const price = square.price * priceModifier;
+  player.money -= price;
   player.properties.push(square.id);
   square.owner = player.id;
   checkResidency(player, square.color);
   log(`${player.name} купил ${square.name[language]}`);
+  offerImprovement(player, square);
+}
+
+function offerImprovement(player, square) {
+  if (confirm(`${player.name}: улучшить ${square.name[language]} за ${square.improvementCost}₽?`)) {
+    if (player.money >= square.improvementCost) {
+      player.money -= square.improvementCost;
+      square.improvements = (square.improvements || 0) + 1;
+      log(`${player.name} улучшил ${square.name[language]}`);
+    }
+  }
 }
 
 function auction(square) {
   // simple auction: first other player willing to pay price gets property
   for (const p of players) {
-    if (!p.properties.includes(square.id) && p.money >= square.price) {
-      if (confirm(`${p.name}, купить на аукционе ${square.name[language]} за ${square.price}₽?`)) {
+    const price = square.price * priceModifier;
+    if (!p.properties.includes(square.id) && p.money >= price) {
+      if (confirm(`${p.name}, купить на аукционе ${square.name[language]} за ${price}₽?`)) {
         buyProperty(p, square);
         break;
       }
@@ -101,12 +129,16 @@ function auction(square) {
 }
 
 function payRent(player, square) {
-  let rent = square.baseRent;
-  if (square.residency) rent *= 2; // residency doubles rent
+  let rent = square.baseRent * (1 + 0.5 * (square.improvements || 0));
+  if (square.residency) rent *= 2;
+  rent *= rentModifier;
   if (square.owner) {
     const owner = players.find(p => p.id === square.owner);
+    const bonus = owner.bonusRent || 1;
+    rent *= bonus;
     player.money -= rent;
     owner.money += rent;
+    owner.bonusRent = 1;
     log(`${player.name} заплатил ${rent}₽ игроку ${owner.name}`);
   }
 }

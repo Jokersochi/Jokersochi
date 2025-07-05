@@ -16,6 +16,11 @@ export const chanceCards = [
     ru: 'Снежная буря в Сибири. Пропустите ход.',
     en: 'Snow storm in Siberia. Skip a turn.',
     action: player => { player.skip = true; }
+  },
+  {
+    ru: 'Экономический кризис. Доход и цены снижены.',
+    en: 'Economic crisis. Rent and prices reduced.',
+    action: () => ({ rentModifier: 0.8, priceModifier: 0.8 })
   }
 ];
 
@@ -23,7 +28,7 @@ export const treasuryCards = [
   {
     ru: 'Экономический бум! Получите 100₽.',
     en: 'Economic boom! Collect 100₽.',
-    action: player => { player.money += 100; }
+    action: player => { player.money += 100; return { rentModifier: 1.2 }; }
   },
   {
     ru: 'Культурный фестиваль. Доход с собственности увеличен на 50% в этот ход.',

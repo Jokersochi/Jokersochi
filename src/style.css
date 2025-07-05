@@ -21,11 +21,10 @@ body {
     font-size: 12px;
     height: 60px;
     width: 60px;
+    position: relative;
 }
 
 .token {
-    width: 20px;
-    height: 20px;
-    background: red;
-    border-radius: 50%;
+    position: absolute;
+    font-size: 20px;
 }

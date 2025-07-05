@@ -8,11 +8,16 @@
 </head>
 <body>
     <h1>Монополия России (Прототип)</h1>
+    <label for="lang">Язык / Language:</label>
+    <select id="lang">
+        <option value="ru">Русский</option>
+        <option value="en">English</option>
+    </select>
     <div id="board" class="board"></div>
     <div id="controls">
         <button id="rollDice">Бросить кубики</button>
         <p id="log"></p>
     </div>
-    <script src="game.js"></script>
+    <script type="module" src="./js/game.js"></script>
 </body>
 </html>

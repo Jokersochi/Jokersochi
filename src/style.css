@@ -1,7 +1,14 @@
+/* Optimized CSS with better performance */
+* {
+    box-sizing: border-box;
+}
+
 body {
     font-family: Arial, sans-serif;
     background-color: #f0f0f0;
     padding: 20px;
+    margin: 0;
+    line-height: 1.4;
 }
 
 .board {
@@ -10,6 +17,7 @@ body {
     grid-template-rows: repeat(8, 60px);
     gap: 2px;
     margin-bottom: 20px;
+    will-change: transform;
 }
 
 .square {
@@ -21,6 +29,12 @@ body {
     font-size: 12px;
     height: 60px;
     width: 60px;
+    position: relative;
+    transition: background-color 0.2s ease;
+}
+
+.square:hover {
+    background-color: #f9f9f9;
 }
 
 .token {
@@ -28,4 +42,54 @@ body {
     height: 20px;
     background: red;
     border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: all 0.3s ease;
+    z-index: 10;
+}
+
+#controls {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+#rollDice {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.2s ease;
+}
+
+#rollDice:hover {
+    background-color: #0056b3;
+}
+
+#rollDice:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+#player-info {
+    background: white;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+#log {
+    margin: 0;
+    padding: 10px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    min-height: 40px;
+    flex: 1;
 }

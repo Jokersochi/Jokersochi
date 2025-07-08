@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест Русской Монополии</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f0f0f0;
+        }
+        .test-container {
+            max-width: 800px;
+            max-inline-size: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin-bottom: 30px;
+            margin-block-end: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .test-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background: #0056b3;
+        }
+        .test-result {
+            margin-top: 10px;
+            margin-block-start: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            font-family: monospace;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Тест Русской Монополии</h1>
+        
+        <div class="test-section">
+            <h3>1. Проверка загрузки модулей</h3>
+            <button class="test-button" onclick="testModules()">Проверить модули</button>
+            <div id="modules-result" class="test-result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>2. Тест утилит</h3>
+            <button class="test-button" onclick="testUtils()">Тест утилит</button>
+            <div id="utils-result" class="test-result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>3. Тест игрового поля</h3>
+            <button class="test-button" onclick="testBoard()">Тест поля</button>
+            <div id="board-result" class="test-result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>4. Тест игроков</h3>
+            <button class="test-button" onclick="testPlayers()">Тест игроков</button>
+            <div id="players-result" class="test-result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>5. Тест игры</h3>
+            <button class="test-button" onclick="testGame()">Тест игры</button>
+            <div id="game-result" class="test-result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>6. Тест локализации</h3>
+            <button class="test-button" onclick="testLocalization()">Тест локализации</button>
+            <div id="localization-result" class="test-result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>7. Тест сохранения</h3>
+            <button class="test-button" onclick="testSaveLoad()">Тест сохранения</button>
+            <div id="save-result" class="test-result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>8. Запуск полной игры</h3>
+            <button class="test-button" onclick="launchGame()">Запустить игру</button>
+            <div id="launch-result" class="test-result"></div>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/board.js"></script>
+    <script src="js/player.js"></script>
+    <script src="js/game.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/main.js"></script>
+    
+    <script>
+        function showResult(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.className = `test-result ${type}`;
+        }
+
+        function testModules() {
+            try {
+                const modules = ['CONFIG', 'utils', 'board', 'Player', 'Game', 'UI', 'app'];
+                const results = [];
+                
+                modules.forEach(module => {
+                    if (typeof window[module] !== 'undefined') {
+                        results.push(`✅ ${module}`);
+                    } else {
+                        results.push(`❌ ${module}`);
+                    }
+                });
+                
+                const allLoaded = results.every(r => r.includes('✅'));
+                showResult('modules-result', results.join('\n'), allLoaded ? 'success' : 'error');
+            } catch (error) {
+                showResult('modules-result', `Ошибка: ${error.message}`, 'error');
+            }
+        }
+
+        function testUtils() {
+            try {
+                const tests = [];
+                
+                // Тест случайных чисел
+                const randomNum = utils.random(1, 10);
+                tests.push(`Случайное число (1-10): ${randomNum}`);
+                
+                // Тест костей
+                const dice = utils.rollDice();
+                tests.push(`Бросок костей: ${dice.dice1} + ${dice.dice2} = ${dice.total}`);
+                
+                // Тест форматирования денег
+                const money = utils.formatMoney(1500);
+                tests.push(`Форматирование денег: ${money}`);
+                
+                // Тест локализации
+                const text = utils.getText('COMMON.START');
+                tests.push(`Локализация: ${text}`);
+                
+                showResult('utils-result', tests.join('\n'), 'success');
+            } catch (error) {
+                showResult('utils-result', `Ошибка: ${error.message}`, 'error');
+            }
+        }
+
+        function testBoard() {
+            try {
+                const tests = [];
+                
+                // Тест создания клетки
+                const cell = board.getCell(1);
+                tests.push(`Клетка 1: ${cell.name} (${cell.price}₽)`);
+                
+                // Тест цветовых групп
+                const brownCells = board.getCellsByColor('brown');
+                tests.push(`Коричневых клеток: ${brownCells.length}`);
+                
+                // Тест покупки
+                const purchaseResult = board.buyCell(1, 1, 600);
+                tests.push(`Покупка клетки: ${purchaseResult ? 'успешно' : 'неудачно'}`);
+                
+                // Тест аренды
+                const rent = board.calculateRent(1, 1);
+                tests.push(`Аренда: ${rent}₽`);
+                
+                showResult('board-result', tests.join('\n'), 'success');
+            } catch (error) {
+                showResult('board-result', `Ошибка: ${error.message}`, 'error');
+            }
+        }
+
+        function testPlayers() {
+            try {
+                const tests = [];
+                
+                // Создание игрока
+                const player = new Player(1, 'Тестовый игрок', 'matryoshka');
+                tests.push(`Создан игрок: ${player.name}`);
+                
+                // Тест денег
+                player.addMoney(1000);
+                tests.push(`Деньги после добавления: ${player.money}₽`);
+                
+                // Тест движения
+                player.move(5);
+                tests.push(`Позиция после движения: ${player.position}`);
+                
+                // Тест покупки собственности
+                const buyResult = player.buyProperty(1, 600);
+                tests.push(`Покупка собственности: ${buyResult ? 'успешно' : 'неудачно'}`);
+                
+                showResult('players-result', tests.join('\n'), 'success');
+            } catch (error) {
+                showResult('players-result', `Ошибка: ${error.message}`, 'error');
+            }
+        }
+
+        function testGame() {
+            try {
+                const tests = [];
+                
+                // Создание тестовой игры
+                const testGame = new Game();
+                tests.push('Игра создана');
+                
+                // Создание игроков
+                const playerData = [
+                    { id: 1, name: 'Игрок 1', token: 'matryoshka' },
+                    { id: 2, name: 'Игрок 2', token: 'balalaika' }
+                ];
+                
+                testGame.startNewGame(playerData);
+                tests.push(`Игра начата с ${testGame.players.length} игроками`);
+                
+                // Тест броска костей
+                const dice = testGame.rollDice();
+                tests.push(`Бросок костей: ${dice.dice1} + ${dice.dice2}`);
+                
+                showResult('game-result', tests.join('\n'), 'success');
+            } catch (error) {
+                showResult('game-result', `Ошибка: ${error.message}`, 'error');
+            }
+        }
+
+        function testLocalization() {
+            try {
+                const tests = [];
+                
+                // Тест русского языка
+                utils.setLocale('ru');
+                const russianText = utils.getText('COMMON.START');
+                tests.push(`Русский: ${russianText}`);
+                
+                // Тест английского языка
+                utils.setLocale('en');
+                const englishText = utils.getText('COMMON.START');
+                tests.push(`English: ${englishText}`);
+                
+                // Возвращаем русский
+                utils.setLocale('ru');
+                
+                showResult('localization-result', tests.join('\n'), 'success');
+            } catch (error) {
+                showResult('localization-result', `Ошибка: ${error.message}`, 'error');
+            }
+        }
+
+        function testSaveLoad() {
+            try {
+                const tests = [];
+                
+                // Тест сохранения
+                const testData = { test: 'data', number: 42 };
+                utils.saveToStorage('test_key', testData);
+                tests.push('Данные сохранены');
+                
+                // Тест загрузки
+                const loadedData = utils.loadFromStorage('test_key');
+                tests.push(`Данные загружены: ${JSON.stringify(loadedData)}`);
+                
+                // Тест удаления
+                utils.removeFromStorage('test_key');
+                const deletedData = utils.loadFromStorage('test_key');
+                tests.push(`Данные удалены: ${deletedData === null ? 'да' : 'нет'}`);
+                
+                showResult('save-result', tests.join('\n'), 'success');
+            } catch (error) {
+                showResult('save-result', `Ошибка: ${error.message}`, 'error');
+            }
+        }
+
+        function launchGame() {
+            try {
+                showResult('launch-result', 'Перенаправление на главную страницу игры...', 'success');
+                
+                // Переход на главную страницу
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1000);
+            } catch (error) {
+                showResult('launch-result', `Ошибка: ${error.message}`, 'error');
+            }
+        }
+
+        // Автоматический запуск тестов при загрузке
+        window.addEventListener('load', () => {
+            console.log('🧪 Запуск автоматических тестов...');
+            testModules();
+        });
+    </script>
+</body>
+</html> 

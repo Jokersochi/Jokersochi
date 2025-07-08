@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Русская Монополия - Онлайн Игра</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Главное меню -->
+    <div id="main-menu" class="screen active">
+        <div class="menu-container">
+            <h1 class="game-title">Русская Монополия</h1>
+            <div class="menu-buttons">
+                <button id="new-game-btn" class="menu-btn primary">Новая Игра</button>
+                <button id="join-game-btn" class="menu-btn secondary">Присоединиться к Игре</button>
+                <button id="settings-btn" class="menu-btn secondary">Настройки</button>
+                <button id="rules-btn" class="menu-btn secondary">Правила</button>
+                <button id="achievements-btn" class="menu-btn secondary">Достижения</button>
+                <button id="statistics-btn" class="menu-btn secondary">Статистика</button>
+                <button id="tournaments-btn" class="menu-btn secondary">Турниры</button>
+            </div>
+            <div class="language-selector">
+                <select id="language-select">
+                    <option value="ru">Русский</option>
+                    <option value="en">English</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Экран настроек -->
+    <div id="settings-screen" class="screen">
+        <div class="settings-container">
+            <h2>Настройки Игры</h2>
+            <div class="settings-section">
+                <h3>Игроки</h3>
+                <div class="player-count">
+                    <label for="player-count">Количество игроков:</label>
+                    <select id="player-count">
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4" selected>4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                    </select>
+                </div>
+                <div class="player-tokens">
+                    <h4>Выберите фишки:</h4>
+                    <div class="token-grid">
+                        <div class="token-option" data-token="matryoshka">
+                            <img src="assets/tokens/matryoshka.png" alt="Матрёшка">
+                            <span>Матрёшка</span>
+                        </div>
+                        <div class="token-option" data-token="balalaika">
+                            <img src="assets/tokens/balalaika.png" alt="Балалайка">
+                            <span>Балалайка</span>
+                        </div>
+                        <div class="token-option" data-token="kremlin">
+                            <img src="assets/tokens/kremlin.png" alt="Кремль">
+                            <span>Кремль</span>
+                        </div>
+                        <div class="token-option" data-token="samovar">
+                            <img src="assets/tokens/samovar.png" alt="Самовар">
+                            <span>Самовар</span>
+                        </div>
+                        <div class="token-option" data-token="bear">
+                            <img src="assets/tokens/bear.png" alt="Медведь">
+                            <span>Медведь</span>
+                        </div>
+                        <div class="token-option" data-token="troika">
+                            <img src="assets/tokens/troika.png" alt="Тройка">
+                            <span>Тройка</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="settings-section">
+                <h3>Правила</h3>
+                <div class="rule-options">
+                    <label>
+                        <input type="checkbox" id="auctions-enabled" checked>
+                        Включить аукционы
+                    </label>
+                    <label>
+                        <input type="checkbox" id="weather-enabled" checked>
+                        Погодные условия
+                    </label>
+                    <label>
+                        <input type="checkbox" id="economic-events-enabled" checked>
+                        Экономические события
+                    </label>
+                    <label>
+                        <input type="checkbox" id="cultural-events-enabled" checked>
+                        Культурные события
+                    </label>
+                </div>
+            </div>
+            <div class="settings-buttons">
+                <button id="back-to-menu" class="btn secondary">Назад</button>
+                <button id="start-game" class="btn primary">Начать Игру</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Игровое поле -->
+    <div id="game-screen" class="screen">
+        <div class="game-container">
+            <!-- Верхняя панель -->
+            <div class="top-panel">
+                <div class="current-player">
+                    <span>Ход игрока:</span>
+                    <div class="player-info">
+                        <img src="assets/tokens/matryoshka.png" alt="Токен" class="player-token">
+                        <span class="player-name">Игрок 1</span>
+                    </div>
+                </div>
+                <div class="game-controls">
+                    <button id="dice-btn" class="btn primary">Бросить кости</button>
+                    <button id="end-turn-btn" class="btn secondary" disabled>Завершить ход</button>
+                </div>
+                <div class="weather-indicator">
+                    <span>Погода: </span>
+                    <span id="current-weather">Солнечно</span>
+                </div>
+                <!-- Новые кнопки для игрового экрана -->
+                <div class="game-info-buttons">
+                    <button id="achievements-game-btn" class="btn secondary">Достижения</button>
+                    <button id="statistics-game-btn" class="btn secondary">Статистика</button>
+                    <button id="tournaments-game-btn" class="btn secondary">Турниры</button>
+                </div>
+            </div>
+
+            <!-- Основное игровое поле -->
+            <div class="game-board">
+                <div class="board-grid">
+                    <!-- Угловые клетки -->
+                    <div class="corner-cell start" data-position="0">
+                        <div class="cell-content">
+                            <h3>СТАРТ</h3>
+                            <p>Получите 2000₽</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Верхний ряд -->
+                    <div class="property-cell" data-position="1" data-color="brown">
+                        <div class="cell-content">
+                            <h3>Арбат</h3>
+                            <p class="price">600₽</p>
+                            <div class="property-owner"></div>
+                        </div>
+                    </div>
+                    <div class="chance-cell" data-position="2">
+                        <div class="cell-content">
+                            <h3>ШАНС</h3>
+                        </div>
+                    </div>
+                    <div class="property-cell" data-position="3" data-color="brown">
+                        <div class="cell-content">
+                            <h3>Тверская</h3>
+                            <p class="price">800₽</p>
+                            <div class="property-owner"></div>
+                        </div>
+                    </div>
+                    <div class="tax-cell" data-position="4">
+                        <div class="cell-content">
+                            <h3>Налог</h3>
+                            <p>200₽</p>
+                        </div>
+                    </div>
+                    <div class="property-cell" data-position="5" data-color="lightblue">
+                        <div class="cell-content">
+                            <h3>Метро</h3>
+                            <p class="price">1000₽</p>
+                            <div class="property-owner"></div>
+                        </div>
+                    </div>
+                    <div class="property-cell" data-position="6" data-color="lightblue">
+                        <div class="cell-content">
+                            <h3>Эрмитаж</h3>
+                            <p class="price">1200₽</p>
+                            <div class="property-owner"></div>
+                        </div>
+                    </div>
+                    <div class="chance-cell" data-position="7">
+                        <div class="cell-content">
+                            <h3>ШАНС</h3>
+                        </div>
+                    </div>
+                    <div class="property-cell" data-position="8" data-color="lightblue">
+                        <div class="cell-content">
+                            <h3>Петергоф</h3>
+                            <p class="price">1400₽</p>
+                            <div class="property-owner"></div>
+                        </div>
+                    </div>
+                    <div class="corner-cell jail" data-position="9">
+                        <div class="cell-content">
+                            <h3>ТЮРЬМА</h3>
+                        </div>
+                    </div>
+
+                    <!-- Правый ряд -->
+                    <div class="property-cell" data-position="10" data-color="pink">
+                        <div class="cell-content">
+                            <h3>Красная площадь</h3>
+                            <p class="price">1600₽</p>
+                            <div class="property-owner"></div>
+                        </div>
+                    </div>
+                    <div class="property-cell" data-position="11" data-color="pink">
+                        <div class="cell-content">
+                            <h3>ГУМ</h3>
+                            <p class="price">1800₽</p>
+                            <div class="property-owner"></div>
+                        </div>
+                    </div>
+                    <div class="treasure-cell" data-position="12">
+                        <div class="cell-content">
+                            <h3>КАЗНА</h3>
+                        </div>
+                    </div>
+                    <div class="property-cell" data-position="13" data-color="pink">
+                        <div class="cell-content">
+                            <h3>ЦУМ</h3>
+                            <p class="price">2000₽</p>
+                            <div class="property-owner"></div>
+                        </div>
+                    </div>
+                    <div class="property-cell" data-position="14" data-color="orange">
+                        <div class="cell-content">
+                            <h3>Третьяковка</h3>
+                            <p class="price">2200₽</p>
+                            <div class="property-owner"></div>
+                        </div>
+                    </div>
+                    <div class="property-cell" data-position="15" data-color="orange">
+                        <div class="cell-content">
+                            <h3>Третьяковская галерея</h3>
+                            <p class="price">2400₽</p>
+                            <div class="property-owner"></div>
+                        </div>
+                    </div>
+                    <div class="property-cell" data-position="16" data-color="orange">
+                        <div class="cell-content">
+                            <h3>Пушкинский музей</h3>
+                            <p class="price">2600₽</p>
+                            <div class="property-owner"></div>
+                        </div>
+                    </div>
+                    <div class="chance-cell" data-position="17">
+                        <div class="cell-content">
+                            <h3>ШАНС</h3>
+                        </div>
+                    </div>
+                    <div class="property-cell" data-position="18" data-color="red">
+                        <div class="cell-content">
+                            <h3>Большой театр</h3>
+                            <p class="price">2800₽</p>
+                            <div class="property-owner"></div>
+                        </div>
+                    </div>
+                    <div class="property-cell" data-position="19" data-color="red">
+                        <div class="cell-content">
+                            <h3>Мариинский театр</h3>
+                            <p class="price">3000₽</p>
+                            <div class="property-owner"></div>
+                        </div>
+                    </div>
+
+                    <!-- Нижний ряд -->
+                    <div class="corner-cell free-parking" data-position="20">
+                        <div class="cell-content">
+                            <h3>БЕСПЛАТНАЯ ПАРКОВКА</h3>
+                        </div>
+                    </div>
+                    <div class="property-cell" data-position="21" data-color="yellow">
+                        <div class="cell-content">
+                            <h3>Сочи</h3>
+                            <p class="price">3200₽</p>
+                            <div class="property-owner"></div>
+                        </div>
+                    </div>
+                    <div class="treasure-cell" data-position="22">
+                        <div class="cell-content">
+                            <h3>КАЗНА</h3>
+                        </div>
+                    </div>
+                    <div class="property-cell" data-position="23" data-color="yellow">
+                        <div class="cell-content">
+                            <h3>Крым</h3>
+                            <p class="price">3400₽</p>
+                            <div class="property-owner"></div>
+                        </div>
+                    </div>
+                    <div class="property-cell" data-position="24" data-color="yellow">
+                        <div class="cell-content">
+                            <h3>Казань</h3>
+                            <p class="price">3600₽</p>
+                            <div class="property-owner"></div>
+                        </div>
+                    </div>
+                    <div class="property-cell" data-position="25" data-color="green">
+                        <div class="cell-content">
+                            <h3>Екатеринбург</h3>
+                            <p class="price">3800₽</p>
+                            <div class="property-owner"></div>
+                        </div>
+                    </div>
+                    <div class="property-cell" data-position="26" data-color="green">
+                        <div class="cell-content">
+                            <h3>Новосибирск</h3>
+                            <p class="price">4000₽</p>
+                            <div class="property-owner"></div>
+                        </div>
+                    </div>
+                    <div class="chance-cell" data-position="27">
+                        <div class="cell-content">
+                            <h3>ШАНС</h3>
+                        </div>
+                    </div>
+                    <div class="property-cell" data-position="28" data-color="green">
+                        <div class="cell-content">
+                            <h3>Владивосток</h3>
+                            <p class="price">4200₽</p>
+                            <div class="property-owner"></div>
+                        </div>
+                    </div>
+                    <div class="property-cell" data-position="29" data-color="blue">
+                        <div class="cell-content">
+                            <h3>Байкал</h3>
+                            <p class="price">4400₽</p>
+                            <div class="property-owner"></div>
+                        </div>
+                    </div>
+
+                    <!-- Левый ряд -->
+                    <div class="corner-cell go-to-jail" data-position="30">
+                        <div class="cell-content">
+                            <h3>ИДИТЕ В ТЮРЬМУ</h3>
+                        </div>
+                    </div>
+                    <div class="property-cell" data-position="31" data-color="purple">
+                        <div class="cell-content">
+                            <h3>Камчатка</h3>
+                            <p class="price">4600₽</p>
+                            <div class="property-owner"></div>
+                        </div>
+                    </div>
+                    <div class="property-cell" data-position="32" data-color="purple">
+                        <div class="cell-content">
+                            <h3>Магадан</h3>
+                            <p class="price">4800₽</p>
+                            <div class="property-owner"></div>
+                        </div>
+                    </div>
+                    <div class="treasure-cell" data-position="33">
+                        <div class="cell-content">
+                            <h3>КАЗНА</h3>
+                        </div>
+                    </div>
+                    <div class="property-cell" data-position="34" data-color="purple">
+                        <div class="cell-content">
+                            <h3>Якутск</h3>
+                            <p class="price">5000₽</p>
+                            <div class="property-owner"></div>
+                        </div>
+                    </div>
+                    <div class="property-cell" data-position="35" data-color="darkblue">
+                        <div class="cell-content">
+                            <h3>Транссиб</h3>
+                            <p class="price">5200₽</p>
+                            <div class="property-owner"></div>
+                        </div>
+                    </div>
+                    <div class="chance-cell" data-position="36">
+                        <div class="cell-content">
+                            <h3>ШАНС</h3>
+                        </div>
+                    </div>
+                    <div class="property-cell" data-position="37" data-color="darkblue">
+                        <div class="cell-content">
+                            <h3>Космодром</h3>
+                            <p class="price">5400₽</p>
+                            <div class="property-owner"></div>
+                        </div>
+                    </div>
+                    <div class="tax-cell" data-position="38">
+                        <div class="cell-content">
+                            <h3>Налог</h3>
+                            <p>1000₽</p>
+                        </div>
+                    </div>
+                    <div class="property-cell" data-position="39" data-color="darkblue">
+                        <div class="cell-content">
+                            <h3>Москва-Сити</h3>
+                            <p class="price">5600₽</p>
+                            <div class="property-owner"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Игровые фишки -->
+                <div class="game-tokens">
+                    <div class="token" data-player="1" style="left: 0%; top: 0%;">
+                        <img src="assets/tokens/matryoshka.png" alt="Игрок 1">
+                    </div>
+                    <div class="token" data-player="2" style="left: 0%; top: 20%;">
+                        <img src="assets/tokens/balalaika.png" alt="Игрок 2">
+                    </div>
+                    <div class="token" data-player="3" style="left: 0%; top: 40%;">
+                        <img src="assets/tokens/kremlin.png" alt="Игрок 3">
+                    </div>
+                    <div class="token" data-player="4" style="left: 0%; top: 60%;">
+                        <img src="assets/tokens/samovar.png" alt="Игрок 4">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Боковая панель -->
+            <div class="side-panel">
+                <!-- Информация об игроках -->
+                <div class="players-info">
+                    <h3>Игроки</h3>
+                    <div class="player-list">
+                        <div class="player-item active" data-player="1">
+                            <img src="assets/tokens/matryoshka.png" alt="Токен" class="player-token">
+                            <div class="player-details">
+                                <span class="player-name">Игрок 1</span>
+                                <span class="player-money">2000₽</span>
+                            </div>
+                        </div>
+                        <div class="player-item" data-player="2">
+                            <img src="assets/tokens/balalaika.png" alt="Токен" class="player-token">
+                            <div class="player-details">
+                                <span class="player-name">Игрок 2</span>
+                                <span class="player-money">2000₽</span>
+                            </div>
+                        </div>
+                        <div class="player-item" data-player="3">
+                            <img src="assets/tokens/kremlin.png" alt="Токен" class="player-token">
+                            <div class="player-details">
+                                <span class="player-name">Игрок 3</span>
+                                <span class="player-money">2000₽</span>
+                            </div>
+                        </div>
+                        <div class="player-item" data-player="4">
+                            <img src="assets/tokens/samovar.png" alt="Токен" class="player-token">
+                            <div class="player-details">
+                                <span class="player-name">Игрок 4</span>
+                                <span class="player-money">2000₽</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Чат -->
+                <div class="chat-section">
+                    <h3>Чат</h3>
+                    <div class="chat-messages" id="chat-messages">
+                        <div class="message">
+                            <span class="message-sender">Система:</span>
+                            <span class="message-text">Игра началась! Первый ход за Игроком 1.</span>
+                        </div>
+                    </div>
+                    <div class="chat-input">
+                        <input type="text" id="chat-input" placeholder="Введите сообщение...">
+                        <button id="send-message-btn">Отправить</button>
+                    </div>
+                </div>
+
+                <!-- Кнопки действий -->
+                <div class="action-buttons">
+                    <button id="trade-btn" class="btn secondary">Торговля</button>
+                    <button id="mortgage-btn" class="btn secondary">Залог</button>
+                    <button id="build-btn" class="btn secondary">Строить</button>
+                    <button id="auction-btn" class="btn secondary">Аукцион</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальные окна -->
+    <div id="modal-overlay" class="modal-overlay hidden">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modal-title">Заголовок</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-content" id="modal-content">
+                <!-- Содержимое модального окна -->
+            </div>
+            <div class="modal-footer">
+                <button id="modal-cancel" class="btn secondary">Отмена</button>
+                <button id="modal-confirm" class="btn primary">Подтвердить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Карточки Шанс и Казна -->
+    <div id="card-modal" class="modal-overlay hidden">
+        <div class="card-modal">
+            <div class="card-content">
+                <div class="card-header">
+                    <h3 id="card-title">Шанс</h3>
+                </div>
+                <div class="card-body">
+                    <p id="card-text">Текст карточки</p>
+                </div>
+                <div class="card-footer">
+                    <button id="card-ok" class="btn primary">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Аукцион -->
+    <div id="auction-modal" class="modal-overlay hidden">
+        <div class="auction-modal">
+            <div class="auction-header">
+                <h3>Аукцион: <span id="auction-property">Название участка</span></h3>
+            </div>
+            <div class="auction-content">
+                <div class="current-bid">
+                    <span>Текущая ставка: </span>
+                    <span id="current-bid-amount">0₽</span>
+                    <span>от </span>
+                    <span id="current-bidder">Игрока</span>
+                </div>
+                <div class="bid-input">
+                    <input type="number" id="bid-amount" placeholder="Ваша ставка">
+                    <button id="place-bid-btn" class="btn primary">Сделать ставку</button>
+                </div>
+                <div class="auction-timer">
+                    <span>Время: </span>
+                    <span id="auction-time">30</span>
+                </div>
+            </div>
+            <div class="auction-footer">
+                <button id="pass-bid-btn" class="btn secondary">Пропустить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Скрипты -->
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/board.js"></script>
+    <script src="js/player.js"></script>
+    <script src="js/property.js"></script>
+    <script src="js/game.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html> 

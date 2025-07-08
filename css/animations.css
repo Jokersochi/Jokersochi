@@ -1,0 +1,844 @@
+/* Современные анимации для Русской Монополии */
+
+/* Базовые анимации */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+@keyframes bounce {
+    0%, 20%, 53%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40%, 43% {
+        transform: translateY(-10px);
+    }
+    70% {
+        transform: translateY(-5px);
+    }
+    90% {
+        transform: translateY(-2px);
+    }
+}
+
+@keyframes shake {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    10%, 30%, 50%, 70%, 90% {
+        transform: translateX(-5px);
+    }
+    20%, 40%, 60%, 80% {
+        transform: translateX(5px);
+    }
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes glow {
+    0%, 100% {
+        box-shadow: 0 0 5px rgba(59, 130, 246, 0.5);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.8), 0 0 30px rgba(59, 130, 246, 0.6);
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200px 0;
+    }
+    100% {
+        background-position: calc(200px + 100%) 0;
+    }
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes sparkle {
+    0%, 100% {
+        opacity: 0;
+        transform: scale(0) rotate(0deg);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1) rotate(180deg);
+    }
+}
+
+/* Применение анимаций к элементам */
+.screen.active {
+    animation: fadeIn 0.6s ease-out;
+}
+
+.menu-container {
+    animation: scaleIn 0.8s ease-out;
+}
+
+.menu-btn {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.menu-btn:nth-child(1) { animation-delay: 0.1s; }
+.menu-btn:nth-child(2) { animation-delay: 0.2s; }
+.menu-btn:nth-child(3) { animation-delay: 0.3s; }
+.menu-btn:nth-child(4) { animation-delay: 0.4s; }
+
+.game-title {
+    animation: fadeInDown 1s ease-out;
+    position: relative;
+}
+
+.game-title::after {
+    content: '';
+    position: absolute;
+    inset-block-end: -10px;
+    inset-inline-start: 50%;
+    transform: translateX(-50%);
+    inline-size: 0;
+    block-size: 3px;
+    background: var(--gradient-accent);
+    animation: slideInLeft 1.2s ease-out 0.5s forwards;
+}
+
+/* Анимации для игрового поля */
+.board-grid {
+    animation: scaleIn 1s ease-out;
+}
+
+.corner-cell, .property-cell, .chance-cell, .tax-cell {
+    animation: fadeIn 0.5s ease-out;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.corner-cell:nth-child(1) { animation-delay: 0.1s; }
+.corner-cell:nth-child(2) { animation-delay: 0.2s; }
+.corner-cell:nth-child(3) { animation-delay: 0.3s; }
+.corner-cell:nth-child(4) { animation-delay: 0.4s; }
+
+/* Анимации для токенов игроков */
+.player-token {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: float 3s ease-in-out infinite;
+}
+
+.player-token:hover {
+    animation: bounce 0.6s ease-in-out;
+}
+
+/* Анимации для кнопок */
+.btn {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: -100%;
+    inline-size: 100%;
+    block-size: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: inset-inline-start 0.5s ease;
+}
+
+.btn:hover::before {
+    inset-inline-start: 100%;
+}
+
+.btn:active {
+    transform: scale(0.95);
+}
+
+/* Анимации для модальных окон */
+.modal-overlay {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modal {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modal-overlay.active .modal {
+    animation: scaleIn 0.3s ease-out;
+}
+
+/* Анимации для карточек */
+.card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-style: preserve-3d;
+}
+
+.card:hover {
+    transform: translateY(-5px) rotateX(5deg);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* Анимации для костей */
+.dice {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dice.rolling {
+    animation: shake 0.5s ease-in-out;
+}
+
+/* Анимации для денег */
+.money {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.money.positive {
+    animation: fadeInUp 0.5s ease-out;
+    color: var(--success-color);
+}
+
+.money.negative {
+    animation: shake 0.5s ease-in-out;
+    color: var(--error-color);
+}
+
+/* Анимации для погоды */
+.weather-indicator {
+    transition: all 0.3s ease;
+}
+
+.weather-indicator.rainy {
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.weather-indicator.snowy {
+    animation: float 3s ease-in-out infinite;
+}
+
+.weather-indicator.stormy {
+    animation: shake 0.5s ease-in-out infinite;
+}
+
+/* Анимации для событий */
+.event-indicator {
+    animation: glow 2s ease-in-out infinite;
+}
+
+/* Анимации для улучшений */
+.improvement {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.improvement:hover {
+    transform: scale(1.1);
+    animation: glow 1s ease-in-out infinite;
+}
+
+/* Анимации для аукционов */
+.auction-item {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.auction-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.auction-timer {
+    animation: pulse 1s ease-in-out infinite;
+}
+
+/* Анимации для чата */
+.chat-message {
+    animation: slideInRight 0.3s ease-out;
+}
+
+.chat-message.own {
+    animation: slideInLeft 0.3s ease-out;
+}
+
+/* Анимации для уведомлений */
+.notification {
+    animation: slideInDown 0.3s ease-out;
+}
+
+.notification.success {
+    border-inline-start-color: var(--success-color);
+}
+
+.notification.error {
+    border-inline-start-color: var(--error-color);
+    animation: shake 0.5s ease-in-out;
+}
+
+.notification.warning {
+    border-inline-start-color: var(--warning-color);
+}
+
+/* Анимации для загрузки */
+.loading {
+    display: inline-block;
+    inline-size: 20px;
+    block-size: 20px;
+    border: 3px solid rgba(59, 130, 246, 0.3);
+    border-radius: 50%;
+    border-block-start-color: var(--primary-light);
+    animation: rotate 1s ease-in-out infinite;
+}
+
+/* Анимации для прогресс-баров */
+.progress-bar {
+    overflow: hidden;
+    position: relative;
+}
+
+.progress-bar::after {
+    content: '';
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    block-size: 100%;
+    inline-size: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    animation: shimmer 2s infinite;
+}
+
+/* Анимации для звездочек */
+.star {
+    position: absolute;
+    inline-size: 4px;
+    block-size: 4px;
+    background: #fbbf24;
+    border-radius: 50%;
+    animation: sparkle 2s ease-in-out infinite;
+}
+
+.star:nth-child(1) { inset-block-start: 10%; inset-inline-start: 10%; animation-delay: 0s; }
+.star:nth-child(2) { inset-block-start: 20%; inset-inline-start: 80%; animation-delay: 0.5s; }
+.star:nth-child(3) { inset-block-start: 60%; inset-inline-start: 20%; animation-delay: 1s; }
+.star:nth-child(4) { inset-block-start: 80%; inset-inline-start: 70%; animation-delay: 1.5s; }
+
+/* Анимации для частиц */
+.particle {
+    position: absolute;
+    inline-size: 6px;
+    block-size: 6px;
+    background: var(--primary-light);
+    border-radius: 50%;
+    animation: float 3s ease-in-out infinite;
+}
+
+/* Анимации для переходов между экранами */
+.screen {
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.screen.fade-out {
+    opacity: 0;
+    transform: scale(0.95);
+}
+
+.screen.fade-in {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Анимации для интерактивных элементов */
+.interactive {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.interactive:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.interactive:active {
+    transform: translateY(0);
+}
+
+/* Анимации для состояний игры */
+.game-state-changing {
+    animation: pulse 0.5s ease-in-out;
+}
+
+.player-turn {
+    animation: glow 2s ease-in-out infinite;
+}
+
+/* Анимации для звуковых эффектов */
+.sound-wave {
+    position: absolute;
+    inline-size: 100%;
+    block-size: 100%;
+    border: 2px solid var(--primary-light);
+    border-radius: 50%;
+    animation: scaleIn 0.5s ease-out;
+    opacity: 0;
+}
+
+/* Анимации для виктории */
+.victory {
+    animation: bounce 1s ease-in-out infinite;
+}
+
+.victory::before {
+    content: '🎉';
+    position: absolute;
+    inset-block-start: -20px;
+    inset-inline-start: 50%;
+    transform: translateX(-50%);
+    font-size: 2rem;
+    animation: float 2s ease-in-out infinite;
+}
+
+/* Анимации для банкротства */
+.bankruptcy {
+    animation: shake 0.5s ease-in-out;
+    filter: grayscale(100%);
+}
+
+/* Анимации для торговли */
+.trade-offer {
+    animation: scaleIn 0.3s ease-out;
+}
+
+.trade-offer:hover {
+    animation: pulse 1s ease-in-out infinite;
+}
+
+/* Анимации для альянсов */
+.alliance {
+    animation: glow 2s ease-in-out infinite;
+    border-color: var(--success-color);
+}
+
+/* Анимации для турниров */
+.tournament {
+    background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+    animation: shimmer 3s ease-in-out infinite;
+}
+
+/* Анимации для рейтинга */
+.ranking {
+    transition: all 0.3s ease;
+}
+
+.ranking:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* Анимации для достижений */
+.achievement {
+    animation: scaleIn 0.5s ease-out;
+}
+
+.achievement.unlocked {
+    animation: bounce 0.6s ease-in-out;
+}
+
+/* Анимации для подсказок */
+.tooltip {
+    animation: fadeInUp 0.3s ease-out;
+}
+
+/* Анимации для обучения */
+.tutorial-step {
+    animation: fadeIn 0.5s ease-out;
+}
+
+.tutorial-highlight {
+    animation: glow 1s ease-in-out infinite;
+}
+
+/* Анимации для настроек */
+.setting-option {
+    transition: all 0.3s ease;
+}
+
+.setting-option:hover {
+    background: var(--bg-tertiary);
+    transform: translateX(5px);
+}
+
+/* Анимации для языкового переключателя */
+.language-selector {
+    transition: all 0.3s ease;
+}
+
+.language-selector:hover {
+    transform: scale(1.05);
+}
+
+/* Анимации для звуковых настроек */
+.sound-control {
+    transition: all 0.3s ease;
+}
+
+.sound-control:hover {
+    transform: scale(1.1);
+}
+
+.sound-control.muted {
+    opacity: 0.5;
+    filter: grayscale(100%);
+}
+
+/* Анимации для полноэкранного режима */
+.fullscreen-toggle {
+    transition: all 0.3s ease;
+}
+
+.fullscreen-toggle:hover {
+    transform: scale(1.1);
+}
+
+/* Анимации для сохранения/загрузки */
+.save-load {
+    transition: all 0.3s ease;
+}
+
+.save-load:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Анимации для статистики */
+.statistics {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+.stat-item {
+    transition: all 0.3s ease;
+}
+
+.stat-item:hover {
+    transform: scale(1.05);
+    background: var(--bg-tertiary);
+}
+
+/* Анимации для истории игр */
+.game-history {
+    animation: slideInLeft 0.5s ease-out;
+}
+
+.history-item {
+    transition: all 0.3s ease;
+}
+
+.history-item:hover {
+    transform: translateX(5px);
+    background: var(--bg-tertiary);
+}
+
+/* Анимации для профиля */
+.profile {
+    animation: scaleIn 0.5s ease-out;
+}
+
+.profile-avatar {
+    transition: all 0.3s ease;
+}
+
+.profile-avatar:hover {
+    transform: scale(1.1);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* Анимации для друзей */
+.friends-list {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+.friend-item {
+    transition: all 0.3s ease;
+}
+
+.friend-item:hover {
+    transform: translateX(5px);
+    background: var(--bg-tertiary);
+}
+
+.friend-online {
+    animation: pulse 2s ease-in-out infinite;
+}
+
+/* Анимации для уведомлений */
+.notifications {
+    animation: slideInRight 0.5s ease-out;
+}
+
+.notification-item {
+    transition: all 0.3s ease;
+}
+
+.notification-item:hover {
+    transform: translateX(-5px);
+    background: var(--bg-tertiary);
+}
+
+/* Анимации для поиска */
+.search {
+    transition: all 0.3s ease;
+}
+
+.search:focus {
+    transform: scale(1.02);
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+}
+
+/* Анимации для фильтров */
+.filter {
+    transition: all 0.3s ease;
+}
+
+.filter:hover {
+    transform: scale(1.05);
+}
+
+.filter.active {
+    animation: glow 1s ease-in-out infinite;
+}
+
+/* Анимации для сортировки */
+.sort {
+    transition: all 0.3s ease;
+}
+
+.sort:hover {
+    transform: scale(1.05);
+}
+
+.sort.active {
+    animation: pulse 1s ease-in-out infinite;
+}
+
+/* Анимации для пагинации */
+.pagination {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+.page-item {
+    transition: all 0.3s ease;
+}
+
+.page-item:hover {
+    transform: scale(1.1);
+}
+
+.page-item.active {
+    animation: glow 1s ease-in-out infinite;
+}
+
+/* Анимации для модальных окон с формами */
+.form-group {
+    animation: fadeInUp 0.3s ease-out;
+}
+
+.form-group:nth-child(1) { animation-delay: 0.1s; }
+.form-group:nth-child(2) { animation-delay: 0.2s; }
+.form-group:nth-child(3) { animation-delay: 0.3s; }
+.form-group:nth-child(4) { animation-delay: 0.4s; }
+
+/* Анимации для валидации */
+.input-error {
+    animation: shake 0.5s ease-in-out;
+    border-color: var(--error-color);
+}
+
+.input-success {
+    border-color: var(--success-color);
+    animation: glow 1s ease-in-out;
+}
+
+/* Анимации для загрузки файлов */
+.file-upload {
+    transition: all 0.3s ease;
+}
+
+.file-upload:hover {
+    transform: scale(1.05);
+}
+
+.file-upload.dragover {
+    animation: pulse 1s ease-in-out infinite;
+    border-color: var(--primary-light);
+}
+
+/* Анимации для прогресса загрузки */
+.upload-progress {
+    animation: shimmer 2s ease-in-out infinite;
+}
+
+/* Анимации для ошибок */
+.error-message {
+    animation: shake 0.5s ease-in-out;
+    border-inline-start-color: var(--error-color);
+}
+
+/* Анимации для успеха */
+.success-message {
+    animation: fadeInUp 0.5s ease-out;
+    border-inline-start-color: var(--success-color);
+}
+
+/* Анимации для предупреждений */
+.warning-message {
+    animation: pulse 1s ease-in-out infinite;
+    border-inline-start-color: var(--warning-color);
+}
+
+/* Анимации для информации */
+.info-message {
+    animation: fadeInUp 0.5s ease-out;
+    border-inline-start-color: var(--primary-light);
+}
+
+/* Анимации для закрытия */
+.close-animation {
+    animation: scaleIn 0.3s ease-out reverse;
+}
+
+/* Анимации для открытия */
+.open-animation {
+    animation: scaleIn 0.3s ease-out;
+}
+
+/* Анимации для переключения */
+.switch-animation {
+    animation: slideInRight 0.3s ease-out;
+}
+
+/* Анимации для появления */
+.appear-animation {
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* Анимации для исчезновения */
+.disappear-animation {
+    animation: fadeIn 0.5s ease-out reverse;
+}
+
+/* Анимации для вращения */
+.rotate-animation {
+    animation: rotate 1s linear infinite;
+}
+
+/* Анимации для пульсации */
+.pulse-animation {
+    animation: pulse 1s ease-in-out infinite;
+}
+
+/* Анимации для подпрыгивания */
+.bounce-animation {
+    animation: bounce 1s ease-in-out infinite;
+}
+
+/* Анимации для тряски */
+.shake-animation {
+    animation: shake 0.5s ease-in-out;
+}
+
+/* Анимации для свечения */
+.glow-animation {
+    animation: glow 2s ease-in-out infinite;
+}
+
+/* Анимации для мерцания */
+.shimmer-animation {
+    animation: shimmer 2s ease-in-out infinite;
+}
+
+/* Анимации для плавания */
+.float-animation {
+    animation: float 3s ease-in-out infinite;
+}
+
+/* Анимации для искрения */
+.sparkle-animation {
+    animation: sparkle 2s ease-in-out infinite;
+} 

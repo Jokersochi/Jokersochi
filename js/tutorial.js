@@ -375,14 +375,14 @@ class TutorialManager {
         this.overlay.className = 'tutorial-overlay';
         this.overlay.style.cssText = `
             position: fixed;
-            top: 0; /* fallback for logical property */
-            inset-block-start: 0;
-            left: 0; /* fallback for logical property */
-            inset-inline-start: 0;
-            width: 100%; /* fallback for logical property */
-            inline-size: 100%;
-            height: 100%; /* fallback for logical property */
-            block-size: 100%;
+            top: 0; /* физическое */
+            inset-block-start: 0; /* логическое */
+            left: 0; /* физическое */
+            inset-inline-start: 0; /* логическое */
+            width: 100%; /* физическое */
+            inline-size: 100%; /* логическое */
+            height: 100%; /* физическое */
+            block-size: 100%; /* логическое */
             background: rgba(0, 0, 0, 0.7);
             z-index: 9999;
             display: none;
@@ -541,10 +541,10 @@ class TutorialManager {
         }
 
         tooltip.style.position = 'absolute';
-        tooltip.style.top = `${Math.max(10, top)}px`; /* fallback for logical property */
-        tooltip.style.insetBlockStart = `${Math.max(10, top)}px`;
-        tooltip.style.left = `${Math.max(10, left)}px`; /* fallback for logical property */
-        tooltip.style.insetInlineStart = `${Math.max(10, left)}px`;
+        tooltip.style.top = `${Math.max(10, top)}px`; /* физическое */
+        tooltip.style.insetBlockStart = `${Math.max(10, top)}px`; /* логическое */
+        tooltip.style.left = `${Math.max(10, left)}px`; /* физическое */
+        tooltip.style.insetInlineStart = `${Math.max(10, left)}px`; /* логическое */
     }
 
     /**
@@ -904,8 +904,10 @@ class TutorialManager {
 
         // Позиционируем подсказку
         const rect = element.getBoundingClientRect();
-        tooltip.style.top = `${rect.bottom + 5}px`;
-        tooltip.style.left = `${rect.left + (rect.width - tooltip.offsetWidth) / 2}px`;
+        tooltip.style.top = `${rect.bottom + 5}px`; /* физическое */
+        tooltip.style.insetBlockStart = `${rect.bottom + 5}px`; /* логическое */
+        tooltip.style.left = `${rect.left + (rect.width - tooltip.offsetWidth) / 2}px`; /* физическое */
+        tooltip.style.insetInlineStart = `${rect.left + (rect.width - tooltip.offsetWidth) / 2}px`; /* логическое */
 
         document.body.appendChild(tooltip);
 

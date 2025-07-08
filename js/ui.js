@@ -406,16 +406,16 @@ class UI {
         
         notification.style.cssText = `
             position: fixed;
-            top: 20px;
             inset-block-start: 20px;
-            right: 20px;
+            inset-block-start: 20px;
+            inset-inline-end: 20px;
             inset-inline-end: 20px;
             padding: 15px 20px;
             background: white;
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
             z-index: 10000;
-            max-width: 300px;
+            max-inline-size: 300px;
             max-inline-size: 300px;
             word-wrap: break-word;
         `;
@@ -880,13 +880,13 @@ class UI {
             const content = `
                 <div class=\"achievements-modal\">
                     <h3>${utils.getText('ACHIEVEMENTS_TITLE')}</h3>
-                    <div style=\"margin-bottom:12px;\">
+                    <div style=\"margin-block-end:12px;\">
                         <div style=\"display:flex;align-items:center;flex-direction:column;\">${pieChart}</div>
-                        <div style=\"font-size:0.95em; margin-bottom:4px;\">${unlocked} / ${total} (${percent}%) ${utils.getText('ACHIEVEMENTS_UNLOCKED') || 'разблокировано'}</div>
-                        <div style=\"background:#eee; border-radius:6px; height:10px; width:100%; overflow:hidden; margin-bottom:8px;\">
-                            <div style=\"background:#4caf50; width:${percent}%; inline-size:${percent}%; height:100%;\"></div>
+                        <div style=\"font-size:0.95em; margin-block-end:4px;\">${unlocked} / ${total} (${percent}%) ${utils.getText('ACHIEVEMENTS_UNLOCKED') || 'разблокировано'}</div>
+                        <div style=\"background:#eee; border-radius:6px; block-size:10px; inline-size:100%; overflow:hidden; margin-block-end:8px;\">
+                            <div style=\"background:#4caf50; inline-size:${percent}%; inline-size:${percent}%; block-size:100%;\"></div>
                         </div>
-                        <div class=\"achievements-filters\" style=\"margin-bottom:8px;\">${filterButtons}</div>
+                        <div class=\"achievements-filters\" style=\"margin-block-end:8px;\">${filterButtons}</div>
                     </div>
                     <ul class=\"achievements-list\">
                         ${playerAchievements.length ? playerAchievements.map(a => `
@@ -964,7 +964,7 @@ class UI {
             const content = `
                 <div class="statistics-modal">
                     <h3>${utils.getText('STATISTICS_TITLE')}</h3>
-                    <div class="statistics-tabs" style="margin-bottom:12px;">${tabButtons}</div>
+                    <div class="statistics-tabs" style="margin-block-end:12px;">${tabButtons}</div>
                     <div class="statistics-tab-content">${contentTab}</div>
                 </div>
                 <script>
@@ -1039,7 +1039,7 @@ class UI {
             const content = `
                 <div class="tournaments-modal">
                     <h3>${utils.getText('TOURNAMENTS_TITLE')}</h3>
-                    <div class="tournaments-tabs" style="margin-bottom:12px;">${tabButtons}</div>
+                    <div class="tournaments-tabs" style="margin-block-end:12px;">${tabButtons}</div>
                     <div class="tournaments-tab-content">${contentTab}</div>
                 </div>
                 <script>
@@ -1346,19 +1346,24 @@ function showCustomTooltip(target, opts, event) {
     const rect = target.getBoundingClientRect();
     // Сначала делаем видимым, чтобы узнать высоту
     tooltip.style.left = rect.left + window.scrollX + rect.width / 2 + 'px';
+    tooltip.style.insetInlineStart = rect.left + window.scrollX + rect.width / 2 + 'px';
     tooltip.style.top = rect.top + window.scrollY - tooltip.offsetHeight - 8 + 'px';
+    tooltip.style.insetBlockStart = rect.top + window.scrollY - tooltip.offsetHeight - 8 + 'px';
     tooltip.style.transform = 'translate(-50%, -100%)';
     tooltip.style.opacity = '1';
     // Корректируем если тултип выходит за экран
     const tRect = tooltip.getBoundingClientRect();
     if (tRect.left < 4) {
         tooltip.style.left = (rect.left + window.scrollX + tRect.width / 2 + 8) + 'px';
+        tooltip.style.insetInlineStart = (rect.left + window.scrollX + tRect.width / 2 + 8) + 'px';
     }
     if (tRect.right > window.innerWidth - 4) {
         tooltip.style.left = (rect.right + window.scrollX - tRect.width / 2 - 8) + 'px';
+        tooltip.style.insetInlineStart = (rect.right + window.scrollX - tRect.width / 2 - 8) + 'px';
     }
     if (tRect.top < 4) {
         tooltip.style.top = (rect.top + window.scrollY + rect.height + 8) + 'px';
+        tooltip.style.insetBlockStart = (rect.top + window.scrollY + rect.height + 8) + 'px';
         tooltip.style.transform = 'translate(-50%, 0)';
     }
     // Для мобильных — автоисчезновение

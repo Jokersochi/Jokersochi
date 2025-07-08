@@ -297,7 +297,7 @@ class App {
         });
 
         network.on('player_left', (data) => {
-            console.log('Player left:', data);
+            console.log('Player inset-inline-start:', data);
             this.showNotification(`${data.player.name} покинул игру`, 'warning');
         });
 

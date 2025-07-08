@@ -13,6 +13,12 @@
             this.rollDice = document.getElementById('rollDice');
             this.log = document.getElementById('log');
             this.moneyAmount = document.getElementById('money-amount');
+            
+            // Проверяем что все необходимые элементы найдены
+            if (!this.board || !this.rollDice || !this.log || !this.moneyAmount) {
+                console.error('Ошибка: Не удалось найти все необходимые DOM элементы');
+                throw new Error('Required DOM elements not found');
+            }
         }
     };
 
@@ -226,7 +232,9 @@
         }
         
         logTimeout = setTimeout(() => {
-            DOM.log.textContent = logQueue.join(' | ');
+            if (DOM.log) {
+                DOM.log.textContent = logQueue.join(' | ');
+            }
             logQueue = [];
         }, 100);
     }

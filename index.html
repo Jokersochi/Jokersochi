@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monopoly Russia - Redirect</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            max-inline-size: 600px;
+            margin: 50px auto;
+            margin-block-start: 50px;
+            margin-inline: auto;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            margin: 10px;
+            margin-inline: 10px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .btn-dev {
+            background: #007bff;
+            color: white;
+        }
+        .btn-prod {
+            background: #28a745;
+            color: white;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎲 Monopoly Russia</h1>
+        <p>Браузерная версия настольной игры с российской тематикой</p>
+        
+        <h3>Выберите версию:</h3>
+        <a href="src/index.html" class="btn btn-dev">🔧 Development</a>
+        <a href="dist/index.html" class="btn btn-prod">🚀 Production</a>
+        
+        <hr style="margin: 30px 0; margin-block: 30px;">
+        
+        <h3>Команды для разработки:</h3>
+        <p><code>npm run dev</code> - запуск dev сервера</p>
+        <p><code>npm run build</code> - сборка проекта</p>
+        <p><code>npm run serve</code> - запуск production версии</p>
+    </div>
+</body>
+</html>

@@ -841,4 +841,60 @@
 /* Анимации для искрения */
 .sparkle-animation {
     animation: sparkle 2s ease-in-out infinite;
+}
+
+/* Анимация броска кубиков */
+.dice-rolling {
+    animation: diceShake 0.7s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+}
+@keyframes diceShake {
+    10% { transform: rotate(-10deg) scale(1.1); }
+    20% { transform: rotate(10deg) scale(1.05); }
+    30% { transform: rotate(-8deg) scale(1.12); }
+    40% { transform: rotate(8deg) scale(1.08); }
+    50% { transform: rotate(-6deg) scale(1.15); }
+    60% { transform: rotate(6deg) scale(1.1); }
+    70% { transform: rotate(-4deg) scale(1.13); }
+    80% { transform: rotate(4deg) scale(1.07); }
+    90% { transform: rotate(0deg) scale(1.1); }
+    100% { transform: rotate(0deg) scale(1); }
+}
+.dice-result {
+    opacity: 0;
+    transform: scale(0.8);
+    transition: opacity 0.3s, transform 0.3s;
+}
+.dice-result.visible {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Анимация салюта (firework) */
+.firework {
+    position: fixed;
+    inset-inline-start: 50%;
+    inset-block-start: 50%;
+    pointer-events: none;
+    z-index: 99999;
+    inline-size: 0;
+    inline-size: 0;
+    block-size: 0;
+    block-size: 0;
+}
+.firework__particle {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 50%;
+    inline-size: 8px;
+    inline-size: 8px;
+    block-size: 8px;
+    block-size: 8px;
+    border-radius: 50%;
+    opacity: 0.85;
+    animation: firework-explode 1.2s cubic-bezier(0.4,0,0.2,1) forwards;
+}
+@keyframes firework-explode {
+    0% { transform: scale(0.5) translate(0,0); opacity: 1; }
+    80% { opacity: 1; }
+    100% { transform: scale(1.2) translate(var(--x), var(--y)); opacity: 0; }
 } 

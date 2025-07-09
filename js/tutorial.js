@@ -3,6 +3,8 @@
  * Обеспечивает интерактивное обучение и контекстные подсказки
  */
 
+import { getText } from './localization.js';
+
 class TutorialManager {
     constructor() {
         this.currentStep = 0;
@@ -460,11 +462,11 @@ class TutorialManager {
         tooltip.className = 'tutorial-tooltip';
         tooltip.innerHTML = `
             <div class="tutorial-header">
-                <h3>${utils.getText(`TUTORIAL.${step.title.toUpperCase()}`)}</h3>
+                <h3>${getText(`TUTORIAL.${step.title.toUpperCase()}`)}</h3>
                 <button class="tutorial-close" onclick="tutorial.closeTutorial()">×</button>
             </div>
             <div class="tutorial-content">
-                <p>${utils.getText(`TUTORIAL.${step.content.toUpperCase()}`)}</p>
+                <p>${getText(`TUTORIAL.${step.content.toUpperCase()}`)}</p>
             </div>
             <div class="tutorial-footer">
                 <span class="tutorial-progress">${this.currentStep + 1} / ${this.activeTutorial.steps.length}</span>

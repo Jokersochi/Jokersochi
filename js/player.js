@@ -3,6 +3,11 @@
  * Управляет состоянием игроков, их деньгами, свойствами и действиями
  */
 
+import { getText } from './localization.js';
+import { formatMoney } from './utils.js';
+// Временные заглушки для отсутствующих функций
+const passedStart = (oldPos, newPos) => newPos < oldPos;
+
 class Player {
     constructor(id, name, token) {
         this.id = id;
@@ -108,7 +113,7 @@ class Player {
     move(steps) {
         const oldPosition = this.position;
         const newPosition = (this.position + steps) % CONFIG.GAME.BOARD_SIZE;
-        const passedStart = utils.passedStart(oldPosition, newPosition);
+        const passedStart = passedStart(oldPosition, newPosition);
         
         this.moveTo(newPosition, passedStart);
         return passedStart;
@@ -122,7 +127,7 @@ class Player {
     moveToPosition(position, collectMoney = true) {
         const oldPosition = this.position;
         const newPosition = position % CONFIG.GAME.BOARD_SIZE;
-        const passedStart = collectMoney && utils.passedStart(oldPosition, newPosition);
+        const passedStart = collectMoney && passedStart(oldPosition, newPosition);
         
         this.moveTo(newPosition, passedStart);
     }
@@ -427,7 +432,7 @@ class Player {
         if (playerElement) {
             const moneyElement = playerElement.querySelector('.player-money');
             if (moneyElement) {
-                moneyElement.textContent = utils.formatMoney(this.money);
+                moneyElement.textContent = formatMoney(this.money);
                 moneyElement.classList.add('changing');
                 setTimeout(() => {
                     moneyElement.classList.remove('changing');
@@ -471,7 +476,7 @@ class Player {
             x += offset;
             y += offset;
             
-            tokenElement.style.transition = animated ? 'left 0.18s, top 0.18s' : '';
+            tokenElement.style.transition = animated ? 'left 0.18s cubic-bezier(0.36,0.07,0.19,0.97), top 0.18s cubic-bezier(0.36,0.07,0.19,0.97)' : '';
             tokenElement.style.left = `${x}px`;
             tokenElement.style.top = `${y}px`;
             if (animated) {
@@ -560,12 +565,30 @@ class Player {
     animateTokenMove = async function(from, to, onStep) {
         const steps = (to >= from) ? (to - from) : (40 - from + to);
         let pos = from;
+        const pathCells = [];
         for (let i = 0; i < steps; i++) {
             pos = (pos + 1) % 40;
             this.position = pos;
             this.updateTokenPosition(true); // true = анимировать
+            // Подсветка маршрута
+            const cellDiv = document.querySelector(`.board-cell[data-cell-idx='${pos}']`);
+            if (cellDiv) {
+                cellDiv.classList.add('cell-path');
+                pathCells.push(cellDiv);
+            }
+            // Виброотклик и звук шага
+            if (window.navigator && navigator.vibrate) {
+                navigator.vibrate(30);
+            }
+            if (window.Audio) {
+                try {
+                    const audio = new Audio('assets/sounds/step.mp3');
+                    audio.volume = 0.4;
+                    audio.play();
+                } catch (e) {}
+            }
             if (typeof onStep === 'function') onStep(pos);
-            await new Promise(res => setTimeout(res, 220));
+            await new Promise(res => setTimeout(res, 150));
         }
         // Визуальный эффект на конечной клетке
         const cellDiv = document.querySelector(`.board-cell[data-cell-idx='${pos}']`);
@@ -579,6 +602,10 @@ class Player {
             tokenElement.classList.add('token-bounce');
             setTimeout(() => tokenElement.classList.remove('token-bounce'), 500);
         }
+        // Убираем подсветку маршрута после завершения анимации
+        setTimeout(() => {
+            pathCells.forEach(cell => cell.classList.remove('cell-path'));
+        }, 800);
     };
 }
 

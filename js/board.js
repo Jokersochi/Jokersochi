@@ -3,6 +3,8 @@
  * Управляет клетками, свойствами и их состояниями
  */
 
+import { getText } from './localization.js';
+
 class Board {
     constructor() {
         this.cells = [];
@@ -95,21 +97,21 @@ class Board {
 
         // Специальные клетки
         switch (position) {
-            case 0: return utils.getText('COMMON.START');
-            case 9: return utils.getText('COMMON.JAIL');
-            case 20: return utils.getText('COMMON.FREE_PARKING');
-            case 30: return utils.getText('COMMON.GO_TO_JAIL');
+            case 0: return getText('COMMON.START');
+            case 9: return getText('COMMON.JAIL');
+            case 20: return getText('COMMON.FREE_PARKING');
+            case 30: return getText('COMMON.GO_TO_JAIL');
             case 2:
             case 7:
             case 17:
             case 22:
             case 33:
-            case 36: return utils.getText('COMMON.CHANCE');
+            case 36: return getText('COMMON.CHANCE');
             case 12:
             case 22:
-            case 33: return utils.getText('COMMON.TREASURE');
+            case 33: return getText('COMMON.TREASURE');
             case 4:
-            case 38: return utils.getText('COMMON.TAX');
+            case 38: return getText('COMMON.TAX');
             default: return `Клетка ${position}`;
         }
     }

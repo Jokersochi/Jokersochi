@@ -3,6 +3,18 @@
  * Управляет игровым процессом, ходами игроков и общей логикой игры
  */
 
+import { getText } from './localization.js';
+import { formatMoney, generateId } from './utils.js';
+import { saveToStorage, loadFromStorage } from './storage.js';
+import { randomChoice, rollDice } from './random.js';
+// TODO: escapeHTML, showToast, randomInt, passedStart — реализовать/импортировать отдельно
+
+// Временные заглушки для отсутствующих функций
+const randomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+const escapeHTML = (str) => String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]);
+const showToast = (msg) => alert(msg); // Временно alert
+const passedStart = (oldPos, newPos) => newPos < oldPos;
+
 class Game {
     constructor() {
         this.players = [];
@@ -68,6 +80,22 @@ class Game {
         
         // Инициализируем достижения
         this.initializeAchievements();
+
+        // В самом начале инициализации игры (например, в конструкторе или initializeGame)
+        if (window.localStorage) {
+            const saved = localStorage.getItem('monopoly-autosave');
+            if (saved) {
+                setTimeout(() => {
+                    if (confirm('Обнаружена сохранённая игра. Продолжить?')) {
+                        try {
+                            this.loadGame(JSON.parse(saved));
+                        } catch (e) { alert('Ошибка восстановления игры!'); }
+                    } else {
+                        localStorage.removeItem('monopoly-autosave');
+                    }
+                }, 200);
+            }
+        }
     }
 
     /**
@@ -101,7 +129,7 @@ class Game {
         this.updateEvents();
         
         // Добавляем сообщение в чат
-        this.addChatMessage('system', utils.getText('MESSAGES.GAME_START', { 
+        this.addChatMessage('system', getText('MESSAGES.GAME_START', { 
             player: this.players[0].name 
         }));
         
@@ -187,7 +215,7 @@ class Game {
      */
     changeWeather() {
         const weatherTypes = CONFIG.WEATHER;
-        const newWeather = weatherTypes[utils.randomInt(0, weatherTypes.length - 1)];
+        const newWeather = weatherTypes[randomInt(0, weatherTypes.length - 1)];
         
         this.weather = {
             type: newWeather.type,
@@ -197,8 +225,8 @@ class Game {
         };
         
         // Добавляем сообщение в чат
-        this.addChatMessage('system', utils.getText('MESSAGES.WEATHER_CHANGE', {
-            weather: utils.getText(`WEATHER.${newWeather.type.toUpperCase()}`)
+        this.addChatMessage('system', getText('MESSAGES.WEATHER_CHANGE', {
+            weather: getText(`WEATHER.${newWeather.type.toUpperCase()}`)
         }));
         
         // Обновляем отображение погоды
@@ -264,7 +292,7 @@ class Game {
      */
     triggerEconomicEvent() {
         const events = CONFIG.ECONOMIC_EVENTS;
-        const event = events[utils.randomInt(0, events.length - 1)];
+        const event = events[randomInt(0, events.length - 1)];
         
         this.economicEvent = {
             ...event,
@@ -276,8 +304,8 @@ class Game {
         this.applyEconomicEvent();
         
         // Добавляем сообщение в чат
-        this.addChatMessage('system', utils.getText('MESSAGES.ECONOMIC_EVENT', {
-            event: utils.getText(`ECONOMIC_EVENTS.${event.type.toUpperCase()}`)
+        this.addChatMessage('system', getText('MESSAGES.ECONOMIC_EVENT', {
+            event: getText(`ECONOMIC_EVENTS.${event.type.toUpperCase()}`)
         }));
         
         // Обновляем отображение событий
@@ -317,7 +345,7 @@ class Game {
      */
     triggerCulturalEvent() {
         const events = CONFIG.CULTURAL_EVENTS;
-        const event = events[utils.randomInt(0, events.length - 1)];
+        const event = events[randomInt(0, events.length - 1)];
         
         this.culturalEvent = {
             ...event,
@@ -329,8 +357,8 @@ class Game {
         this.applyCulturalEvent();
         
         // Добавляем сообщение в чат
-        this.addChatMessage('system', utils.getText('MESSAGES.CULTURAL_EVENT', {
-            event: utils.getText(`CULTURAL_EVENTS.${event.type.toUpperCase()}`)
+        this.addChatMessage('system', getText('MESSAGES.CULTURAL_EVENT', {
+            event: getText(`CULTURAL_EVENTS.${event.type.toUpperCase()}`)
         }));
         
         // Обновляем отображение событий
@@ -381,7 +409,7 @@ class Game {
         // Проверяем истечение предложений торговли
         this.tradeOffers = this.tradeOffers.filter(offer => {
             if (offer.expiresAt && Date.now() > offer.expiresAt) {
-                this.addChatMessage('system', utils.getText('MESSAGES.TRADE_EXPIRED', {
+                this.addChatMessage('system', getText('MESSAGES.TRADE_EXPIRED', {
                     from: offer.from.name,
                     to: offer.to.name
                 }));
@@ -400,7 +428,7 @@ class Game {
      */
     createTradeOffer(from, to, offer, request) {
         const tradeOffer = {
-            id: utils.generateId(),
+            id: generateId(),
             from: from,
             to: to,
             offer: offer,
@@ -413,7 +441,7 @@ class Game {
         this.tradeOffers.push(tradeOffer);
         
         // Добавляем сообщение в чат
-        this.addChatMessage('system', utils.getText('MESSAGES.TRADE_OFFER', {
+        this.addChatMessage('system', getText('MESSAGES.TRADE_OFFER', {
             from: from.name,
             to: to.name
         }));
@@ -446,7 +474,7 @@ class Game {
         });
         
         // Добавляем сообщение в чат
-        this.addChatMessage('system', utils.getText('MESSAGES.TRADE_ACCEPTED', {
+        this.addChatMessage('system', getText('MESSAGES.TRADE_ACCEPTED', {
             from: offer.from.name,
             to: offer.to.name
         }));
@@ -476,7 +504,7 @@ class Game {
         });
         
         // Добавляем сообщение в чат
-        this.addChatMessage('system', utils.getText('MESSAGES.TRADE_REJECTED', {
+        this.addChatMessage('system', getText('MESSAGES.TRADE_REJECTED', {
             from: offer.from.name,
             to: offer.to.name
         }));
@@ -555,7 +583,7 @@ class Game {
      */
     createAlliance(players, conditions = {}) {
         const alliance = {
-            id: utils.generateId(),
+            id: generateId(),
             players: players,
             conditions: conditions,
             createdAt: Date.now(),
@@ -569,7 +597,7 @@ class Game {
         this.alliances.push(alliance);
         
         // Добавляем сообщение в чат
-        this.addChatMessage('system', utils.getText('MESSAGES.ALLIANCE_FORMED', {
+        this.addChatMessage('system', getText('MESSAGES.ALLIANCE_FORMED', {
             players: players.map(p => p.name).join(', ')
         }));
         
@@ -593,7 +621,7 @@ class Game {
         this.alliances = this.alliances.filter(a => a.id !== alliance.id);
         
         // Добавляем сообщение в чат
-        this.addChatMessage('system', utils.getText('MESSAGES.ALLIANCE_BROKEN', {
+        this.addChatMessage('system', getText('MESSAGES.ALLIANCE_BROKEN', {
             players: alliance.players.map(p => p.name).join(', ')
         }));
     }
@@ -624,7 +652,7 @@ class Game {
      */
     startTournament(config) {
         this.tournament = {
-            id: utils.generateId(),
+            id: generateId(),
             type: config.type || 'elimination',
             players: [...this.players],
             rounds: [],
@@ -634,8 +662,8 @@ class Game {
         };
         
         // Добавляем сообщение в чат
-        this.addChatMessage('system', utils.getText('MESSAGES.TOURNAMENT_START', {
-            type: utils.getText(`TOURNAMENT.${config.type.toUpperCase()}`)
+        this.addChatMessage('system', getText('MESSAGES.TOURNAMENT_START', {
+            type: getText(`TOURNAMENT.${config.type.toUpperCase()}`)
         }));
         
         return this.tournament;
@@ -674,7 +702,7 @@ class Game {
         });
         
         // Добавляем сообщение в чат
-        this.addChatMessage('system', utils.getText('MESSAGES.TOURNAMENT_END', {
+        this.addChatMessage('system', getText('MESSAGES.TOURNAMENT_END', {
             winner: winner.name
         }));
         
@@ -767,13 +795,28 @@ class Game {
         });
         
         // Добавляем сообщение в чат
-        this.addChatMessage('system', utils.getText('MESSAGES.ACHIEVEMENT_UNLOCKED', {
+        this.addChatMessage('system', getText('MESSAGES.ACHIEVEMENT_UNLOCKED', {
             player: player.name,
-            achievement: utils.getText(`ACHIEVEMENTS.${achievement.id.toUpperCase()}`)
+            achievement: getText(`ACHIEVEMENTS.${achievement.id.toUpperCase()}`)
         }));
         
         // Обновляем отображение достижений
         this.updateAchievementsDisplay();
+        // Анимация и уведомление
+        const panel = document.getElementById('achievements-panel');
+        if (panel) {
+            const els = panel.querySelectorAll('.achievement');
+            if (els.length) {
+                const el = els[els.length - 1];
+                el.classList.add('unlocked');
+                setTimeout(() => el.classList.remove('unlocked'), 1000);
+            }
+        }
+        if (typeof showToast === 'function') {
+            showToast(`Достижение: ${achievement.name}`);
+        } else if (typeof utils.showToast === 'function') {
+            utils.showToast(`Достижение: ${achievement.name}`);
+        }
     }
 
     /**
@@ -831,6 +874,14 @@ class Game {
         
         // Проверяем условия окончания игры
         this.checkGameEndConditions();
+        
+        // --- Автосохранение ---
+        if (window.localStorage) {
+            try {
+                const saveData = this.saveGame();
+                localStorage.setItem('monopoly-autosave', JSON.stringify(saveData));
+            } catch (e) { console.warn('Auto-save failed:', e); }
+        }
     }
 
     /**
@@ -843,7 +894,7 @@ class Game {
             return null;
         }
         // Бросаем кости
-        this.dice = utils.rollDice();
+        this.dice = rollDice();
         currentPlayer.lastRoll = this.dice;
         // Проверяем на дубль
         if (this.dice.isDouble) {
@@ -855,14 +906,14 @@ class Game {
         if (currentPlayer.doublesCount >= 3) {
             currentPlayer.goToJail();
             currentPlayer.doublesCount = 0;
-            this.addChatMessage('system', utils.getText('MESSAGES.JAIL_VISIT', { 
+            this.addChatMessage('system', getText('MESSAGES.JAIL_VISIT', { 
                 player: currentPlayer.name 
             }));
             this.nextPlayer();
             return this.dice;
         }
         // Добавляем сообщение в чат
-        this.addChatMessage('system', utils.getText('MESSAGES.DICE_ROLL', {
+        this.addChatMessage('system', getText('MESSAGES.DICE_ROLL', {
             player: currentPlayer.name,
             dice1: this.dice.dice1,
             dice2: this.dice.dice2
@@ -907,7 +958,7 @@ class Game {
                 break;
             case 'go_to_jail':
                 player.goToJail();
-                this.addChatMessage('system', utils.getText('MESSAGES.JAIL_VISIT', { 
+                this.addChatMessage('system', getText('MESSAGES.JAIL_VISIT', { 
                     player: player.name 
                 }));
                 break;
@@ -960,7 +1011,7 @@ class Game {
         
         if (player.canPayRent(rentAmount)) {
             if (player.payRent(rentAmount, owner)) {
-                this.addChatMessage('system', utils.getText('MESSAGES.RENT_PAID', {
+                this.addChatMessage('system', getText('MESSAGES.RENT_PAID', {
                     player: player.name,
                     amount: rentAmount,
                     owner: owner.name
@@ -996,7 +1047,7 @@ class Game {
         
         player.declareBankruptcy();
         
-        this.addChatMessage('system', utils.getText('MESSAGES.BANKRUPTCY', { 
+        this.addChatMessage('system', getText('MESSAGES.BANKRUPTCY', { 
             player: player.name 
         }));
         
@@ -1009,7 +1060,7 @@ class Game {
      * @param {Player} player - игрок
      */
     handleChanceCard(player) {
-        const card = utils.randomChoice(CONFIG.CHANCE_CARDS);
+        const card = randomChoice(CONFIG.CHANCE_CARDS);
         this.showChanceCard(card);
         
         this.applyChanceCard(player, card);
@@ -1036,7 +1087,7 @@ class Game {
                 break;
         }
         
-        this.addChatMessage('system', utils.getText('MESSAGES.CHANCE_CARD', { 
+        this.addChatMessage('system', getText('MESSAGES.CHANCE_CARD', { 
             text: card.text 
         }));
     }
@@ -1046,7 +1097,7 @@ class Game {
      * @param {Player} player - игрок
      */
     handleTreasureCard(player) {
-        const card = utils.randomChoice(CONFIG.TREASURE_CARDS);
+        const card = randomChoice(CONFIG.TREASURE_CARDS);
         this.showTreasureCard(card);
         
         this.applyTreasureCard(player, card);
@@ -1069,7 +1120,7 @@ class Game {
                 break;
         }
         
-        this.addChatMessage('system', utils.getText('MESSAGES.TREASURE_CARD', { 
+        this.addChatMessage('system', getText('MESSAGES.TREASURE_CARD', { 
             text: card.text 
         }));
     }
@@ -1104,7 +1155,7 @@ class Game {
             active: true
         };
         
-        this.addChatMessage('system', utils.getText('MESSAGES.AUCTION_START', { 
+        this.addChatMessage('system', getText('MESSAGES.AUCTION_START', { 
             property: cell.name 
         }));
         
@@ -1155,7 +1206,7 @@ class Game {
                 winner.properties.push(this.auction.cell.position);
                 winner.stats.auctionsWon++;
                 
-                this.addChatMessage('system', utils.getText('MESSAGES.AUCTION_WIN', {
+                this.addChatMessage('system', getText('MESSAGES.AUCTION_WIN', {
                     player: winner.name,
                     amount: this.auction.currentBid
                 }));
@@ -1185,7 +1236,7 @@ class Game {
         
         const winner = this.players.find(p => !p.bankrupt);
         if (winner) {
-            this.addChatMessage('system', utils.getText('MESSAGES.GAME_OVER', { 
+            this.addChatMessage('system', getText('MESSAGES.GAME_OVER', { 
                 winner: winner.name 
             }));
             
@@ -1204,7 +1255,7 @@ class Game {
      */
     addChatMessage(sender, message) {
         const chatMessage = {
-            id: utils.generateId(),
+            id: generateId(),
             sender: sender,
             message: message,
             timestamp: new Date().toISOString()
@@ -1289,8 +1340,8 @@ class Game {
             const messageElement = document.createElement('div');
             messageElement.className = 'message';
             messageElement.innerHTML = `
-                <span class="message-sender">${msg.sender}:</span>
-                <span class="message-text">${msg.message}</span>
+                <span class="message-sender">${escapeHTML(msg.sender)}:</span>
+                <span class="message-text">${escapeHTML(msg.message)}</span>
             `;
             chatMessages.appendChild(messageElement);
         });
@@ -1309,7 +1360,7 @@ class Game {
         const bidder = document.getElementById('current-bidder');
         const timer = document.getElementById('auction-time');
         
-        if (bidAmount) bidAmount.textContent = utils.formatMoney(this.auction.currentBid);
+        if (bidAmount) bidAmount.textContent = formatMoney(this.auction.currentBid);
         if (bidder) {
             const currentBidderPlayer = this.players.find(p => p.id === this.auction.currentBidder);
             bidder.textContent = currentBidderPlayer ? currentBidderPlayer.name : 'Нет';
@@ -1330,12 +1381,12 @@ class Game {
         
         modalTitle.textContent = 'Покупка собственности';
         modalContent.innerHTML = `
-            <p>Вы хотите купить ${cell.name} за ${utils.formatMoney(cell.price)}?</p>
+            <p>Вы хотите купить ${cell.name} за ${formatMoney(cell.price)}?</p>
             <div class="property-info">
                 <p><strong>Арендная плата:</strong></p>
                 <ul>
                     ${cell.rent.map((rent, index) => 
-                        `<li>${index === 0 ? 'Без улучшений' : `${index} улучшений`}: ${utils.formatMoney(rent)}</li>`
+                        `<li>${index === 0 ? 'Без улучшений' : `${index} улучшений`}: ${formatMoney(rent)}</li>`
                     ).join('')}
                 </ul>
             </div>
@@ -1346,7 +1397,7 @@ class Game {
         // Обработчики кнопок
         document.getElementById('modal-confirm').onclick = () => {
             if (player.buyProperty(cell.position, cell.price)) {
-                this.addChatMessage('system', utils.getText('MESSAGES.PROPERTY_PURCHASED', {
+                this.addChatMessage('system', getText('MESSAGES.PROPERTY_PURCHASED', {
                     player: player.name,
                     property: cell.name,
                     price: cell.price
@@ -1421,6 +1472,27 @@ class Game {
     showVictoryScreen(winner) {
         // Реализация экрана победителя
         console.log(`Победитель: ${winner.name}`);
+        // Анимация салюта
+        for (let i = 0; i < 3; i++) {
+            setTimeout(() => {
+                const firework = document.createElement('div');
+                firework.className = 'firework';
+                for (let j = 0; j < 18; j++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'firework__particle';
+                    const angle = (j / 18) * 2 * Math.PI;
+                    const radius = 120 + Math.random() * 40;
+                    const x = Math.cos(angle) * radius;
+                    const y = Math.sin(angle) * radius;
+                    particle.style.setProperty('--x', `${x}px`);
+                    particle.style.setProperty('--y', `${y}px`);
+                    particle.style.background = `hsl(${Math.floor(Math.random()*360)},90%,60%)`;
+                    firework.appendChild(particle);
+                }
+                document.body.appendChild(firework);
+                setTimeout(() => firework.remove(), 1500);
+            }, i * 400);
+        }
     }
 
     /**
@@ -1437,7 +1509,7 @@ class Game {
             timestamp: new Date().toISOString()
         };
         
-        utils.saveToStorage('russian_monopoly_save', gameData);
+        saveToStorage('russian_monopoly_save', gameData);
     }
 
     /**
@@ -1445,7 +1517,7 @@ class Game {
      * @returns {boolean} true если загрузка успешна
      */
     loadGame() {
-        const gameData = utils.loadFromStorage('russian_monopoly_save');
+        const gameData = loadFromStorage('russian_monopoly_save');
         if (!gameData) return false;
         
         // Восстанавливаем игроков
@@ -1482,14 +1554,14 @@ class Game {
             timestamp: new Date().toISOString()
         };
         
-        utils.saveToStorage('russian_monopoly_stats', stats);
+        saveToStorage('russian_monopoly_stats', stats);
     }
 
     /**
      * Загружает настройки
      */
     loadSettings() {
-        const savedSettings = utils.loadFromStorage('russian_monopoly_settings');
+        const savedSettings = loadFromStorage('russian_monopoly_settings');
         if (savedSettings) {
             this.settings = { ...CONFIG.DEFAULT_SETTINGS, ...savedSettings };
         }
@@ -1499,7 +1571,7 @@ class Game {
      * Сохраняет настройки
      */
     saveSettings() {
-        utils.saveToStorage('russian_monopoly_settings', this.settings);
+        saveToStorage('russian_monopoly_settings', this.settings);
     }
 
     /**
@@ -1553,6 +1625,23 @@ class Game {
                 this.endAuction();
             };
         }
+    }
+
+    /**
+     * Обновляет отображение достижений
+     */
+    updateAchievementsDisplay() {
+        const panel = document.getElementById('achievements-panel');
+        if (!panel) return;
+        panel.innerHTML = '';
+        this.players.forEach(player => {
+            player.achievements.forEach(a => {
+                const el = document.createElement('div');
+                el.className = 'achievement';
+                el.textContent = a.name;
+                panel.appendChild(el);
+            });
+        });
     }
 }
 

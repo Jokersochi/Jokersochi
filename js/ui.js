@@ -3,6 +3,15 @@
  * Управляет переключением экранов, обработкой событий и анимациями
  */
 
+import { getText } from './localization.js';
+import { formatMoney, generateId } from './utils.js';
+import { saveToStorage, loadFromStorage } from './storage.js';
+import { randomChoice, rollDice } from './random.js';
+// Временные заглушки для отсутствующих функций
+const escapeHTML = (str) => String(str).replace(/[&<>"]'/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]);
+const showToast = (msg) => alert(msg);
+const passedStart = (oldPos, newPos) => newPos < oldPos;
+
 class UI {
     constructor() {
         this.currentScreen = 'main-menu';
@@ -332,6 +341,11 @@ class UI {
             modalTitle.textContent = title;
             modalContent.innerHTML = content;
             modal.classList.remove('hidden');
+            modal.classList.add('fade-in');
+            const modalOverlay = document.querySelector('.modal-overlay');
+            if (modalOverlay) {
+                modalOverlay.classList.add('fade-in');
+            }
 
             // Очищаем предыдущие обработчики
             const newConfirmBtn = confirmBtn.cloneNode(true);
@@ -361,9 +375,18 @@ class UI {
      * @param {Element} modal - модальное окно
      */
     hideModal(modal) {
-        if (modal) {
-            modal.classList.add('hidden');
+        if (!modal) return;
+        const overlay = modal.closest('.modal-overlay');
+        modal.classList.remove('fade-in');
+        modal.classList.add('fade-out');
+        if (overlay) {
+            overlay.classList.remove('fade-in');
+            overlay.classList.add('fade-out');
         }
+        setTimeout(() => {
+            if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
+            if (modal && modal.parentNode) modal.parentNode.removeChild(modal);
+        }, 350);
     }
 
     /**
@@ -380,6 +403,7 @@ class UI {
             cardTitle.textContent = title;
             cardText.textContent = text;
             cardModal.classList.remove('hidden');
+            cardModal.classList.add('fade-in');
         }
     }
 
@@ -387,10 +411,13 @@ class UI {
      * Скрывает карточку
      */
     hideCardModal() {
-        const cardModal = document.getElementById('card-modal');
-        if (cardModal) {
-            cardModal.classList.add('hidden');
-        }
+        const cardModal = document.querySelector('.card-modal');
+        if (!cardModal) return;
+        cardModal.classList.remove('fade-in');
+        cardModal.classList.add('fade-out');
+        setTimeout(() => {
+            if (cardModal.parentNode) cardModal.parentNode.removeChild(cardModal);
+        }, 350);
     }
 
     /**
@@ -467,7 +494,7 @@ class UI {
         };
         
         // Сохраняем настройки
-        utils.saveToStorage('game_settings', settings);
+        saveToStorage('game_settings', settings);
     }
 
     /**
@@ -475,13 +502,13 @@ class UI {
      * @param {string} language - код языка
      */
     changeLanguage(language) {
-        utils.setLocale(language);
+        // utils.setLocale(language); // utils.setLocale не существует
         
         // Обновляем все тексты на странице
         this.updateAllTexts();
         
         // Сохраняем выбор языка
-        utils.saveToStorage('language', language);
+        saveToStorage('language', language);
     }
 
     /**
@@ -499,7 +526,7 @@ class UI {
         buttons.forEach(button => {
             const key = button.getAttribute('data-text-key');
             if (key) {
-                button.textContent = utils.getText(key);
+                button.textContent = getText(key);
             }
         });
 
@@ -530,7 +557,7 @@ class UI {
             if (position) {
                 const cellData = board.getCell(parseInt(position));
                 if (cellData && cellData.price > 0) {
-                    price.textContent = utils.formatMoney(cellData.price);
+                    price.textContent = formatMoney(cellData.price);
                 }
             }
         });
@@ -544,18 +571,36 @@ class UI {
         if (diceBtn) {
             diceBtn.classList.add('rolling');
             diceBtn.disabled = true;
-            
-            // Анимация броска
-            setTimeout(() => {
-                const result = game.rollDice();
-                if (result) {
-                    this.showDiceResult(result);
-                }
-                
+        }
+        // Виброотклик и звук (если поддерживается)
+        if (window.navigator && navigator.vibrate) {
+            navigator.vibrate(80);
+        }
+        if (window.Audio) {
+            try {
+                const audio = new Audio('assets/sounds/dice.mp3');
+                audio.volume = 0.5;
+                audio.play();
+            } catch (e) {}
+        }
+        // Анимация броска кубиков
+        let diceResultBlock = document.querySelector('.dice-result');
+        if (diceResultBlock) {
+            diceResultBlock.classList.remove('visible');
+            diceResultBlock.classList.add('dice-rolling');
+        }
+        setTimeout(() => {
+            const result = game.rollDice();
+            this.showDiceResult(result);
+            if (diceBtn) {
                 diceBtn.classList.remove('rolling');
                 diceBtn.disabled = false;
-            }, 800);
-        }
+            }
+            if (diceResultBlock) {
+                diceResultBlock.classList.remove('dice-rolling');
+                diceResultBlock.classList.add('visible');
+            }
+        }, 700);
     }
 
     /**
@@ -563,19 +608,22 @@ class UI {
      * @param {Object} result - результат броска
      */
     showDiceResult(result) {
-        const notification = `
-            <div class="dice-result">
-                <h3>Результат броска</h3>
-                <div class="dice-numbers">
-                    <span class="dice">${result.dice1}</span>
-                    <span class="dice">${result.dice2}</span>
-                </div>
-                <p>Общая сумма: ${result.total}</p>
-                ${result.isDouble ? '<p class="double">Дубль!</p>' : ''}
+        let diceResultBlock = document.querySelector('.dice-result');
+        if (!diceResultBlock) {
+            diceResultBlock = document.createElement('div');
+            diceResultBlock.className = 'dice-result';
+            document.body.appendChild(diceResultBlock);
+        }
+        diceResultBlock.innerHTML = `
+            <div class="dice-numbers">
+                <span class="dice">${result.dice1}</span>
+                <span class="dice">${result.dice2}</span>
             </div>
         `;
-        
-        this.showModal('Бросок костей', notification);
+        // Плавное появление результата
+        setTimeout(() => {
+            diceResultBlock.classList.add('visible');
+        }, 50);
     }
 
     /**
@@ -703,7 +751,7 @@ class UI {
                             const cell = board.getCell(pos);
                             return `<div class="property-option">
                                 <input type="radio" name="mortgage" value="${pos}">
-                                <label>${cell.name} - ${utils.formatMoney(cell.price / 2)}</label>
+                                <label>${cell.name} - ${formatMoney(cell.price / 2)}</label>
                             </div>`;
                         }).join('')}
                     </div>
@@ -713,7 +761,7 @@ class UI {
                             const cell = board.getCell(pos);
                             return `<div class="property-option">
                                 <input type="radio" name="unmortgage" value="${pos}">
-                                <label>${cell.name} - ${utils.formatMoney(cell.price / 2 * 1.1)}</label>
+                                <label>${cell.name} - ${formatMoney(cell.price / 2 * 1.1)}</label>
                             </div>`;
                         }).join('')}
                     </div>
@@ -747,7 +795,7 @@ class UI {
                         return `<div class="build-option">
                             <h4>${cell.name}</h4>
                             <p>Улучшения: ${cell.improvements}/${CONFIG.IMPROVEMENT.MAX_LEVEL}</p>
-                            <p>Стоимость улучшения: ${utils.formatMoney(CONFIG.IMPROVEMENT.COST_PER_LEVEL)}</p>
+                            <p>Стоимость улучшения: ${formatMoney(CONFIG.IMPROVEMENT.COST_PER_LEVEL)}</p>
                             <button onclick="ui.buildImprovement(${pos})" ${cell.improvements >= CONFIG.IMPROVEMENT.MAX_LEVEL ? 'disabled' : ''}>
                                 Добавить улучшение
                             </button>
@@ -879,10 +927,10 @@ class UI {
             const pieChart = `<svg width='80' height='80' style='display:block;margin:0 auto 8px;'><circle r='${radius}' cx='40' cy='40' fill='none' stroke='#eee' stroke-width='${stroke}'/><circle r='${radius}' cx='40' cy='40' fill='none' stroke='#4caf50' stroke-width='${stroke}' stroke-dasharray='${circ}' stroke-dashoffset='${offset}' style='transition:stroke-dashoffset 0.5s;'/><text x='40' y='46' text-anchor='middle' font-size='1.2em' fill='#333'>${percent}%</text></svg>`;
             const content = `
                 <div class=\"achievements-modal\">
-                    <h3>${utils.getText('ACHIEVEMENTS_TITLE')}</h3>
+                    <h3>${getText('ACHIEVEMENTS_TITLE')}</h3>
                     <div style=\"margin-block-end:12px;\">
                         <div style=\"display:flex;align-items:center;flex-direction:column;\">${pieChart}</div>
-                        <div style=\"font-size:0.95em; margin-block-end:4px;\">${unlocked} / ${total} (${percent}%) ${utils.getText('ACHIEVEMENTS_UNLOCKED') || 'разблокировано'}</div>
+                        <div style=\"font-size:0.95em; margin-block-end:4px;\">${unlocked} / ${total} (${percent}%) ${getText('ACHIEVEMENTS_UNLOCKED') || 'разблокировано'}</div>
                         <div style=\"background:#eee; border-radius:6px; block-size:10px; inline-size:100%; overflow:hidden; margin-block-end:8px;\">
                             <div style=\"background:#4caf50; inline-size:${percent}%; inline-size:${percent}%; block-size:100%;\"></div>
                         </div>
@@ -891,7 +939,7 @@ class UI {
                     <ul class=\"achievements-list\">
                         ${playerAchievements.length ? playerAchievements.map(a => `
                             <li class=\"achievement ${a.unlocked ? 'unlocked' : 'locked'}\">\n                                <span class=\"icon\">${a.icon || '🏆'}</span>\n                                <span class=\"title\">${a.title || a.name}</span>\n                                <span class=\"desc\">${a.message || a.description}</span>\n                                <span class=\"date\">${a.unlocked ? (new Date(a.unlockedAt)).toLocaleDateString() : ''}</span>\n                            </li>
-                        `).join('') : `<li>${utils.getText('ACHIEVEMENTS_NONE')}</li>`}
+                        `).join('') : `<li>${getText('ACHIEVEMENTS_NONE')}</li>`}
                     </ul>
                 </div>
                 <script>
@@ -903,7 +951,7 @@ class UI {
                     });
                 </script>
             `;
-            this.showModal(utils.getText('ACHIEVEMENTS_TITLE'), content);
+            this.showModal(getText('ACHIEVEMENTS_TITLE'), content);
         } catch (e) {
             this.showNotification('Ошибка отображения достижений: ' + (e.message || e), 'error');
         }
@@ -933,37 +981,37 @@ class UI {
             if (selectedTab === 'player') {
                 contentTab = stats ? `
                     <ul class="statistics-list">
-                        <li>${utils.getText('STATISTICS.GAMES_PLAYED')}: ${stats.gamesPlayed}</li>
-                        <li>${utils.getText('STATISTICS.GAMES_WON')}: ${stats.gamesWon}</li>
-                        <li>${utils.getText('STATISTICS.TOTAL_MONEY')}: ${stats.totalMoneyEarned}₽</li>
-                        <li>${utils.getText('STATISTICS.TOTAL_PROPERTIES')}: ${stats.totalPropertiesPurchased}</li>
-                        <li>${utils.getText('STATISTICS.TOTAL_TRADES')}: ${stats.totalTradesCompleted}</li>
-                        <li>${utils.getText('STATISTICS.TOTAL_AUCTIONS')}: ${stats.totalAuctionsWon}</li>
-                        <li>${utils.getText('STATISTICS.ACHIEVEMENTS_UNLOCKED')}: ${stats.totalAchievementsUnlocked || 0}</li>
-                        <li>${utils.getText('STATISTICS.TIME_PLAYED')}: ${stats.totalPlayTime || 0}</li>
+                        <li>${getText('STATISTICS.GAMES_PLAYED')}: ${stats.gamesPlayed}</li>
+                        <li>${getText('STATISTICS.GAMES_WON')}: ${stats.gamesWon}</li>
+                        <li>${getText('STATISTICS.TOTAL_MONEY')}: ${stats.totalMoneyEarned}₽</li>
+                        <li>${getText('STATISTICS.TOTAL_PROPERTIES')}: ${stats.totalPropertiesPurchased}</li>
+                        <li>${getText('STATISTICS.TOTAL_TRADES')}: ${stats.totalTradesCompleted}</li>
+                        <li>${getText('STATISTICS.TOTAL_AUCTIONS')}: ${stats.totalAuctionsWon}</li>
+                        <li>${getText('STATISTICS.ACHIEVEMENTS_UNLOCKED')}: ${stats.totalAchievementsUnlocked || 0}</li>
+                        <li>${getText('STATISTICS.TIME_PLAYED')}: ${stats.totalPlayTime || 0}</li>
                     </ul>
-                ` : `<div>${utils.getText('STATISTICS_NONE')}</div>`;
+                ` : `<div>${getText('STATISTICS_NONE')}</div>`;
             } else if (selectedTab === 'global') {
                 contentTab = globalStats ? `
                     <ul class="statistics-list">
-                        <li>${utils.getText('STATISTICS.GAMES_PLAYED')}: ${globalStats.totalGames}</li>
-                        <li>${utils.getText('STATISTICS.TOTAL_MONEY')}: ${globalStats.totalMoneyEarned}₽</li>
-                        <li>${utils.getText('STATISTICS.TOTAL_PROPERTIES')}: ${globalStats.totalPropertiesPurchased}</li>
-                        <li>${utils.getText('STATISTICS.TOTAL_TRADES')}: ${globalStats.totalTradesCompleted}</li>
-                        <li>${utils.getText('STATISTICS.TOTAL_AUCTIONS')}: ${globalStats.totalAuctionsWon}</li>
-                        <li>${utils.getText('STATISTICS.TIME_PLAYED')}: ${globalStats.totalPlayTime || 0}</li>
+                        <li>${getText('STATISTICS.GAMES_PLAYED')}: ${globalStats.totalGames}</li>
+                        <li>${getText('STATISTICS.TOTAL_MONEY')}: ${globalStats.totalMoneyEarned}₽</li>
+                        <li>${getText('STATISTICS.TOTAL_PROPERTIES')}: ${globalStats.totalPropertiesPurchased}</li>
+                        <li>${getText('STATISTICS.TOTAL_TRADES')}: ${globalStats.totalTradesCompleted}</li>
+                        <li>${getText('STATISTICS.TOTAL_AUCTIONS')}: ${globalStats.totalAuctionsWon}</li>
+                        <li>${getText('STATISTICS.TIME_PLAYED')}: ${globalStats.totalPlayTime || 0}</li>
                     </ul>
-                ` : `<div>${utils.getText('STATISTICS_NONE')}</div>`;
+                ` : `<div>${getText('STATISTICS_NONE')}</div>`;
             } else if (selectedTab === 'records') {
                 contentTab = records ? `
                     <ul class="statistics-list">
-                        ${Array.from(records.entries()).map(([key, rec]) => `<li>${utils.getText('STATISTICS.'+key.toUpperCase()) || key}: ${rec.value} (${rec.player || ''})</li>`).join('')}
+                        ${Array.from(records.entries()).map(([key, rec]) => `<li>${getText('STATISTICS.'+key.toUpperCase()) || key}: ${rec.value} (${rec.player || ''})</li>`).join('')}
                     </ul>
-                ` : `<div>${utils.getText('STATISTICS_NONE')}</div>`;
+                ` : `<div>${getText('STATISTICS_NONE')}</div>`;
             }
             const content = `
                 <div class="statistics-modal">
-                    <h3>${utils.getText('STATISTICS_TITLE')}</h3>
+                    <h3>${getText('STATISTICS_TITLE')}</h3>
                     <div class="statistics-tabs" style="margin-block-end:12px;">${tabButtons}</div>
                     <div class="statistics-tab-content">${contentTab}</div>
                 </div>
@@ -976,7 +1024,7 @@ class UI {
                     });
                 </script>
             `;
-            this.showModal(utils.getText('STATISTICS_TITLE'), content);
+            this.showModal(getText('STATISTICS_TITLE'), content);
         } catch (e) {
             this.showNotification('Ошибка отображения статистики: ' + (e.message || e), 'error');
         }
@@ -1009,7 +1057,7 @@ class UI {
                             <span class="status">Статус: ${t.status}</span>
                             <span class="players">Игроков: ${t.currentPlayers?.length || 0}/${t.maxPlayers}</span>
                         </li>
-                    `).join('') : `<li>${utils.getText('TOURNAMENTS_NONE')}</li>`}
+                    `).join('') : `<li>${getText('TOURNAMENTS_NONE')}</li>`}
                 </ul>`;
             } else if (selectedTab === 'history') {
                 const history = tournaments.getTournamentHistory ? tournaments.getTournamentHistory(10) : [];
@@ -1038,7 +1086,7 @@ class UI {
             }
             const content = `
                 <div class="tournaments-modal">
-                    <h3>${utils.getText('TOURNAMENTS_TITLE')}</h3>
+                    <h3>${getText('TOURNAMENTS_TITLE')}</h3>
                     <div class="tournaments-tabs" style="margin-block-end:12px;">${tabButtons}</div>
                     <div class="tournaments-tab-content">${contentTab}</div>
                 </div>
@@ -1051,7 +1099,7 @@ class UI {
                     });
                 </script>
             `;
-            this.showModal(utils.getText('TOURNAMENTS_TITLE'), content);
+            this.showModal(getText('TOURNAMENTS_TITLE'), content);
         } catch (e) {
             this.showNotification('Ошибка отображения турниров: ' + (e.message || e), 'error');
         }

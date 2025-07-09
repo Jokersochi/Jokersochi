@@ -3,6 +3,8 @@
  * Обеспечивает онлайн-игру, чат, синхронизацию и турниры
  */
 
+import { generateId } from './utils.js';
+
 class NetworkManager {
     constructor() {
         this.socket = null;
@@ -39,7 +41,7 @@ class NetworkManager {
 
         try {
             this.socket = new WebSocket(serverUrl);
-            this.playerId = playerId || utils.generateId();
+            this.playerId = playerId || generateId();
             
             this.socket.onopen = () => {
                 this.connected = true;

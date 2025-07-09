@@ -1,0 +1,8 @@
+{
+  "COMMON": { ... },
+  "MESSAGES": { ... },
+  "ERRORS": { ... },
+  "TOOLTIPS": { ... },
+  "STATISTICS": { ... }
+}
+// (Вставить все строки из LOCALES.en) 

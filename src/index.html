@@ -2,93 +2,116 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <meta name="description" content="Монополия России - быстрая браузерная версия настольной игры с российской тематикой">
-    <meta name="keywords" content="монополия, игра, россия, браузерная игра">
-    <meta name="author" content="Monopoly Russia Team">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monopoly Russia (Расширенная версия)</title>
+    <meta name="description" content="Быстрая браузерная версия настольной игры Монополия с российской тематикой. Играйте онлайн бесплатно!">
     <meta name="theme-color" content="#007bff">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="Монополия России">
-    
-    <!-- Preload critical resources -->
-    <link rel="preload" href="style.css" as="style">
-    <link rel="preload" href="game.js" as="script">
-    
-    <!-- Critical CSS inline -->
-    <style>
-        /* Critical rendering path CSS */
-        body{margin:0;font-family:Arial,sans-serif;background:#f0f0f0}
-        .board{display:grid;grid-template-columns:repeat(8,1fr);grid-template-rows:repeat(8,1fr);gap:2px;margin:20px 0;max-width:600px;margin-left:auto;margin-right:auto;aspect-ratio:1;background:#f8f9fa;border-radius:8px;padding:8px;box-shadow:0 4px 6px rgba(0,0,0,0.1);border:3px solid #007bff}
-        .square{background:#fff;border:1px solid #dee2e6;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:12px;font-weight:500;text-align:center;position:relative;transition:all 0.3s ease;cursor:pointer;overflow:hidden;min-height:60px;padding:4px}
-        .token{width:24px;height:24px;background:linear-gradient(45deg,#dc3545,#e83e8c);border-radius:50%;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);transition:all 0.3s ease;z-index:10;box-shadow:0 2px 4px rgba(0,0,0,0.1);border:2px solid #fff}
-        #controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:24px;margin-top:48px}
-        #rollDice{padding:16px 24px;background:linear-gradient(45deg,#007bff,#17a2b8);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:18px;font-weight:600;transition:all 0.3s ease;box-shadow:0 4px 6px rgba(0,0,0,0.1)}
-        #player-info{background:#fff;padding:24px;border-radius:8px;box-shadow:0 2px 4px rgba(0,0,0,0.075);border:1px solid #dee2e6}
-        #log{margin:0;padding:24px;background:#fff;border:1px solid #ddd;border-radius:8px;min-height:80px;flex:1}
-        .square-content{display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%;gap:2px}
-        .square-icon{font-size:20px;line-height:1}
-        .square-name{font-size:10px;font-weight:600;line-height:1.1;word-break:break-word;max-width:100%}
-        .square-price{font-size:8px;font-weight:700;color:#28a745;background:rgba(40,167,69,0.1);padding:1px 4px;border-radius:2px;margin-top:2px}
-    </style>
-    
-    <title>Монополия России - Быстрая Игра</title>
-    
-    <!-- Non-critical CSS -->
-    <link rel="stylesheet" href="style.css" media="print" onload="this.media='all'">
-    <noscript><link rel="stylesheet" href="style.css"></noscript>
+    <link rel="manifest" href="../manifest.json">
+    <link rel="icon" type="image/png" sizes="192x192" href="../icons/icon-192x192.png">
+    <link rel="apple-touch-icon" href="../icons/icon-192x192.png">
+    <link rel="canonical" href="https://yourdomain.com/">
+    <meta property="og:title" content="Монополия Россия — браузерная настольная игра">
+    <meta property="og:description" content="Быстрая браузерная версия настольной игры Монополия с российской тематикой. Играйте онлайн бесплатно!">
+    <meta property="og:image" content="../icons/icon-512x512.png">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://yourdomain.com/">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header>
-        <h1>🎲 Монополия России</h1>
-        <p class="subtitle">Быстрая браузерная версия</p>
-    </header>
-    
-    <main>
-        <div id="game-container">
-            <div id="board" class="board" aria-label="Игровое поле"></div>
-            
-            <div id="controls">
-                <button id="rollDice" type="button" aria-label="Бросить кубики">
-                    🎲 Бросить кубики
-                </button>
-                
-                <div id="player-info">
-                    <p id="player-money">💰 Деньги: <span id="money-amount">500₽</span></p>
-                    <p id="player-properties">🏠 Собственность: <span id="properties-count">0</span></p>
-                </div>
-                
-                <div id="game-log">
-                    <p id="log" aria-live="polite">Готов к игре!</p>
-                </div>
+    <div id="game-container">
+        <!-- Игровое поле -->
+        <div id="board" class="board"></div>
+
+        <!-- Панель игроков -->
+        <div id="players-panel"></div>
+
+        <!-- Текущий игрок -->
+        <div class="current-player">
+            <div class="player-info">
+                <img class="player-token" src="" alt="Фишка">
+                <span class="player-name"></span>
             </div>
         </div>
-        
-        <div id="game-stats" class="hidden">
-            <h3>📊 Статистика игры</h3>
-            <div id="stats-content"></div>
+
+        <!-- Погода и события -->
+        <div id="current-weather"></div>
+        <div id="current-events"></div>
+
+        <!-- Панель достижений -->
+        <div id="achievements-panel"></div>
+
+        <!-- Кнопки турнира и улучшений -->
+        <div id="actions-panel">
+            <button id="start-tournament-btn">Турнир</button>
+            <button id="build-improvement-btn">Построить улучшение</button>
         </div>
-    </main>
-    
-    <footer>
-        <p>© 2024 Монополия России - Оптимизированная версия</p>
-    </footer>
-    
-    <!-- Loading indicator -->
-    <div id="loading" class="loading-overlay hidden">
-        <div class="spinner"></div>
-        <p>Загрузка игры...</p>
+
+        <!-- Чат -->
+        <div id="chat">
+            <div id="chat-messages" style="height:120px;overflow-y:auto;"></div>
+            <input id="chat-input" type="text" placeholder="Сообщение...">
+            <button id="send-message-btn">Отправить</button>
+        </div>
+
+        <!-- Модальное окно для карточек -->
+        <div id="card-modal" class="modal hidden">
+            <div class="modal-content">
+                <h2 id="card-title"></h2>
+                <p id="card-text"></p>
+                <button onclick="document.getElementById('card-modal').classList.add('hidden')">OK</button>
+            </div>
+        </div>
+
+        <!-- Модальное окно для покупки -->
+        <div id="modal-overlay" class="modal hidden">
+            <div class="modal-content">
+                <h2 id="modal-title"></h2>
+                <div id="modal-content"></div>
+                <button id="modal-confirm">Купить</button>
+                <button id="modal-cancel">Аукцион</button>
+            </div>
+        </div>
+
+        <!-- Модальное окно аукциона -->
+        <div id="auction-modal" class="modal hidden">
+            <div class="modal-content">
+                <h2>Аукцион: <span id="auction-property"></span></h2>
+                <div>
+                    <span>Текущая ставка: <span id="current-bid-amount">0</span></span><br>
+                    <span>Участник: <span id="current-bidder">-</span></span><br>
+                    <span>Время: <span id="auction-time">0</span> сек</span>
+                </div>
+                <input id="bid-amount" type="number" min="1" placeholder="Ваша ставка">
+                <button id="place-bid-btn">Сделать ставку</button>
+                <button id="pass-bid-btn">Пас</button>
+            </div>
+        </div>
+        <div id="toast" class="toast hidden"></div>
     </div>
-    
-    <!-- Error boundary -->
-    <div id="error-boundary" class="error-overlay hidden">
-        <h3>⚠️ Ошибка</h3>
-        <p id="error-message"></p>
-        <button onclick="location.reload()">🔄 Перезагрузить</button>
-    </div>
-    
-    <!-- Optimized script loading -->
-    <script src="game.js" defer></script>
+
+    <!-- Подключение JS (в правильном порядке!) -->
+    <script src="../js/config.js"></script>
+    <script src="../js/utils.js"></script>
+    <script src="../js/board.js"></script>
+    <script src="../js/player.js"></script>
+    <script src="../js/game.js"></script>
+    <script>
+    // Инициализация кнопок турнира и улучшений
+    document.addEventListener('DOMContentLoaded', function() {
+        const tournamentBtn = document.getElementById('start-tournament-btn');
+        if (tournamentBtn) tournamentBtn.onclick = () => game.startTournament({ type: 'elimination', maxRounds: 5 });
+        const improvementBtn = document.getElementById('build-improvement-btn');
+        if (improvementBtn) improvementBtn.onclick = () => {
+            const pos = game.players[game.currentPlayerIndex].position;
+            game.players[game.currentPlayerIndex].addImprovement(pos);
+        };
+    });
+    if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('../sw.js');
+  });
+}
+    </script>
 </body>
 </html> 

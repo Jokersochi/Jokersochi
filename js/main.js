@@ -3,6 +3,8 @@
  * Инициализирует все системы и управляет жизненным циклом приложения
  */
 
+import { loadLocales, setLocale } from './localization.js';
+
 // Глобальные переменные
 let game;
 let board;
@@ -897,10 +899,10 @@ class App {
      * Меняет язык
      * @param {string} language - язык
      */
-    changeLanguage(language) {
+    async changeLanguage(language) {
         this.settings.language = language;
         this.saveSettings();
-        utils.setLanguage(language);
+        await setLocale(language);
         
         // Обновляем интерфейс
         this.updateLanguageDisplay();

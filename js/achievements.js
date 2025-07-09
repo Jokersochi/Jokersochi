@@ -3,6 +3,9 @@
  * Управляет достижениями игроков, наградами и прогрессом
  */
 
+import { getText } from './localization.js';
+import { showToast } from './ui-utils.js';
+
 class AchievementSystem {
     constructor() {
         this.achievements = new Map();
@@ -774,8 +777,8 @@ class AchievementSystem {
         const notification = {
             id: Date.now(),
             type: 'achievement',
-            title: utils.getText(`ACHIEVEMENTS.${achievement.name.toUpperCase()}`),
-            message: utils.getText(`ACHIEVEMENTS.${achievement.description.toUpperCase()}`),
+            title: getText(`ACHIEVEMENTS.${achievement.name.toUpperCase()}`),
+            message: getText(`ACHIEVEMENTS.${achievement.description.toUpperCase()}`),
             icon: achievement.icon,
             rarity: achievement.rarity,
             points: achievement.points,
@@ -783,35 +786,7 @@ class AchievementSystem {
         };
 
         this.notifications.push(notification);
-        this.displayNotification(notification);
-    }
-
-    /**
-     * Отображает уведомление
-     * @param {Object} notification - уведомление
-     */
-    displayNotification(notification) {
-        const notificationElement = document.createElement('div');
-        notificationElement.className = `achievement-notification ${notification.rarity}`;
-        notificationElement.innerHTML = `
-            <div class="notification-icon">${notification.icon}</div>
-            <div class="notification-content">
-                <div class="notification-title">${notification.title}</div>
-                <div class="notification-message">${notification.message}</div>
-                <div class="notification-points">+${notification.points} очков</div>
-            </div>
-            <button class="notification-details" style="margin-inline-end:8px;" onclick="if(window.ui)window.ui.showAchievementsModal()">Подробнее</button>
-            <button class="notification-close" onclick="this.parentElement.remove()">×</button>
-        `;
-
-        document.body.appendChild(notificationElement);
-
-        // Автоматически убираем через 5 секунд
-        setTimeout(() => {
-            if (notificationElement.parentElement) {
-                notificationElement.remove();
-            }
-        }, 5000);
+        showToast(notification.title, notification.message, notification.icon, notification.rarity, notification.points);
     }
 
     /**

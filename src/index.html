@@ -16,7 +16,42 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://yourdomain.com/">
     <meta name="twitter:card" content="summary_large_image">
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-XXXXXXX-X"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-XXXXXXX-X');
+    </script>
+    <!-- Yandex.Metrica -->
+    <script type="text/javascript" >
+      (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+      })(window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+      ym(XXXXXXX, "init", {
+          clickmap:true,
+          trackLinks:true,
+          accurateTrackBounce:true,
+          webvisor:true
+      });
+    </script>
+    <noscript><div><img src="https://mc.yandex.ru/watch/XXXXXXX" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
     <link rel="stylesheet" href="style.css">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+    <script>
+      const firebaseConfig = {
+        apiKey: "ВАШ_API_KEY",
+        authDomain: "ВАШ_ДОМЕН.firebaseapp.com",
+        projectId: "ВАШ_PROJECT_ID",
+        appId: "ВАШ_APP_ID"
+      };
+      firebase.initializeApp(firebaseConfig);
+    </script>
 </head>
 <body>
     <div id="game-container">
@@ -45,6 +80,15 @@
         <div id="actions-panel">
             <button id="start-tournament-btn">Турнир</button>
             <button id="build-improvement-btn">Построить улучшение</button>
+        </div>
+
+        <!-- Кнопки сохранения/загрузки игры -->
+        <div id="save-load-controls" style="margin: 8px 0; text-align: center;">
+          <button onclick="game.saveGameToFile()">💾 Сохранить игру</button>
+          <label style="display:inline-block; cursor:pointer;">
+            <input type="file" accept="application/json" style="display:none;" onchange="game.loadGameFromFile(this.files[0])">
+            <span style="padding:0 8px;">📂 Загрузить игру</span>
+          </label>
         </div>
 
         <!-- Чат -->
@@ -88,6 +132,9 @@
             </div>
         </div>
         <div id="toast" class="toast hidden"></div>
+        <button id="google-signin-btn">Войти через Google</button>
+        <button id="signout-btn">Выйти</button>
+        <button id="theme-toggle-btn">🌙/☀️ Переключить тему</button>
     </div>
 
     <!-- Подключение JS (в правильном порядке!) -->
@@ -112,6 +159,34 @@
     navigator.serviceWorker.register('../sw.js');
   });
 }
+    document.getElementById('google-signin-btn').onclick = function() {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      firebase.auth().signInWithPopup(provider)
+        .then(result => {
+          const user = result.user;
+          alert('Вход выполнен: ' + user.displayName);
+          // user.uid, user.email, user.photoURL
+        })
+        .catch(error => {
+          alert('Ошибка входа: ' + error.message);
+        });
+    };
+    document.getElementById('signout-btn').onclick = function() {
+      firebase.auth().signOut();
+    };
+    // Переключатель темы
+    const themeBtn = document.getElementById('theme-toggle-btn');
+    function applyTheme(theme) {
+      document.body.classList.toggle('theme-light', theme === 'light');
+      localStorage.setItem('theme', theme);
+    }
+    themeBtn.onclick = function() {
+      const isLight = document.body.classList.toggle('theme-light');
+      localStorage.setItem('theme', isLight ? 'light' : 'dark');
+    };
+    // Восстановление темы при загрузке
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) applyTheme(savedTheme);
     </script>
 </body>
 </html> 

@@ -3,7 +3,9 @@
  * Управляет клетками, свойствами и их состояниями
  */
 
+import { showNotification } from './ui-utils.js';
 import { getText } from './localization.js';
+import { randomChoice } from './random.js';
 
 class Board {
     constructor() {
@@ -416,12 +418,12 @@ class Board {
         if (this.weatherTimer >= CONFIG.WEATHER.CHANGE_INTERVAL) {
             this.weatherTimer = 0;
             const weatherTypes = CONFIG.WEATHER_TYPES;
-            this.weather = utils.randomChoice(weatherTypes).id;
+            this.weather = randomChoice(weatherTypes).id;
             
             // Уведомление о смене погоды
             const weatherName = weatherTypes.find(w => w.id === this.weather).name;
-            utils.showNotification(
-                utils.getText('MESSAGES.WEATHER_CHANGE', { weather: weatherName }),
+            showNotification(
+                getText('MESSAGES.WEATHER_CHANGE', { weather: weatherName }),
                 'info'
             );
         }
@@ -435,14 +437,14 @@ class Board {
         
         // Проверяем вероятность экономического события
         if (Math.random() < CONFIG.ECONOMIC_EVENTS.FREQUENCY && !this.economicEvent) {
-            const event = utils.randomChoice(CONFIG.ECONOMIC_EVENTS);
+            const event = randomChoice(CONFIG.ECONOMIC_EVENTS);
             this.economicEvent = {
                 ...event,
                 duration: CONFIG.ECONOMIC_EVENTS.DURATION
             };
             
-            utils.showNotification(
-                utils.getText('MESSAGES.' + event.id.toUpperCase()),
+            showNotification(
+                getText('MESSAGES.' + event.id.toUpperCase()),
                 event.id === 'boom' ? 'success' : 'warning'
             );
         }
@@ -462,14 +464,14 @@ class Board {
     updateCulturalEvents() {
         // Проверяем вероятность культурного события
         if (Math.random() < CONFIG.CULTURAL_EVENTS.FREQUENCY && !this.culturalEvent) {
-            const event = utils.randomChoice(CONFIG.CULTURAL_EVENTS);
+            const event = randomChoice(CONFIG.CULTURAL_EVENTS);
             this.culturalEvent = {
                 ...event,
                 duration: CONFIG.CULTURAL_EVENTS.DURATION
             };
             
-            utils.showNotification(
-                utils.getText('MESSAGES.CULTURAL_FESTIVAL'),
+            showNotification(
+                getText('MESSAGES.CULTURAL_FESTIVAL'),
                 'info'
             );
         }

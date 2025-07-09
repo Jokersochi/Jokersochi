@@ -1,4 +1,8 @@
 import { isEven, isOdd, clamp, deepClone, formatMoney, generateId } from './utils.js';
+import { random, rollDice, shuffle, randomChoice } from './random.js';
+import { saveToStorage, loadFromStorage, removeFromStorage, isStorageSupported } from './storage.js';
+import { getText, loadLocales, setLocale } from './localization.js';
+import { showToast, showNotification, escapeHTML, passedStart } from './ui-utils.js';
 
 describe('utils', () => {
   test('isEven', () => {

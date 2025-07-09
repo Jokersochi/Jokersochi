@@ -84,7 +84,7 @@ body {
 
 /* ===== LAYOUT COMPONENTS ===== */
 .container {
-    max-width: 1200px;
+    max-inline-size: 1200px;
     margin: 0 auto;
     padding: 0 var(--spacing-md);
 }
@@ -107,7 +107,7 @@ header h1 {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    margin-bottom: var(--spacing-xs);
+    margin-block-end: var(--spacing-xs);
 }
 
 .subtitle {
@@ -126,7 +126,7 @@ footer {
     color: var(--white);
     text-align: center;
     padding: var(--spacing-md);
-    margin-top: auto;
+    margin-block-start: auto;
 }
 
 /* ===== GAME BOARD ===== */
@@ -137,7 +137,7 @@ footer {
     padding: var(--spacing-xl);
     box-shadow: var(--shadow-lg);
     margin: 0 auto;
-    max-width: 800px;
+    max-inline-size: 800px;
 }
 
 .board {
@@ -145,8 +145,8 @@ footer {
     grid-template-columns: repeat(8, 1fr);
     grid-template-rows: repeat(8, 1fr);
     gap: 2px;
-    margin: var(--spacing-lg) 0;
-    max-width: 600px;
+    margin-block-start: var(--spacing-lg);
+    max-inline-size: 600px;
     margin-inline-start: auto; /* logical */
     margin-inline-end: auto; /* logical */
     aspect-ratio: 1;
@@ -307,13 +307,13 @@ footer {
 
 /* ===== TOKEN ANIMATIONS ===== */
 .token {
-    width: 24px;
-    height: 24px;
+    inline-size: 24px;
+    block-size: 24px;
     background: linear-gradient(45deg, var(--danger-color), #e83e8c);
     border-radius: 50%;
     position: absolute;
-    top: 50%;
-    left: 50%;
+    inset-inline-start: 50%;
+    inset-inline-end: 50%;
     transform: translate(-50%, -50%);
     transition: all var(--transition-base);
     z-index: var(--z-popover);
@@ -364,15 +364,15 @@ footer {
     content: '';
     position: absolute;
     top: 0;
-    left: -100%;
+    inset-inline-start: -100%;
     inline-size: 100%;
     block-size: 100%;
     background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: left 0.5s;
+    transition: inset-inline-start 0.5s;
 }
 
 #rollDice:hover::before {
-    left: 100%;
+    inset-inline-start: 100%;
 }
 
 #rollDice:hover {

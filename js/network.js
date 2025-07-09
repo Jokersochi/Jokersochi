@@ -4,6 +4,7 @@
  */
 
 import { generateId } from './utils.js';
+import { showToast } from './ui-utils.js';
 
 class NetworkManager {
     constructor() {

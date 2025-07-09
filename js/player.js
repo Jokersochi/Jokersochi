@@ -5,6 +5,7 @@
 
 import { getText } from './localization.js';
 import { formatMoney } from './utils.js';
+import { showToast } from './ui-utils.js';
 // Временные заглушки для отсутствующих функций
 const passedStart = (oldPos, newPos) => newPos < oldPos;
 

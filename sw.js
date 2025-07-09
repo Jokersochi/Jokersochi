@@ -339,4 +339,38 @@ async function cleanupOldCache() {
     }
 }
 
+self.addEventListener('push', function(event) {
+  let data = {};
+  if (event.data) {
+    data = event.data.json();
+  }
+  const title = data.title || 'Monopoly Russia';
+  const options = {
+    body: data.body || 'У вас новое уведомление!',
+    icon: 'icons/icon-192x192.png',
+    badge: 'icons/icon-72x72.png',
+    data: data.url || '/' // Можно добавить переход по клику
+  };
+  event.waitUntil(
+    self.registration.showNotification(title, options)
+  );
+});
+
+self.addEventListener('notificationclick', function(event) {
+  event.notification.close();
+  const url = event.notification.data || '/';
+  event.waitUntil(
+    clients.matchAll({ type: 'window' }).then(windowClients => {
+      for (let client of windowClients) {
+        if (client.url === url && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      if (clients.openWindow) {
+        return clients.openWindow(url);
+      }
+    })
+  );
+});
+
 console.log('🎲 Service Worker: Монополия России загружен'); 

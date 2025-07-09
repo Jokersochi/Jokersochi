@@ -4,6 +4,10 @@
  */
 
 import { loadLocales, setLocale } from './localization.js';
+import { showToast } from './ui-utils.js';
+import { getText } from './localization.js';
+import { randomChoice } from './random.js';
+import { formatMoney, generateId } from './utils.js';
 
 // Глобальные переменные
 let game;

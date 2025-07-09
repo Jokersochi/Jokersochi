@@ -7,11 +7,11 @@ import { getText } from './localization.js';
 import { formatMoney, generateId } from './utils.js';
 import { saveToStorage, loadFromStorage } from './storage.js';
 import { randomChoice, rollDice } from './random.js';
+import { showToast, showNotification, escapeHTML, passedStart } from './ui-utils.js';
 // TODO: escapeHTML, showToast, randomInt, passedStart — реализовать/импортировать отдельно
 
 // Временные заглушки для отсутствующих функций
 const randomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
-const escapeHTML = (str) => String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]);
 const showToast = (msg) => alert(msg); // Временно alert
 const passedStart = (oldPos, newPos) => newPos < oldPos;
 
@@ -41,7 +41,10 @@ class Game {
             totalMoney: 0,
             totalProperties: 0,
             totalAuctions: 0,
-            totalTrades: 0
+            totalTrades: 0,
+            gamesPlayed: 0,
+            gamesWon: 0,
+            diceRolls: 0
         };
         
         this.initializeGame();
@@ -143,6 +146,7 @@ class Game {
         
         // Запускаем игровой цикл
         this.startGameLoop();
+        this.statistics.gamesPlayed++;
     }
 
     /**
@@ -931,6 +935,7 @@ class Game {
         if (!this.dice.isDouble) {
             this.nextPlayer();
         }
+        this.statistics.diceRolls++;
         return this.dice;
     }
 
@@ -1242,6 +1247,7 @@ class Game {
             
             // Показываем экран победителя
             this.showVictoryScreen(winner);
+            this.statistics.gamesWon++;
         }
         
         // Сохраняем статистику
@@ -1493,6 +1499,11 @@ class Game {
                 setTimeout(() => firework.remove(), 1500);
             }, i * 400);
         }
+        const victoryModal = document.getElementById('victory-modal');
+        if (victoryModal) {
+          victoryModal.classList.add('fadeInDown');
+          setTimeout(() => victoryModal.classList.remove('fadeInDown'), 1000);
+        }
     }
 
     /**
@@ -1642,6 +1653,43 @@ class Game {
                 panel.appendChild(el);
             });
         });
+    }
+
+    /**
+     * Показывает статистику сессии
+     */
+    showSessionStats() {
+        showToast(`Бросков: ${this.statistics.diceRolls}, Побед: ${this.statistics.gamesWon}, Игр: ${this.statistics.gamesPlayed}`, 'info', 4000);
+    }
+
+    // Сохранение игры в файл
+    saveGameToFile() {
+      const data = JSON.stringify(this, (key, value) => {
+        // Исключаем циклические ссылки и лишние свойства
+        if (key === 'board' || key === 'gameLoop') return undefined;
+        return value;
+      }, 2);
+      const blob = new Blob([data], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'monopoly-save.json';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+    // Загрузка игры из файла
+    loadGameFromFile(file) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        try {
+          const data = JSON.parse(e.target.result);
+          Object.assign(this, data);
+          showToast('Игра успешно загружена!', 'success');
+          this.updateGameUI();
+        } catch (err) {
+          showToast('Ошибка загрузки файла', 'error');
+        }
+      };
+      reader.readAsText(file);
     }
 }
 

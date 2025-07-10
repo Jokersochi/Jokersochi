@@ -2,6 +2,7 @@
  * Модуль статистики
  * Отслеживает игровые показатели, аналитику и рекорды
  */
+import eventBus from './event-bus.js';
 
 class StatisticsSystem {
     constructor() {
@@ -60,53 +61,26 @@ class StatisticsSystem {
      * Настраивает слушатели событий
      */
     setupEventListeners() {
-        document.addEventListener('gameEvent', (e) => {
-            this.handleGameEvent(e.detail);
+        eventBus.on('gameStarted', (data) => this.onGameStart(data));
+        eventBus.on('gameEnded', (data) => this.onGameEnd(data));
+        eventBus.on('moneyChanged', (data) => {
+            if (data.amount > 0) this.trackMoneyEarned(data.player, data.amount);
         });
-
-        document.addEventListener('gameStart', (e) => {
-            this.onGameStart(e.detail);
+        eventBus.on('propertyPurchased', (data) => this.trackPropertyPurchase(data.player, data.cell));
+        // Assuming 'residenceBuilt' event
+        eventBus.on('residenceBuilt', (data) => this.trackResidenceBuilt(data.player, data.cell));
+        eventBus.on('tradeCompleted', (data) => this.trackTradeCompleted(data.offer.from, data.offer));
+        eventBus.on('auctionEnded', (data) => {
+            if (data.winner) this.trackAuctionWon(data.winner, data);
         });
-
-        document.addEventListener('gameEnd', (e) => {
-            this.onGameEnd(e.detail);
+        eventBus.on('allianceFormed', (data) => this.trackAllianceFormed(data.players[0], data));
+        eventBus.on('tournamentFinished', (data) => {
+            if (data.winners && data.winners.length > 0) this.trackTournamentWon(data.winners[0], data.tournament);
         });
-    }
-
-    /**
-     * Обрабатывает игровые события
-     * @param {Object} event - событие игры
-     */
-    handleGameEvent(event) {
-        switch (event.type) {
-            case 'money_earned':
-                this.trackMoneyEarned(event.player, event.amount);
-                break;
-            case 'property_purchased':
-                this.trackPropertyPurchase(event.player, event.property);
-                break;
-            case 'residence_built':
-                this.trackResidenceBuilt(event.player, event.property);
-                break;
-            case 'trade_completed':
-                this.trackTradeCompleted(event.player, event.trade);
-                break;
-            case 'auction_won':
-                this.trackAuctionWon(event.player, event.auction);
-                break;
-            case 'alliance_formed':
-                this.trackAllianceFormed(event.player, event.alliance);
-                break;
-            case 'tournament_won':
-                this.trackTournamentWon(event.player, event.tournament);
-                break;
-            case 'rent_paid':
-                this.trackRentPaid(event.player, event.amount);
-                break;
-            case 'property_improved':
-                this.trackPropertyImproved(event.player, event.property);
-                break;
-        }
+        // Assuming 'rentPaid' event
+        eventBus.on('rentPaid', (data) => this.trackRentPaid(data.player, data.amount));
+        // Assuming 'improvementAdded' event
+        eventBus.on('improvementAdded', (data) => this.trackPropertyImproved(data.player, data.cell));
     }
 
     /**
@@ -371,68 +345,50 @@ class StatisticsSystem {
             // Проверяем рекорд по деньгам
             if (player.money > this.records.get('highestMoney').value) {
                 this.records.set('highestMoney', {
-                    value: player.money,
-                    player: { id: player.id, name: player.name },
-                    date: Date.now()
+                    value: player.money, player: { id: player.id, name: player.name }, date: Date.now()
                 });
+                this.dispatchRecordEvent('highestMoney', this.records.get('highestMoney'));
             }
 
             // Проверяем рекорд по недвижимости
             if (player.properties.length > this.records.get('mostProperties').value) {
                 this.records.set('mostProperties', {
-                    value: player.properties.length,
-                    player: { id: player.id, name: player.name },
-                    date: Date.now()
+                    value: player.properties.length, player: { id: player.id, name: player.name }, date: Date.now()
                 });
+                this.dispatchRecordEvent('mostProperties', this.records.get('mostProperties'));
             }
 
             // Проверяем рекорд по резиденциям
             const residences = player.properties.filter(p => p.hasResidence).length;
             if (residences > this.records.get('mostResidences').value) {
                 this.records.set('mostResidences', {
-                    value: residences,
-                    player: { id: player.id, name: player.name },
-                    date: Date.now()
+                    value: residences, player: { id: player.id, name: player.name }, date: Date.now()
                 });
+                this.dispatchRecordEvent('mostResidences', this.records.get('mostResidences'));
             }
 
             // Проверяем рекорд по сделкам
             if (stats.totalTradesCompleted > this.records.get('mostTrades').value) {
                 this.records.set('mostTrades', {
-                    value: stats.totalTradesCompleted,
-                    player: { id: player.id, name: player.name },
-                    date: Date.now()
+                    value: stats.totalTradesCompleted, player: { id: player.id, name: player.name }, date: Date.now()
                 });
+                this.dispatchRecordEvent('mostTrades', this.records.get('mostTrades'));
             }
 
             // Проверяем рекорд по аукционам
             if (stats.totalAuctionsWon > this.records.get('mostAuctionsWon').value) {
                 this.records.set('mostAuctionsWon', {
-                    value: stats.totalAuctionsWon,
-                    player: { id: player.id, name: player.name },
-                    date: Date.now()
+                    value: stats.totalAuctionsWon, player: { id: player.id, name: player.name }, date: Date.now()
                 });
-                if (window.ui) {
-                    window.ui.showNotification(
-                        `Новый рекорд: аукционов выиграно — ${stats.totalAuctionsWon}! <button class='notification-details' onclick='window.ui.showStatisticsModal()'>Подробнее</button>`,
-                        'success', 6000
-                    );
-                }
+                this.dispatchRecordEvent('mostAuctionsWon', this.records.get('mostAuctionsWon'));
             }
 
             // Проверяем рекорд по турнирам
             if (stats.totalTournamentsWon > this.records.get('mostTournamentsWon').value) {
                 this.records.set('mostTournamentsWon', {
-                    value: stats.totalTournamentsWon,
-                    player: { id: player.id, name: player.name },
-                    date: Date.now()
+                    value: stats.totalTournamentsWon, player: { id: player.id, name: player.name }, date: Date.now()
                 });
-                if (window.ui) {
-                    window.ui.showNotification(
-                        `Новый рекорд: турниров выиграно — ${stats.totalTournamentsWon}! <button class='notification-details' onclick='window.ui.showStatisticsModal()'>Подробнее</button>`,
-                        'success', 6000
-                    );
-                }
+                this.dispatchRecordEvent('mostTournamentsWon', this.records.get('mostTournamentsWon'));
             }
 
             // Проверяем рекорд по улучшениям
@@ -442,14 +398,16 @@ class StatisticsSystem {
                     player: { id: player.id, name: player.name },
                     date: Date.now()
                 });
-                if (window.ui) {
-                    window.ui.showNotification(
-                        `Новый рекорд: улучшений построено — ${stats.totalImprovementsBuilt}! <button class='notification-details' onclick='window.ui.showStatisticsModal()'>Подробнее</button>`,
-                        'success', 6000
-                    );
-                }
+                this.dispatchRecordEvent('mostImprovements', this.records.get('mostImprovements'));
             }
         });
+    }
+
+    /**
+     * Отправляет событие о новом рекорде
+     */
+    dispatchRecordEvent(key, record) {
+        eventBus.emit('recordBroken', { key, record });
     }
 
     /**

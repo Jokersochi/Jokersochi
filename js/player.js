@@ -2,11 +2,9 @@
  * Модуль управления игроками
  * Управляет состоянием игроков, их деньгами, свойствами и действиями
  */
-
-import { getText } from './localization.js';
+import { CONFIG } from './config.js';
 import { formatMoney } from './utils.js';
-import { showToast } from './ui-utils.js';
-// Временные заглушки для отсутствующих функций
+
 const passedStart = (oldPos, newPos) => newPos < oldPos;
 
 class Player {
@@ -20,7 +18,6 @@ class Player {
         this.inJail = false;
         this.jailTurns = 0;
         this.bankrupt = false;
-        this.turnOrder = 0;
         this.isCurrentPlayer = false;
         this.doublesCount = 0;
         this.lastRoll = null;
@@ -51,9 +48,6 @@ class Player {
         if (reason === 'rent') {
             this.stats.totalRentReceived += amount;
         }
-        
-        // Обновляем UI
-        this.updateMoneyDisplay();
     }
 
     /**
@@ -73,9 +67,6 @@ class Player {
         if (reason === 'rent') {
             this.stats.totalRentPaid += amount;
         }
-        
-        // Обновляем UI
-        this.updateMoneyDisplay();
         return true;
     }
 
@@ -101,9 +92,6 @@ class Player {
             this.addMoney(2000, 'start');
             this.stats.timesPassedStart++;
         }
-        
-        // Обновляем позицию фишки на поле
-        this.updateTokenPosition();
     }
 
     /**
@@ -141,7 +129,6 @@ class Player {
         this.inJail = true;
         this.jailTurns = 0;
         this.stats.timesInJail++;
-        this.updateTokenPosition();
     }
 
     /**
@@ -170,11 +157,11 @@ class Player {
      * @param {number} price - цена
      * @returns {boolean} true если покупка успешна
      */
-    buyProperty(position, price) {
+    buyProperty(board, position, price) {
         if (!this.hasMoney(price)) {
             return false;
         }
-        
+
         if (board.buyCell(position, this.id, price)) {
             this.removeMoney(price, 'property');
             this.properties.push(position);
@@ -190,7 +177,7 @@ class Player {
      * @param {number} position - позиция свойства
      * @returns {number} полученная сумма
      */
-    sellProperty(position) {
+    sellProperty(board, position) {
         const sellPrice = board.sellCell(position, this.id);
         if (sellPrice > 0) {
             this.addMoney(sellPrice, 'property_sale');
@@ -205,7 +192,7 @@ class Player {
      * @param {number} position - позиция свойства
      * @returns {number} полученная сумма
      */
-    mortgageProperty(position) {
+    mortgageProperty(board, position) {
         const mortgageAmount = board.mortgageCell(position, this.id);
         if (mortgageAmount > 0) {
             this.addMoney(mortgageAmount, 'mortgage');
@@ -218,7 +205,7 @@ class Player {
      * @param {number} position - позиция свойства
      * @returns {boolean} true если выкуп успешен
      */
-    unmortgageProperty(position) {
+    unmortgageProperty(board, position) {
         const unmortgageCost = board.unmortgageCell(position, this.id);
         if (unmortgageCost > 0 && this.hasMoney(unmortgageCost)) {
             this.removeMoney(unmortgageCost, 'unmortgage');
@@ -232,12 +219,12 @@ class Player {
      * @param {number} position - позиция свойства
      * @returns {boolean} true если улучшение добавлено
      */
-    addImprovement(position) {
+    addImprovement(board, position) {
         const cost = CONFIG.IMPROVEMENT.COST_PER_LEVEL;
         if (!this.hasMoney(cost)) {
             return false;
         }
-        
+
         if (board.addImprovement(position, this.id)) {
             this.removeMoney(cost, 'improvement');
             return true;
@@ -250,7 +237,7 @@ class Player {
      * @param {number} position - позиция свойства
      * @returns {number} полученная сумма
      */
-    removeImprovement(position) {
+    removeImprovement(board, position) {
         const sellPrice = CONFIG.IMPROVEMENT.COST_PER_LEVEL / 2;
         if (board.removeImprovement(position, this.id)) {
             this.addMoney(sellPrice, 'improvement_sale');
@@ -264,12 +251,12 @@ class Player {
      * @param {number} position - позиция свойства
      * @returns {boolean} true если резиденция построена
      */
-    buildResidence(position) {
+    buildResidence(board, position) {
         const cost = CONFIG.RESIDENCE.BUILD_COST;
         if (!this.hasMoney(cost)) {
             return false;
         }
-        
+
         if (board.buildResidence(position, this.id)) {
             this.removeMoney(cost, 'residence');
             return true;
@@ -289,7 +276,7 @@ class Player {
      * Получает все незаложенные свойства игрока
      * @returns {Array} массив позиций незаложенных свойств
      */
-    getUnmortgagedProperties() {
+    getUnmortgagedProperties(board) {
         return this.properties.filter(position => {
             const cell = board.getCell(position);
             return cell && !cell.mortgaged;
@@ -300,7 +287,7 @@ class Player {
      * Получает все заложенные свойства игрока
      * @returns {Array} массив позиций заложенных свойств
      */
-    getMortgagedProperties() {
+    getMortgagedProperties(board) {
         return this.properties.filter(position => {
             const cell = board.getCell(position);
             return cell && cell.mortgaged;
@@ -311,24 +298,24 @@ class Player {
      * Получает общую стоимость всех свойств игрока
      * @returns {number} общая стоимость
      */
-    getTotalPropertyValue() {
+    getTotalPropertyValue(board) {
         let total = 0;
-        
+
         this.properties.forEach(position => {
             const cell = board.getCell(position);
             if (cell) {
                 total += cell.price;
-                
+
                 // Добавляем стоимость улучшений
                 total += cell.improvements * CONFIG.IMPROVEMENT.COST_PER_LEVEL;
-                
+
                 // Добавляем стоимость резиденции
                 if (cell.residence) {
                     total += CONFIG.RESIDENCE.BUILD_COST;
                 }
             }
         });
-        
+
         return total;
     }
 
@@ -336,8 +323,8 @@ class Player {
      * Получает общую стоимость активов игрока
      * @returns {number} общая стоимость активов
      */
-    getTotalAssets() {
-        return this.money + this.getTotalPropertyValue();
+    getTotalAssets(board) {
+        return this.money + this.getTotalPropertyValue(board);
     }
 
     /**
@@ -345,11 +332,11 @@ class Player {
      * @param {number} rentAmount - сумма аренды
      * @returns {boolean} true если может платить
      */
-    canPayRent(rentAmount) {
+    canPayRent(board, rentAmount) {
         if (this.money >= rentAmount) {
             return true;
         }
-        
+
         // Проверяем, может ли игрок продать что-то для оплаты
         const unmortgagedProperties = this.getUnmortgagedProperties();
         let totalSellableValue = 0;
@@ -364,35 +351,16 @@ class Player {
                 }
             }
         });
-        
-        return (this.money + totalSellableValue) >= rentAmount;
-    }
 
-    /**
-     * Платит аренду другому игроку
-     * @param {number} rentAmount - сумма аренды
-     * @param {Player} owner - владелец собственности
-     * @returns {boolean} true если оплата успешна
-     */
-    payRent(rentAmount, owner) {
-        if (!this.canPayRent(rentAmount)) {
-            return false;
-        }
-        
-        if (this.removeMoney(rentAmount, 'rent')) {
-            owner.addMoney(rentAmount, 'rent');
-            return true;
-        }
-        
-        return false;
+        return (this.money + totalSellableValue) >= rentAmount;
     }
 
     /**
      * Проверяет банкротство игрока
      * @returns {boolean} true если игрок банкрот
      */
-    checkBankruptcy() {
-        if (this.money < 0 && this.getTotalAssets() <= 0) {
+    checkBankruptcy(board) {
+        if (this.money < 0 && this.getTotalAssets(board) <= 0) {
             this.bankrupt = true;
             this.stats.totalMoneySpent += Math.abs(this.money);
             this.money = 0;
@@ -414,97 +382,15 @@ class Player {
      * Получает статистику игрока
      * @returns {Object} статистика
      */
-    getStats() {
+    getStats(board) {
         return {
             ...this.stats,
-            totalAssets: this.getTotalAssets(),
+            totalAssets: this.getTotalAssets(board),
             totalProperties: this.properties.length,
-            unmortgagedProperties: this.getUnmortgagedProperties().length,
-            mortgagedProperties: this.getMortgagedProperties().length,
-            netWorth: this.getTotalAssets() - CONFIG.GAME.STARTING_MONEY
+            unmortgagedProperties: this.getUnmortgagedProperties(board).length,
+            mortgagedProperties: this.getMortgagedProperties(board).length,
+            netWorth: this.getTotalAssets(board) - CONFIG.GAME.STARTING_MONEY
         };
-    }
-
-    /**
-     * Обновляет отображение денег игрока в UI
-     */
-    updateMoneyDisplay() {
-        const playerElement = document.querySelector(`[data-player="${this.id}"]`);
-        if (playerElement) {
-            const moneyElement = playerElement.querySelector('.player-money');
-            if (moneyElement) {
-                moneyElement.textContent = formatMoney(this.money);
-                moneyElement.classList.add('changing');
-                setTimeout(() => {
-                    moneyElement.classList.remove('changing');
-                }, 600);
-            }
-        }
-    }
-
-    /**
-     * Обновляет позицию фишки игрока на поле
-     */
-    updateTokenPosition(animated = false) {
-        const tokenElement = document.querySelector(`[data-player="${this.id}"]`);
-        if (tokenElement) {
-            // Вычисляем позицию на игровом поле
-            const boardSize = CONFIG.GAME.BOARD_SIZE;
-            const cellSize = 60; // Размер клетки в пикселях
-            
-            let x, y;
-            
-            if (this.position <= 10) {
-                // Верхний ряд
-                x = (10 - this.position) * cellSize;
-                y = 0;
-            } else if (this.position <= 20) {
-                // Правый ряд
-                x = 0;
-                y = (this.position - 10) * cellSize;
-            } else if (this.position <= 30) {
-                // Нижний ряд
-                x = (this.position - 20) * cellSize;
-                y = 10 * cellSize;
-            } else {
-                // Левый ряд
-                x = 10 * cellSize;
-                y = (40 - this.position) * cellSize;
-            }
-            
-            // Добавляем небольшое смещение для разных игроков
-            const offset = (this.id - 1) * 20;
-            x += offset;
-            y += offset;
-            
-            tokenElement.style.transition = animated ? 'left 0.18s cubic-bezier(0.36,0.07,0.19,0.97), top 0.18s cubic-bezier(0.36,0.07,0.19,0.97)' : '';
-            tokenElement.style.left = `${x}px`;
-            tokenElement.style.top = `${y}px`;
-            if (animated) {
-                tokenElement.classList.add('moving');
-                setTimeout(() => {
-                    tokenElement.classList.remove('moving');
-                    tokenElement.style.transition = '';
-                }, 200);
-            }
-        }
-    }
-
-    /**
-     * Устанавливает игрока как текущего
-     * @param {boolean} isCurrent - является ли текущим
-     */
-    setCurrentPlayer(isCurrent) {
-        this.isCurrentPlayer = isCurrent;
-        
-        const playerElement = document.querySelector(`[data-player="${this.id}"]`);
-        if (playerElement) {
-            if (isCurrent) {
-                playerElement.classList.add('active');
-            } else {
-                playerElement.classList.remove('active');
-            }
-        }
     }
 
     /**
@@ -522,7 +408,6 @@ class Player {
             inJail: this.inJail,
             jailTurns: this.jailTurns,
             bankrupt: this.bankrupt,
-            turnOrder: this.turnOrder,
             isCurrentPlayer: this.isCurrentPlayer,
             doublesCount: this.doublesCount,
             lastRoll: this.lastRoll,
@@ -544,73 +429,16 @@ class Player {
         this.inJail = state.inJail;
         this.jailTurns = state.jailTurns;
         this.bankrupt = state.bankrupt;
-        this.turnOrder = state.turnOrder;
         this.isCurrentPlayer = state.isCurrentPlayer;
         this.doublesCount = state.doublesCount;
         this.lastRoll = state.lastRoll;
         this.stats = { ...state.stats };
-        
-        // Обновляем UI
-        this.updateMoneyDisplay();
-        this.updateTokenPosition();
-        this.setCurrentPlayer(this.isCurrentPlayer);
     }
-
-    /**
-     * Анимирует перемещение фишки игрока по маршруту (от from до to)
-     * @param {number} from - начальная позиция
-     * @param {number} to - конечная позиция
-     * @param {function} onStep - вызывается после каждого шага
-     * @returns {Promise}
-     */
-    animateTokenMove = async function(from, to, onStep) {
-        const steps = (to >= from) ? (to - from) : (40 - from + to);
-        let pos = from;
-        const pathCells = [];
-        for (let i = 0; i < steps; i++) {
-            pos = (pos + 1) % 40;
-            this.position = pos;
-            this.updateTokenPosition(true); // true = анимировать
-            // Подсветка маршрута
-            const cellDiv = document.querySelector(`.board-cell[data-cell-idx='${pos}']`);
-            if (cellDiv) {
-                cellDiv.classList.add('cell-path');
-                pathCells.push(cellDiv);
-            }
-            // Виброотклик и звук шага
-            if (window.navigator && navigator.vibrate) {
-                navigator.vibrate(30);
-            }
-            if (window.Audio) {
-                try {
-                    const audio = new Audio('assets/sounds/step.mp3');
-                    audio.volume = 0.4;
-                    audio.play();
-                } catch (e) {}
-            }
-            if (typeof onStep === 'function') onStep(pos);
-            await new Promise(res => setTimeout(res, 150));
-        }
-        // Визуальный эффект на конечной клетке
-        const cellDiv = document.querySelector(`.board-cell[data-cell-idx='${pos}']`);
-        if (cellDiv) {
-            cellDiv.classList.add('cell-active');
-            setTimeout(() => cellDiv.classList.remove('cell-active'), 700);
-        }
-        // Bounce-анимация для токена
-        const tokenElement = document.querySelector(`[data-player='${this.id}']`);
-        if (tokenElement) {
-            tokenElement.classList.add('token-bounce');
-            setTimeout(() => tokenElement.classList.remove('token-bounce'), 500);
-        }
-        // Убираем подсветку маршрута после завершения анимации
-        setTimeout(() => {
-            pathCells.forEach(cell => cell.classList.remove('cell-path'));
-        }, 800);
-    };
 }
 
-// Экспорт для использования в других модулях
+// Экспорт для использования в других модулей
+export { Player };
+
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = Player;
 } 

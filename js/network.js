@@ -5,6 +5,7 @@
 
 import { generateId } from './utils.js';
 import { showToast } from './ui-utils.js';
+import { CONFIG } from './config.js';
 
 class NetworkManager {
     constructor() {
@@ -12,7 +13,7 @@ class NetworkManager {
         this.connected = false;
         this.roomId = null;
         this.playerId = null;
-        this.serverUrl = 'wss://your-game-server.com';
+        this.serverUrl = CONFIG.NETWORK.SERVER_URL;
         this.reconnectAttempts = 0;
         this.maxReconnectAttempts = 5;
         this.reconnectDelay = 1000;
@@ -156,6 +157,9 @@ class NetworkManager {
                 break;
             case 'error':
                 this.handleError(message.data);
+                break;
+            case 'pong':
+                this.triggerEvent('pong', message.data);
                 break;
             default:
                 console.warn('Unknown message type:', message.type);
@@ -378,7 +382,6 @@ class NetworkManager {
             auth_success: [],
             room_joined: [],
             player_joined: [],
-            player_left: [],
             game_state: [],
             player_action: [],
             chat_message: [],
@@ -388,6 +391,7 @@ class NetworkManager {
             event_trigger: [],
             tournament_update: [],
             achievement_unlocked: []
+            // 'pong' is intentionally omitted as it's for internal latency check
         };
     }
 
@@ -730,6 +734,4 @@ class TournamentManager {
 }
 
 // Экспортируем классы
-window.NetworkManager = NetworkManager;
-window.RoomManager = RoomManager;
-window.TournamentManager = TournamentManager; 
+export { NetworkManager, RoomManager, TournamentManager }; 

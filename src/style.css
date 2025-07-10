@@ -77,6 +77,7 @@ body {
     color: var(--dark-color);
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     min-height: 100vh;
+    min-block-size: 100vh;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -147,8 +148,8 @@ footer {
     gap: 2px;
     margin-block-start: var(--spacing-lg);
     max-inline-size: 600px;
-    margin-inline-start: auto; /* logical */
-    margin-inline-end: auto; /* logical */
+    margin-inline-start: auto;
+    margin-inline-end: auto;
     aspect-ratio: 1;
     background: var(--light-color);
     border-radius: var(--border-radius-lg);
@@ -172,7 +173,7 @@ footer {
     transition: all var(--transition-base);
     cursor: pointer;
     overflow: hidden;
-    min-block-size: 60px; /* logical */
+    min-block-size: 60px;
     padding: var(--spacing-xs);
 }
 
@@ -203,7 +204,7 @@ footer {
     font-weight: 600;
     line-height: 1.1;
     word-break: break-word;
-    max-inline-size: 100%; /* logical */
+    max-inline-size: 100%;
 }
 
 .square-price {
@@ -213,7 +214,7 @@ footer {
     background: rgba(40, 167, 69, 0.1);
     padding: 1px 4px;
     border-radius: 2px;
-    margin-block-start: 2px; /* logical */
+    margin-block-start: 2px;
 }
 
 .square.owned {
@@ -313,7 +314,7 @@ footer {
     border-radius: 50%;
     position: absolute;
     inset-inline-start: 50%;
-    inset-inline-end: 50%;
+    inset-block-start: 50%;
     transform: translate(-50%, -50%);
     transition: all var(--transition-base);
     z-index: var(--z-popover);
@@ -342,7 +343,7 @@ footer {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: var(--spacing-lg);
-    margin-block-start: var(--spacing-xl); /* logical */
+    margin-block-start: var(--spacing-xl);
 }
 
 #rollDice {
@@ -430,13 +431,13 @@ footer {
 #log {
     margin: 0;
     padding: var(--spacing-lg);
-    min-block-size: 80px; /* logical */
+    min-block-size: 80px;
     font-family: var(--font-family-mono);
     font-size: var(--font-size-sm);
     line-height: 1.6;
     color: var(--dark-color);
     background: #f8f9fa;
-    border-block-end: 1px solid #dee2e6; /* logical */
+    border-block-end: 1px solid #dee2e6;
 }
 
 /* ===== UTILITY CLASSES ===== */
@@ -474,13 +475,13 @@ footer {
 }
 
 .spinner {
-    inline-size: 50px; /* logical */
-    block-size: 50px; /* logical */
+    inline-size: 50px;
+    block-size: 50px;
     border: 4px solid rgba(255, 255, 255, 0.3);
-    border-block-start: 4px solid var(--primary-color); /* logical */
+    border-block-start: 4px solid var(--primary-color);
     border-radius: 50%;
     animation: spin 1s linear infinite;
-    margin-block-end: var(--spacing-md); /* logical */
+    margin-block-end: var(--spacing-md);
 }
 
 @keyframes spin {
@@ -500,17 +501,17 @@ footer {
     box-shadow: var(--shadow-lg);
     z-index: var(--z-modal);
     text-align: center;
-    max-inline-size: 400px; /* logical */
+    max-inline-size: 400px;
     inline-size: 90%;
 }
 
 .error-overlay h3 {
     color: var(--danger-color);
-    margin-block-end: var(--spacing-md); /* logical */
+    margin-block-end: var(--spacing-md);
 }
 
 .error-overlay button {
-    margin-block-start: var(--spacing-md); /* logical */
+    margin-block-start: var(--spacing-md);
     padding: var(--spacing-sm) var(--spacing-lg);
     background: var(--primary-color);
     color: var(--white);
@@ -534,12 +535,12 @@ footer {
     
     .square {
         font-size: 0.75rem;
-        min-block-size: 50px; /* logical */
+        min-block-size: 50px;
     }
     
     .token {
-        inline-size: 20px; /* logical */
-        block-size: 20px; /* logical */
+        inline-size: 20px;
+        block-size: 20px;
     }
     
     #controls {
@@ -565,12 +566,12 @@ footer {
     
     .square {
         font-size: 0.625rem;
-        min-block-size: 40px; /* logical */
+        min-block-size: 40px;
     }
     
     .token {
-        inline-size: 16px; /* logical */
-        block-size: 16px; /* logical */
+        inline-size: 16px;
+        block-size: 16px;
     }
     
     #rollDice {
@@ -665,7 +666,7 @@ footer {
 
 /* ===== CUSTOM SCROLLBAR ===== */
 ::-webkit-scrollbar {
-    inline-size: 8px; /* logical */
+    inline-size: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -680,83 +681,93 @@ footer {
 
 ::-webkit-scrollbar-thumb:hover {
     background: var(--primary-hover);
-} 
+}
+
+/* ===== ANIMATIONS ===== */
 .go-animate {
     animation: go-confetti 1s cubic-bezier(.4,0,.2,1);
     z-index: 20;
-  }
-  @keyframes go-confetti {
+}
+
+@keyframes go-confetti {
     0% { box-shadow: 0 0 0 0 #ffd600, 0 0 0 0 #ff4081; }
     30% { box-shadow: 0 0 0 8px #ffd600, 0 0 16px 8px #ff4081aa; }
     60% { box-shadow: 0 0 0 4px #ffd600, 0 0 8px 4px #ff4081aa; }
     100% { box-shadow: 0 0 0 0 #ffd600, 0 0 0 0 #ff4081; }
-  }
-  
-  .jail-animate {
+}
+
+.jail-animate {
     animation: jail-bars 1s cubic-bezier(.4,0,.2,1);
     z-index: 20;
-  }
-  @keyframes jail-bars {
+}
+
+@keyframes jail-bars {
     0%, 100% { box-shadow: 0 0 0 0 #607d8b; }
     20% { box-shadow: 0 0 0 8px #607d8b88; }
     40% { box-shadow: 0 0 0 4px #607d8bcc; }
     60% { box-shadow: 0 0 0 8px #607d8b88; }
     80% { box-shadow: 0 0 0 0 #607d8b; }
-  }
-  
-  .free-parking-animate {
+}
+
+.free-parking-animate {
     animation: parking-pulse 1s cubic-bezier(.4,0,.2,1);
     z-index: 20;
-  }
-  @keyframes parking-pulse {
+}
+
+@keyframes parking-pulse {
     0% { box-shadow: 0 0 0 0 #00e676; }
     50% { box-shadow: 0 0 16px 8px #00e67688; }
     100% { box-shadow: 0 0 0 0 #00e676; }
-  }
-  
-  .go-to-jail-animate {
+}
+
+.go-to-jail-animate {
     animation: go-to-jail-pulse 1s cubic-bezier(.4,0,.2,1);
     z-index: 20;
-  }
-  @keyframes go-to-jail-pulse {
+}
+
+@keyframes go-to-jail-pulse {
     0% { box-shadow: 0 0 0 0 #e53935; }
     30% { box-shadow: 0 0 0 8px #e53935cc; }
     60% { box-shadow: 0 0 0 4px #e53935aa; }
     100% { box-shadow: 0 0 0 0 #e53935; }
-  }
-  
-  .chance-animate {
+}
+
+.chance-animate {
     animation: chance-glow 1s cubic-bezier(.4,0,.2,1);
     z-index: 20;
-  }
-  @keyframes chance-glow {
+}
+
+@keyframes chance-glow {
     0% { box-shadow: 0 0 0 0 #7c4dff; }
     50% { box-shadow: 0 0 16px 8px #7c4dff88; }
     100% { box-shadow: 0 0 0 0 #7c4dff; }
-  }
-  
-  .treasure-animate {
+}
+
+.treasure-animate {
     animation: treasure-glow 1s cubic-bezier(.4,0,.2,1);
     z-index: 20;
-  }
-  @keyframes treasure-glow {
+}
+
+@keyframes treasure-glow {
     0% { box-shadow: 0 0 0 0 #ffd600; }
     50% { box-shadow: 0 0 16px 8px #ffd60088; }
     100% { box-shadow: 0 0 0 0 #ffd600; }
-  }
-  
-  .tax-animate {
+}
+
+.tax-animate {
     animation: tax-shake 0.7s cubic-bezier(.4,0,.2,1);
     z-index: 20;
-  }
-  @keyframes tax-shake {
+}
+
+@keyframes tax-shake {
     0%, 100% { transform: translateX(0); }
     20% { transform: translateX(-4px); }
     40% { transform: translateX(4px); }
     60% { transform: translateX(-2px); }
     80% { transform: translateX(2px); }
-  }
-  
+}
+
+/* ===== TOAST NOTIFICATIONS ===== */
 .toast {
     position: fixed;
     bottom: 30px;
@@ -772,21 +783,25 @@ footer {
     transition: opacity 0.4s, bottom 0.4s;
     z-index: 2000;
 }
+
 .toast.show {
     opacity: 1;
     bottom: 60px;
     pointer-events: auto;
 }
+
 .achievement.unlocked {
     animation: pop 0.7s cubic-bezier(.68,-0.55,.27,1.55);
     background: gold;
     color: #222;
 }
+
 @keyframes pop {
     0% { transform: scale(0.7); opacity: 0.2; }
     60% { transform: scale(1.2); opacity: 1; }
     100% { transform: scale(1); }
 }
+
 button {
     background: #007bff;
     color: #fff;
@@ -798,11 +813,30 @@ button {
     cursor: pointer;
     transition: background 0.2s;
 }
-button:hover { background: #0056b3; }
+
+button:hover { 
+    background: #0056b3; 
+}
+
 @media (max-width: 700px) {
-    .board { inline-size: 98vw; padding: 5px; font-size: 12px; }
-    #players-panel, .player-info { flex-direction: column; font-size: 13px; }
-    .modal-content { min-inline-size: 90vw; padding: 10px; }
-    #chat, #achievements-panel, #players-panel { max-inline-size: 98vw; }
-    button { font-size: 14px; padding: 8px 10px; }
+    .board { 
+        inline-size: 98vw; 
+        padding: 5px; 
+        font-size: 12px; 
+    }
+    #players-panel, .player-info { 
+        flex-direction: column; 
+        font-size: 13px; 
+    }
+    .modal-content { 
+        min-inline-size: 90vw; 
+        padding: 10px; 
+    }
+    #chat, #achievements-panel, #players-panel { 
+        max-inline-size: 98vw; 
+    }
+    button { 
+        font-size: 14px; 
+        padding: 8px 10px; 
+    }
 } 

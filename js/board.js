@@ -6,6 +6,7 @@
 import { showNotification } from './ui-utils.js';
 import { getText } from './localization.js';
 import { randomChoice } from './random.js';
+import { CONFIG } from './config.js';
 
 class Board {
     constructor() {
@@ -565,6 +566,8 @@ class Board {
 const board = new Board();
 
 // Экспорт для использования в других модулях
+export { Board, board };
+
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = Board;
 } 

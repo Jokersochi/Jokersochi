@@ -1,9 +1,9 @@
 {
-  "timestamp": "2025-07-08T18:01:01.738Z",
+  "timestamp": "2025-07-10T22:53:34.712Z",
   "files": {
-    "style.min.css": "1180 bytes",
+    "style.min.css": "13665 bytes",
     "game.min.js": "5499 bytes",
-    "index.html": "794 bytes"
+    "index.html": "6860 bytes"
   },
-  "totalSize": 7473
+  "totalSize": 26024
 }

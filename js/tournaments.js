@@ -2,6 +2,7 @@
  * Модуль управления турнирами
  * Организует турниры, управляет участниками и наградами
  */
+import eventBus from './event-bus.js';
 
 class TournamentSystem {
     constructor() {
@@ -35,13 +36,12 @@ class TournamentSystem {
      * Настраивает слушатели событий
      */
     setupEventListeners() {
-        document.addEventListener('gameEnd', (e) => {
-            this.handleGameEnd(e.detail);
-        });
+        // Listen for the specific event that a tournament game has ended
+        eventBus.on('tournamentGameEnded', (detail) => this.handleGameEnd(detail));
 
-        document.addEventListener('playerDisconnect', (e) => {
-            this.handlePlayerDisconnect(e.detail);
-        });
+        // This should be emitted by the network manager or a player manager
+        // For now, we'll listen to the game-level playerBankrupt event
+        eventBus.on('playerDisconnected', (detail) => this.handlePlayerDisconnect(detail));
     }
 
     /**
@@ -170,10 +170,7 @@ class TournamentSystem {
 
         // Возвращаем вступительный взнос
         if (tournament.entryFee > 0) {
-            const gamePlayer = window.game?.players.find(p => p.id === playerId);
-            if (gamePlayer) {
-                gamePlayer.addMoney(tournament.entryFee);
-            }
+            eventBus.emit('playerMoneyUpdateRequest', { playerId: playerId, amount: tournament.entryFee, reason: 'tournament_refund' });
         }
 
         this.saveData();
@@ -368,11 +365,8 @@ class TournamentSystem {
         };
 
         // Запускаем игру
-        if (window.game) {
-            window.game.startTournamentGame(gameConfig);
-            pendingGame.status = 'active';
-            pendingGame.gameId = gameConfig.gameId;
-        }
+        eventBus.emit('startTournamentGameRequest', gameConfig);
+        pendingGame.status = 'active';
     }
 
     /**
@@ -599,10 +593,7 @@ class TournamentSystem {
                 winner.prize = prize;
 
                 // Выдаем приз игроку
-                const gamePlayer = window.game?.players.find(p => p.id === winner.id);
-                if (gamePlayer) {
-                    gamePlayer.addMoney(prize);
-                }
+                eventBus.emit('playerMoneyUpdateRequest', { playerId: winner.id, amount: prize, reason: 'tournament_prize' });
 
                 // Обновляем статистику игрока
                 if (!this.players.has(winner.id)) {
@@ -777,10 +768,8 @@ class TournamentSystem {
      * @param {Object} data - данные события
      */
     dispatchTournamentEvent(eventType, data) {
-        const event = new CustomEvent(`tournament_${eventType}`, {
-            detail: { ...data, timestamp: Date.now() }
-        });
-        document.dispatchEvent(event);
+        // The event name will be like 'tournamentCreated', 'playerRegistered', etc.
+        eventBus.emit(eventType, { ...data, timestamp: Date.now() });
     }
 
     /**

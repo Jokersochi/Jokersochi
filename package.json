@@ -27,6 +27,9 @@
     "stylelint": "^15.0.0",
     "stylelint-no-physical-properties": "^2.0.0"
   },
+  "dependencies": {
+    "firebase": "^9.22.2"
+  },
   "engines": {
     "node": ">=14.0.0"
   },

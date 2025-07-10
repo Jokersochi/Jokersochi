@@ -1409,3 +1409,220 @@ input:focus-visible, select:focus-visible, button:focus-visible, .btn:focus-visi
     opacity: 0;
     transform: scale(0.96);
 } 
+
+/* Trade Creation Dialog */
+.trade-creation-dialog {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: space-between;
+}
+
+.trade-side {
+    flex: 1;
+    background: var(--bg-tertiary);
+    padding: 1rem;
+    border-radius: var(--radius-lg);
+}
+
+.trade-side h4 {
+    color: var(--primary-light);
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--bg-secondary);
+    padding-bottom: 0.5rem;
+}
+
+.trade-separator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent-color);
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.75rem;
+    background: var(--bg-primary);
+    border: 1px solid var(--bg-secondary);
+    color: var(--text-primary);
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+}
+
+.trade-property-list {
+    list-style: none;
+    padding: 0;
+    max-height: 200px;
+    overflow-y: auto;
+    background: var(--bg-primary);
+    border-radius: var(--radius-md);
+    padding: 0.5rem;
+}
+
+.trade-property-item label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem;
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    transition: background-color 0.2s;
+}
+
+.trade-property-item label:hover {
+    background-color: var(--bg-secondary);
+}
+
+.trade-property-item input[type="checkbox"] {
+    width: 1.2rem;
+    height: 1.2rem;
+    accent-color: var(--primary-light);
+}
+
+.property-name {
+    flex-grow: 1;
+}
+
+.property-color-indicator {
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+.modal[id*="trade-creation-modal"] .modal {
+    max-width: 700px;
+}
+
+/* Trade Offer Notification/Modal */
+.trade-offer-details {
+    text-align: center;
+}
+
+.trade-offer-details p {
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+}
+
+.trade-summary {
+    display: flex;
+    justify-content: space-around;
+    text-align: left;
+    gap: 1rem;
+}
+
+.trade-summary-side {
+    flex: 1;
+    padding: 1rem;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-lg);
+}
+
+.trade-summary-side h4 {
+    color: var(--accent-color);
+    margin-bottom: 0.5rem;
+}
+
+.trade-summary-side p {
+    font-size: 1rem;
+    margin: 0;
+}
+
+.trade-summary-side em {
+    font-style: normal;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+/* Property Management Dialog */
+.property-management-dialog h3 {
+    text-align: center;
+    color: var(--accent-color);
+    margin-bottom: 1.5rem;
+}
+
+.property-manage-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-height: 60vh;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+}
+
+.property-manage-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-lg);
+    border-left: 5px solid var(--property-color, var(--bg-secondary));
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.property-manage-item.mortgaged {
+    background: repeating-linear-gradient(
+        45deg,
+        var(--bg-tertiary),
+        var(--bg-tertiary) 10px,
+        rgba(0,0,0,0.1) 10px,
+        rgba(0,0,0,0.1) 20px
+    );
+    opacity: 0.8;
+    border-left-color: var(--text-muted);
+}
+
+.property-manage-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-grow: 1;
+}
+
+.property-manage-info .property-name {
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.property-manage-info .property-status {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    background: var(--bg-secondary);
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--radius-md);
+}
+
+.property-manage-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+.property-manage-actions .btn.btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+}
+
+.modal.property-manage-modal .modal-footer {
+    display: none;
+}
+
+.modal.trade-creation-modal .modal {
+    max-width: 700px;
+}
+
+.modal.trade-offer-modal .modal-footer .btn.secondary {
+    background-color: var(--error-color);
+}

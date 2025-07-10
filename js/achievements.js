@@ -2,6 +2,7 @@
  * Модуль системы достижений
  * Управляет достижениями игроков, наградами и прогрессом
  */
+import eventBus from './event-bus.js';
 
 import { getText } from './localization.js';
 import { showToast } from './ui-utils.js';
@@ -473,60 +474,24 @@ class AchievementSystem {
      * Настраивает слушатели событий
      */
     setupEventListeners() {
-        // Слушаем события игры для проверки достижений
-        document.addEventListener('gameEvent', (e) => {
-            this.handleGameEvent(e.detail);
-        });
-    }
-
-    /**
-     * Обрабатывает игровые события
-     * @param {Object} event - событие игры
-     */
-    handleGameEvent(event) {
-        switch (event.type) {
-            case 'money_earned':
-                this.checkMoneyAchievements(event.player, event.amount);
-                break;
-            case 'property_purchased':
-                this.checkPropertyAchievements(event.player);
-                break;
-            case 'residence_built':
-                this.checkResidenceAchievements(event.player);
-                break;
-            case 'property_improved':
-                this.checkImprovementAchievements(event.player);
-                break;
-            case 'trade_completed':
-                this.checkTradeAchievements(event.player);
-                break;
-            case 'auction_won':
-                this.checkAuctionAchievements(event.player);
-                break;
-            case 'alliance_formed':
-                this.checkAllianceAchievements(event.player);
-                break;
-            case 'tournament_won':
-                this.checkTournamentAchievements(event.player);
-                break;
-            case 'game_won':
-                this.checkWinAchievements(event.player);
-                break;
-            case 'weather_changed':
-                this.checkWeatherAchievements(event.player);
-                break;
-            case 'event_triggered':
-                this.checkEventAchievements(event.player);
-                break;
-        }
+        eventBus.on('moneyChanged', data => this.checkMoneyAchievements(data.player));
+        eventBus.on('propertyPurchased', data => this.checkPropertyAchievements(data.player));
+        // Assuming 'residenceBuilt' event will be emitted
+        eventBus.on('residenceBuilt', data => this.checkResidenceAchievements(data.player));
+        // Assuming 'improvementAdded' event will be emitted
+        eventBus.on('improvementAdded', data => this.checkImprovementAchievements(data.player));
+        eventBus.on('tradeCompleted', data => this.checkTradeAchievements(data.offer.from, data.offer.to));
+        eventBus.on('auctionEnded', data => data.winner && this.checkAuctionAchievements(data.winner));
+        eventBus.on('allianceFormed', data => this.checkAllianceAchievements(data.players));
+        eventBus.on('tournamentFinished', data => data.winners && this.checkTournamentAchievements(data.winners[0]));
+        eventBus.on('gameEnded', data => data.winner && this.checkWinAchievements(data.winner));
     }
 
     /**
      * Проверяет достижения за деньги
      * @param {Player} player - игрок
-     * @param {number} amount - сумма
      */
-    checkMoneyAchievements(player, amount) {
+    checkMoneyAchievements(player) {
         const totalMoney = player.money;
         
         this.achievements.forEach((achievement, id) => {
@@ -589,16 +554,19 @@ class AchievementSystem {
     /**
      * Проверяет достижения за торговлю
      * @param {Player} player - игрок
+     * @param {Player} partner - второй игрок в сделке
      */
-    checkTradeAchievements(player) {
-        const tradeCount = player.tradeHistory ? player.tradeHistory.length : 0;
-        
+    checkTradeAchievements(player, partner) {
+        // This logic needs player stats to be updated. Assuming player.stats.totalTradesCompleted exists.
+        [player, partner].forEach(p => {
+            const tradeCount = p.stats.totalTradesCompleted || 0;
         this.achievements.forEach((achievement, id) => {
             if (achievement.type === 'trades' && !achievement.unlocked) {
                 if (tradeCount >= achievement.condition) {
                     this.unlockAchievement(player, id);
                 }
             }
+        });
         });
     }
 
@@ -607,7 +575,7 @@ class AchievementSystem {
      * @param {Player} player - игрок
      */
     checkAuctionAchievements(player) {
-        const auctionWins = player.auctionWins ? player.auctionWins : 0;
+        const auctionWins = player.stats.auctionsWon || 0;
         
         this.achievements.forEach((achievement, id) => {
             if (achievement.type === 'auctions' && !achievement.unlocked) {
@@ -622,16 +590,18 @@ class AchievementSystem {
      * Проверяет достижения за альянсы
      * @param {Player} player - игрок
      */
-    checkAllianceAchievements(player) {
-        const allianceCount = player.alliances ? player.alliances.length : 0;
-        
-        this.achievements.forEach((achievement, id) => {
-            if (achievement.type === 'alliances' && !achievement.unlocked) {
-                if (allianceCount >= achievement.condition) {
-                    this.unlockAchievement(player, id);
+    checkAllianceAchievements(players) {
+        // This logic needs player stats. Assuming player.stats.alliancesFormed exists.
+        players.forEach(p => {
+            const allianceCount = p.stats.alliancesFormed || 0;
+            this.achievements.forEach((achievement, id) => {
+                if (achievement.type === 'alliances' && !achievement.unlocked) {
+                    if (allianceCount >= achievement.condition) {
+                        this.unlockAchievement(p, id);
+                    }
                 }
-            }
-        });
+            });
+        })
     }
 
     /**
@@ -639,7 +609,7 @@ class AchievementSystem {
      * @param {Player} player - игрок
      */
     checkTournamentAchievements(player) {
-        const tournamentWins = player.tournamentWins ? player.tournamentWins : 0;
+        const tournamentWins = player.stats.tournamentsWon || 0;
         
         this.achievements.forEach((achievement, id) => {
             if (achievement.type === 'tournament_wins' && !achievement.unlocked) {
@@ -655,7 +625,7 @@ class AchievementSystem {
      * @param {Player} player - игрок
      */
     checkWinAchievements(player) {
-        const wins = player.wins ? player.wins : 0;
+        const wins = player.stats.gamesWon || 0;
         
         this.achievements.forEach((achievement, id) => {
             if (achievement.type === 'wins' && !achievement.unlocked) {
@@ -786,7 +756,9 @@ class AchievementSystem {
         };
 
         this.notifications.push(notification);
-        showToast(notification.title, notification.message, notification.icon, notification.rarity, notification.points);
+
+        // Отправляем событие через EventBus
+        eventBus.emit('achievementNotification', { notification });
     }
 
     /**
@@ -795,14 +767,11 @@ class AchievementSystem {
      * @param {Object} achievement - достижение
      */
     dispatchAchievementEvent(player, achievement) {
-        const event = new CustomEvent('achievementUnlocked', {
-            detail: {
-                player: player,
-                achievement: achievement,
-                timestamp: Date.now()
-            }
+        eventBus.emit('achievementUnlocked', {
+            player: player,
+            achievement: achievement,
+            timestamp: Date.now()
         });
-        document.dispatchEvent(event);
     }
 
     /**

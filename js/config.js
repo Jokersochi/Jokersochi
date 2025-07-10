@@ -18,6 +18,11 @@ const CONFIG = {
         SUPPORTED_LANGUAGES: ['ru', 'en', 'de', 'fr', 'es', 'zh', 'ja', 'ko']
     },
 
+    // Сетевые настройки
+    NETWORK: {
+        SERVER_URL: 'wss://your-game-server.com'
+    },
+
     // Настройки аукциона
     AUCTION: {
         MIN_BID: 10,
@@ -686,7 +691,7 @@ const CONFIG = {
         BUTTON_CLICK: 'assets/sounds/button_click.mp3'
     },
 
-    // Настройки по умолчанию
+    // Настройки по умолчанию для игры и UI
     DEFAULT_SETTINGS: {
         language: 'ru',
         soundEnabled: true,
@@ -699,10 +704,26 @@ const CONFIG = {
         enableWeather: true,
         enableEconomicEvents: true,
         enableCulturalEvents: true
-    }
+    },
+
+    // Настройки по умолчанию для приложения
+    APP_DEFAULTS: {
+        language: 'ru',
+        soundVolume: 0.7,
+        musicVolume: 0.5,
+        masterVolume: 1.0,
+        muted: false,
+        autoSave: true,
+        animations: true,
+        particles: true,
+        fullscreen: false,
+        theme: 'dark'
+    },
 };
 
 // Экспорт конфигурации
+export { CONFIG };
+
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = CONFIG;
 } 

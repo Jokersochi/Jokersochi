@@ -47,10 +47,12 @@ export function renderBoard() {
   });
 }
 
+// roll a single six-sided die
 function rollDice() {
   return Math.floor(Math.random() * 6) + 1;
 }
 
+// move player token across the board and trigger square effects
 function movePlayer(player, steps) {
   const oldPos = player.position;
   player.position = (player.position + steps) % boardData.length;
@@ -59,6 +61,7 @@ function movePlayer(player, steps) {
   handleSquare(player);
 }
 
+// resolve actions depending on the square the player landed on
 function handleSquare(player) {
   const square = boardData[player.position];
   if (square.type === 'property') {
@@ -85,6 +88,7 @@ function handleSquare(player) {
   renderBoard();
 }
 
+// ask current player if they want to buy the unowned property
 function offerPurchase(player, square) {
   const price = square.price * priceModifier;
   if (player.money < price) return;
@@ -95,6 +99,7 @@ function offerPurchase(player, square) {
   }
 }
 
+// transfer property to player and charge money
 function buyProperty(player, square) {
   const price = square.price * priceModifier;
   player.money -= price;
@@ -105,6 +110,7 @@ function buyProperty(player, square) {
   offerImprovement(player, square);
 }
 
+// prompt player to invest in an improvement for higher rent
 function offerImprovement(player, square) {
   if (confirm(`${player.name}: улучшить ${square.name[language]} за ${square.improvementCost}₽?`)) {
     if (player.money >= square.improvementCost) {
@@ -115,8 +121,8 @@ function offerImprovement(player, square) {
   }
 }
 
+// simple auction: first other player willing to pay price gets property
 function auction(square) {
-  // simple auction: first other player willing to pay price gets property
   for (const p of players) {
     const price = square.price * priceModifier;
     if (!p.properties.includes(square.id) && p.money >= price) {
@@ -128,6 +134,7 @@ function auction(square) {
   }
 }
 
+// deduct rent from the current player and pay the owner
 function payRent(player, square) {
   let rent = square.baseRent * (1 + 0.5 * (square.improvements || 0));
   if (square.residency) rent *= 2;
@@ -143,6 +150,7 @@ function payRent(player, square) {
   }
 }
 
+// check if player owns all properties of the color and mark residencies
 function checkResidency(player, color) {
   const sameColor = boardData.filter(s => s.color === color);
   if (sameColor.every(sq => sq.owner === player.id)) {
@@ -151,6 +159,7 @@ function checkResidency(player, color) {
   }
 }
 
+// advance turn order and move the active player
 export function nextTurn() {
   const player = players[currentPlayerIndex];
   if (player.skip) {

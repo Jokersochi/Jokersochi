@@ -1,8 +1,0 @@
-{
-  "plugins": [
-    "stylelint-no-physical-properties"
-  ],
-  "rules": {
-    "plugin/no-physical-properties": [true, { "disableFix": false }]
-  }
-} 

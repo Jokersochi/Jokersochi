@@ -776,4 +776,4 @@ class AudioManager {
 }
 
 // Экспортируем класс
-window.AudioManager = AudioManager; 
+export default AudioManager; 

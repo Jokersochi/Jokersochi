@@ -888,4 +888,4 @@ class AchievementSystem {
 }
 
 // Экспортируем класс
-window.AchievementSystem = AchievementSystem; 
+export default AchievementSystem; 

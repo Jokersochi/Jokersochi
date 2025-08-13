@@ -806,4 +806,4 @@ class TournamentSystem {
 }
 
 // Экспортируем класс
-window.TournamentSystem = TournamentSystem; 
+export default TournamentSystem; 

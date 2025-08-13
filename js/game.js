@@ -11,6 +11,7 @@ import eventBus from './event-bus.js';
 import { CONFIG } from './config.js';
 import { Player } from './player.js';
 import { board } from './board.js';
+import auctionManager from './auction-manager.js';
 
 class Game {
     constructor() {
@@ -48,7 +49,7 @@ class Game {
         eventBus.on('rollDiceRequest', () => this.rollDice());
         eventBus.on('endTurnRequest', () => this.nextPlayer());
         eventBus.on('buyPropertyRequest', (data) => this.buyProperty(data.player, data.cell));
-        eventBus.on('auctionEnded', (data) => this.handleAuctionResult(data));
+        eventBus.on('auctionPropertyRequest', data => auctionManager.startAuction({ cell: data.cell, players: this.players.filter(p => !p.bankrupt) }));
         eventBus.on('tradeCompleted', (data) => this.executeTrade(data));
         eventBus.on('startTournamentGameRequest', (config) => this.startTournamentGame(config));
         eventBus.on('playerMoneyUpdateRequest', (data) => this.updatePlayerMoney(data));
@@ -325,10 +326,10 @@ class Game {
      */
     offerPropertyPurchase(player, cell) {
         if (!player.hasMoney(cell.price)) {
-            // Запускаем аукцион
-            eventBus.emit('startAuctionRequest', { cell, players: this.players.filter(p => !p.bankrupt) });
+            // Not enough money, property goes to auction
+            auctionManager.startAuction({ cell, players: this.players.filter(p => !p.bankrupt) });
         } else {
-            // UI должен показать диалог покупки
+            // Player can afford it, UI should show a purchase dialog
             eventBus.emit('showPurchaseDialogRequest', { player, cell });
         }
     }
@@ -491,22 +492,6 @@ class Game {
     }
 
     /**
-     * Обрабатывает результат завершенного аукциона
-     * @param {object} data - { winner, cell, price }
-     */
-    handleAuctionResult({ winner, cell, price }) {
-        if (winner && price > 0) {
-            const winnerPlayer = this.players.find(p => p.id === winner.id);
-            if (winnerPlayer && winnerPlayer.hasMoney(price)) {
-                winnerPlayer.removeMoney(price, 'auction');
-                this.board.buyCell(cell.position, winnerPlayer.id, price);
-                winnerPlayer.stats.auctionsWon++;
-                eventBus.emit('gameStateUpdated');
-            }
-        }
-    }
-
-    /**
      * Проверяет условия окончания игры
      */
     checkGameEndConditions() {
@@ -637,7 +622,7 @@ class Game {
         // Восстанавливаем игроков
         this.players = gameData.players.map(playerState => {
             const player = new Player();
-            player.loadState(playerState, this.board);
+            player.loadState(playerState);
             return player;
         });
         

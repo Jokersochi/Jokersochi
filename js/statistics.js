@@ -744,4 +744,4 @@ class StatisticsSystem {
 }
 
 // Экспортируем класс
-window.StatisticsSystem = StatisticsSystem; 
+export default StatisticsSystem; 

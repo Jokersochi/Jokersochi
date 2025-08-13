@@ -932,4 +932,4 @@ class TutorialManager {
 }
 
 // Экспортируем класс
-window.TutorialManager = TutorialManager; 
+export default TutorialManager; 

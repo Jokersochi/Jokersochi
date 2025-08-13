@@ -147,6 +147,9 @@ class UIManager {
         }
 
         // События модальных окон
+        eventBus.on('showPurchaseDialogRequest', (data) => this.showPurchaseDialog(data));
+
+        // Общие обработчики
         this.setupModalEventListeners();
     }
 
@@ -217,7 +220,7 @@ class UIManager {
     showModal(modalId, data = {}) {
         const modal = this.modals.get(modalId);
         if (modal && modal.element) {
-            modal.element.classList.remove('hidden');
+            modal.element.classList.add('active');
             
             // Заполняем данными
             if (data.title && modal.title) {
@@ -239,7 +242,7 @@ class UIManager {
     closeModal(modalId) {
         const modal = this.modals.get(modalId);
         if (modal && modal.element) {
-            modal.element.classList.add('hidden');
+            modal.element.classList.remove('active');
         }
     }
 
@@ -249,9 +252,57 @@ class UIManager {
     closeAllModals() {
         this.modals.forEach(modal => {
             if (modal.element) {
-                modal.element.classList.add('hidden');
+                modal.element.classList.remove('active');
             }
         });
+    }
+
+    /**
+     * Показывает диалог покупки/аукциона для недвижимости.
+     * @param {object} data - { player, cell }
+     */
+    showPurchaseDialog({ player, cell }) {
+        const modal = this.modals.get('purchase');
+        if (!modal || !modal.element) return;
+
+        // Заполняем контент модального окна
+        modal.title.textContent = getText('PURCHASE.TITLE', { property: cell.name });
+        modal.content.innerHTML = `
+            <p>${getText('PURCHASE.QUESTION', { price: cell.price })}</p>
+            <div class="property-card-preview" style="border-left-color: ${cell.color || '#ccc'};">
+                 <h4>${cell.name}</h4>
+                 <p>${getText('PURCHASE.PRICE')}: ${cell.price}₽</p>
+            </div>
+        `;
+
+        // Обновляем текст кнопок
+        modal.confirm.textContent = getText('PURCHASE.BUY');
+        modal.cancel.textContent = getText('PURCHASE.AUCTION');
+
+        // --- Обработчики событий ---
+        // Используем cloneNode для удаления старых слушателей
+        const newConfirmBtn = modal.confirm.cloneNode(true);
+        modal.confirm.parentNode.replaceChild(newConfirmBtn, modal.confirm);
+        modal.confirm = newConfirmBtn;
+
+        const newCancelBtn = modal.cancel.cloneNode(true);
+        modal.cancel.parentNode.replaceChild(newCancelBtn, modal.cancel);
+        modal.cancel = newCancelBtn;
+
+        const handleBuy = () => {
+            eventBus.emit('buyPropertyRequest', { player, cell });
+            this.closeModal('purchase');
+        };
+
+        const handleAuction = () => {
+            eventBus.emit('auctionPropertyRequest', { cell });
+            this.closeModal('purchase');
+        };
+
+        modal.confirm.addEventListener('click', handleBuy);
+        modal.cancel.addEventListener('click', handleAuction);
+
+        this.showModal('purchase');
     }
 
     /**
@@ -324,7 +375,8 @@ class UIManager {
 const ui = new UIManager();
 
 // Экспорт для использования в других модулях
-export { UIManager, ui };
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = UI;
+} 
 
-// Делаем доступным глобально
-window.ui = ui;
+// Если функция renderBoard не используется внутри ui.js, удаляю её определение. 

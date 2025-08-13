@@ -1,79 +1,52 @@
 /**
- * Event Bus для управления событиями в игре
- * Обеспечивает слабую связанность между модулями
+ * Глобальная шина событий для слабой связи между модулями.
  */
-
 class EventBus {
     constructor() {
         this.events = {};
+        console.log("EventBus initialized");
     }
 
     /**
-     * Подписывается на событие
-     * @param {string} event - название события
-     * @param {Function} callback - функция обратного вызова
+     * Подписаться на событие.
+     * @param {string} eventName - Название события.
+     * @param {Function} callback - Функция-обработчик.
+     * @returns {Function} Функция для отписки.
      */
-    on(event, callback) {
-        if (!this.events[event]) {
-            this.events[event] = [];
+    on(eventName, callback) {
+        if (!this.events[eventName]) {
+            this.events[eventName] = [];
         }
-        this.events[event].push(callback);
-    }
-
-    /**
-     * Отписывается от события
-     * @param {string} event - название события
-     * @param {Function} callback - функция обратного вызова
-     */
-    off(event, callback) {
-        if (!this.events[event]) return;
+        this.events[eventName].push(callback);
         
-        const index = this.events[event].indexOf(callback);
-        if (index > -1) {
-            this.events[event].splice(index, 1);
-        }
+        // Возвращаем функцию для отписки
+        return () => {
+            this.off(eventName, callback);
+        };
     }
 
     /**
-     * Генерирует событие
-     * @param {string} event - название события
-     * @param {*} data - данные события
+     * Отписаться от события.
+     * @param {string} eventName - Название события.
+     * @param {Function} callback - Функция-обработчик.
      */
-    emit(event, data) {
-        if (!this.events[event]) return;
-        
-        this.events[event].forEach(callback => {
-            try {
-                callback(data);
-            } catch (error) {
-                console.error(`Error in event handler for ${event}:`, error);
-            }
-        });
+    off(eventName, callback) {
+        if (!this.events[eventName]) return;
+        this.events[eventName] = this.events[eventName].filter(
+            (eventCallback) => callback !== eventCallback
+        );
     }
 
     /**
-     * Очищает все события
+     * Опубликовать событие.
+     * @param {string} eventName - Название события.
+     * @param {*} data - Данные, передаваемые с событием.
      */
-    clear() {
-        this.events = {};
-    }
-
-    /**
-     * Получает количество подписчиков на событие
-     * @param {string} event - название события
-     * @returns {number} количество подписчиков
-     */
-    getListenerCount(event) {
-        return this.events[event] ? this.events[event].length : 0;
+    emit(eventName, data) {
+        if (!this.events[eventName]) return;
+        this.events[eventName].forEach(callback => callback(data));
     }
 }
 
-// Создаем глобальный экземпляр EventBus
 const eventBus = new EventBus();
-
-// Экспорт для использования в других модулях
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = eventBus;
-}
-
-export default eventBus; 
+export default eventBus;

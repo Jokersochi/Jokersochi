@@ -1,12 +1,13 @@
 /**
- * Модуль управления игроками
- * Управляет состоянием игроков, их деньгами, свойствами и действиями
+ * Server-side Player module.
+ * Manages the state of a single player, their money, properties, and actions.
+ * This is a pure data model with no UI dependencies.
  */
-import { CONFIG } from './config.js';
+import { CONFIG } from '../js/config.js';
 
 const passedStart = (oldPos, newPos) => newPos < oldPos;
 
-class Player {
+export class Player {
     constructor(id, name, token) {
         this.id = id;
         this.name = name;
@@ -152,6 +153,7 @@ class Player {
 
     /**
      * Покупает свойство
+     * @param {object} board - The board instance
      * @param {number} position - позиция свойства
      * @param {number} price - цена
      * @returns {boolean} true если покупка успешна
@@ -173,6 +175,7 @@ class Player {
 
     /**
      * Продает свойство
+     * @param {object} board - The board instance
      * @param {number} position - позиция свойства
      * @returns {number} полученная сумма
      */
@@ -188,6 +191,7 @@ class Player {
 
     /**
      * Закладывает свойство
+     * @param {object} board - The board instance
      * @param {number} position - позиция свойства
      * @returns {number} полученная сумма
      */
@@ -201,6 +205,7 @@ class Player {
 
     /**
      * Выкупает свойство из залога
+     * @param {object} board - The board instance
      * @param {number} position - позиция свойства
      * @returns {boolean} true если выкуп успешен
      */
@@ -215,6 +220,7 @@ class Player {
 
     /**
      * Добавляет улучшение к свойству
+     * @param {object} board - The board instance
      * @param {number} position - позиция свойства
      * @returns {boolean} true если улучшение добавлено
      */
@@ -233,6 +239,7 @@ class Player {
 
     /**
      * Удаляет улучшение с свойства
+     * @param {object} board - The board instance
      * @param {number} position - позиция свойства
      * @returns {number} полученная сумма
      */
@@ -247,6 +254,7 @@ class Player {
 
     /**
      * Строит резиденцию
+     * @param {object} board - The board instance
      * @param {number} position - позиция свойства
      * @returns {boolean} true если резиденция построена
      */
@@ -273,6 +281,7 @@ class Player {
 
     /**
      * Получает все незаложенные свойства игрока
+     * @param {object} board - The board instance
      * @returns {Array} массив позиций незаложенных свойств
      */
     getUnmortgagedProperties(board) {
@@ -284,6 +293,7 @@ class Player {
 
     /**
      * Получает все заложенные свойства игрока
+     * @param {object} board - The board instance
      * @returns {Array} массив позиций заложенных свойств
      */
     getMortgagedProperties(board) {
@@ -295,6 +305,7 @@ class Player {
 
     /**
      * Получает общую стоимость всех свойств игрока
+     * @param {object} board - The board instance
      * @returns {number} общая стоимость
      */
     getTotalPropertyValue(board) {
@@ -320,6 +331,7 @@ class Player {
 
     /**
      * Получает общую стоимость активов игрока
+     * @param {object} board - The board instance
      * @returns {number} общая стоимость активов
      */
     getTotalAssets(board) {
@@ -328,6 +340,7 @@ class Player {
 
     /**
      * Проверяет, может ли игрок платить аренду
+     * @param {object} board - The board instance
      * @param {number} rentAmount - сумма аренды
      * @returns {boolean} true если может платить
      */
@@ -337,7 +350,7 @@ class Player {
         }
 
         // Проверяем, может ли игрок продать что-то для оплаты
-        const unmortgagedProperties = this.getUnmortgagedProperties();
+        const unmortgagedProperties = this.getUnmortgagedProperties(board);
         let totalSellableValue = 0;
         
         unmortgagedProperties.forEach(position => {
@@ -356,6 +369,7 @@ class Player {
 
     /**
      * Проверяет банкротство игрока
+     * @param {object} board - The board instance
      * @returns {boolean} true если игрок банкрот
      */
     checkBankruptcy(board) {
@@ -379,6 +393,7 @@ class Player {
 
     /**
      * Получает статистику игрока
+     * @param {object} board - The board instance
      * @returns {Object} статистика
      */
     getStats(board) {
@@ -435,9 +450,6 @@ class Player {
     }
 }
 
-// Экспорт для использования в других модулей
-export { Player };
-
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = Player;
-} 
+    module.exports = { Player };
+}

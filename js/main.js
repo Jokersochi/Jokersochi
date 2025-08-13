@@ -12,6 +12,7 @@ import eventBus from './event-bus.js';
 import { game } from './game.js';
 import { board } from './board.js';
 import { ui } from './ui.js';
+import { settingsManager } from './settings-manager.js';
 import { chat } from './chat.js';
 
 // Глобальные переменные
@@ -46,7 +47,7 @@ class App {
     constructor() {
         this.initialized = false;
         this.currentScreen = 'main-menu';
-        this.settings = {};
+        this.settings = settingsManager.getAll();
         this.saveSlots = [];
         this.errorHandler = null;
         this.eventBus = eventBus;
@@ -64,9 +65,6 @@ class App {
             
             // Инициализируем утилиты
             await this.initializeUtils();
-            
-            // Загружаем настройки
-            await this.loadSettings();
             
             // Инициализируем локализацию
             await this.initializeLocalization();
@@ -158,40 +156,12 @@ class App {
     }
 
     /**
-     * Загружает настройки
-     */
-    async loadSettings() {
-        try {
-            const savedSettings = localStorage.getItem('gameSettings');
-            if (savedSettings) {
-                this.settings = JSON.parse(savedSettings);
-            } else {
-                this.settings = { ...CONFIG.APP_DEFAULTS };
-            }
-        } catch (error) {
-            console.warn('Failed to load settings:', error);
-            this.settings = { ...CONFIG.APP_DEFAULTS };
-        }
-    }
-
-    /**
-     * Сохраняет настройки
-     */
-    saveSettings() {
-        try {
-            localStorage.setItem('gameSettings', JSON.stringify(this.settings));
-        } catch (error) {
-            console.warn('Failed to save settings:', error);
-        }
-    }
-
-    /**
      * Инициализирует локализацию
      */
     async initializeLocalization() {
         try {
             // Устанавливаем язык
-            const language = this.settings.language || APP_CONFIG.DEFAULT_LANGUAGE;
+            const language = settingsManager.get('language') || APP_CONFIG.DEFAULT_LANGUAGE;
             await setLocale(language);
             
             // Обновляем интерфейс
@@ -543,8 +513,7 @@ class App {
      * Обновляет настройки из формы
      */
     updateSettingsFromForm() {
-        // Сохраняем настройки
-        this.saveSettings();
+        // Настройки обновляются через settingsManager, который автоматически сохраняет их
         console.log('Settings updated from form');
     }
 
@@ -562,8 +531,8 @@ class App {
      * @param {boolean} value - значение
      */
     updateRuleSetting(settingId, value) {
-        this.settings[settingId] = value;
-        this.saveSettings();
+        settingsManager.set(settingId, value);
+        this.settings = settingsManager.getAll(); // Обновляем локальную копию
         console.log('Rule setting updated:', settingId, value);
     }
 
@@ -572,8 +541,8 @@ class App {
      * @param {string} language - язык
      */
     async changeLanguage(language) {
-        this.settings.language = language;
-        this.saveSettings();
+        settingsManager.set('language', language);
+        this.settings = settingsManager.getAll(); // Обновляем локальную копию
         await setLocale(language);
         
         // Обновляем интерфейс
@@ -689,12 +658,12 @@ class App {
     toggleFullscreen() {
         if (!document.fullscreenElement) {
             document.documentElement.requestFullscreen();
-            this.settings.fullscreen = true;
+            settingsManager.set('fullscreen', true);
         } else {
             document.exitFullscreen();
-            this.settings.fullscreen = false;
+            settingsManager.set('fullscreen', false);
         }
-        this.saveSettings();
+        this.settings = settingsManager.getAll(); // Обновляем локальную копию
     }
 
     /**
@@ -840,20 +809,19 @@ document.addEventListener('DOMContentLoaded', () => {
     app = new App();
 });
 
-// Глобальные функции для UI
-window.startNewGame = () => app.startNewGame();
-window.joinGame = () => app.showJoinGameScreen();
-window.showSettings = () => app.showSettingsScreen();
-window.showRules = () => app.showRulesScreen();
-window.rollDice = () => app.rollDice();
-window.endTurn = () => app.endTurn();
-window.changeLanguage = (lang) => app.changeLanguage(lang);
-window.toggleFullscreen = () => app.toggleFullscreen();
-window.showHelp = () => app.showHelp();
-window.showStatistics = () => app.showStatistics();
-window.showAchievements = () => app.showAchievements();
+// Глобальные функции для UI (оставляем только для совместимости с HTML)
+// В будущем можно заменить на event listeners
+window.startNewGame = () => app?.startNewGame();
+window.joinGame = () => app?.showJoinGameScreen();
+window.showSettings = () => app?.showSettingsScreen();
+window.showRules = () => app?.showRulesScreen();
+window.rollDice = () => app?.rollDice();
+window.endTurn = () => app?.endTurn();
+window.changeLanguage = (lang) => app?.changeLanguage(lang);
+window.toggleFullscreen = () => app?.toggleFullscreen();
+window.showHelp = () => app?.showHelp();
+window.showStatistics = () => app?.showStatistics();
+window.showAchievements = () => app?.showAchievements();
 
 // Экспорт для тестирования
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { App, APP_CONFIG };
-} 
+export { App, APP_CONFIG }; 

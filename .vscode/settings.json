@@ -1,3 +1,4 @@
 {
-    "CodeGPT.apiKey": "Nvidia"
+    "CodeGPT.apiKey": "Nvidia",
+    "cmake.sourceDirectory": "C:/Users/joker/OneDrive/Dokumenti/GitHub/Jokersochi/node_modules/bare-fs"
 }

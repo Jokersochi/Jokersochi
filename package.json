@@ -1,41 +1,69 @@
 {
-  "name": "monopoly-russia-prototype",
-  "version": "1.0.0",
-  "description": "A browser-based Monopoly game with Russian cultural specifics",
-  "main": "src/game.js",
+  "name": "monopoly-russia",
+  "version": "2.0.0",
+  "description": "Браузерная версия настольной игры Русская Монополия",
+  "main": "index.html",
+  "type": "module",
   "scripts": {
-    "build": "node build.js",
-    "dev": "python3 -m http.server 8000",
-    "serve": "python3 -m http.server 8000 -d dist",
-    "start": "npm run dev",
-    "test": "echo \"No tests specified\" && exit 0",
-    "optimize": "npm run build && npm run analyze",
-    "analyze": "node -e \"console.log('Bundle analysis:', require('./dist/build-info.json'))\"",
-    "lint:css": "stylelint '**/*.css'"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "serve": "vite preview",
+    "lint": "eslint js/**/*.js",
+    "lint:fix": "eslint js/**/*.js --fix",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "optimize:images": "node scripts/optimize-images.js",
+    "optimize:svg": "node scripts/optimize-svg.js",
+    "analyze": "vite-bundle-analyzer",
+    "lighthouse": "lighthouse http://localhost:3000 --output=html --output-path=./lighthouse-report.html",
+    "old:build": "node build.js",
+    "old:dev": "python3 -m http.server 8000",
+    "old:serve": "python3 -m http.server 8000 -d dist",
+    "lint:css": "stylelint '**/*.css'",
+    "archive": "node scripts/archive.js",
+    "archive:source": "node scripts/archive.js source",
+    "archive:production": "node scripts/archive.js production"
   },
   "keywords": [
     "monopoly",
+    "russia",
     "game",
-    "javascript",
-    "browser",
-    "russia"
+    "board-game",
+    "pwa",
+    "multiplayer"
   ],
-  "author": "Developer",
+  "author": "Jokersochi",
   "license": "MIT",
   "devDependencies": {
+    "archiver": "^6.0.1",
+    "vite": "^5.0.0",
+    "terser": "^5.24.0",
+    "autoprefixer": "^10.4.16",
+    "cssnano": "^6.0.1",
+    "postcss": "^8.4.32",
+    "eslint": "^8.55.0",
+    "jest": "^29.7.0",
+    "vite-bundle-analyzer": "^0.7.0",
+    "lighthouse": "^11.6.0",
+    "svgo": "^3.2.0",
+    "imagemin": "^8.0.1",
+    "imagemin-mozjpeg": "^10.0.0",
+    "imagemin-pngquant": "^9.0.2",
+    "imagemin-webp": "^8.0.0",
     "http-server": "^14.0.0",
-    "stylelint": "^15.0.0",
-    "stylelint-no-physical-properties": "^2.0.0"
+    "stylelint": "^15.0.0"
   },
   "dependencies": {
     "firebase": "^9.22.2"
   },
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=18.0.0"
   },
   "browserslist": [
-    "last 2 versions",
     "> 1%",
+    "last 2 versions",
     "not dead"
   ]
 }

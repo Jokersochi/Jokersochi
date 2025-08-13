@@ -1504,6 +1504,29 @@ input:focus-visible, select:focus-visible, button:focus-visible, .btn:focus-visi
     max-width: 700px;
 }
 
+.property-card-preview {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    border-left: 8px solid; /* color will be set via style attribute */
+    text-align: center;
+}
+
+.property-card-preview h4 {
+    margin: 0.5rem 0;
+    font-size: 1.2rem;
+    color: var(--text-primary);
+}
+
+.property-card-preview p {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--accent-color);
+    font-weight: 600;
+}
+
+
 /* Trade Offer Notification/Modal */
 .trade-offer-details {
     text-align: center;
@@ -1625,4 +1648,95 @@ input:focus-visible, select:focus-visible, button:focus-visible, .btn:focus-visi
 
 .modal.trade-offer-modal .modal-footer .btn.secondary {
     background-color: var(--error-color);
+}
+
+/* Auction Modal */
+.auction-modal .modal-content {
+    text-align: center;
+}
+
+.auction-item-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.auction-item-info h4 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.auction-timer {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--accent-color);
+    margin-bottom: 1rem;
+    animation: pulse 1.5s infinite;
+}
+
+.auction-bid-info {
+    background: var(--bg-tertiary);
+    padding: 1rem;ь
+    border-radius: var(--radius-lg);
+    margin-bottom: 1.5rem;
+}
+
+.auction-bid-info p {
+    margin: 0.5rem 0;
+    font-size: 1.1rem;
+}
+
+.auction-bid-info span {
+    font-weight: 600;
+    color: var(--primary-light);
+}
+
+.auction-participants {
+    margin-bottom: 1.5rem;
+}
+
+.auction-participants h5 {
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+}
+
+#auction-participant-list {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+#auction-participant-list li {
+    background: var(--bg-secondary);
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-md);
+    transition: all var(--transition-normal);
+}
+
+#auction-participant-list li.passed {
+    opacity: 0.5;
+    text-decoration: line-through;
+    background: var(--bg-tertiary);
+}
+
+.auction-actions {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+#auction-bid-input {
+    flex-grow: 1;
+}
+
+.error-text {
+    color: var(--error-color);
+    min-height: 1.2em;
+    font-weight: 500;
 }

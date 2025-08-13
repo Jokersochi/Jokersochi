@@ -3,6 +3,8 @@
  * Обеспечивает онлайн-игру, чат, синхронизацию и турниры
  */
 
+import { RoomManager } from './room-manager.js';
+import { TournamentManager } from './tournament-manager.js';
 import { generateId } from './utils.js';
 import { showToast } from './ui-utils.js';
 import { CONFIG } from './config.js';
@@ -128,6 +130,9 @@ class NetworkManager {
             case 'player_left':
                 this.handlePlayerLeft(message.data);
                 break;
+            case 'game_started':
+                this.handleGameStarted(message.data);
+                break;
             case 'game_state':
                 this.handleGameState(message.data);
                 break;
@@ -140,8 +145,20 @@ class NetworkManager {
             case 'trade_offer':
                 this.handleTradeOffer(message.data);
                 break;
-            case 'auction_update':
-                this.handleAuctionUpdate(message.data);
+            case 'auction_started':
+                this.handleAuctionStarted(message.data);
+                break;
+            case 'auction_bid_placed':
+                this.handleAuctionBidPlaced(message.data);
+                break;
+            case 'auction_player_passed':
+                this.handleAuctionPlayerPassed(message.data);
+                break;
+            case 'auction_time_update':
+                this.handleAuctionTimeUpdate(message.data);
+                break;
+            case 'auction_ended':
+                this.handleAuctionEnded(message.data);
                 break;
             case 'weather_change':
                 this.handleWeatherChange(message.data);
@@ -157,6 +174,9 @@ class NetworkManager {
                 break;
             case 'error':
                 this.handleError(message.data);
+                break;
+            case 'auction_error':
+                this.handleAuctionError(message.data);
                 break;
             case 'pong':
                 this.triggerEvent('pong', message.data);
@@ -201,6 +221,14 @@ class NetworkManager {
     }
 
     /**
+     * Обрабатывает начало игры
+     * @param {Object} data - данные игры
+     */
+    handleGameStarted(data) {
+        this.triggerEvent('game_started', data);
+    }
+
+    /**
      * Обрабатывает обновление состояния игры
      * @param {Object} data - данные состояния
      */
@@ -233,11 +261,43 @@ class NetworkManager {
     }
 
     /**
-     * Обрабатывает обновление аукциона
-     * @param {Object} data - данные аукциона
+     * Обрабатывает начало аукциона
+     * @param {Object} data - данные
      */
-    handleAuctionUpdate(data) {
-        this.triggerEvent('auction_update', data);
+    handleAuctionStarted(data) {
+        this.triggerEvent('auction_started', data);
+    }
+
+    /**
+     * Обрабатывает размещение ставки
+     * @param {Object} data - данные
+     */
+    handleAuctionBidPlaced(data) {
+        this.triggerEvent('auction_bid_placed', data);
+    }
+
+    /**
+     * Обрабатывает пас игрока
+     * @param {Object} data - данные
+     */
+    handleAuctionPlayerPassed(data) {
+        this.triggerEvent('auction_player_passed', data);
+    }
+
+    /**
+     * Обрабатывает обновление времени аукциона
+     * @param {Object} data - данные
+     */
+    handleAuctionTimeUpdate(data) {
+        this.triggerEvent('auction_time_update', data);
+    }
+
+    /**
+     * Обрабатывает завершение аукциона
+     * @param {Object} data - данные
+     */
+    handleAuctionEnded(data) {
+        this.triggerEvent('auction_ended', data);
     }
 
     /**
@@ -279,6 +339,14 @@ class NetworkManager {
     handleError(data) {
         console.error('Server error:', data);
         this.triggerEvent('error', data);
+    }
+
+    /**
+     * Обрабатывает ошибку аукциона
+     * @param {Object} data - данные ошибки
+     */
+    handleAuctionError(data) {
+        this.triggerEvent('auction_error', data);
     }
 
     /**
@@ -346,7 +414,14 @@ class NetworkManager {
      * @param {number} amount - сумма ставки
      */
     sendAuctionBid(amount) {
-        this.sendMessage('auction_bid', { amount: amount });
+        this.sendPlayerAction('make_bid', { amount });
+    }
+
+    /**
+     * Отправляет пас на аукционе
+     */
+    sendAuctionPass() {
+        this.sendPlayerAction('pass_auction');
     }
 
     /**
@@ -381,12 +456,18 @@ class NetworkManager {
             error: [],
             auth_success: [],
             room_joined: [],
+            game_started: [],
             player_joined: [],
             game_state: [],
             player_action: [],
             chat_message: [],
             trade_offer: [],
-            auction_update: [],
+            auction_started: [],
+            auction_bid_placed: [],
+            auction_player_passed: [],
+            auction_time_update: [],
+            auction_ended: [],
+            auction_error: [],
             weather_change: [],
             event_trigger: [],
             tournament_update: [],
@@ -546,190 +627,6 @@ class NetworkManager {
             reconnectAttempts: this.reconnectAttempts,
             messageQueueLength: this.messageQueue.length
         };
-    }
-}
-
-/**
- * Модуль для управления комнатами
- */
-class RoomManager {
-    constructor(networkManager) {
-        this.network = networkManager;
-        this.rooms = new Map();
-        this.currentRoom = null;
-        this.roomList = [];
-        
-        this.setupEventHandlers();
-    }
-
-    /**
-     * Настраивает обработчики событий
-     */
-    setupEventHandlers() {
-        this.network.on('room_list', (data) => {
-            this.roomList = data.rooms;
-            this.triggerEvent('room_list_updated', this.roomList);
-        });
-
-        this.network.on('room_joined', (data) => {
-            this.currentRoom = data;
-            this.triggerEvent('room_joined', data);
-        });
-
-        this.network.on('player_joined', (data) => {
-            if (this.currentRoom) {
-                this.currentRoom.players.push(data.player);
-                this.triggerEvent('player_joined', data);
-            }
-        });
-
-        this.network.on('player_left', (data) => {
-            if (this.currentRoom) {
-                this.currentRoom.players = this.currentRoom.players.filter(
-                    p => p.id !== data.playerId
-                );
-                this.triggerEvent('player_left', data);
-            }
-        });
-    }
-
-    /**
-     * Получает список комнат
-     */
-    getRoomList() {
-        this.network.sendMessage('get_room_list');
-    }
-
-    /**
-     * Создает новую комнату
-     * @param {Object} config - конфигурация комнаты
-     */
-    createRoom(config) {
-        this.network.sendMessage('create_room', config);
-    }
-
-    /**
-     * Присоединяется к комнате
-     * @param {string} roomId - ID комнаты
-     */
-    joinRoom(roomId) {
-        this.network.sendMessage('join_room', { roomId: roomId });
-    }
-
-    /**
-     * Покидает текущую комнату
-     */
-    leaveRoom() {
-        if (this.currentRoom) {
-            this.network.sendMessage('leave_room');
-            this.currentRoom = null;
-        }
-    }
-
-    /**
-     * Получает текущую комнату
-     * @returns {Object|null} текущая комната
-     */
-    getCurrentRoom() {
-        return this.currentRoom;
-    }
-
-    /**
-     * Получает список комнат
-     * @returns {Array} список комнат
-     */
-    getRooms() {
-        return this.roomList;
-    }
-}
-
-/**
- * Модуль для управления турнирами
- */
-class TournamentManager {
-    constructor(networkManager) {
-        this.network = networkManager;
-        this.tournaments = new Map();
-        this.currentTournament = null;
-        this.tournamentList = [];
-        
-        this.setupEventHandlers();
-    }
-
-    /**
-     * Настраивает обработчики событий
-     */
-    setupEventHandlers() {
-        this.network.on('tournament_list', (data) => {
-            this.tournamentList = data.tournaments;
-            this.triggerEvent('tournament_list_updated', this.tournamentList);
-        });
-
-        this.network.on('tournament_joined', (data) => {
-            this.currentTournament = data;
-            this.triggerEvent('tournament_joined', data);
-        });
-
-        this.network.on('tournament_update', (data) => {
-            if (this.currentTournament && this.currentTournament.id === data.tournamentId) {
-                Object.assign(this.currentTournament, data);
-                this.triggerEvent('tournament_updated', data);
-            }
-        });
-
-        this.network.on('tournament_ended', (data) => {
-            this.currentTournament = null;
-            this.triggerEvent('tournament_ended', data);
-        });
-    }
-
-    /**
-     * Получает список турниров
-     */
-    getTournamentList() {
-        this.network.sendMessage('get_tournament_list');
-    }
-
-    /**
-     * Создает турнир
-     * @param {Object} config - конфигурация турнира
-     */
-    createTournament(config) {
-        this.network.sendMessage('create_tournament', config);
-    }
-
-    /**
-     * Присоединяется к турниру
-     * @param {string} tournamentId - ID турнира
-     */
-    joinTournament(tournamentId) {
-        this.network.sendMessage('join_tournament', { tournamentId: tournamentId });
-    }
-
-    /**
-     * Покидает турнир
-     */
-    leaveTournament() {
-        if (this.currentTournament) {
-            this.network.sendMessage('leave_tournament');
-            this.currentTournament = null;
-        }
-    }
-
-    /**
-     * Получает текущий турнир
-     * @returns {Object|null} текущий турнир
-     */
-    getCurrentTournament() {
-        return this.currentTournament;
-    }
-
-    /**
-     * Получает список турниров
-     * @returns {Array} список турниров
-     */
-    getTournaments() {
-        return this.tournamentList;
     }
 }
 

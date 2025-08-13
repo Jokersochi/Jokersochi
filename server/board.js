@@ -1,14 +1,12 @@
 /**
- * Модуль игрового поля
- * Управляет клетками, свойствами и их состояниями
+ * Server-side Board module.
+ * Manages cells, properties, and their states without any UI dependencies.
  */
 
-import { showNotification } from './ui-utils.js';
-import { getText } from './localization.js';
-import { randomChoice } from './random.js';
-import { CONFIG } from './config.js';
+import { randomChoice } from '../js/random.js';
+import { CONFIG } from '../js/config.js';
 
-class Board {
+export class Board {
     constructor() {
         this.cells = [];
         this.properties = new Map();
@@ -90,7 +88,7 @@ class Board {
     }
 
     /**
-     * Получает название клетки
+     * Получает название клетки (ключ для локализации или имя)
      * @param {number} position - позиция
      * @returns {string} название
      */
@@ -98,24 +96,24 @@ class Board {
         const property = CONFIG.PROPERTIES.find(p => p.position === position);
         if (property) return property.name;
 
-        // Специальные клетки
+        // Специальные клетки - возвращаем ключи
         switch (position) {
-            case 0: return getText('COMMON.START');
-            case 9: return getText('COMMON.JAIL');
-            case 20: return getText('COMMON.FREE_PARKING');
-            case 30: return getText('COMMON.GO_TO_JAIL');
+            case 0: return 'start';
+            case 9: return 'jail';
+            case 20: return 'free_parking';
+            case 30: return 'go_to_jail';
             case 2:
             case 7:
             case 17:
             case 22:
             case 33:
-            case 36: return getText('COMMON.CHANCE');
+            case 36: return 'chance';
             case 12:
             case 22:
-            case 33: return getText('COMMON.TREASURE');
+            case 33: return 'treasure';
             case 4:
-            case 38: return getText('COMMON.TAX');
-            default: return `Клетка ${position}`;
+            case 38: return 'tax';
+            default: return `cell_${position}`;
         }
     }
 
@@ -176,7 +174,7 @@ class Board {
     /**
      * Проверяет, принадлежат ли все клетки одного цвета одному игроку
      * @param {string} color - цвет
-     * @param {number} playerId - ID игрока
+     * @param {string} playerId - ID игрока
      * @returns {boolean} true если все клетки принадлежат игроку
      */
     hasColorMonopoly(color, playerId) {
@@ -187,7 +185,7 @@ class Board {
     /**
      * Получает количество клеток определенного цвета у игрока
      * @param {string} color - цвет
-     * @param {number} playerId - ID игрока
+     * @param {string} playerId - ID игрока
      * @returns {number} количество клеток
      */
     getPlayerColorCount(color, playerId) {
@@ -198,7 +196,7 @@ class Board {
     /**
      * Покупает клетку
      * @param {number} position - позиция
-     * @param {number} playerId - ID игрока
+     * @param {string} playerId - ID игрока
      * @param {number} price - цена покупки
      * @returns {boolean} true если покупка успешна
      */
@@ -219,7 +217,7 @@ class Board {
     /**
      * Продает клетку
      * @param {number} position - позиция
-     * @param {number} playerId - ID игрока
+     * @param {string} playerId - ID игрока
      * @returns {number} стоимость продажи
      */
     sellCell(position, playerId) {
@@ -268,7 +266,7 @@ class Board {
     /**
      * Закладывает клетку
      * @param {number} position - позиция
-     * @param {number} playerId - ID игрока
+     * @param {string} playerId - ID игрока
      * @returns {number} сумма залога
      */
     mortgageCell(position, playerId) {
@@ -289,7 +287,7 @@ class Board {
     /**
      * Выкупает клетку из залога
      * @param {number} position - позиция
-     * @param {number} playerId - ID игрока
+     * @param {string} playerId - ID игрока
      * @returns {number} стоимость выкупа
      */
     unmortgageCell(position, playerId) {
@@ -306,7 +304,7 @@ class Board {
     /**
      * Добавляет улучшение к клетке
      * @param {number} position - позиция
-     * @param {number} playerId - ID игрока
+     * @param {string} playerId - ID игрока
      * @returns {boolean} true если улучшение добавлено
      */
     addImprovement(position, playerId) {
@@ -339,7 +337,7 @@ class Board {
     /**
      * Удаляет улучшение с клетки
      * @param {number} position - позиция
-     * @param {number} playerId - ID игрока
+     * @param {string} playerId - ID игрока
      * @returns {boolean} true если улучшение удалено
      */
     removeImprovement(position, playerId) {
@@ -355,7 +353,7 @@ class Board {
     /**
      * Строит резиденцию
      * @param {number} position - позиция
-     * @param {number} playerId - ID игрока
+     * @param {string} playerId - ID игрока
      * @returns {boolean} true если резиденция построена
      */
     buildResidence(position, playerId) {
@@ -388,7 +386,7 @@ class Board {
     /**
      * Вычисляет арендную плату
      * @param {number} position - позиция
-     * @param {number} playerId - ID игрока (владелец)
+     * @param {string} playerId - ID игрока (владелец)
      * @returns {number} арендная плата
      */
     calculateRent(position, playerId) {
@@ -410,19 +408,20 @@ class Board {
         }
 
         // Влияние погоды
-        const weatherEffect = CONFIG.WEATHER.EFFECTS[this.weather];
+        const weatherEffect = CONFIG.WEATHER.find(w => w.type === this.weather)?.effects;
         if (weatherEffect) {
-            rent *= weatherEffect.rentMultiplier;
+            rent *= weatherEffect.rent;
         }
 
         // Влияние экономических событий
         if (this.economicEvent) {
-            rent *= this.economicEvent.multiplier;
+            rent *= this.economicEvent.income;
         }
 
         // Влияние культурных событий
         if (this.culturalEvent) {
-            rent += this.culturalEvent.bonus;
+            // Assuming cultural events add a flat bonus, which is not in config.
+            // This part might need adjustment based on final game rules.
         }
 
         return Math.floor(rent);
@@ -430,86 +429,71 @@ class Board {
 
     /**
      * Обновляет погоду
+     * @returns {object|null} New weather object if changed, otherwise null.
      */
     updateWeather() {
         this.weatherTimer++;
-        if (this.weatherTimer >= CONFIG.WEATHER.CHANGE_INTERVAL) {
+        if (this.weatherTimer >= (CONFIG.WEATHER_CHANGE_INTERVAL || 10)) { // Default interval
             this.weatherTimer = 0;
-            const weatherTypes = CONFIG.WEATHER_TYPES;
-            this.weather = randomChoice(weatherTypes).id;
-            
-            // Уведомление о смене погоды
-            const weatherName = weatherTypes.find(w => w.id === this.weather).name;
-            showNotification(
-                getText('MESSAGES.WEATHER_CHANGE', { weather: weatherName }),
-                'info'
-            );
+            const newWeather = randomChoice(CONFIG.WEATHER);
+            if (this.weather !== newWeather.type) {
+                this.weather = newWeather.type;
+                return newWeather;
+            }
         }
+        return null;
     }
 
     /**
      * Обновляет экономические события
+     * @returns {object|null} New event object if changed, otherwise null.
      */
     updateEconomicEvents() {
         this.eventTimer++;
         
-        // Проверяем вероятность экономического события
-        if (Math.random() < CONFIG.ECONOMIC_EVENTS.FREQUENCY && !this.economicEvent) {
+        if (Math.random() < (CONFIG.ECONOMIC_EVENT_FREQUENCY || 0.1) && !this.economicEvent) {
             const event = randomChoice(CONFIG.ECONOMIC_EVENTS);
-            this.economicEvent = {
-                ...event,
-                duration: CONFIG.ECONOMIC_EVENTS.DURATION
-            };
-            
-            showNotification(
-                getText('MESSAGES.' + event.id.toUpperCase()),
-                event.id === 'boom' ? 'success' : 'warning'
-            );
+            this.economicEvent = { ...event };
+            return event;
         }
 
-        // Уменьшаем длительность события
         if (this.economicEvent) {
             this.economicEvent.duration--;
             if (this.economicEvent.duration <= 0) {
                 this.economicEvent = null;
             }
         }
+        return null;
     }
 
     /**
      * Обновляет культурные события
+     * @returns {object|null} New event object if changed, otherwise null.
      */
     updateCulturalEvents() {
-        // Проверяем вероятность культурного события
-        if (Math.random() < CONFIG.CULTURAL_EVENTS.FREQUENCY && !this.culturalEvent) {
+        if (Math.random() < (CONFIG.CULTURAL_EVENT_FREQUENCY || 0.05) && !this.culturalEvent) {
             const event = randomChoice(CONFIG.CULTURAL_EVENTS);
-            this.culturalEvent = {
-                ...event,
-                duration: CONFIG.CULTURAL_EVENTS.DURATION
-            };
-            
-            showNotification(
-                getText('MESSAGES.CULTURAL_FESTIVAL'),
-                'info'
-            );
+            this.culturalEvent = { ...event };
+            return event;
         }
 
-        // Уменьшаем длительность события
         if (this.culturalEvent) {
             this.culturalEvent.duration--;
             if (this.culturalEvent.duration <= 0) {
                 this.culturalEvent = null;
             }
         }
+        return null;
     }
 
     /**
      * Обновляет состояние игрового поля
      */
     update() {
-        this.updateWeather();
-        this.updateEconomicEvents();
-        this.updateCulturalEvents();
+        const weatherChange = this.updateWeather();
+        const economicChange = this.updateEconomicEvents();
+        const culturalChange = this.updateCulturalEvents();
+        return { weatherChange, economicChange, culturalChange };
     }
 
     /**
@@ -563,7 +547,6 @@ class Board {
             }
         });
 
-        // Подсчет монополий
         const colors = [...new Set(CONFIG.PROPERTIES.map(p => p.color))];
         colors.forEach(color => {
             const colorCells = this.getCellsByColor(color);
@@ -577,14 +560,4 @@ class Board {
 
         return stats;
     }
-}
-
-// Создаем глобальный экземпляр игрового поля
-const board = new Board();
-
-// Экспорт для использования в других модулях
-export { Board, board };
-
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = Board;
 }

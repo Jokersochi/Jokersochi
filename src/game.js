@@ -52,7 +52,8 @@
     // Game state
     const gameState = {
         players: [
-            { id: 1, name: 'Игрок 1', position: 0, money: 500, properties: new Set() }
+            { id: 1, name: 'Игрок 1', position: 0, money: 500, properties: new Set(), color: '#FF5733' }, // Красный
+            { id: 2, name: 'Игрок 2', position: 0, money: 500, properties: new Set(), color: '#33FF57' }  // Зеленый
         ],
         currentPlayerIndex: 0,
         squares: new Map(),
@@ -165,23 +166,30 @@
         
         // Visual feedback
         const squareElement = gameState.squares.get(square.id);
-        squareElement.style.backgroundColor = '#d4edda';
-        setTimeout(() => {
-            squareElement.style.backgroundColor = '';
-        }, 1000);
+        squareElement.style.backgroundColor = player.color || '#a2d2ff'; // Use player color or a default light blue
+        squareElement.style.border = `2px solid ${player.color || '#a2d2ff'}`;
     }
 
     function payRent(player, square) {
         const rent = square.rent;
-        player.money -= rent;
-        
-        // Find owner efficiently
         const owner = gameState.players.find(p => p.id === square.owner);
-        if (owner) {
-            owner.money += rent;
-            updatePlayerMoney(player);
-            log(`${player.name} заплатил ${rent}₽ аренды игроку ${owner.name}`);
+
+        if (!owner) {
+            log(`Ошибка: Владелец клетки ${square.name.ru} не найден.`);
+            return;
         }
+
+        if (player.money < rent) {
+            log(`${player.name} не хватает денег для оплаты аренды ${rent}₽ игроку ${owner.name}.`);
+            // Здесь можно добавить логику банкротства
+            return;
+        }
+
+        player.money -= rent;
+        owner.money += rent;
+        updatePlayerMoney(player);
+        updatePlayerMoney(owner); // Обновить деньги владельца
+        log(`${player.name} заплатил ${rent}₽ аренды игроку ${owner.name}.`);
     }
 
     // Optimized chance card handling
@@ -233,7 +241,12 @@
         
         logTimeout = setTimeout(() => {
             if (DOM.log) {
-                DOM.log.textContent = logQueue.join(' | ');
+                const newLogEntry = document.createElement('p');
+                newLogEntry.textContent = logQueue.join(' | ');
+                DOM.log.prepend(newLogEntry); // Add new logs at the top
+                if (DOM.log.children.length > 10) { // Keep only last 10 logs
+                    DOM.log.removeChild(DOM.log.lastChild);
+                }
             }
             logQueue = [];
         }, 100);

@@ -584,7 +584,3 @@ const board = new Board();
 
 // Экспорт для использования в других модулях
 export { Board, board };
-
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = Board;
-}

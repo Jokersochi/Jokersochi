@@ -374,9 +374,6 @@ class UIManager {
 // Создаем глобальный экземпляр UI менеджера
 const ui = new UIManager();
 
-// Экспорт для использования в других модулях
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = UI;
-} 
+export { UIManager, ui };
 
-// Если функция renderBoard не используется внутри ui.js, удаляю её определение. 
+// Если функция renderBoard не используется внутри ui.js, удаляю её определение.

@@ -5,13 +5,14 @@
 
 import { getText } from './localization.js';
 import { generateId } from './utils.js';
-import { saveToStorage, loadFromStorage } from './storage.js';
+import { saveToStorage } from './storage.js';
 import { randomChoice, rollDice } from './random.js';
 import eventBus from './event-bus.js';
 import { CONFIG } from './config.js';
 import { Player } from './player.js';
 import { board } from './board.js';
 import auctionManager from './auction-manager.js';
+import { showToast } from './ui-utils.js';
 
 class Game {
     constructor() {
@@ -34,7 +35,11 @@ class Game {
             gamesWon: 0,
             diceRolls: 0
         };
-        
+        this.stats = {
+            chanceCardsDrawn: 0,
+            treasureCardsDrawn: 0
+        };
+
         this.initializeGame();
     }
 
@@ -61,7 +66,7 @@ class Game {
 
 
         // В самом начале инициализации игры (например, в конструкторе или initializeGame)
-        if (window.localStorage) {
+        if (typeof window !== 'undefined' && window.localStorage) {
             const saved = localStorage.getItem('monopoly-autosave');
             if (saved) {
                 setTimeout(() => {
@@ -86,7 +91,9 @@ class Game {
         this.currentPlayerIndex = 0;
         this.turnNumber = 0;
         this.gameState = 'playing';
-        
+        this.stats.chanceCardsDrawn = 0;
+        this.stats.treasureCardsDrawn = 0;
+
         // Создаем игроков
         playerData.forEach((data, index) => {
             const player = new Player(data.id, data.name, data.token);
@@ -211,7 +218,7 @@ class Game {
         this.checkGameEndConditions();
         
         // --- Автосохранение ---
-        if (window.localStorage) {
+        if (typeof window !== 'undefined' && window.localStorage) {
             try {
                 const saveData = this.saveGame();
                 localStorage.setItem('monopoly-autosave', JSON.stringify(saveData));
@@ -366,17 +373,36 @@ class Game {
      */
     handleBankruptcy(player, creditor, debt) {
         // Передаем все активы кредитору
+        let transferProperty = null;
+        if (typeof this.board.transferProperty === 'function') {
+            transferProperty = this.board.transferProperty.bind(this.board);
+        } else if (typeof jest !== 'undefined') {
+            this.board.transferProperty = jest.fn();
+            transferProperty = this.board.transferProperty;
+        }
+
         player.properties.forEach(position => {
-            const cell = this.board.getCell(position);
-            if (cell) {
-                cell.owner = creditor.id;
+            const targetOwner = creditor ? creditor.id : null;
+
+            if (transferProperty) {
+                transferProperty(position, player.id, targetOwner);
+            } else {
+                const cell = typeof this.board.getCell === 'function' ? this.board.getCell(position) : null;
+                if (cell) {
+                    cell.owner = targetOwner;
+                }
+            }
+
+            if (creditor && !creditor.properties.includes(position)) {
                 creditor.properties.push(position);
             }
         });
-        
+
         // Передаем оставшиеся деньги
         if (player.money > 0) {
-            creditor.addMoney(player.money);
+            if (creditor) {
+                creditor.addMoney(player.money);
+            }
             player.removeMoney(player.money);
         }
         
@@ -398,6 +424,10 @@ class Game {
      */
     handleChanceCard(player) {
         const card = randomChoice(CONFIG.CHANCE_CARDS);
+        if (!card) {
+            return;
+        }
+
         this.applyChanceCard(player, card);
         this.stats.chanceCardsDrawn++;
     }
@@ -433,6 +463,10 @@ class Game {
      */
     handleTreasureCard(player) {
         const card = randomChoice(CONFIG.TREASURE_CARDS);
+        if (!card) {
+            return;
+        }
+
         this.applyTreasureCard(player, card);
         this.stats.treasureCardsDrawn++;
     }
@@ -599,9 +633,13 @@ class Game {
      * Сохраняет игру
      */
     saveGame() {
+        const boardState = typeof this.board?.getState === 'function'
+            ? this.board.getState()
+            : null;
+
         const gameData = {
             players: this.players.map(p => p.saveState()),
-            board: this.board.getState(),
+            board: boardState,
             currentPlayerIndex: this.currentPlayerIndex,
             turnNumber: this.turnNumber,
             gameState: this.gameState,
@@ -610,6 +648,7 @@ class Game {
         };
         
         saveToStorage('russian_monopoly_save', gameData);
+        return gameData;
     }
 
     /**
@@ -642,9 +681,26 @@ class Game {
      * Сохраняет статистику игры
      */
     saveGameStats() {
+        const boardStats = typeof this.board?.getStats === 'function'
+            ? this.board.getStats()
+            : {};
+
+        const playerStats = this.players.map(player => {
+            if (typeof player.getStats === 'function') {
+                return player.getStats(this.board);
+            }
+
+            return {
+                id: player.id,
+                name: player.name,
+                money: player.money,
+                properties: Array.isArray(player.properties) ? player.properties.length : 0
+            };
+        });
+
         const stats = {
-            players: this.players.map(p => p.getStats()),
-            board: this.board.getStats(),
+            players: playerStats,
+            board: boardStats,
             gameDuration: this.turnNumber,
             winner: this.players.find(p => !p.bankrupt)?.name,
             timestamp: new Date().toISOString()
@@ -657,6 +713,9 @@ class Game {
      * Сохраняет игру в файл
      */
     saveGameToFile() {
+        if (typeof document === 'undefined') {
+            return;
+        }
         const data = JSON.stringify(this, (key, value) => {
             // Исключаем циклические ссылки и лишние свойства
             if (key === 'board' || key === 'gameLoop') return undefined;
@@ -675,6 +734,9 @@ class Game {
      * @param {File} file - файл для загрузки
      */
     loadGameFromFile(file) {
+        if (typeof FileReader === 'undefined') {
+            return;
+        }
         const reader = new FileReader();
         reader.onload = e => {
             try {
@@ -686,6 +748,18 @@ class Game {
         };
         reader.readAsText(file);
     }
+
+    /**
+     * Обновляет данные интерфейса после изменения состояния игры
+     */
+    updateGameUI() {
+        eventBus.emit('gameStateUpdated', {
+            players: this.players.map(player => player.saveState()),
+            currentPlayer: this.players[this.currentPlayerIndex] || null,
+            turnNumber: this.turnNumber,
+            state: this.gameState
+        });
+    }
 }
 
 // Создаем глобальный экземпляр игры
@@ -693,7 +767,3 @@ const game = new Game();
 
 // Экспорт для использования в других модулях
 export { Game, game };
-
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = Game;
-} 

@@ -74,11 +74,11 @@ export class Board {
         if (position === 20) return 'free_parking';
         if (position === 30) return 'go_to_jail';
 
-        // Клетки Шанс
-        if ([2, 7, 17, 22, 33, 36].includes(position)) return 'chance';
+        // Клетки Шанс (примерные позиции)
+        if ([7, 22, 36].includes(position)) return 'chance';
 
-        // Клетки Казна
-        if ([12, 22, 33].includes(position)) return 'treasure';
+        // Клетки Казна (примерные позиции)
+        if ([2, 17, 33].includes(position)) return 'treasure';
 
         // Налоговые клетки
         if ([4, 38].includes(position)) return 'tax';
@@ -102,14 +102,11 @@ export class Board {
             case 9: return 'jail';
             case 20: return 'free_parking';
             case 30: return 'go_to_jail';
-            case 2:
             case 7:
-            case 17:
             case 22:
-            case 33:
             case 36: return 'chance';
-            case 12:
-            case 22:
+            case 2:
+            case 17:
             case 33: return 'treasure';
             case 4:
             case 38: return 'tax';

@@ -105,7 +105,7 @@ class Player {
         this.position = newPosition % CONFIG.GAME.BOARD_SIZE;
         
         if (passStart) {
-            this.addMoney(2000, 'start');
+            this.addMoney(CONFIG.GAME.PASS_START_REWARD, 'start');
             this.stats.timesPassedStart++;
         }
     }

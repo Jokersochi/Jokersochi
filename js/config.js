@@ -14,6 +14,7 @@ const CONFIG = {
         GO_TO_JAIL_POSITION: 30,
         FREE_PARKING_POSITION: 20,
         START_POSITION: 0,
+        PASS_START_REWARD: 2000,
         DEFAULT_LANGUAGE: 'ru',
         SUPPORTED_LANGUAGES: ['ru', 'en', 'de', 'fr', 'es', 'zh', 'ja', 'ko']
     },

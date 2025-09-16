@@ -24,7 +24,8 @@ export class Board {
      */
     initializeBoard() {
         // Создаем все клетки
-        for (let i = 0; i < CONFIG.GAME.BOARD_SIZE; i++) {
+        const size = CONFIG.GAME.BOARD_SIZE;
+        for (let i = 0; i < size; i++) {
             this.cells[i] = this.createCell(i);
         }
 

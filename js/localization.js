@@ -25,6 +25,7 @@ export const setLocale = async (locale) => {
 };
 
 export const getText = (key, params = {}) => {
+  if (!key || typeof key !== 'string') return '';
   const keys = key.split('.');
   let text = locales[currentLocale];
   for (const k of keys) {

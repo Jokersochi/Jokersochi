@@ -11,9 +11,9 @@
     "serve": "vite preview",
     "lint": "eslint js/**/*.js",
     "lint:fix": "eslint js/**/*.js --fix",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage",
+    "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js",
+    "test:watch": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --watch",
+    "test:coverage": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --coverage",
     "optimize:images": "node scripts/optimize-images.js",
     "optimize:svg": "node scripts/optimize-svg.js",
     "analyze": "vite-bundle-analyzer",
@@ -60,6 +60,13 @@
   },
   "engines": {
     "node": ">=18.0.0"
+  },
+  "jest": {
+    "testEnvironment": "jsdom",
+    "extensionsToTreatAsEsm": [
+      ".js"
+    ],
+    "transform": {}
   },
   "browserslist": [
     "> 1%",

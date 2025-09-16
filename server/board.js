@@ -124,8 +124,8 @@ export class Board {
         if (property) return property.price;
 
         // Налоговые клетки
-        if (position === 4) return 200;
-        if (position === 38) return 1000;
+        if (position === 4) return CONFIG.GAME.INCOME_TAX;
+        if (position === 38) return CONFIG.GAME.LUXURY_TAX;
 
         return 0;
     }

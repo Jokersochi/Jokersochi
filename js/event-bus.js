@@ -4,7 +4,6 @@
 class EventBus {
     constructor() {
         this.events = {};
-        console.log("EventBus initialized");
     }
 
     /**
@@ -44,7 +43,14 @@ class EventBus {
      */
     emit(eventName, data) {
         if (!this.events[eventName]) return;
-        this.events[eventName].forEach(callback => callback(data));
+        this.events[eventName].forEach(callback => {
+            try {
+                callback(data);
+            } catch (error) {
+                // Не роняем приложение из-за одного обработчика
+                console.warn(`[EventBus] handler error for ${eventName}:`, error);
+            }
+        });
     }
 }
 

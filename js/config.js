@@ -15,6 +15,8 @@ const CONFIG = {
         FREE_PARKING_POSITION: 20,
         START_POSITION: 0,
         PASS_START_REWARD: 2000,
+        INCOME_TAX: 200,
+        LUXURY_TAX: 1000,
         DEFAULT_LANGUAGE: 'ru',
         SUPPORTED_LANGUAGES: ['ru', 'en', 'de', 'fr', 'es', 'zh', 'ja', 'ko']
     },

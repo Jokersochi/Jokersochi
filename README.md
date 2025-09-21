@@ -1,201 +1,89 @@
-# 🎲 Monopoly Russia
+# Brandopoly Blitz
 
-Браузерная версия настольной игры Монополия с российской тематикой. Играйте онлайн бесплатно!
+Brandopoly Blitz is a multiplayer economic board game inspired by Monopoly and expanded with dynamic brand economies, sealed-bid auctions, and deep contract systems. The monorepo contains the NestJS realtime backend, React + PixiJS client, Electron desktop wrapper, Docker deployment assets, and telemetry configuration.
 
-## 🚀 Быстрый старт
+## Features
 
-### Локальная разработка
+- Rectangular 15 × 9 perimeter board of world-leading brands with synergy bonuses and PR reputation effects.
+- Lobby and match services with Socket.IO realtime updates, sealed-bid auctions, and contract negotiation flows.
+- Anti-cheat heuristics, telemetry via OpenTelemetry collector, Prometheus, and Grafana dashboards.
+- React front-end with PixiJS board rendering, Zustand store, i18n (EN/RU), accessible UI patterns, and tutorial overlay.
+- Electron desktop shell reusing the Vite build.
 
-```bash
-npm install
-npm run dev
-```
-
-Откройте http://localhost:3000 в браузере
-
-### Сборка проекта
-
-```bash
-npm run build     # Сборка с Vite (минификация, tree-shaking, code splitting)
-npm run preview   # Предпросмотр production версии
-npm run serve     # Запуск production версии
-```
-
-### Оптимизация
-
-```bash
-npm run optimize:svg      # Оптимизация SVG файлов
-npm run optimize:images   # Оптимизация изображений и конвертация в WebP
-npm run analyze          # Анализ размера бандла
-npm run lighthouse       # Проверка производительности
-```
-
-## 📁 Структура проекта
+## Project Structure
 
 ```
-├── src/                    # Исходные файлы
-│   ├── index.html         # Development версия
-│   ├── index.prod.html    # Production шаблон
-│   ├── style.css          # Стили
-│   ├── game.js            # Игровая логика
-│   └── performance-report.md
-├── dist/                  # Собранные файлы
-│   ├── index.html         # Минифицированная версия
-│   ├── style.min.css      # Минифицированные стили
-│   └── game.min.js        # Минифицированный JS
-├── build.js               # Скрипт сборки
-├── .htaccess             # Конфигурация Apache
-└── index.html            # Стартовая страница
+backend/        NestJS application (Auth, Lobby, Match, Economy, Auctions, Deals, Anti-cheat, Telemetry)
+frontend/       React + PixiJS client
+desktop/        Electron wrapper for the web client
+docker/         Dockerfiles and docker-compose setup
+config/         Nginx, OpenTelemetry collector, Prometheus configuration
+assets/         Placeholder SVGs and neutral skins
+BrandingConfig.json  Brand naming modes (Generic/RealBrands)
 ```
 
-## 🎮 Возможности
+## Getting Started
 
-- **Игровое поле** с российскими городами и локациями
-- **Покупка собственности** и система аренды
-- **Карточки шанса** с российской тематикой
-- **Оптимизированный код** с кэшированием DOM и плавными анимациями
-- **Адаптивный дизайн** для мобильных устройств
-- **Production готовность** с минификацией и сжатием
+### Prerequisites
+- Node.js 20+
+- npm 9+
+- Docker (optional for containerized deployment)
+- PostgreSQL and Redis (for local backend outside Docker)
 
-## 🛠️ Технические особенности
-
-- **ES6-модули** с tree-shaking и code splitting
-- **Vite** для быстрой сборки и разработки
-- **Критический CSS** для ускорения first paint
-- **Оптимизированные изображения** (WebP, SVG)
-- **Service Worker** для офлайн-режима
-- **Lazy loading** для крупных модулей
-- **Адаптивный дизайн** с логическими CSS-свойствами
-- **Производительность** оптимизирована на ~60%
-
-## ⚡ Оптимизация производительности
-
-### JavaScript
-- ✅ Все модули переведены на ES6 import/export
-- ✅ Удалены неиспользуемые экспорты через window.*
-- ✅ Настроен Vite с tree-shaking и code splitting
-- ✅ Крупные модули (tutorial, achievements) вынесены в отдельные чанки
-- ✅ Автоматическая минификация через Terser
-
-### CSS
-- ✅ Критический CSS встроен в head для ускорения first paint
-- ✅ Автоматическая минификация через cssnano
-- ✅ Логические и физические CSS-свойства для совместимости
-- ✅ Autoprefixer для кроссбраузерности
-
-### Изображения и ассеты
-- ✅ Автоматическая оптимизация SVG через svgo
-- ✅ Конвертация изображений в WebP
-- ✅ Сжатие JPEG/PNG через imagemin
-- ✅ Удаление неиспользуемых ассетов
-
-### Загрузка и PWA
-- ✅ Preload критических ресурсов
-- ✅ DNS prefetch для внешних доменов
-- ✅ Улучшенное кэширование в Service Worker
-- ✅ Оптимизация для мобильных устройств
-
-## 📊 Метрики производительности
-
-- Размер bundle: ~2.8KB (минифицированный)
-- Время загрузки: ~100ms
-- DOM запросы: 1-2 на действие
-- Стабильное использование памяти
-
-## 🔧 Команды NPM
-
-- `npm run start` - Быстрый старт dev сервера
-- `npm run dev` - Разработка (порт 8000)
-- `npm run build` - Сборка проекта
-- `npm run serve` - Production сервер
-- `npm run optimize` - Сборка + анализ
-- `npm run analyze` - Анализ размера bundle
-
-## 🌟 Планы развития
-
-- Многопользовательский режим
-- Система достижений
-- Турнирный режим  
-- Дополнительные карточки событий
-- Интеграция с социальными сетями
-- Progressive Web App возможности
-
-## 🌐 Локализация и языки
-
-- Все строки вынесены во внешние JSON-файлы (`assets/tokens/ru.json`, `assets/tokens/en.json`)
-- Динамическая подгрузка и переключение языков без перезагрузки страницы
-- Для добавления нового языка — создайте аналогичный JSON-файл и добавьте его в выпадающий список выбора языка
-
-## 🧩 Модульная архитектура
-
-- Весь JS-код разделён на ES6-модули: утилиты, локализация, работа с хранилищем, генерация случайных чисел и т.д.
-- Минимизация глобальных переменных, строгая структура импортов
-
-## 🧪 Тестирование и CI
-
-- (Рекомендуется) Добавить unit-тесты для ключевых функций (например, rollDice, работа с localStorage)
-- Возможна интеграция с GitHub Actions для автоматической проверки и сборки
-
-## 📱 PWA и SEO
-
-- Поддержка manifest.json и sw.js для оффлайн-режима и установки на устройство
-- Добавлены мета-теги для SEO и социальных сетей
-
-## 📝 Как добавить новый язык
-
-1. Скопируйте `assets/tokens/ru.json` или `en.json` и переведите все строки
-2. Назовите файл по коду языка (например, `de.json` для немецкого)
-3. Добавьте опцию выбора языка в UI (или используйте существующий выпадающий список)
-4. Всё — язык будет доступен для динамического переключения!
-
-## 📁 Обновлённая структура проекта
+### Install Dependencies
 
 ```
-├── assets/
-│   ├── brands/           # SVG-логотипы
-│   ├── sounds/           # Аудио
-│   └── tokens/           # Локализации (ru.json, en.json, ...)
-├── css/                  # Стили (адаптивные, с логическими и физическими свойствами)
-├── js/
-│   ├── localization.js   # Локализация (динамическая)
-│   ├── utils.js          # Базовые утилиты
-│   ├── random.js         # Генерация случайных чисел
-│   ├── storage.js        # Работа с localStorage
-│   └── ...               # Остальные модули
-├── index.html            # Стартовая страница
-└── ...
+npm install --prefix backend
+npm install --prefix frontend
+npm install --prefix desktop
 ```
 
-## ♿ Доступность и адаптивность
+### Development Workflow
 
-- Используются как физические, так и логические CSS-свойства для максимальной совместимости
-- Поддержка focus-visible, outline для клавиатурной навигации
-- Полная адаптивность для мобильных и десктопа
+1. Start PostgreSQL & Redis (Docker compose or local).
+2. Generate Prisma client and run migrations:
+   ```
+   cd backend
+   npx prisma generate
+   npx prisma migrate dev
+   ```
+3. Launch backend: `npm run start:dev --prefix backend`
+4. Launch frontend: `npm run dev --prefix frontend`
+5. Optionally start Electron shell: `npm run start --prefix desktop`
 
-## Логические CSS-свойства
+Environment variables are defined in `.env.example`. Copy to `.env` and fill secrets as needed.
 
-В проекте используется только современная логика для размеров и отступов:
-- Вместо `width` — `inline-size`
-- Вместо `height` — `block-size`
-- Вместо `margin-left` — `margin-inline-start`
-- Вместо `right` — `inset-inline-end`
-- и т.д.
+### Docker Compose
 
-### Проверка физических свойств
-
-Проверить наличие физических свойств во всех CSS-файлах:
-
-```sh
-npm run lint:css:physical
+```
+cd docker
+docker compose up --build
 ```
 
-Если скрипт что-то находит — замените физические свойства на логические аналоги.
+Services: `backend` (NestJS), `frontend` (Vite preview), `postgres`, `redis`, `otel-collector`, `prometheus`, `grafana`.
 
-### Тестирование RTL/LTR
+## Testing
 
-- В DevTools меняйте `<html dir="rtl">` и проверяйте, что интерфейс не ломается.
-- Тестируйте на мобильных устройствах и в разных браузерах.
+- Backend unit tests: `npm test --prefix backend`
+- Frontend unit tests: `npm test --prefix frontend`
 
----
+Playwright and end-to-end suites can be added within `frontend` as needed.
 
+## Branding Modes
 
+`BrandingConfig.json` toggles between neutral “Generic” labels and text-only “RealBrands”. Production deployments must enable the generic mode unless trademark licenses are secured.
+
+## Telemetry
+
+The backend emits OpenTelemetry spans via OTLP. The provided collector configuration exposes a Prometheus endpoint (`otel-collector:9464`) scraped by Prometheus and visualised in Grafana (`http://localhost:3001`).
+
+## Security & Fair Play
+
+- JWT authentication with short-lived access tokens and refresh tokens.
+- Anti-cheat heuristics detecting suspicious auction bidding and ultra-low latency.
+- Server-side validation of match flow, auctions, and contracts.
+- Redis-driven session cache and rate-limiting hooks (extend as needed).
+
+## License
+
+MIT. See `LICENSE` (if provided) for details.

@@ -1,0 +1,180 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum MatchStatus {
+  LOBBY
+  ACTIVE
+  FINISHED
+  ARCHIVED
+}
+
+enum MatchMode {
+  CLASSIC
+  ADVANCED
+  BLITZ
+}
+
+enum ContractStatus {
+  PENDING
+  ACTIVE
+  REJECTED
+  EXPIRED
+  COMPLETED
+}
+
+model Player {
+  id                 String            @id @default(uuid())
+  email              String?           @unique
+  displayName        String
+  passwordHash       String
+  elo                Int               @default(1200)
+  reputation         Int               @default(100)
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+  matches            MatchPlayer[]
+  proposedContracts  Contract[]        @relation("proposer")
+  receivedContracts  Contract[]        @relation("counterparty")
+  telemetryEvents    TelemetryEvent[]
+  tutorialCompletedAt DateTime?
+  preferences        Json?
+}
+
+model Match {
+  id          String          @id @default(uuid())
+  status      MatchStatus     @default(LOBBY)
+  mode        MatchMode       @default(CLASSIC)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  config      Json
+  state       Json
+  players     MatchPlayer[]
+  contracts   Contract[]
+  alliances   Alliance[]
+  events      GameplayEvent[]
+  telemetry   TelemetryEvent[]
+}
+
+model MatchPlayer {
+  id          String        @id @default(uuid())
+  match       Match         @relation(fields: [matchId], references: [id])
+  matchId     String
+  player      Player?       @relation(fields: [playerId], references: [id])
+  playerId    String?
+  displayName String
+  seat        Int
+  cash        Int            @default(1000000)
+  trust       Int            @default(50)
+  reputation  Float          @default(1.0)
+  isBot       Boolean        @default(false)
+  meta        Json?
+  brands      BrandState[]
+  events      GameplayEvent[]
+
+  @@unique([matchId, seat])
+}
+
+model Brand {
+  id           Int          @id @default(autoincrement())
+  slug         String       @unique
+  genericName  String
+  realName     String
+  industry     String
+  baseCost     Int
+  baseRent     Int
+  marketPower  Float
+  synergyKey   String
+  tier         Int           @default(1)
+  createdAt    DateTime      @default(now())
+  states       BrandState[]
+}
+
+model BrandState {
+  id           String      @id @default(uuid())
+  match        Match       @relation(fields: [matchId], references: [id])
+  matchId      String
+  brand        Brand       @relation(fields: [brandId], references: [id])
+  brandId      Int
+  owner        MatchPlayer? @relation(fields: [ownerId], references: [id])
+  ownerId      String?
+  level        Int         @default(1)
+  reputation   Float       @default(1.0)
+  rentModifier Float       @default(1.0)
+  lastEventId  String?
+
+  @@unique([matchId, brandId])
+}
+
+model Contract {
+  id            String         @id @default(uuid())
+  match         Match          @relation(fields: [matchId], references: [id])
+  matchId       String
+  proposer      MatchPlayer    @relation("proposer", fields: [proposerId], references: [id])
+  proposerId    String
+  counterparty  MatchPlayer?   @relation("counterparty", fields: [counterpartyId], references: [id])
+  counterpartyId String?
+  terms         Json
+  status        ContractStatus @default(PENDING)
+  createdAt     DateTime       @default(now())
+  acceptedAt    DateTime?
+  expiresAt     DateTime?
+
+  @@index([matchId])
+}
+
+model Alliance {
+  id           String                @id @default(uuid())
+  match        Match                 @relation(fields: [matchId], references: [id])
+  matchId      String
+  trustRating  Float                 @default(0.0)
+  formedAt     DateTime              @default(now())
+  dissolvedAt  DateTime?
+  terms        Json
+  participants AllianceParticipant[]
+
+  @@index([matchId])
+}
+
+model AllianceParticipant {
+  id             String      @id @default(uuid())
+  alliance       Alliance    @relation(fields: [allianceId], references: [id])
+  allianceId     String
+  member         MatchPlayer @relation(fields: [matchPlayerId], references: [id])
+  matchPlayerId  String
+  role           String
+  joinedAt       DateTime    @default(now())
+  leftAt         DateTime?
+
+  @@index([allianceId])
+}
+
+model GameplayEvent {
+  id            String       @id @default(uuid())
+  match         Match        @relation(fields: [matchId], references: [id])
+  matchId       String
+  player        MatchPlayer? @relation(fields: [matchPlayerId], references: [id])
+  matchPlayerId String?
+  type          String
+  payload       Json
+  createdAt     DateTime     @default(now())
+
+  @@index([matchId])
+}
+
+model TelemetryEvent {
+  id        String   @id @default(uuid())
+  player    Player?  @relation(fields: [playerId], references: [id])
+  playerId  String?
+  match     Match?   @relation(fields: [matchId], references: [id])
+  matchId   String?
+  event     String
+  payload   Json
+  emittedAt DateTime @default(now())
+
+  @@index([event])
+}

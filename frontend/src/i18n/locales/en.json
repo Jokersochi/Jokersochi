@@ -1,0 +1,27 @@
+{
+  "title": "Brandopoly Blitz",
+  "lobby": {
+    "header": "Available Rooms",
+    "create": "Create Lobby",
+    "join": "Join",
+    "ready": "Ready",
+    "notReady": "Not Ready",
+    "start": "Start Match"
+  },
+  "game": {
+    "yourTurn": "Your turn",
+    "waiting": "Waiting for other players",
+    "drive": "Drive Meter",
+    "auction": "Auction",
+    "contracts": "Contracts",
+    "tutorial": "Tutorial"
+  },
+  "tutorial": {
+    "step1": "Roll the dice and travel through brand districts.",
+    "step2": "Bid in silent auctions to secure franchises.",
+    "step3": "Negotiate smart deals and alliances to dominate the market."
+  },
+  "accessibility": {
+    "skip": "Skip to main content"
+  }
+}

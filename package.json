@@ -1,7 +1,7 @@
 {
-  "name": "monopoly-russia",
-  "version": "2.0.0",
-  "description": "Браузерная версия настольной игры Русская Монополия",
+  "name": "visage-studio",
+  "version": "1.0.0",
+  "description": "Веб-приложение для виртуальной примерки макияжа",
   "main": "index.html",
   "type": "module",
   "scripts": {
@@ -27,12 +27,12 @@
     "archive:production": "node scripts/archive.js production"
   },
   "keywords": [
-    "monopoly",
-    "russia",
-    "game",
-    "board-game",
+    "makeup",
+    "beauty",
+    "virtual-try-on",
+    "visage",
     "pwa",
-    "multiplayer"
+    "web-app"
   ],
   "author": "Jokersochi",
   "license": "MIT",

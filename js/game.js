@@ -4,6 +4,7 @@
  */
 
 import { getText } from './localization.js';
+import { showToast } from './ui-utils.js';
 import { generateId } from './utils.js';
 import { saveToStorage, loadFromStorage } from './storage.js';
 import { randomChoice, rollDice } from './random.js';
@@ -61,7 +62,7 @@ class Game {
 
 
         // В самом начале инициализации игры (например, в конструкторе или initializeGame)
-        if (window.localStorage) {
+        if (typeof window !== 'undefined' && window.localStorage) {
             const saved = localStorage.getItem('monopoly-autosave');
             if (saved) {
                 setTimeout(() => {
@@ -74,6 +75,20 @@ class Game {
                     }
                 }, 200);
             }
+        }
+    }
+
+    /**
+     * Обновляет UI-состояние после изменений игры
+     */
+    updateGameUI() {
+        try {
+            // Сигналы для обновления отдельных частей UI
+            eventBus.emit('boardUpdateRequest');
+            eventBus.emit('playersUpdateRequest');
+            eventBus.emit('currentPlayerUpdateRequest');
+        } catch (e) {
+            console.warn('updateGameUI failed:', e);
         }
     }
 
@@ -211,7 +226,7 @@ class Game {
         this.checkGameEndConditions();
         
         // --- Автосохранение ---
-        if (window.localStorage) {
+        if (typeof window !== 'undefined' && window.localStorage) {
             try {
                 const saveData = this.saveGame();
                 localStorage.setItem('monopoly-autosave', JSON.stringify(saveData));
@@ -255,18 +270,18 @@ class Game {
         // АНИМИРОВАННОЕ перемещение игрока
         const oldPos = currentPlayer.position;
         const steps = this.dice.total;
-        const newPos = (oldPos + steps) % 40;
+        const newPos = (oldPos + steps) % CONFIG.GAME.BOARD_SIZE;
         eventBus.emit('playerMoving', { player: currentPlayer, from: oldPos, to: newPos });
         
-        // Обновляем позицию игрока
-        currentPlayer.position = newPos;
+        // Обновляем позицию и начисляем бонус за СТАРТ через Player.move
+        const passedGo = currentPlayer.move(steps);
         // Обрабатываем клетку, на которую попал игрок
         this.handleCellLanding(currentPlayer, currentPlayer.position);
         // Если не дубль, переходим к следующему игроку
         if (!this.dice.isDouble) {
             this.nextPlayer();
         }
-        eventBus.emit('diceRolledEvent', { player: currentPlayer, roll: this.dice });
+        eventBus.emit('diceRolledEvent', { player: currentPlayer, roll: this.dice, passedGo });
         return this.dice;
     }
 
@@ -399,7 +414,7 @@ class Game {
     handleChanceCard(player) {
         const card = randomChoice(CONFIG.CHANCE_CARDS);
         this.applyChanceCard(player, card);
-        this.stats.chanceCardsDrawn++;
+        if (player && player.stats) { player.stats.chanceCardsDrawn++; }
     }
 
     /**
@@ -434,7 +449,7 @@ class Game {
     handleTreasureCard(player) {
         const card = randomChoice(CONFIG.TREASURE_CARDS);
         this.applyTreasureCard(player, card);
-        this.stats.treasureCardsDrawn++;
+        if (player && player.stats) { player.stats.treasureCardsDrawn++; }
     }
 
     /**
@@ -610,6 +625,7 @@ class Game {
         };
         
         saveToStorage('russian_monopoly_save', gameData);
+        return gameData;
     }
 
     /**

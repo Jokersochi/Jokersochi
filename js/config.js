@@ -14,6 +14,9 @@ const CONFIG = {
         GO_TO_JAIL_POSITION: 30,
         FREE_PARKING_POSITION: 20,
         START_POSITION: 0,
+        PASS_START_REWARD: 2000,
+        INCOME_TAX: 200,
+        LUXURY_TAX: 1000,
         DEFAULT_LANGUAGE: 'ru',
         SUPPORTED_LANGUAGES: ['ru', 'en', 'de', 'fr', 'es', 'zh', 'ja', 'ko']
     },
@@ -49,6 +52,7 @@ const CONFIG = {
     },
 
     // Настройки погоды
+    WEATHER_CHANGE_INTERVAL: 10,
     WEATHER: [
         {
             type: 'sunny',
@@ -123,6 +127,8 @@ const CONFIG = {
     ],
 
     // Настройки экономических событий
+    ECONOMIC_EVENT_FREQUENCY: 0.1,
+    ECONOMIC_EVENT_DURATION: 5,
     ECONOMIC_EVENTS: [
         {
             type: 'boom',
@@ -187,6 +193,8 @@ const CONFIG = {
     ],
 
     // Настройки культурных событий
+    CULTURAL_EVENT_FREQUENCY: 0.05,
+    CULTURAL_EVENT_DURATION: 3,
     CULTURAL_EVENTS: [
         {
             type: 'festival',
@@ -200,7 +208,8 @@ const CONFIG = {
             ko_name: '문화제',
             duration: 3,
             tourism: 1.5,
-            culture: 1.3
+            culture: 1.3,
+            bonus: 200
         },
         {
             type: 'olympics',
@@ -214,7 +223,8 @@ const CONFIG = {
             ko_name: '올림픽',
             duration: 4,
             tourism: 2.0,
-            culture: 1.5
+            culture: 1.5,
+            bonus: 300
         },
         {
             type: 'exhibition',
@@ -228,7 +238,8 @@ const CONFIG = {
             ko_name: '국제 박람회',
             duration: 3,
             tourism: 1.4,
-            culture: 1.2
+            culture: 1.2,
+            bonus: 150
         },
         {
             type: 'concert',
@@ -242,7 +253,8 @@ const CONFIG = {
             ko_name: '메가 콘서트',
             duration: 2,
             tourism: 1.3,
-            culture: 1.4
+            culture: 1.4,
+            bonus: 250
         }
     ],
 
@@ -655,29 +667,7 @@ const CONFIG = {
         { id: 'troika', name: 'Тройка', image: 'assets/tokens/troika.png' }
     ],
 
-    // Погодные условия
-    WEATHER_TYPES: [
-        { id: 'sunny', name: 'Солнечно', en_name: 'Sunny', effect: 'normal' },
-        { id: 'rainy', name: 'Дождливо', en_name: 'Rainy', effect: 'rent_reduction' },
-        { id: 'snowy', name: 'Снежно', en_name: 'Snowy', effect: 'movement_reduction' },
-        { id: 'stormy', name: 'Шторм', en_name: 'Stormy', effect: 'severe_reduction' }
-    ],
-
-    // Экономические события
-    ECONOMIC_EVENTS: [
-        { id: 'boom', name: 'Экономический бум', en_name: 'Economic Boom', effect: 'rent_increase', multiplier: 1.5 },
-        { id: 'crisis', name: 'Экономический кризис', en_name: 'Economic Crisis', effect: 'rent_decrease', multiplier: 0.7 },
-        { id: 'inflation', name: 'Инфляция', en_name: 'Inflation', effect: 'cost_increase', multiplier: 1.3 },
-        { id: 'deflation', name: 'Дефляция', en_name: 'Deflation', effect: 'cost_decrease', multiplier: 0.8 }
-    ],
-
-    // Культурные события
-    CULTURAL_EVENTS: [
-        { id: 'festival', name: 'Фестиваль', en_name: 'Festival', effect: 'rent_bonus', bonus: 200 },
-        { id: 'holiday', name: 'Праздник', en_name: 'Holiday', effect: 'income_bonus', bonus: 300 },
-        { id: 'exhibition', name: 'Выставка', en_name: 'Exhibition', effect: 'property_bonus', bonus: 150 },
-        { id: 'concert', name: 'Концерт', en_name: 'Concert', effect: 'entertainment_bonus', bonus: 250 }
-    ],
+    // (Упрощенные массивы ECONOMIC_EVENTS/CULTURAL_EVENTS были удалены для устранения дублирования)
 
     // Звуковые эффекты
     SOUNDS: {

@@ -3,9 +3,17 @@ let locales = {};
 let currentLocale = 'ru';
 
 export const loadLocales = async (lang = 'ru') => {
-  const response = await fetch(`assets/tokens/${lang}.json`);
-  locales[lang] = await response.json();
-  currentLocale = lang;
+  try {
+    const response = await fetch(`assets/tokens/${lang}.json`);
+    if (!response.ok) throw new Error(`Failed to load locale ${lang}`);
+    const data = await response.json();
+    locales[lang] = data || {};
+    currentLocale = lang;
+  } catch (error) {
+    console.warn('Locale load failed, falling back to key passthrough:', error?.message || error);
+    locales[lang] = locales[lang] || {};
+    currentLocale = lang;
+  }
 };
 
 export const setLocale = async (locale) => {
@@ -17,6 +25,7 @@ export const setLocale = async (locale) => {
 };
 
 export const getText = (key, params = {}) => {
+  if (!key || typeof key !== 'string') return '';
   const keys = key.split('.');
   let text = locales[currentLocale];
   for (const k of keys) {

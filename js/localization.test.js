@@ -1,11 +1,22 @@
-import { getText, setLocale, loadLocales } from './localization.js';
+const { getText, setLocale, loadLocales, setLocales } = require('./localization.js');
+const fetch = require('node-fetch');
+global.fetch = fetch;
 
-global.fetch = jest.fn(() => Promise.resolve({
-  json: () => Promise.resolve({
-    COMMON: { HELLO: 'Привет', HI: 'Hi' },
-    MESSAGES: { WELCOME: 'Добро пожаловать' }
-  })
-}));
+jest.mock('node-fetch', () => {
+  return jest.fn(() => 
+    Promise.resolve({
+      ok: true,
+      json: () => Promise.resolve({
+        COMMON: { HELLO: 'Привет', HI: 'Hi' },
+        MESSAGES: { WELCOME: 'Добро пожаловать' }
+      })
+    })
+  );
+});
+
+beforeEach(() => {
+  jest.clearAllMocks();
+});
 
 describe('localization', () => {
   beforeAll(async () => {
@@ -18,9 +29,7 @@ describe('localization', () => {
   });
 
   test('setLocale switches language', async () => {
-    fetch.mockImplementationOnce(() => Promise.resolve({
-      json: () => Promise.resolve({ COMMON: { HI: 'Hallo' } })
-    }));
+    fetch.mockImplementationOnce(() => Promise.resolve({ ok: true, json: () => Promise.resolve({ COMMON: { HI: 'Hallo' } }) }));
     await setLocale('de');
     expect(getText('COMMON.HI')).toBe('Hallo');
   });

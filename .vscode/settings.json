@@ -1,4 +1,10 @@
 {
     "CodeGPT.apiKey": "Nvidia",
-    "cmake.sourceDirectory": "C:/Users/joker/OneDrive/Dokumenti/GitHub/Jokersochi/node_modules/bare-fs"
+    "cmake.sourceDirectory": "C:/Users/joker/OneDrive/Dokumenti/GitHub/Jokersochi/node_modules/bare-fs",
+    "codex-project-manager.lineNumbersMigrationCompleted": true,
+    "chat.mcp.discovery.enabled": {
+        "cursor-workspace": true,
+        "cursor-global": true
+    },
+    "chat.agent.maxRequests": 10000
 }

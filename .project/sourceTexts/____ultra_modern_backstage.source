@@ -1,0 +1,1760 @@
+{
+  "cells": [
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:1",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 0,
+          "chunkSize": 471,
+          "startOffset": 0,
+          "endOffset": 472
+        },
+        "edits": [],
+        "chunkIndex": 0,
+        "chunkSize": 471,
+        "startOffset": 0,
+        "endOffset": 472
+      },
+      "kind": 2,
+      "value": "<!doctype html>\n<html lang=\"ru\">\n<head>\n  <!-- === META & SEO === -->\n  <meta charset=\"utf-8\" />\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n  <title>Премиум‑визажист в Сочи — high‑fashion макияж, съёмки, свадьбы</title>\n  <meta name=\"description\" content=\"Премиум‑визажист: свадебный, вечерний и fashion‑макияж, обучение. Онлайн‑запись, портфолио, отзывы. Атмосфера high‑fashion backstage.\" />\n  <meta name=\"theme-color\" content=\"#0b0b12\" />",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:2",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 1,
+          "chunkSize": 514,
+          "startOffset": 472,
+          "endOffset": 989
+        },
+        "edits": [],
+        "chunkIndex": 1,
+        "chunkSize": 514,
+        "startOffset": 472,
+        "endOffset": 989
+      },
+      "kind": 2,
+      "value": "<link rel=\"icon\" href='data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><circle cx=\"50\" cy=\"50\" r=\"48\" fill=\"%230b0b12\"/><text x=\"50\" y=\"60\" font-size=\"60\" text-anchor=\"middle\" fill=\"%23ff4bd1\">★</text></svg>' />\n\n  <!-- Open Graph -->\n  <meta property=\"og:title\" content=\"Премиум‑визажист — high‑fashion макияж\" />\n  <meta property=\"og:description\" content=\"Свадебный, вечерний, съёмки, обучение. Онлайн‑бронь, портфолио, отзывы.\" />\n  <meta property=\"og:type\" content=\"website\" />",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:3",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 2,
+          "chunkSize": 515,
+          "startOffset": 989,
+          "endOffset": 1507
+        },
+        "edits": [],
+        "chunkIndex": 2,
+        "chunkSize": 515,
+        "startOffset": 989,
+        "endOffset": 1507
+      },
+      "kind": 2,
+      "value": "<meta property=\"og:image\" content=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAAAAABQ8c6WAAAACXBIWXMAAAsSAAALEgHS3X78AAAAMElEQVR4nO3BMQEAAADCoPVPbQhPoAAAAAAAAAAAAAAAAAAAAAAAAAAAAABg4gVtAAE1dH6nAAAAAElFTkSuQmCC\" />\n\n  <!-- === BASE STYLES === -->\n  <style>\n    :root {\n      --bg: #0b0b12;                 /* глубокий графит */\n      --bg-elev: #0f0f18;            /* для карточек */\n      --txt: #e6e6f0;                /* перламутрово‑белый */\n      --muted: #b8bcc9;              /* вторичный текст */",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:4",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 3,
+          "chunkSize": 490,
+          "startOffset": 1507,
+          "endOffset": 2004
+        },
+        "edits": [],
+        "chunkIndex": 3,
+        "chunkSize": 490,
+        "startOffset": 1507,
+        "endOffset": 2004
+      },
+      "kind": 2,
+      "value": "--neon: #9d5cff;               /* неоновая сирень */\n      --neon-2: #33f1ff;             /* ледяная бирюза */\n      --accent: #ff4bd1;             /* фуксия‑глоу */\n      --ok: #52ffa8;                 /* акцент успеха */\n      --warn: #ffce56;\n\n      --rad: 18px;                   /* скругления */\n      --shadow: 0 10px 30px rgba(0,0,0,.45), 0 0 40px rgba(157,92,255,.08);\n\n      /* Флюидная типографика */\n      --fs-900: clamp(40px, 6vw, 80px);\n      --fs-700: clamp(28px, 4vw, 48px);",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:5",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 4,
+          "chunkSize": 522,
+          "startOffset": 2004,
+          "endOffset": 2533
+        },
+        "edits": [],
+        "chunkIndex": 4,
+        "chunkSize": 522,
+        "startOffset": 2004,
+        "endOffset": 2533
+      },
+      "kind": 2,
+      "value": "--fs-600: clamp(22px, 2.8vw, 32px);\n      --fs-500: clamp(18px, 2vw, 22px);\n      --fs-400: clamp(15px, 1.4vw, 18px);\n\n      /* Перламутровый градиент */\n      --pearl-grad: conic-gradient(from 120deg at 50% 50%, rgba(255,75,209,.25), rgba(157,92,255,.25), rgba(51,241,255,.25), rgba(255,206,86,.2), rgba(255,75,209,.25));\n      --neon-grad: radial-gradient(1200px 600px at 80% -10%, rgba(157,92,255,.12), transparent 60%),\n                    radial-gradient(800px 400px at 20% 0%, rgba(51,241,255,.10), transparent 60%);",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:6",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 5,
+          "chunkSize": 500,
+          "startOffset": 2533,
+          "endOffset": 3038
+        },
+        "edits": [],
+        "chunkIndex": 5,
+        "chunkSize": 500,
+        "startOffset": 2533,
+        "endOffset": 3038
+      },
+      "kind": 2,
+      "value": "}\n\n    /* Сброс и база */\n    * { box-sizing: border-box; }\n    html { scroll-behavior: smooth; }\n    body {\n      margin: 0; background: var(--bg);\n      color: var(--txt); font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, \"Inter\", \"Helvetica Neue\", Arial, \"Segoe UI\", Roboto, sans-serif;\n      line-height: 1.55; letter-spacing: .2px;\n      background-image: var(--neon-grad);\n      overflow-x: hidden;\n    }\n    h1, h2, h3 { font-weight: 700; letter-spacing: .3px; margin: 0 0 .6em; }",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:7",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 6,
+          "chunkSize": 507,
+          "startOffset": 3038,
+          "endOffset": 3550
+        },
+        "edits": [],
+        "chunkIndex": 6,
+        "chunkSize": 507,
+        "startOffset": 3038,
+        "endOffset": 3550
+      },
+      "kind": 2,
+      "value": "h1 { font-size: var(--fs-900); }\n    h2 { font-size: var(--fs-700); }\n    h3 { font-size: var(--fs-600); }\n    p, li { font-size: var(--fs-400); color: var(--txt); opacity: .95; }\n    .accent-italic { font-style: italic; font-family: \"Playfair Display\", \"Georgia\", ui-serif, serif; letter-spacing: .2px; }\n\n    .container { width: min(1200px, 92vw); margin: 0 auto; }\n    .grid { display: grid; gap: 28px; }\n\n    a { color: var(--neon-2); text-decoration: none; }\n    a:hover { text-decoration: underline; }",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:8",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 7,
+          "chunkSize": 437,
+          "startOffset": 3550,
+          "endOffset": 3993
+        },
+        "edits": [],
+        "chunkIndex": 7,
+        "chunkSize": 437,
+        "startOffset": 3550,
+        "endOffset": 3993
+      },
+      "kind": 2,
+      "value": ".btn {\n      --h: 56px; display: inline-flex; align-items: center; justify-content: center; height: var(--h);\n      padding: 0 22px; border-radius: 999px; background: linear-gradient(90deg, var(--accent), var(--neon));\n      color: #0b0b12; font-weight: 700; text-decoration: none; box-shadow: 0 0 0 0 rgba(255,75,209,.35);\n      outline: none; border: none; cursor: pointer; position: relative; overflow: hidden;\n    }\n    .btn:before {",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:9",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 8,
+          "chunkSize": 502,
+          "startOffset": 3993,
+          "endOffset": 4502
+        },
+        "edits": [],
+        "chunkIndex": 8,
+        "chunkSize": 502,
+        "startOffset": 3993,
+        "endOffset": 4502
+      },
+      "kind": 2,
+      "value": "content: \"\"; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(255,255,255,.35), transparent 40%, transparent 60%, rgba(255,255,255,.25));\n      mix-blend-mode: soft-light; opacity: .6; transform: translateX(-100%);\n    }\n    .btn:hover:before { animation: shimmer 1.2s linear; }\n    .btn:hover { filter: brightness(1.05); box-shadow: 0 6px 30px rgba(255,75,209,.25), 0 0 60px rgba(51,241,255,.18); }\n    .btn:focus-visible { outline: 3px solid var(--neon-2); outline-offset: 2px; }",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:10",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 9,
+          "chunkSize": 532,
+          "startOffset": 4502,
+          "endOffset": 5039
+        },
+        "edits": [],
+        "chunkIndex": 9,
+        "chunkSize": 532,
+        "startOffset": 4502,
+        "endOffset": 5039
+      },
+      "kind": 2,
+      "value": "@keyframes shimmer { to { transform: translateX(100%); } }\n\n    .chip { display: inline-flex; align-items:center; gap:8px; padding: 8px 12px; border-radius: 999px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); }\n\n    /* === HEADER / NAV === */\n    .header { position: sticky; top: 0; z-index: 50; backdrop-filter: blur(10px); background: rgba(11,11,18,.40); border-bottom: 1px solid rgba(255,255,255,.06); }\n    .nav { display: flex; align-items: center; justify-content: space-between; height: 68px; }",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:11",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 10,
+          "chunkSize": 469,
+          "startOffset": 5039,
+          "endOffset": 5514
+        },
+        "edits": [],
+        "chunkIndex": 10,
+        "chunkSize": 469,
+        "startOffset": 5039,
+        "endOffset": 5514
+      },
+      "kind": 2,
+      "value": ".brand { display:flex; align-items: center; gap: 12px; font-weight:800; letter-spacing: .6px; }\n    .brand .logo { width: 34px; height: 34px; border-radius: 50%; background: var(--pearl-grad); box-shadow: 0 0 30px rgba(157,92,255,.3) inset; }\n    .menu { display: flex; gap: 22px; align-items: center; }\n    .menu a { font-weight:600; opacity:.88; padding: 8px 10px; border-radius: 10px; }\n    .menu a:hover { background: rgba(255,255,255,.06); text-decoration: none; }",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:12",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 11,
+          "chunkSize": 495,
+          "startOffset": 5514,
+          "endOffset": 6014
+        },
+        "edits": [],
+        "chunkIndex": 11,
+        "chunkSize": 495,
+        "startOffset": 5514,
+        "endOffset": 6014
+      },
+      "kind": 2,
+      "value": ".burger { display:none; width: 38px; height: 38px; border-radius: 10px; border:1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.04); }\n    @media (max-width: 900px){\n      .menu { display:none; position: fixed; top: 68px; left:0; right:0; background: rgba(11,11,18,.92); border-top:1px solid rgba(255,255,255,.06); flex-direction: column; padding: 18px; }\n      .menu.open { display:flex; }\n      .burger { display:inline-grid; place-content:center; }\n    }\n\n    /* === HERO === */",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:13",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 12,
+          "chunkSize": 504,
+          "startOffset": 6014,
+          "endOffset": 6523
+        },
+        "edits": [],
+        "chunkIndex": 12,
+        "chunkSize": 504,
+        "startOffset": 6014,
+        "endOffset": 6523
+      },
+      "kind": 2,
+      "value": ".hero { position: relative; min-height: 88vh; display:grid; align-items:center; }\n    .hero__bg {\n      position:absolute; inset:0; overflow:hidden; pointer-events:none; filter: saturate(1.1);\n    }\n    .hero__bg video, .hero__bg img { width: 100%; height: 100%; object-fit: cover; transform: translateY(var(--parallax,0px)); transition: transform .1s linear; }\n    .hero__overlay { position:absolute; inset:0; background:\n      radial-gradient(40% 60% at 70% 10%, rgba(157,92,255,.25), transparent 60%),",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:14",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 13,
+          "chunkSize": 473,
+          "startOffset": 6523,
+          "endOffset": 7003
+        },
+        "edits": [],
+        "chunkIndex": 13,
+        "chunkSize": 473,
+        "startOffset": 6523,
+        "endOffset": 7003
+      },
+      "kind": 2,
+      "value": "radial-gradient(60% 40% at 20% 0%, rgba(51,241,255,.12), transparent 60%),\n      linear-gradient(180deg, rgba(11,11,18,.35), rgba(11,11,18,.85) 70%);\n      mix-blend-mode: screen; pointer-events:none; }\n\n    .hero__content { position: relative; padding: 100px 0 60px; }\n    .hero__kicker { display:flex; gap: 10px; align-items:center; margin-bottom: 14px; }\n    .hero__title { line-height: .98; text-shadow: 0 2px 30px rgba(157,92,255,.16), 0 0 80px rgba(51,241,255,.12); }",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:15",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 14,
+          "chunkSize": 441,
+          "startOffset": 7003,
+          "endOffset": 7449
+        },
+        "edits": [],
+        "chunkIndex": 14,
+        "chunkSize": 441,
+        "startOffset": 7003,
+        "endOffset": 7449
+      },
+      "kind": 2,
+      "value": ".hero__subtitle { max-width: 680px; color: var(--muted); margin: 16px 0 28px; }\n    .hero__cta { display:flex; gap:14px; flex-wrap:wrap; align-items:center; }\n\n    .socials { display:flex; gap:10px; }\n    .icon { width: 22px; height: 22px; display:inline-block; }\n    .icon svg { width:100%; height:100%; }\n\n    /* Masked images utility */\n    .masked { position: relative; overflow:hidden; border-radius: var(--rad); }\n    .masked::before {",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:16",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 15,
+          "chunkSize": 503,
+          "startOffset": 7449,
+          "endOffset": 7959
+        },
+        "edits": [],
+        "chunkIndex": 15,
+        "chunkSize": 503,
+        "startOffset": 7449,
+        "endOffset": 7959
+      },
+      "kind": 2,
+      "value": "content:\"\"; position:absolute; inset:0; background: linear-gradient(120deg, rgba(255,255,255,.14), rgba(255,255,255,0) 40%),\n                                         linear-gradient(200deg, rgba(255,75,209,.08), rgba(51,241,255,.08));\n      mix-blend-mode: soft-light; pointer-events:none; }\n\n    /* === ABOUT === */\n    section { padding: 80px 0; }\n    .section__head { display:flex; align-items:end; justify-content: space-between; margin-bottom: 32px; gap: 20px; }\n    .muted { color: var(--muted); }",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:17",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 16,
+          "chunkSize": 489,
+          "startOffset": 7959,
+          "endOffset": 8453
+        },
+        "edits": [],
+        "chunkIndex": 16,
+        "chunkSize": 489,
+        "startOffset": 7959,
+        "endOffset": 8453
+      },
+      "kind": 2,
+      "value": ".about__grid { grid-template-columns: 1.1fr .9fr; }\n    .about__photo { aspect-ratio: 3/4; object-fit: cover; width:100%; }\n    @media (max-width: 900px){ .about__grid { grid-template-columns: 1fr; } }\n\n    /* === SERVICES === */\n    .cards { grid-template-columns: repeat(4, 1fr); }\n    .card { background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02)); border:1px solid rgba(255,255,255,.08); border-radius: var(--rad); padding: 22px; box-shadow: var(--shadow); }",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:18",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 17,
+          "chunkSize": 454,
+          "startOffset": 8453,
+          "endOffset": 8912
+        },
+        "edits": [],
+        "chunkIndex": 17,
+        "chunkSize": 454,
+        "startOffset": 8453,
+        "endOffset": 8912
+      },
+      "kind": 2,
+      "value": ".card h3 { margin-bottom: 6px; }\n    .card .meta { display:flex; gap:12px; flex-wrap:wrap; margin: 10px 0 14px; }\n    .price { font-weight:800; font-size: var(--fs-500); color: var(--ok); }\n    @media (max-width: 1100px){ .cards { grid-template-columns: repeat(2, 1fr); } }\n    @media (max-width: 640px){ .cards { grid-template-columns: 1fr; } }\n\n    /* === PORTFOLIO === */\n    .filters { display:flex; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; }",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:19",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 18,
+          "chunkSize": 534,
+          "startOffset": 8912,
+          "endOffset": 9451
+        },
+        "edits": [],
+        "chunkIndex": 18,
+        "chunkSize": 534,
+        "startOffset": 8912,
+        "endOffset": 9451
+      },
+      "kind": 2,
+      "value": ".filter-btn { padding: 8px 14px; border-radius: 999px; border:1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.04); color: var(--txt); cursor:pointer; }\n    .filter-btn[aria-pressed=\"true\"] { background: linear-gradient(90deg, rgba(255,75,209,.25), rgba(157,92,255,.25)); border-color: rgba(157,92,255,.55); }\n\n    .portfolio { grid-template-columns: repeat(3, 1fr); }\n    .work { position:relative; overflow:hidden; border-radius: var(--rad); aspect-ratio: 3/4; cursor:pointer; border:1px solid rgba(255,255,255,.06); }",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:20",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 19,
+          "chunkSize": 497,
+          "startOffset": 9451,
+          "endOffset": 9953
+        },
+        "edits": [],
+        "chunkIndex": 19,
+        "chunkSize": 497,
+        "startOffset": 9451,
+        "endOffset": 9953
+      },
+      "kind": 2,
+      "value": ".work img { width:100%; height:100%; object-fit: cover; transition: transform .6s ease; filter: saturate(1.05) contrast(1.05); }\n    .work:hover img { transform: scale(1.04); }\n    .work__overlay { position:absolute; inset:0; background: linear-gradient(180deg, rgba(11,11,18,.0), rgba(11,11,18,.85)); display:flex; align-items:end; padding: 16px; opacity:0; transition: opacity .3s ease; }\n    .work:hover .work__overlay { opacity:1; }\n    .work__caption { font-size: 14px; color: var(--muted); }",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:21",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 20,
+          "chunkSize": 538,
+          "startOffset": 9953,
+          "endOffset": 10496
+        },
+        "edits": [],
+        "chunkIndex": 20,
+        "chunkSize": 538,
+        "startOffset": 9953,
+        "endOffset": 10496
+      },
+      "kind": 2,
+      "value": "@media (max-width: 1100px){ .portfolio { grid-template-columns: repeat(2, 1fr); } }\n    @media (max-width: 640px){ .portfolio { grid-template-columns: 1fr; } }\n\n    /* Modal viewer */\n    .modal { position: fixed; inset: 0; display: none; place-items:center; background: rgba(5,5,12,.85); z-index: 60; padding: 24px; }\n    .modal.open { display:grid; }\n    .modal__inner { width:min(1100px, 96vw); background: var(--bg-elev); border:1px solid rgba(255,255,255,.08); border-radius: var(--rad); overflow:hidden; box-shadow: var(--shadow); }",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:22",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 21,
+          "chunkSize": 462,
+          "startOffset": 10496,
+          "endOffset": 10963
+        },
+        "edits": [],
+        "chunkIndex": 21,
+        "chunkSize": 462,
+        "startOffset": 10496,
+        "endOffset": 10963
+      },
+      "kind": 2,
+      "value": ".modal__media { width:100%; aspect-ratio: 16/10; background:#09090f; display:grid; place-items:center; }\n    .modal__media img, .modal__media video { width:100%; height:100%; object-fit: cover; }\n    .modal__caption { padding: 14px 16px; color: var(--muted); border-top:1px solid rgba(255,255,255,.06); display:flex; justify-content: space-between; align-items:center; gap:16px; }\n\n    /* === REVIEWS === */\n    .carousel { position: relative; overflow:hidden; }",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:23",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 22,
+          "chunkSize": 495,
+          "startOffset": 10963,
+          "endOffset": 11463
+        },
+        "edits": [],
+        "chunkIndex": 22,
+        "chunkSize": 495,
+        "startOffset": 10963,
+        "endOffset": 11463
+      },
+      "kind": 2,
+      "value": ".carousel__track { display:flex; transition: transform .6s ease; }\n    .review { min-width: 100%; padding: 24px; display:grid; grid-template-columns: 80px 1fr; gap: 18px; align-items:center; border:1px solid rgba(255,255,255,.06); border-radius: var(--rad); background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.02)); }\n    .review img { width:80px; height:80px; border-radius: 50%; object-fit: cover; }\n    .stars { color: #ffd166; letter-spacing: 2px; font-size: 18px; }",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:24",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 23,
+          "chunkSize": 378,
+          "startOffset": 11463,
+          "endOffset": 11846
+        },
+        "edits": [],
+        "chunkIndex": 23,
+        "chunkSize": 378,
+        "startOffset": 11463,
+        "endOffset": 11846
+      },
+      "kind": 2,
+      "value": ".carousel__nav { margin-top: 12px; display:flex; gap: 10px; }\n    .dot { width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,.25); border:1px solid rgba(255,255,255,.2); cursor:pointer; }\n    .dot.active { background: linear-gradient(90deg, var(--accent), var(--neon)); }\n\n    /* === PRICING === */\n    .pricing { grid-template-columns: repeat(3, 1fr); }",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:25",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 24,
+          "chunkSize": 488,
+          "startOffset": 11846,
+          "endOffset": 12339
+        },
+        "edits": [],
+        "chunkIndex": 24,
+        "chunkSize": 488,
+        "startOffset": 11846,
+        "endOffset": 12339
+      },
+      "kind": 2,
+      "value": ".price-card { background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02)); border:1px solid rgba(255,255,255,.08); border-radius: var(--rad); padding: 22px; box-shadow: var(--shadow); display:flex; flex-direction: column; }\n    .badge { font-size: 12px; padding: 6px 10px; border-radius: 999px; background: rgba(255,75,209,.12); border: 1px solid rgba(255,75,209,.35); align-self:flex-start; }\n    .price-xl { font-size: 34px; font-weight: 900; margin: 8px 0 16px; }",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:26",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 25,
+          "chunkSize": 498,
+          "startOffset": 12339,
+          "endOffset": 12842
+        },
+        "edits": [],
+        "chunkIndex": 25,
+        "chunkSize": 498,
+        "startOffset": 12339,
+        "endOffset": 12842
+      },
+      "kind": 2,
+      "value": ".price-cta { margin-top: auto; }\n    @media (max-width: 1100px){ .pricing { grid-template-columns: 1fr 1fr; } }\n    @media (max-width: 640px){ .pricing { grid-template-columns: 1fr; } }\n\n    /* === CTA / FORM === */\n    .cta { background: radial-gradient(80% 100% at 50% 0%, rgba(157,92,255,.18), rgba(51,241,255,.10) 60%, transparent), linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0)); border-top:1px solid rgba(255,255,255,.06); border-bottom:1px solid rgba(255,255,255,.06); }",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:27",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 26,
+          "chunkSize": 457,
+          "startOffset": 12842,
+          "endOffset": 13304
+        },
+        "edits": [],
+        "chunkIndex": 26,
+        "chunkSize": 457,
+        "startOffset": 12842,
+        "endOffset": 13304
+      },
+      "kind": 2,
+      "value": ".form { display:grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 12px; }\n    .input { height: 56px; border-radius: 12px; border:1px solid rgba(255,255,255,.16); background: rgba(255,255,255,.04); color: var(--txt); padding: 0 14px; font-size: 16px; }\n    .input::placeholder { color: rgba(230,230,240,.5); }\n    @media (max-width: 900px){ .form { grid-template-columns: 1fr; } }\n\n    /* === FAQ & MEDIA === */\n    .faq { grid-template-columns: 1fr 1fr; }",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:28",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 27,
+          "chunkSize": 468,
+          "startOffset": 13304,
+          "endOffset": 13777
+        },
+        "edits": [],
+        "chunkIndex": 27,
+        "chunkSize": 468,
+        "startOffset": 13304,
+        "endOffset": 13777
+      },
+      "kind": 2,
+      "value": ".faq-item { border:1px solid rgba(255,255,255,.08); border-radius: var(--rad); overflow:hidden; background: rgba(255,255,255,.03); }\n    .faq-q { width:100%; text-align:left; padding:16px 18px; background: transparent; border:none; color: var(--txt); font-weight:700; display:flex; justify-content: space-between; align-items:center; cursor:pointer; }\n    .faq-a { padding: 0 18px 16px; color: var(--muted); display:none; }\n    .faq-item.open .faq-a { display:block; }",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:29",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 28,
+          "chunkSize": 496,
+          "startOffset": 13777,
+          "endOffset": 14278
+        },
+        "edits": [],
+        "chunkIndex": 28,
+        "chunkSize": 496,
+        "startOffset": 13777,
+        "endOffset": 14278
+      },
+      "kind": 2,
+      "value": "@media (max-width: 900px){ .faq { grid-template-columns: 1fr; } }\n\n    .media-grid { grid-template-columns: 2fr 1fr; }\n    .media-grid iframe, .media-grid video { width:100%; border: none; border-radius: var(--rad); }\n    @media (max-width: 900px){ .media-grid { grid-template-columns: 1fr; } }\n\n    /* === FOOTER / CONTACTS === */\n    .contacts { display:grid; grid-template-columns: 1.2fr .8fr; gap: 24px; }\n    .map { aspect-ratio: 16/10; border: none; width:100%; border-radius: var(--rad); }",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:30",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 29,
+          "chunkSize": 486,
+          "startOffset": 14278,
+          "endOffset": 14769
+        },
+        "edits": [],
+        "chunkIndex": 29,
+        "chunkSize": 486,
+        "startOffset": 14278,
+        "endOffset": 14769
+      },
+      "kind": 2,
+      "value": "@media (max-width: 900px){ .contacts { grid-template-columns: 1fr; } }\n\n    /* === MICRO‑INTERACTIONS === */\n    .hover-glow { transition: box-shadow .25s ease, transform .25s ease; }\n    .hover-glow:hover { box-shadow: 0 12px 40px rgba(157,92,255,.22), 0 0 80px rgba(51,241,255,.14); transform: translateY(-2px); }\n\n    /* === ACCESSIBILITY / REDUCED MOTION === */\n    @media (prefers-reduced-motion: reduce) {\n      * { animation: none !important; transition: none !important; }\n    }",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:31",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 30,
+          "chunkSize": 487,
+          "startOffset": 14769,
+          "endOffset": 15261
+        },
+        "edits": [],
+        "chunkIndex": 30,
+        "chunkSize": 487,
+        "startOffset": 14769,
+        "endOffset": 15261
+      },
+      "kind": 2,
+      "value": ".sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }\n  </style>\n\n  <!-- === STRUCTURED DATA (JSON‑LD) === -->\n  <script type=\"application/ld+json\">\n  {\n    \"@context\": \"https://schema.org\",\n    \"@type\": \"Person\",\n    \"name\": \"Лилит (Lilit Evoyan)\",\n    \"jobTitle\": \"Визажист\",\n    \"description\": \"Свадебный, вечерний, fashion‑макияж. Обучение.\",\n    \"address\": {\n      \"@type\": \"PostalAddress\",",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:32",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 31,
+          "chunkSize": 565,
+          "startOffset": 15261,
+          "endOffset": 15833
+        },
+        "edits": [],
+        "chunkIndex": 31,
+        "chunkSize": 565,
+        "startOffset": 15261,
+        "endOffset": 15833
+      },
+      "kind": 2,
+      "value": "\"addressLocality\": \"Сочи\",\n      \"addressCountry\": \"RU\"\n    },\n    \"telephone\": \"+7 918 907‑77‑07\",\n    \"image\": \"https://example.com/portrait.jpg\",\n    \"sameAs\": [\"https://t.me/id1193363222\",\"https://vk.com/lilit17\"]\n  </script>\n  <script type=\"application/ld+json\">\n  {\n    \"@context\": \"https://schema.org\",\n    \"@type\": \"FAQPage\",\n    \"mainEntity\": [\n      {\"@type\":\"Question\",\"name\":\"Как заранее забронировать дату свадьбы?\",\"acceptedAnswer\":{\"@type\":\"Answer\",\"text\":\"Выберите желаемую дату в форме, мы подтвердим время и детали в мессенджере в течение дня.\"}},",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:33",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 32,
+          "chunkSize": 496,
+          "startOffset": 15833,
+          "endOffset": 16336
+        },
+        "edits": [],
+        "chunkIndex": 32,
+        "chunkSize": 496,
+        "startOffset": 15833,
+        "endOffset": 16336
+      },
+      "kind": 2,
+      "value": "{\"@type\":\"Question\",\"name\":\"Сколько длится свадебный макияж?\",\"acceptedAnswer\":{\"@type\":\"Answer\",\"text\":\"Обычно 90–120 минут с учетом консультации и подготовительных процедур.\"}},\n      {\"@type\":\"Question\",\"name\":\"Выезжаете на дом или в отель?\",\"acceptedAnswer\":{\"@type\":\"Answer\",\"text\":\"Да, возможен выезд по Сочи и пригороду. Стоимость рассчитывается индивидуально.\"}}\n    ]\n  }\n  </script>\n\n  <!-- === ANALYTICS (placeholders; вставьте свои ID) === -->\n  <!-- Google Analytics 4 -->\n  <script>",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:34",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 33,
+          "chunkSize": 481,
+          "startOffset": 16336,
+          "endOffset": 16822
+        },
+        "edits": [],
+        "chunkIndex": 33,
+        "chunkSize": 481,
+        "startOffset": 16336,
+        "endOffset": 16822
+      },
+      "kind": 2,
+      "value": "// TODO: замените на реальный GA4 Measurement ID\n    /*\n    window.dataLayer = window.dataLayer || [];\n    function gtag(){ dataLayer.push(arguments); }\n    gtag('js', new Date());\n    gtag('config', 'G-XXXXXXXXXX');\n    */\n  </script>\n  <!-- Yandex.Metrika -->\n  <script>\n    // TODO: вставьте код Метрики\n  </script>\n  <!-- Preconnect & Fonts -->\n  <link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n  <link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:35",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 34,
+          "chunkSize": 510,
+          "startOffset": 16822,
+          "endOffset": 17335
+        },
+        "edits": [],
+        "chunkIndex": 34,
+        "chunkSize": 510,
+        "startOffset": 16822,
+        "endOffset": 17335
+      },
+      "kind": 2,
+      "value": "<link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Playfair+Display:ital,wght@1,600;1,700&display=swap\" rel=\"stylesheet\">\n\n  <!-- Twitter Card -->\n  <meta name=\"twitter:card\" content=\"summary_large_image\">\n  <meta name=\"twitter:title\" content=\"Премиум‑визажист — high‑fashion макияж\">\n  <meta name=\"twitter:description\" content=\"Свадебный, вечерний, съёмки, обучение. Онлайн‑бронь, портфолио, отзывы.\">\n\n  <!-- LocalBusiness JSON‑LD -->\n  <script type=\"application/ld+json\">",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:36",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 35,
+          "chunkSize": 526,
+          "startOffset": 17335,
+          "endOffset": 17864
+        },
+        "edits": [],
+        "chunkIndex": 35,
+        "chunkSize": 526,
+        "startOffset": 17335,
+        "endOffset": 17864
+      },
+      "kind": 2,
+      "value": "{\n    \"@context\": \"https://schema.org\",\n    \"@type\": \"LocalBusiness\",\n    \"name\": \"Backstage Beauty\",\n    \"image\": \"https://example.com/og.jpg\",\n    \"address\": {\"@type\":\"PostalAddress\",\"addressLocality\":\"Сочи\",\"addressCountry\":\"RU\",\"streetAddress\":\"ул. Пример, 1\"},\n    \"telephone\": \"+7 918 907‑77‑07\",\n    \"priceRange\": \"₽₽₽\",\n    \"openingHours\": \"Mo-Su 10:00-21:00\",\n    \"sameAs\": [\"https://t.me/id1193363222\",\"https://vk.com/lilit17\"]  \"aggregateRating\": {\"@type\":\"AggregateRating\",\"ratingValue\":\"5.0\",\"reviewCount\":\"127\"},",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:37",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 36,
+          "chunkSize": 519,
+          "startOffset": 17864,
+          "endOffset": 18388
+        },
+        "edits": [],
+        "chunkIndex": 36,
+        "chunkSize": 519,
+        "startOffset": 17864,
+        "endOffset": 18388
+      },
+      "kind": 2,
+      "value": "\"makesOffer\": [\n      {\"@type\":\"Offer\",\"name\":\"Свадебный макияж\",\"price\":\"15000\",\"priceCurrency\":\"RUB\"},\n      {\"@type\":\"Offer\",\"name\":\"Вечерний макияж\",\"price\":\"8000\",\"priceCurrency\":\"RUB\"},\n      {\"@type\":\"Offer\",\"name\":\"Макияж для съёмок\",\"price\":\"10000\",\"priceCurrency\":\"RUB\"}\n    ]\n  }\n  </script>\n</head>\n\n<body>\n  <a class=\"sr-only\" href=\"#main\">Перейти к основному содержимому</a>\n\n  <!-- === HEADER === -->\n  <header class=\"header\" role=\"banner\">\n    <div class=\"container nav\" aria-label=\"Основная навигация\">",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:38",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 37,
+          "chunkSize": 490,
+          "startOffset": 18388,
+          "endOffset": 18885
+        },
+        "edits": [],
+        "chunkIndex": 37,
+        "chunkSize": 490,
+        "startOffset": 18388,
+        "endOffset": 18885
+      },
+      "kind": 2,
+      "value": "<div class=\"brand\" aria-label=\"Логотип и бренд\">\n        <div class=\"logo\" aria-hidden=\"true\"></div>\n        <span>Backstage&nbsp;Beauty</span>\n      </div>\n      <nav>\n        <button class=\"burger\" id=\"burger\" aria-label=\"Открыть меню\" aria-expanded=\"false\">☰</button>\n        <div class=\"menu\" id=\"menu\" role=\"navigation\">\n          <a href=\"#services\">Услуги</a>\n          <a href=\"#portfolio\">Портфолио</a>\n          <a href=\"#reviews\">Отзывы</a>\n          <a href=\"#pricing\">Прайс</a>",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:39",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 38,
+          "chunkSize": 476,
+          "startOffset": 18885,
+          "endOffset": 19372
+        },
+        "edits": [],
+        "chunkIndex": 38,
+        "chunkSize": 476,
+        "startOffset": 18885,
+        "endOffset": 19372
+      },
+      "kind": 2,
+      "value": "<a href=\"#faq\">FAQ</a>\n          <a href=\"#contacts\">Контакты</a>\n          <a href=\"#cta\" class=\"chip hover-glow\">Записаться</a>\n        </div>\n      </nav>\n    </div>\n  </header>\n\n  <!-- === HERO === -->\n  <section class=\"hero\" id=\"hero\" aria-label=\"Главный блок\">\n    <div class=\"hero__bg\" aria-hidden=\"true\">\n      <video autoplay muted loop playsinline poster=\"https://images.unsplash.com/photo-1512204645234-98aeb8f71d0b?q=80&w=1600&auto=format&fit=crop\" id=\"heroVideo\">",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:40",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 39,
+          "chunkSize": 433,
+          "startOffset": 19372,
+          "endOffset": 19814
+        },
+        "edits": [],
+        "chunkIndex": 39,
+        "chunkSize": 433,
+        "startOffset": 19372,
+        "endOffset": 19814
+      },
+      "kind": 2,
+      "value": "<source src=\"\" type=\"video/mp4\" />\n      </video>\n      <div class=\"hero__overlay\"></div>\n    </div>\n    <div class=\"container hero__content\">\n      <div class=\"hero__kicker\">\n        <span class=\"chip\">High‑Fashion</span>\n        <span class=\"chip\">Backstage</span>\n        <span class=\"chip\">Premium</span>\n      </div>\n      <h1 class=\"hero__title\">Высокая мода в вашем образе <span class=\"accent-italic\">за один сеанс</span></h1>",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:41",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 40,
+          "chunkSize": 340,
+          "startOffset": 19814,
+          "endOffset": 20161
+        },
+        "edits": [],
+        "chunkIndex": 40,
+        "chunkSize": 340,
+        "startOffset": 19814,
+        "endOffset": 20161
+      },
+      "kind": 2,
+      "value": "<p class=\"hero__subtitle\">Свадебный, вечерний, съёмочный макияж и персональные обучающие сессии. Чистая кожа, идеальные тона, стойкость до 24 часов — без компромиссов.</p>\n      <div class=\"hero__cta\">\n        <a href=\"#cta\" class=\"btn\" aria-label=\"Перейти к записи\">Записаться</a>\n        <div class=\"socials\" aria-label=\"Социальные сети\">",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:42",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 41,
+          "chunkSize": 384,
+          "startOffset": 20161,
+          "endOffset": 20556
+        },
+        "edits": [],
+        "chunkIndex": 41,
+        "chunkSize": 384,
+        "startOffset": 20161,
+        "endOffset": 20556
+      },
+      "kind": 2,
+      "value": "<a class=\"icon\" aria-label=\"Instagram\" href=\"#\" rel=\"noopener\"><svg viewBox=\"0 0 24 24\" fill=\"currentColor\" aria-hidden=\"true\"><path d=\"M7 2C4.2 2 2 4.2 2 7v10c0 2.8 2.2 5 5 5h10c2.8 0 5-2.2 5-5V7c0-2.8-2.2-5-5-5H7zm0 2h10c1.7 0 3 1.3 3 3v10c0 1.7-1.3 3-3 3H7c-1.7 0-3-1.3-3-3V7c0-1.7 1.3-3 3-3zm11 1.8a1.2 1.2 0 100 2.4 1.2 1.2 0 000-2.4zM12 7a5 5 0 100 10 5 5 0 000-10z\"/></svg></a>",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:43",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 42,
+          "chunkSize": 411,
+          "startOffset": 20556,
+          "endOffset": 20978
+        },
+        "edits": [],
+        "chunkIndex": 42,
+        "chunkSize": 411,
+        "startOffset": 20556,
+        "endOffset": 20978
+      },
+      "kind": 2,
+      "value": "<a class=\"icon\" aria-label=\"Telegram\" href=\"https://t.me/id1193363222\" target=\"_blank\" rel=\"noopener\" rel=\"noopener\"><svg viewBox=\"0 0 24 24\" fill=\"currentColor\" aria-hidden=\"true\"><path d=\"M9.04 15.3l-.37 5.24c.53 0 .76-.23 1.04-.5l2.5-2.4 5.18 3.8c.95.53 1.64.25 1.9-.88l3.44-16.1c.35-1.62-.62-2.25-1.63-1.86L1.54 9.6c-1.56.6-1.53 1.47-.26 1.86l5.83 1.82 13.5-8.5c.63-.38 1.2-.17.73.27L9.04 15.3z\"/></svg></a>",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:44",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 43,
+          "chunkSize": 485,
+          "startOffset": 20978,
+          "endOffset": 21474
+        },
+        "edits": [],
+        "chunkIndex": 43,
+        "chunkSize": 485,
+        "startOffset": 20978,
+        "endOffset": 21474
+      },
+      "kind": 2,
+      "value": "<a class=\"icon\" aria-label=\"TikTok\" href=\"#\" rel=\"noopener\"><svg viewBox=\"0 0 24 24\" fill=\"currentColor\" aria-hidden=\"true\"><path d=\"M16 3c1.1 1.5 2.6 2.5 4.6 2.8V9c-1.8-.1-3.4-.7-4.6-1.7v6.4c0 3.3-2.7 6-6 6s-6-2.7-6-6 2.7-6 6-6c.4 0 .7 0 1 .1v3.7c-.3-.1-.6-.1-1-.1-1.3 0-2.3 1-2.3 2.3S7.7 16 9 16s2.3-1 2.3-2.3V3h4.7z\"/></svg></a>\n        </div>\n      </div>\n    </div>\n  </section>\n\n  <main id=\"main\">\n    <!-- === ABOUT === -->\n    <section id=\"about\">\n      <div class=\"container\">",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:45",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 44,
+          "chunkSize": 490,
+          "startOffset": 21474,
+          "endOffset": 21973
+        },
+        "edits": [],
+        "chunkIndex": 44,
+        "chunkSize": 490,
+        "startOffset": 21474,
+        "endOffset": 21973
+      },
+      "kind": 2,
+      "value": "<div class=\"section__head\">\n          <h2>О мастере</h2>\n          <span class=\"muted\">Философия чистой, выразительной красоты</span>\n        </div>\n        <div class=\"grid about__grid\">\n          <div>\n            <p><strong>Привет! Я — частный визажист премиум‑класса</strong> с опытом работы на fashion‑съёмках, показах и индивидуальных проектах. Мой подход — <span class=\"accent-italic\">невидимый макияж</span>: без тяжести, но с идеальной коррекцией и стойкостью.</p>\n            <ul>",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:46",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 45,
+          "chunkSize": 384,
+          "startOffset": 21973,
+          "endOffset": 22372
+        },
+        "edits": [],
+        "chunkIndex": 45,
+        "chunkSize": 384,
+        "startOffset": 21973,
+        "endOffset": 22372
+      },
+      "kind": 2,
+      "value": "<li>Сертифицированные продукты, гипоаллергенные формулы</li>\n              <li>Регалии: <em>MAC Pro</em>, <em>NYX Pro</em>, участник backstage‑команд на показах</li>\n              <li>Обучение и менторство для начинающих визажистов</li>\n            </ul>\n            <div class=\"chip\">Сертификаты и дипломы — по запросу</div>\n          </div>\n          <div class=\"masked hover-glow\">",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:47",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 46,
+          "chunkSize": 493,
+          "startOffset": 22372,
+          "endOffset": 22878
+        },
+        "edits": [],
+        "chunkIndex": 46,
+        "chunkSize": 493,
+        "startOffset": 22372,
+        "endOffset": 22878
+      },
+      "kind": 2,
+      "value": "<img class=\"about__photo\" loading=\"lazy\" src=\"https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?q=80&w=1000&auto=format&fit=crop\" alt=\"Портрет визажиста в студии high‑fashion\" />\n          </div>\n        </div>\n      </div>\n    </section>\n\n    <!-- === SERVICES === -->\n    <section id=\"services\" aria-label=\"Услуги\">\n      <div class=\"container\">\n        <div class=\"section__head\">\n          <h2>Услуги</h2>\n          <span class=\"muted\">Съёмки · Свадьбы · Вечер · Обучение</span>",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:48",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 47,
+          "chunkSize": 516,
+          "startOffset": 22878,
+          "endOffset": 23403
+        },
+        "edits": [],
+        "chunkIndex": 47,
+        "chunkSize": 516,
+        "startOffset": 22878,
+        "endOffset": 23403
+      },
+      "kind": 2,
+      "value": "</div>\n        <div class=\"grid cards\">\n          <article class=\"card hover-glow\" aria-label=\"Макияж для съёмок\">\n            <h3>Макияж для съёмок</h3>\n            <div class=\"meta\">\n              <span class=\"chip\">Длительность: ~90 мин</span>\n              <span class=\"chip price\">от 10 000 ₽</span>\n            </div>\n            <p>Камера‑ready: выравнивание тона, коррекция, стойкие текстуры, контроль бликов.</p>\n          </article>\n          <article class=\"card hover-glow\" aria-label=\"Свадебный макияж\">",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:49",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 48,
+          "chunkSize": 508,
+          "startOffset": 23403,
+          "endOffset": 23924
+        },
+        "edits": [],
+        "chunkIndex": 48,
+        "chunkSize": 508,
+        "startOffset": 23403,
+        "endOffset": 23924
+      },
+      "kind": 2,
+      "value": "<h3>Свадебный</h3>\n            <div class=\"meta\">\n              <span class=\"chip\">Длительность: ~120 мин</span>\n              <span class=\"chip price\">от 15 000 ₽</span>\n            </div>\n            <p>Воздушная кожа, акцент на глаза/губы по желанию, стойкость и ретушь зоны декольте.</p>\n          </article>\n          <article class=\"card hover-glow\" aria-label=\"Вечерний макияж\">\n            <h3>Вечерний</h3>\n            <div class=\"meta\">\n              <span class=\"chip\">Длительность: ~75 мин</span>",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:50",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 49,
+          "chunkSize": 452,
+          "startOffset": 23924,
+          "endOffset": 24391
+        },
+        "edits": [],
+        "chunkIndex": 49,
+        "chunkSize": 452,
+        "startOffset": 23924,
+        "endOffset": 24391
+      },
+      "kind": 2,
+      "value": "<span class=\"chip price\">от 8 000 ₽</span>\n            </div>\n            <p>Глянцевые акценты, сияние, smoky/liner. Идеально для мероприятий и ужинов.</p>\n          </article>\n          <article class=\"card hover-glow\" aria-label=\"Обучающий макияж\">\n            <h3>Обучающий</h3>\n            <div class=\"meta\">\n              <span class=\"chip\">Длительность: 2–3 часа</span>\n              <span class=\"chip price\">от 18 000 ₽</span>\n            </div>",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:51",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 50,
+          "chunkSize": 501,
+          "startOffset": 24391,
+          "endOffset": 24905
+        },
+        "edits": [],
+        "chunkIndex": 50,
+        "chunkSize": 501,
+        "startOffset": 24391,
+        "endOffset": 24905
+      },
+      "kind": 2,
+      "value": "<p>Индивидуальный разбор косметички, схемы нанесения, подбор оттенков и кистей.</p>\n          </article>\n        </div>\n      </div>\n    </section>\n\n    <!-- === PORTFOLIO === -->\n    <section id=\"portfolio\" aria-label=\"Портфолио\">\n      <div class=\"container\">\n        <div class=\"section__head\">\n          <h2>Портфолио</h2>\n          <div class=\"filters\" role=\"tablist\" aria-label=\"Фильтры работ\">\n            <button class=\"filter-btn\" data-filter=\"all\" aria-pressed=\"true\" role=\"tab\">Все</button>",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:52",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 51,
+          "chunkSize": 471,
+          "startOffset": 24905,
+          "endOffset": 25389
+        },
+        "edits": [],
+        "chunkIndex": 51,
+        "chunkSize": 471,
+        "startOffset": 24905,
+        "endOffset": 25389
+      },
+      "kind": 2,
+      "value": "<button class=\"filter-btn\" data-filter=\"wedding\" role=\"tab\">Свадебный</button>\n            <button class=\"filter-btn\" data-filter=\"evening\" role=\"tab\">Вечерний</button>\n            <button class=\"filter-btn\" data-filter=\"shoot\" role=\"tab\">Съёмки</button>\n          </div>\n        </div>\n        <div class=\"grid portfolio\" id=\"portfolioGrid\">\n          <!-- work item -->\n          <figure class=\"work\" data-cat=\"wedding\" tabindex=\"0\" aria-label=\"Нежный свадебный образ\">",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:53",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 52,
+          "chunkSize": 416,
+          "startOffset": 25389,
+          "endOffset": 25818
+        },
+        "edits": [],
+        "chunkIndex": 52,
+        "chunkSize": 416,
+        "startOffset": 25389,
+        "endOffset": 25818
+      },
+      "kind": 2,
+      "value": "<img loading=\"lazy\" src=\"https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1000&auto=format&fit=crop\" alt=\"Нежный свадебный макияж с сиянием\" />\n            <figcaption class=\"work__overlay\"><span class=\"work__caption\">Wedding · Нежный блеск и светлая вуаль</span></figcaption>\n          </figure>\n          <figure class=\"work\" data-cat=\"shoot\" tabindex=\"0\" aria-label=\"Fashion‑съёмка с графикой\">",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:54",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 53,
+          "chunkSize": 423,
+          "startOffset": 25818,
+          "endOffset": 26254
+        },
+        "edits": [],
+        "chunkIndex": 53,
+        "chunkSize": 423,
+        "startOffset": 25818,
+        "endOffset": 26254
+      },
+      "kind": 2,
+      "value": "<img loading=\"lazy\" src=\"https://images.unsplash.com/photo-1517260739337-6799d5994e4a?q=80&w=1000&auto=format&fit=crop\" alt=\"Fashion‑макияж с графичными стрелками\" />\n            <figcaption class=\"work__overlay\"><span class=\"work__caption\">Shoot · Графичные стрелки и влажная кожа</span></figcaption>\n          </figure>\n          <figure class=\"work\" data-cat=\"evening\" tabindex=\"0\" aria-label=\"Вечерний акцент на глаза\">",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:55",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 54,
+          "chunkSize": 414,
+          "startOffset": 26254,
+          "endOffset": 26681
+        },
+        "edits": [],
+        "chunkIndex": 54,
+        "chunkSize": 414,
+        "startOffset": 26254,
+        "endOffset": 26681
+      },
+      "kind": 2,
+      "value": "<img loading=\"lazy\" src=\"https://images.unsplash.com/photo-1519400197429-404ae1a1e184?q=80&w=1000&auto=format&fit=crop\" alt=\"Вечерний smoky‑eye и нюдовые губы\" />\n            <figcaption class=\"work__overlay\"><span class=\"work__caption\">Evening · Smoky‑eye с нюдовыми губами</span></figcaption>\n          </figure>\n          <figure class=\"work\" data-cat=\"shoot\" tabindex=\"0\" aria-label=\"Глянцевые губы для клипа\">",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:56",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 55,
+          "chunkSize": 407,
+          "startOffset": 26681,
+          "endOffset": 27101
+        },
+        "edits": [],
+        "chunkIndex": 55,
+        "chunkSize": 407,
+        "startOffset": 26681,
+        "endOffset": 27101
+      },
+      "kind": 2,
+      "value": "<img loading=\"lazy\" src=\"https://images.unsplash.com/photo-1520975922284-885e59a0a41f?q=80&w=1000&auto=format&fit=crop\" alt=\"Глянцевые губы и влажный эффект кожи\" />\n            <figcaption class=\"work__overlay\"><span class=\"work__caption\">Shoot · Влажный скин и глянец</span></figcaption>\n          </figure>\n          <figure class=\"work\" data-cat=\"wedding\" tabindex=\"0\" aria-label=\"Классическая свадьба\">",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:57",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 56,
+          "chunkSize": 412,
+          "startOffset": 27101,
+          "endOffset": 27526
+        },
+        "edits": [],
+        "chunkIndex": 56,
+        "chunkSize": 412,
+        "startOffset": 27101,
+        "endOffset": 27526
+      },
+      "kind": 2,
+      "value": "<img loading=\"lazy\" src=\"https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=1000&auto=format&fit=crop\" alt=\"Классический свадебный образ с акцентом на глаза\" />\n            <figcaption class=\"work__overlay\"><span class=\"work__caption\">Wedding · Классика и сияние</span></figcaption>\n          </figure>\n          <figure class=\"work\" data-cat=\"evening\" tabindex=\"0\" aria-label=\"Вечерний глянец\">",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:58",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 57,
+          "chunkSize": 503,
+          "startOffset": 27526,
+          "endOffset": 28042
+        },
+        "edits": [],
+        "chunkIndex": 57,
+        "chunkSize": 503,
+        "startOffset": 27526,
+        "endOffset": 28042
+      },
+      "kind": 2,
+      "value": "<img loading=\"lazy\" src=\"https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?q=80&w=1000&auto=format&fit=crop\" alt=\"Вечерний макияж с глянцевыми акцентами\" />\n            <figcaption class=\"work__overlay\"><span class=\"work__caption\">Evening · Перламутровые акценты</span></figcaption>\n          </figure>\n        </div>\n      </div>\n\n      <!-- Modal viewer -->\n      <div class=\"modal\" id=\"modal\" role=\"dialog\" aria-modal=\"true\" aria-label=\"Просмотр работы\">\n        <div class=\"modal__inner\">",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:59",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 58,
+          "chunkSize": 489,
+          "startOffset": 28042,
+          "endOffset": 28542
+        },
+        "edits": [],
+        "chunkIndex": 58,
+        "chunkSize": 489,
+        "startOffset": 28042,
+        "endOffset": 28542
+      },
+      "kind": 2,
+      "value": "<div class=\"modal__media\" id=\"modalMedia\" aria-live=\"polite\"></div>\n          <div class=\"modal__caption\">\n            <span id=\"modalText\">&nbsp;</span>\n            <button class=\"chip\" id=\"modalClose\" aria-label=\"Закрыть\">Закрыть ✕</button>\n          </div>\n        </div>\n      </div>\n    </section>\n\n    <!-- === REVIEWS === -->\n    <section id=\"reviews\" aria-label=\"Отзывы клиентов\">\n      <div class=\"container\">\n        <div class=\"section__head\">\n          <h2>Отзывы клиентов</h2>",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:60",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 59,
+          "chunkSize": 508,
+          "startOffset": 28542,
+          "endOffset": 29061
+        },
+        "edits": [],
+        "chunkIndex": 59,
+        "chunkSize": 508,
+        "startOffset": 28542,
+        "endOffset": 29061
+      },
+      "kind": 2,
+      "value": "<span class=\"muted\">Реальные истории и впечатления</span>\n        </div>\n        <div class=\"carousel\" aria-roledescription=\"carousel\" aria-label=\"Отзывы\" id=\"reviewCarousel\">\n          <div class=\"carousel__track\" id=\"reviewTrack\">\n            <article class=\"review\">\n              <img src=\"https://images.unsplash.com/photo-1531123897727-8f129e1688ce?q=80&w=200&auto=format&fit=crop\" alt=\"Фото клиента Анны\" />\n              <div>\n                <div class=\"stars\" aria-label=\"Оценка 5 из 5\">★★★★★</div>",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:61",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 60,
+          "chunkSize": 433,
+          "startOffset": 29061,
+          "endOffset": 29511
+        },
+        "edits": [],
+        "chunkIndex": 60,
+        "chunkSize": 433,
+        "startOffset": 29061,
+        "endOffset": 29511
+      },
+      "kind": 2,
+      "value": "<p>«Свадебный макияж держался идеально весь день. Лицо — как после лёгкой ретуши в журнале. Спасибо!» — Анна</p>\n              </div>\n            </article>\n            <article class=\"review\">\n              <img src=\"https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=200&auto=format&fit=crop\" alt=\"Фото клиента Марии\" />\n              <div>\n                <div class=\"stars\" aria-label=\"Оценка 5 из 5\">★★★★★</div>",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:62",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 61,
+          "chunkSize": 431,
+          "startOffset": 29511,
+          "endOffset": 29959
+        },
+        "edits": [],
+        "chunkIndex": 61,
+        "chunkSize": 431,
+        "startOffset": 29511,
+        "endOffset": 29959
+      },
+      "kind": 2,
+      "value": "<p>«Для клипа нужен был стойкий глянец без перегруза. Результат — идеально! Камера меня полюбила.» — Мария</p>\n              </div>\n            </article>\n            <article class=\"review\">\n              <img src=\"https://images.unsplash.com/photo-1519340241574-2cec6aef0c01?q=80&w=200&auto=format&fit=crop\" alt=\"Фото клиента Елены\" />\n              <div>\n                <div class=\"stars\" aria-label=\"Оценка 5 из 5\">★★★★★</div>",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:63",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 62,
+          "chunkSize": 491,
+          "startOffset": 29959,
+          "endOffset": 30467
+        },
+        "edits": [],
+        "chunkIndex": 62,
+        "chunkSize": 491,
+        "startOffset": 29959,
+        "endOffset": 30467
+      },
+      "kind": 2,
+      "value": "<p>«Обучение — огонь! Разобрали мою косметичку, теперь делаю дневной макияж за 10 минут.» — Елена</p>\n              </div>\n            </article>\n          </div>\n          <div class=\"carousel__nav\" role=\"tablist\" aria-label=\"Навигация по отзывам\">\n            <button class=\"dot active\" data-slide=\"0\" role=\"tab\" aria-selected=\"true\" aria-controls=\"reviewTrack\"></button>\n            <button class=\"dot\" data-slide=\"1\" role=\"tab\" aria-selected=\"false\" aria-controls=\"reviewTrack\"></button>",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:64",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 63,
+          "chunkSize": 483,
+          "startOffset": 30467,
+          "endOffset": 30963
+        },
+        "edits": [],
+        "chunkIndex": 63,
+        "chunkSize": 483,
+        "startOffset": 30467,
+        "endOffset": 30963
+      },
+      "kind": 2,
+      "value": "<button class=\"dot\" data-slide=\"2\" role=\"tab\" aria-selected=\"false\" aria-controls=\"reviewTrack\"></button>\n          </div>\n        </div>\n      </div>\n    </section>\n\n    <!-- === PRICING & OFFERS === -->\n    <section id=\"pricing\" aria-label=\"Прайс и спецпредложения\">\n      <div class=\"container\">\n        <div class=\"section__head\">\n          <h2>Прайс и спецпредложения</h2>\n          <span class=\"muted\">Прозрачно и честно</span>\n        </div>\n        <div class=\"grid pricing\">",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:65",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 64,
+          "chunkSize": 490,
+          "startOffset": 30963,
+          "endOffset": 31464
+        },
+        "edits": [],
+        "chunkIndex": 64,
+        "chunkSize": 490,
+        "startOffset": 30963,
+        "endOffset": 31464
+      },
+      "kind": 2,
+      "value": "<article class=\"price-card hover-glow\">\n            <span class=\"badge\">Популярно</span>\n            <h3>Вечерний макияж</h3>\n            <div class=\"price-xl\">8 000 ₽</div>\n            <ul>\n              <li>До 75 минут</li>\n              <li>Индивидуальный подбор оттенков</li>\n              <li>Стайлинг бровей</li>\n            </ul>\n            <div class=\"price-cta\"><a href=\"#cta\" class=\"btn\">Записаться</a></div>\n          </article>\n          <article class=\"price-card hover-glow\">",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:66",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 65,
+          "chunkSize": 487,
+          "startOffset": 31464,
+          "endOffset": 31964
+        },
+        "edits": [],
+        "chunkIndex": 65,
+        "chunkSize": 487,
+        "startOffset": 31464,
+        "endOffset": 31964
+      },
+      "kind": 2,
+      "value": "<span class=\"badge\">Bridal</span>\n            <h3>Свадебный</h3>\n            <div class=\"price-xl\">15 000 ₽</div>\n            <ul>\n              <li>До 120 минут</li>\n              <li>Тест‑макияж со скидкой 20%</li>\n              <li>Ретушь зоны декольте</li>\n            </ul>\n            <div class=\"price-cta\"><a href=\"#cta\" class=\"btn\">Забронировать дату</a></div>\n          </article>\n          <article class=\"price-card hover-glow\">\n            <span class=\"badge\">Подарки</span>",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:67",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 66,
+          "chunkSize": 486,
+          "startOffset": 31964,
+          "endOffset": 32463
+        },
+        "edits": [],
+        "chunkIndex": 66,
+        "chunkSize": 486,
+        "startOffset": 31964,
+        "endOffset": 32463
+      },
+      "kind": 2,
+      "value": "<h3>Сертификаты</h3>\n            <div class=\"price-xl\">от 5 000 ₽</div>\n            <ul>\n              <li>Электронные и печатные</li>\n              <li>Персональное поздравление</li>\n              <li>Срок действия: 12 месяцев</li>\n            </ul>\n            <div class=\"price-cta\"><a href=\"#cta\" class=\"btn\">Оформить</a></div>\n          </article>\n        </div>\n      </div>\n    </section>\n\n    <!-- === CTA / BOOKING === -->\n    <section id=\"cta\" class=\"cta\" aria-label=\"Запись\">",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:68",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 67,
+          "chunkSize": 477,
+          "startOffset": 32463,
+          "endOffset": 32947
+        },
+        "edits": [],
+        "chunkIndex": 67,
+        "chunkSize": 477,
+        "startOffset": 32463,
+        "endOffset": 32947
+      },
+      "kind": 2,
+      "value": "<div class=\"container\">\n        <div class=\"section__head\">\n          <h2>Готовы к идеальному образу?</h2>\n          <span class=\"muted\">Оставьте заявку — ответ в мессенджере в течение дня</span>\n        </div>\n\n        <!-- Placeholder для стороннего виджета онлайн‑бронирования -->\n        <div id=\"bookingWidget\" class=\"card\" style=\"margin-bottom: 16px;\" data-provider=\"calendly\" data-url=\"https://calendly.com/yourname/30min\">\n          <strong>Онлайн‑бронирование</strong>",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:69",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 68,
+          "chunkSize": 521,
+          "startOffset": 32947,
+          "endOffset": 33479
+        },
+        "edits": [],
+        "chunkIndex": 68,
+        "chunkSize": 521,
+        "startOffset": 32947,
+        "endOffset": 33479
+      },
+      "kind": 2,
+      "value": "<p class=\"muted\">Виджет загружается... Если не появился, используйте форму ниже.</p>\n        </div>\n\n        <form class=\"form\" id=\"bookingForm\" aria-label=\"Форма записи\" novalidate>\n          <label class=\"sr-only\" for=\"name\">Имя</label>\n          <input class=\"input\" id=\"name\" name=\"name\" type=\"text\" placeholder=\"Имя\" required />\n\n          <label class=\"sr-only\" for=\"phone\">Телефон</label>\n          <input class=\"input\" id=\"phone\" name=\"phone\" type=\"tel\" placeholder=\"Телефон\" pattern=\"[+0-9\\s()-]{6,}\" required />",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:70",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 69,
+          "chunkSize": 535,
+          "startOffset": 33479,
+          "endOffset": 34026
+        },
+        "edits": [],
+        "chunkIndex": 69,
+        "chunkSize": 535,
+        "startOffset": 33479,
+        "endOffset": 34026
+      },
+      "kind": 2,
+      "value": "<label class=\"sr-only\" for=\"date\">Желаемая дата</label>\n          <input class=\"input\" id=\"date\" name=\"date\" type=\"date\" />\n\n          <button class=\"btn\" type=\"submit\">Записаться</button>\n        </form>\n\n        <div id=\"formMsg\" role=\"status\" aria-live=\"polite\" class=\"muted\" style=\"margin-top:10px;\"></div>\n\n        <div style=\"margin-top:16px; display:flex; gap:10px; flex-wrap:wrap; align-items:center;\">\n          <a class=\"chip hover-glow\" href=\"https://t.me/id1193363222\" target=\"_blank\" rel=\"noopener\">Написать в Telegram</a>",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:71",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 70,
+          "chunkSize": 491,
+          "startOffset": 34026,
+          "endOffset": 34528
+        },
+        "edits": [],
+        "chunkIndex": 70,
+        "chunkSize": 491,
+        "startOffset": 34026,
+        "endOffset": 34528
+      },
+      "kind": 2,
+      "value": "<a class=\"chip hover-glow\" href=\"https://wa.me/79189077707\" target=\"_blank\" rel=\"noopener\">WhatsApp</a>\n          <a class=\"chip hover-glow\" href=\"tel:+79189077707\">Позвонить</a>\n        </div>\n      </div>\n    </section>\n\n    <!-- === PUBLICATIONS === -->\n    <section id=\"media\" aria-label=\"Публикации и backstage\">\n      <div class=\"container\">\n        <div class=\"section__head\">\n          <h2>Публикации</h2>\n          <span class=\"muted\">Выдержки из Instagram/TikTok и закулисье</span>",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:72",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 71,
+          "chunkSize": 459,
+          "startOffset": 34528,
+          "endOffset": 34996
+        },
+        "edits": [],
+        "chunkIndex": 71,
+        "chunkSize": 459,
+        "startOffset": 34528,
+        "endOffset": 34996
+      },
+      "kind": 2,
+      "value": "</div>\n        <div class=\"grid cards\">\n          <article class=\"card hover-glow\">\n            <h3>Глянцевый образ для съёмки</h3>\n            <p class=\"muted\">Разбор продуктов и схемы нанесения</p>\n            <a class=\"chip\" href=\"#\" target=\"_blank\" rel=\"noopener\">Смотреть пост →</a>\n          </article>\n          <article class=\"card hover-glow\">\n            <h3>Невеста‑2025: тренды</h3>\n            <p class=\"muted\">Долговечные текстуры, soft glow</p>",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:73",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 72,
+          "chunkSize": 497,
+          "startOffset": 34996,
+          "endOffset": 35506
+        },
+        "edits": [],
+        "chunkIndex": 72,
+        "chunkSize": 497,
+        "startOffset": 34996,
+        "endOffset": 35506
+      },
+      "kind": 2,
+      "value": "<a class=\"chip\" href=\"#\" target=\"_blank\" rel=\"noopener\">Смотреть Reels →</a>\n          </article>\n          <article class=\"card hover-glow\">\n            <h3>Backstage: до/после</h3>\n            <p class=\"muted\">Честные кадры без фильтров</p>\n            <a class=\"chip\" href=\"#\" target=\"_blank\" rel=\"noopener\">Смотреть видео →</a>\n          </article>\n        </div>\n      </div>\n    </section>\n\n    <!-- === FAQ & BACKSTAGE MEDIA === -->\n    <section id=\"faq\" aria-label=\"FAQ и backstage‑видео\">",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:74",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 73,
+          "chunkSize": 492,
+          "startOffset": 35506,
+          "endOffset": 36005
+        },
+        "edits": [],
+        "chunkIndex": 73,
+        "chunkSize": 492,
+        "startOffset": 35506,
+        "endOffset": 36005
+      },
+      "kind": 2,
+      "value": "<div class=\"container\">\n        <div class=\"section__head\">\n          <h2>FAQ</h2>\n          <span class=\"muted\">Популярные вопросы</span>\n        </div>\n        <div class=\"grid faq\">\n          <div>\n            <div class=\"faq-item\">\n              <button class=\"faq-q\" aria-expanded=\"false\">Как подготовиться к макияжу? <span>+</span></button>\n              <div class=\"faq-a\">Лёгкий уход за 2–3 дня, увлажнение за час до визита, чистая кожа без тональных средств.</div>\n            </div>",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:75",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 74,
+          "chunkSize": 434,
+          "startOffset": 36005,
+          "endOffset": 36452
+        },
+        "edits": [],
+        "chunkIndex": 74,
+        "chunkSize": 434,
+        "startOffset": 36005,
+        "endOffset": 36452
+      },
+      "kind": 2,
+      "value": "<div class=\"faq-item\">\n              <button class=\"faq-q\" aria-expanded=\"false\">Какие бренды вы используете? <span>+</span></button>\n              <div class=\"faq-a\">Профессиональные линейки: Dior Backstage, NARS, Charlotte Tilbury, Make Up For Ever и др.</div>\n            </div>\n            <div class=\"faq-item\">\n              <button class=\"faq-q\" aria-expanded=\"false\">Можно ли отменить/перенести запись? <span>+</span></button>",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:76",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 75,
+          "chunkSize": 485,
+          "startOffset": 36452,
+          "endOffset": 36952
+        },
+        "edits": [],
+        "chunkIndex": 75,
+        "chunkSize": 485,
+        "startOffset": 36452,
+        "endOffset": 36952
+      },
+      "kind": 2,
+      "value": "<div class=\"faq-a\">Да, предупредите минимум за 24 часа — подберём новое время без штрафов.</div>\n            </div>\n          </div>\n          <div>\n            <div class=\"grid media-grid\">\n              <iframe title=\"Backstage видео 1\" loading=\"lazy\" src=\"https://www.youtube-nocookie.com/embed/aqz-KE-bpKQ\" allowfullscreen></iframe>\n              <video controls loading=\"lazy\" poster=\"https://images.unsplash.com/photo-1542038784456-1ea8e935640e?q=80&w=1200&auto=format&fit=crop\">",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:77",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 76,
+          "chunkSize": 478,
+          "startOffset": 36952,
+          "endOffset": 37447
+        },
+        "edits": [],
+        "chunkIndex": 76,
+        "chunkSize": 478,
+        "startOffset": 36952,
+        "endOffset": 37447
+      },
+      "kind": 2,
+      "value": "<source src=\"\" type=\"video/mp4\" />\n              </video>\n            </div>\n          </div>\n        </div>\n      </div>\n    </section>\n\n    <!-- === CONTACTS === -->\n    <section id=\"contacts\" aria-label=\"Контакты\">\n      <div class=\"container\">\n        <div class=\"section__head\">\n          <h2>Контакты</h2>\n          <span class=\"muted\">Студия: Сочи, ул. Пример, 1 · 10:00–21:00 без выходных</span>\n        </div>\n        <div class=\"contacts\">\n          <div class=\"card\">",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:78",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 77,
+          "chunkSize": 499,
+          "startOffset": 37447,
+          "endOffset": 37959
+        },
+        "edits": [],
+        "chunkIndex": 77,
+        "chunkSize": 499,
+        "startOffset": 37447,
+        "endOffset": 37959
+      },
+      "kind": 2,
+      "value": "<p><strong>Адрес:</strong> Сочи, ул. Пример, 1</p>\n            <p><strong>Телефон:</strong> <a href=\"tel:+79189077707\">+7 (918) 907‑77‑07</a></p>\n            <p><strong>Email:</strong> <a href=\"mailto:beauty@example.com\">beauty@example.com</a></p>\n            <p><strong>VK:</strong> <a href=\"https://vk.com/lilit17\" target=\"_blank\" rel=\"noopener\">@lilit17</a></p>\n            <p><strong>Telegram:</strong> <a href=\"https://t.me/id1193363222\" target=\"_blank\" rel=\"noopener\">t.me/id1193363222</a></p>",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:79",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 78,
+          "chunkSize": 440,
+          "startOffset": 37959,
+          "endOffset": 38412
+        },
+        "edits": [],
+        "chunkIndex": 78,
+        "chunkSize": 440,
+        "startOffset": 37959,
+        "endOffset": 38412
+      },
+      "kind": 2,
+      "value": "<div class=\"socials\" aria-label=\"Социальные сети в подвале\">\n              <a class=\"icon\" aria-label=\"Instagram\" href=\"#\" rel=\"noopener\"><svg viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M7 2C4.2 2 2 4.2 2 7v10c0 2.8 2.2 5 5 5h10c2.8 0 5-2.2 5-5V7c0-2.8-2.2-5-5-5H7zm0 2h10c1.7 0 3 1.3 3 3v10c0 1.7-1.3 3-3 3H7c-1.7 0-3-1.3-3-3V7c0-1.7 1.3-3 3-3zm11 1.8a1.2 1.2 0 100 2.4 1.2 1.2 0 000-2.4zM12 7a5 5 0 100 10 5 5 0 000-10z\"/></svg></a>",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:80",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 79,
+          "chunkSize": 392,
+          "startOffset": 38412,
+          "endOffset": 38819
+        },
+        "edits": [],
+        "chunkIndex": 79,
+        "chunkSize": 392,
+        "startOffset": 38412,
+        "endOffset": 38819
+      },
+      "kind": 2,
+      "value": "<a class=\"icon\" aria-label=\"Telegram\" href=\"https://t.me/id1193363222\" target=\"_blank\" rel=\"noopener\" rel=\"noopener\"><svg viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M9.04 15.3l-.37 5.24c.53 0 .76-.23 1.04-.5l2.5-2.4 5.18 3.8c.95.53 1.64.25 1.9-.88l3.44-16.1c.35-1.62-.62-2.25-1.63-1.86L1.54 9.6c-1.56.6-1.53 1.47-.26 1.86l5.83 1.82 13.5-8.5c.63-.38 1.2-.17.73.27L9.04 15.3z\"/></svg></a>",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:81",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 80,
+          "chunkSize": 522,
+          "startOffset": 38819,
+          "endOffset": 39356
+        },
+        "edits": [],
+        "chunkIndex": 80,
+        "chunkSize": 522,
+        "startOffset": 38819,
+        "endOffset": 39356
+      },
+      "kind": 2,
+      "value": "<a class=\"icon\" aria-label=\"TikTok\" href=\"#\" rel=\"noopener\"><svg viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M16 3c1.1 1.5 2.6 2.5 4.6 2.8V9c-1.8-.1-3.4-.7-4.6-1.7v6.4c0 3.3-2.7 6-6 6s-6-2.7-6-6 2.7-6 6-6c.4 0 .7 0 1 .1v3.7c-.3-.1-.6-.1-1-.1-1.3 0-2.3 1-2.3 2.3S7.7 16 9 16s2.3-1 2.3-2.3V3h4.7z\"/></svg></a>\n            </div>\n          </div>\n          <iframe class=\"map hover-glow\" title=\"Карта студии\" loading=\"lazy\" src=\"https://yandex.ru/map-widget/v1/?um=constructor%3Aplaceholder&source=constructor\"></iframe>",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:82",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 81,
+          "chunkSize": 485,
+          "startOffset": 39356,
+          "endOffset": 39850
+        },
+        "edits": [],
+        "chunkIndex": 81,
+        "chunkSize": 485,
+        "startOffset": 39356,
+        "endOffset": 39850
+      },
+      "kind": 2,
+      "value": "</div>\n      </div>\n    </section>\n  </main>\n\n  <footer class=\"container\" style=\"padding: 40px 0; display:flex; justify-content: space-between; gap: 12px; flex-wrap:wrap; border-top:1px solid rgba(255,255,255,.06);\">\n    <small>© <span id=\"year\"></span> Backstage Beauty. Все права защищены.</small>\n    <small><a href=\"#hero\">Наверх ↑</a></small>\n  </footer>\n\n  <!-- === SCRIPTS === -->\n  <script>\n    // Sticky nav: mobile burger\n    const burger = document.getElementById('burger');",
+      "languageId": "html"
+    },
+    {
+      "metadata": {
+        "id": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage 1:83",
+        "type": "text",
+        "data": {
+          "type": "text",
+          "chunkIndex": 82,
+          "chunkSize": 143,
+          "startOffset": 39850,
+          "endOffset": 40000
+        },
+        "edits": [],
+        "chunkIndex": 82,
+        "chunkSize": 143,
+        "startOffset": 39850,
+        "endOffset": 40000
+      },
+      "kind": 2,
+      "value": "const menu = document.getElementById('menu');\n    burger?.addEventListener('click', () => {\n      const opened = menu.classList.toggle('open');",
+      "languageId": "html"
+    }
+  ],
+  "metadata": {
+    "textDirection": "ltr",
+    "videoUrl": "",
+    "lineNumbersEnabled": true,
+    "lineNumbersEnabledSource": "global",
+    "id": "source-1758120252104",
+    "originalName": "премиум_визажист_одностраничный_сайт_ultra_modern_backstage.html",
+    "sourceFsPath": "c:\\Users\\joker\\OneDrive\\Dokumenti\\GitHub\\Jokersochi\\.project\\sourceTexts\\____ultra_modern_backstage.source",
+    "codexFsPath": "c:\\Users\\joker\\OneDrive\\Dokumenti\\GitHub\\Jokersochi\\files\\target\\____ultra_modern_backstage.codex",
+    "navigation": [],
+    "sourceCreatedAt": "2025-09-17T14:44:12.104Z",
+    "corpusMarker": "smart-segmenter"
+  }
+}

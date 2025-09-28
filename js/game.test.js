@@ -1,15 +1,12 @@
-import { Game } from './game.js';
-import { Player } from './player.js';
-import { board } from './board.js';
-import eventBus from './event-bus.js';
-import auctionManager from './auction-manager.js';
-import * as random from './random.js';
+const { describe, test, expect, beforeEach, afterEach } = require('@jest/globals');
+const _jest = require('@jest/globals').jest;
+// Module requires are intentionally delayed until after mocks are declared
 
 // --- Mocking Dependencies ---
 
 // Mock the Player class
-jest.mock('./player.js', () => ({
-    Player: jest.fn().mockImplementation((id, name) => ({
+_jest.mock('./player.js', () => ({
+    Player: _jest.fn().mockImplementation((id, name) => ({
         id,
         name,
         position: 0,
@@ -18,46 +15,60 @@ jest.mock('./player.js', () => ({
         properties: [],
         lastRoll: null,
         doublesCount: 0,
-        hasMoney: jest.fn().mockReturnValue(true),
-        canPayRent: jest.fn().mockReturnValue(true),
-        buyProperty: jest.fn().mockReturnValue(true),
-        removeMoney: jest.fn(),
-        addMoney: jest.fn(),
-        goToJail: jest.fn(),
-        declareBankruptcy: jest.fn(function() { this.bankrupt = true; }),
-        saveState: jest.fn(function() { return { id: this.id, name: this.name, money: this.money, bankrupt: this.bankrupt }; }),
+        hasMoney: _jest.fn().mockReturnValue(true),
+        canPayRent: _jest.fn().mockReturnValue(true),
+        buyProperty: _jest.fn().mockReturnValue(true),
+        removeMoney: _jest.fn(),
+        addMoney: _jest.fn(),
+        goToJail: _jest.fn(),
+        declareBankruptcy: _jest.fn(function() { this.bankrupt = true; }),
+        saveState: _jest.fn(function() { return { id: this.id, name: this.name, money: this.money, bankrupt: this.bankrupt }; }),
+        getStats: _jest.fn(function() { return { ...this.stats }; }),
+        move: _jest.fn(function(steps) { const oldPos = this.position; this.position = (this.position + steps) % 40; return this.position < oldPos; }),
+        moveToPosition: _jest.fn(function(position, collectMoney = true) { const oldPos = this.position; this.position = position % 40; return collectMoney && (this.position < oldPos); }),
     })),
 }));
 
 // Mock singletons and modules
-jest.mock('./board.js', () => ({
+_jest.mock('./board.js', () => ({
     board: {
-        initializeBoard: jest.fn(),
-        getCell: jest.fn(),
-        calculateRent: jest.fn().mockReturnValue(50),
+        initializeBoard: _jest.fn(),
+        getCell: _jest.fn(),
+        calculateRent: _jest.fn().mockReturnValue(50),
+        transferProperty: _jest.fn(),
+        getState: _jest.fn(() => ({})),
+        getStats: _jest.fn(() => ({})),
     },
 }));
 
-jest.mock('./event-bus.js', () => ({
-    emit: jest.fn(),
-    on: jest.fn(),
+_jest.mock('./event-bus.js', () => ({
+    emit: _jest.fn(),
+    on: _jest.fn(),
 }));
 
-jest.mock('./auction-manager.js', () => ({
-    startAuction: jest.fn(),
+_jest.mock('./auction-manager.js', () => ({
+    startAuction: _jest.fn(),
 }));
 
-jest.mock('./random.js', () => ({
-    rollDice: jest.fn(),
-    randomChoice: jest.fn(),
+_jest.mock('./random.js', () => ({
+    rollDice: _jest.fn(),
+    randomChoice: _jest.fn(),
 }));
 
-jest.mock('./localization.js', () => ({
-    getText: jest.fn(key => key), // Return the key itself for simplicity
+_jest.mock('./localization.js', () => ({
+    getText: _jest.fn(key => key), // Return the key itself for simplicity
 }));
 
 
 describe('Game Class', () => {
+    // Require modules after mocks are in place so that the module system
+    // returns the mocked versions to modules that require them (e.g. game.js)
+    const { Game } = require('./game.js');
+    const { Player } = require('./player.js');
+    const { board } = require('./board.js');
+    const eventBus = require('./event-bus.js');
+    const auctionManager = require('./auction-manager.js');
+    const random = require('./random.js');
     let game;
     const playerData = [
         { id: 'p1', name: 'Joker', token: 'matryoshka' },
@@ -66,7 +77,7 @@ describe('Game Class', () => {
 
     beforeEach(() => {
         // Clear all mocks before each test
-        jest.clearAllMocks();
+        _jest.clearAllMocks();
         game = new Game();
     });
 

@@ -3,6 +3,7 @@
  * Управляет состоянием игроков, их деньгами, свойствами и действиями
  */
 import { CONFIG } from './config.js';
+import eventBus from './event-bus.js';
 
 const passedStart = (oldPos, newPos) => newPos < oldPos;
 
@@ -41,11 +42,19 @@ class Player {
      * @param {string} reason - причина (для статистики)
      */
     addMoney(amount, reason = '') {
+        if (amount <= 0) {
+            return;
+        }
+
         this.money += amount;
         this.stats.totalMoneyEarned += amount;
         
         if (reason === 'rent') {
             this.stats.totalRentReceived += amount;
+        }
+
+        if (eventBus && typeof eventBus.emit === 'function') {
+            eventBus.emit('moneyChanged', { player: this, amount: this.money, change: amount, reason });
         }
     }
 
@@ -56,6 +65,10 @@ class Player {
      * @returns {boolean} true если достаточно денег
      */
     removeMoney(amount, reason = '') {
+        if (amount <= 0) {
+            return false;
+        }
+
         if (this.money < amount) {
             return false;
         }
@@ -65,6 +78,10 @@ class Player {
         
         if (reason === 'rent') {
             this.stats.totalRentPaid += amount;
+        }
+
+        if (eventBus && typeof eventBus.emit === 'function') {
+            eventBus.emit('moneyChanged', { player: this, amount: this.money, change: -amount, reason });
         }
         return true;
     }
@@ -88,7 +105,7 @@ class Player {
         this.position = newPosition % CONFIG.GAME.BOARD_SIZE;
         
         if (passStart) {
-            this.addMoney(2000, 'start');
+            this.addMoney(CONFIG.GAME.PASS_START_REWARD, 'start');
             this.stats.timesPassedStart++;
         }
     }
@@ -337,7 +354,7 @@ class Player {
         }
 
         // Проверяем, может ли игрок продать что-то для оплаты
-        const unmortgagedProperties = this.getUnmortgagedProperties();
+        const unmortgagedProperties = this.getUnmortgagedProperties(board);
         let totalSellableValue = 0;
         
         unmortgagedProperties.forEach(position => {
@@ -439,5 +456,11 @@ class Player {
 export { Player };
 
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = Player;
+    try {
+        module.exports = module.exports || {};
+        module.exports.Player = Player;
+        module.exports.default = Player;
+    } catch (e) {
+        // ignore
+    }
 } 

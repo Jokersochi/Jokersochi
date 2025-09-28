@@ -26,7 +26,8 @@ class Board {
      */
     initializeBoard() {
         // Создаем все клетки
-        for (let i = 0; i < CONFIG.GAME.BOARD_SIZE; i++) {
+        const size = CONFIG.GAME.BOARD_SIZE;
+        for (let i = 0; i < size; i++) {
             this.cells[i] = this.createCell(i);
         }
 
@@ -76,11 +77,11 @@ class Board {
         if (position === 20) return 'free_parking';
         if (position === 30) return 'go_to_jail';
 
-        // Клетки Шанс
-        if ([2, 7, 17, 22, 33, 36].includes(position)) return 'chance';
+        // Клетки Шанс (примерные позиции)
+        if ([7, 22, 36].includes(position)) return 'chance';
 
-        // Клетки Казна
-        if ([12, 22, 33].includes(position)) return 'treasure';
+        // Клетки Казна (примерные позиции)
+        if ([2, 17, 33].includes(position)) return 'treasure';
 
         // Налоговые клетки
         if ([4, 38].includes(position)) return 'tax';
@@ -104,14 +105,11 @@ class Board {
             case 9: return getText('COMMON.JAIL');
             case 20: return getText('COMMON.FREE_PARKING');
             case 30: return getText('COMMON.GO_TO_JAIL');
-            case 2:
             case 7:
-            case 17:
             case 22:
-            case 33:
             case 36: return getText('COMMON.CHANCE');
-            case 12:
-            case 22:
+            case 2:
+            case 17:
             case 33: return getText('COMMON.TREASURE');
             case 4:
             case 38: return getText('COMMON.TAX');
@@ -129,8 +127,8 @@ class Board {
         if (property) return property.price;
 
         // Налоговые клетки
-        if (position === 4) return 200;
-        if (position === 38) return 1000;
+        if (position === 4) return CONFIG.GAME.INCOME_TAX;
+        if (position === 38) return CONFIG.GAME.LUXURY_TAX;
 
         return 0;
     }
@@ -409,20 +407,28 @@ class Board {
             rent *= 1.5;
         }
 
-        // Влияние погоды
-        const weatherEffect = CONFIG.WEATHER.EFFECTS[this.weather];
-        if (weatherEffect) {
-            rent *= weatherEffect.rentMultiplier;
+        // Влияние погоды (используем массив WEATHER)
+        const weather = CONFIG.WEATHER.find(w => w.type === this.weather);
+        if (weather && weather.effects && typeof weather.effects.rent === 'number') {
+            rent *= weather.effects.rent;
         }
 
-        // Влияние экономических событий
+        // Влияние экономических событий (по данным из CONFIG)
         if (this.economicEvent) {
-            rent *= this.economicEvent.multiplier;
+            const econ = CONFIG.ECONOMIC_EVENTS.find(e => e.type === this.economicEvent.type || e.id === this.economicEvent.id);
+            const multiplier = econ?.income ?? this.economicEvent.income ?? this.economicEvent.multiplier;
+            if (typeof multiplier === 'number') {
+                rent *= multiplier;
+            }
         }
 
-        // Влияние культурных событий
+        // Влияние культурных событий (flat bonus если указан bonus)
         if (this.culturalEvent) {
-            rent += this.culturalEvent.bonus;
+            const cult = CONFIG.CULTURAL_EVENTS.find(c => c.type === this.culturalEvent.type || c.id === this.culturalEvent.id);
+            const bonus = cult?.bonus ?? this.culturalEvent.bonus;
+            if (typeof bonus === 'number') {
+                rent += bonus;
+            }
         }
 
         return Math.floor(rent);
@@ -433,13 +439,14 @@ class Board {
      */
     updateWeather() {
         this.weatherTimer++;
-        if (this.weatherTimer >= CONFIG.WEATHER.CHANGE_INTERVAL) {
+        const changeInterval = CONFIG.WEATHER_CHANGE_INTERVAL || 10;
+        if (this.weatherTimer >= changeInterval) {
             this.weatherTimer = 0;
-            const weatherTypes = CONFIG.WEATHER_TYPES;
-            this.weather = randomChoice(weatherTypes).id;
-            
-            // Уведомление о смене погоды
-            const weatherName = weatherTypes.find(w => w.id === this.weather).name;
+            const newWeather = randomChoice(CONFIG.WEATHER);
+            if (newWeather) {
+                this.weather = newWeather.type;
+            }
+            const weatherName = newWeather ? newWeather.name : this.weather;
             showNotification(
                 getText('MESSAGES.WEATHER_CHANGE', { weather: weatherName }),
                 'info'
@@ -454,16 +461,18 @@ class Board {
         this.eventTimer++;
         
         // Проверяем вероятность экономического события
-        if (Math.random() < CONFIG.ECONOMIC_EVENTS.FREQUENCY && !this.economicEvent) {
+        if (Math.random() < (CONFIG.ECONOMIC_EVENT_FREQUENCY || 0.1) && !this.economicEvent) {
             const event = randomChoice(CONFIG.ECONOMIC_EVENTS);
-            this.economicEvent = {
-                ...event,
-                duration: CONFIG.ECONOMIC_EVENTS.DURATION
-            };
+            if (event) {
+                this.economicEvent = {
+                    ...event,
+                    duration: event.duration ?? CONFIG.ECONOMIC_EVENT_DURATION
+                };
+            }
             
             showNotification(
-                getText('MESSAGES.' + event.id.toUpperCase()),
-                event.id === 'boom' ? 'success' : 'warning'
+                getText('MESSAGES.' + (event?.type || event?.id || 'event').toString().toUpperCase()),
+                (event?.type || event?.id) === 'boom' ? 'success' : 'warning'
             );
         }
 
@@ -481,12 +490,14 @@ class Board {
      */
     updateCulturalEvents() {
         // Проверяем вероятность культурного события
-        if (Math.random() < CONFIG.CULTURAL_EVENTS.FREQUENCY && !this.culturalEvent) {
+        if (Math.random() < (CONFIG.CULTURAL_EVENT_FREQUENCY || 0.05) && !this.culturalEvent) {
             const event = randomChoice(CONFIG.CULTURAL_EVENTS);
-            this.culturalEvent = {
-                ...event,
-                duration: CONFIG.CULTURAL_EVENTS.DURATION
-            };
+            if (event) {
+                this.culturalEvent = {
+                    ...event,
+                    duration: event.duration ?? CONFIG.CULTURAL_EVENT_DURATION
+                };
+            }
             
             showNotification(
                 getText('MESSAGES.CULTURAL_FESTIVAL'),

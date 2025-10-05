@@ -1,5 +1,5 @@
 import { fallbackData } from './fallbackData';
-import type { GameData } from './types';
+import type { BoardCell, Card, GameData } from './types';
 
 async function safeImport<T>(path: string, warnings: string[]): Promise<T | undefined> {
   try {
@@ -10,6 +10,18 @@ async function safeImport<T>(path: string, warnings: string[]): Promise<T | unde
     return undefined;
   }
 }
+
+const sortBoard = (cells: BoardCell[]): BoardCell[] =>
+  [...cells].sort((a, b) => {
+    const orderA = a.order ?? Number.MAX_SAFE_INTEGER;
+    const orderB = b.order ?? Number.MAX_SAFE_INTEGER;
+    if (orderA !== orderB) {
+      return orderA - orderB;
+    }
+    return a.id.localeCompare(b.id);
+  });
+
+const sortCards = (cards: Card[]): Card[] => [...cards].sort((a, b) => a.id.localeCompare(b.id));
 
 export async function loadGameData(): Promise<{ data: GameData; warnings: string[] }> {
   const warnings: string[] = [];
@@ -38,10 +50,14 @@ export async function loadGameData(): Promise<{ data: GameData; warnings: string
     safeImport('../data/contracts.json', warnings)
   ]);
 
+  const resolvedBoard = sortBoard(board ?? fallbackData.board);
+  const resolvedChance = chance ? sortCards(chance) : sortCards(fallbackData.chance);
+  const resolvedTrial = trial ? sortCards(trial) : sortCards(fallbackData.trial);
+
   const data: GameData = {
-    board: board ?? fallbackData.board,
-    chance: chance ?? fallbackData.chance,
-    trial: trial ?? fallbackData.trial,
+    board: resolvedBoard,
+    chance: resolvedChance,
+    trial: resolvedTrial,
     presets: presets ?? fallbackData.presets,
     locales: {
       ...fallbackData.locales,

@@ -1,19 +1,23 @@
 export type CellType =
   | 'start'
   | 'property'
-  | 'railway'
+  | 'transport'
   | 'utility'
   | 'tax'
   | 'chance'
   | 'trial'
+  | 'micro-event'
+  | 'contract'
+  | 'goto-jail'
   | 'jail'
-  | 'parking'
-  | 'gotojail';
+  | 'parking';
 
 export interface RentDetails {
-  base: number;
-  setBonus?: number;
-  withHotel?: number;
+  base?: number;
+  multiplier?: number;
+  fixed?: number;
+  withSet?: number;
+  withImprovements?: number;
 }
 
 export interface BoardCell {
@@ -24,12 +28,16 @@ export interface BoardCell {
   rent?: number | RentDetails;
   category?: string;
   tax?: number;
+  amount?: number;
   description?: string;
+  order?: number;
+  color?: string;
 }
 
 export interface CardEffect {
   money?: number;
   move?: number;
+  moveTo?: number;
   goTo?: string;
   jail?: boolean;
   freeJail?: boolean;
@@ -40,6 +48,7 @@ export interface CardEffect {
 export interface Card {
   id: string;
   type: string;
+  title?: string;
   text: string;
   effect: CardEffect;
 }

@@ -26,14 +26,15 @@ export function CardOverlay({ card, onResolve, t }: CardOverlayProps) {
           <h2 id="card-overlay-heading" className="text-xl font-semibold text-slate-700">
             {t('CARD_DRAWN_TITLE')}
           </h2>
-          <p className="text-sm text-slate-500">{card.type}</p>
+          {card.title && <p className="text-sm font-semibold text-slate-600">{card.title}</p>}
+          <p className="text-xs uppercase tracking-wide text-slate-400">{card.type}</p>
         </header>
         <p className="rounded-2xl bg-slate-100 p-4 text-sm text-slate-700">{card.text}</p>
         <button
           ref={closeButtonRef}
           type="button"
           onClick={onResolve}
-          className="mt-6 w-full rounded-2xl bg-accent px-4 py-3 text-sm font-semibold text-white shadow-soft transition hover:bg-accent/90"
+          className="mt-6 w-full rounded-2xl bg-accent px-4 py-3 text-sm font-semibold text-white shadow-soft transition hover:bg-accent/90 focus-visible:outline-none"
         >
           {t('RESOLVE_CARD')}
         </button>

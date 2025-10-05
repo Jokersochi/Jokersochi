@@ -20,15 +20,15 @@ const baseBoard: BoardCell[] = [
 ];
 
 beforeEach(() => {
-  useGameStore.setState({
-    board: baseBoard,
-    chanceDeck: [],
-    trialDeck: [],
-    microEvents: [],
-    contracts: [],
-    presets: { test: preset },
-    locales: {},
-    players: [
+  useGameStore.setState((state) => {
+    state.board = baseBoard;
+    state.chanceDeck = [];
+    state.trialDeck = [];
+    state.microEvents = [];
+    state.contracts = [];
+    state.presets = { test: preset };
+    state.locales = {};
+    state.players = [
       {
         id: 'player-1',
         name: 'Игрок 1',
@@ -41,18 +41,20 @@ beforeEach(() => {
         properties: [],
         contracts: []
       }
-    ],
-    currentPlayerIndex: 0,
-    dice: [0, 0],
-    turnPhase: 'idle',
-    log: [],
-    isGameStarted: true,
-    selectedPreset: 'test',
-    selectedLocale: 'ru',
-    pendingPurchase: undefined,
-    pendingCard: undefined,
-    warnings: [],
-    gameConfig: preset
+    ];
+    state.currentPlayerIndex = 0;
+    state.dice = [0, 0];
+    state.turnPhase = 'idle';
+    state.log = [];
+    state.isGameStarted = true;
+    state.selectedPreset = 'test';
+    state.selectedLocale = 'ru';
+    state.pendingPurchase = undefined;
+    state.pendingCard = undefined;
+    state.activeCell = undefined;
+    state.warnings = [];
+    state.gameConfig = preset;
+    state.nextMicroEventIndex = 0;
   });
 });
 
@@ -86,5 +88,34 @@ describe('gameStore mechanics', () => {
     expect(state.players[0].balance).toBe(380);
     expect(state.players[0].properties).toContain('city');
     expect(state.turnPhase).toBe('idle');
+  });
+
+  it('moves player to target cell when resolving moveTo card', () => {
+    useGameStore.setState((state) => {
+      state.board = [
+        { id: 'start', name: 'Старт', type: 'start' },
+        { id: 'alpha', name: 'Альфа', type: 'property', price: 150, rent: { multiplier: 0.5 } },
+        { id: 'trial', name: 'Испытание', type: 'trial' },
+        { id: 'beta', name: 'Бета', type: 'property', price: 200, rent: { multiplier: 0.5 } }
+      ];
+      state.players[0].position = 0;
+      state.players[0].properties = [];
+      state.pendingCard = {
+        id: 'move-card',
+        type: 'move',
+        title: 'Перейдите на Бета',
+        text: 'Переместитесь на клетку Бета.',
+        effect: { moveTo: 3 }
+      };
+      state.turnPhase = 'card';
+      state.pendingPurchase = undefined;
+    });
+
+    useGameStore.getState().resolveCard();
+
+    const state = useGameStore.getState();
+    expect(state.players[0].position).toBe(3);
+    expect(state.pendingPurchase?.cellId).toBe('beta');
+    expect(state.turnPhase).toBe('purchase');
   });
 });

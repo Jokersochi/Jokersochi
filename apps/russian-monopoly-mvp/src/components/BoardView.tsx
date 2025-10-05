@@ -8,6 +8,57 @@ interface BoardViewProps {
   currentPlayerId?: string;
 }
 
+const typeLabels: Partial<Record<BoardCell['type'], string>> = {
+  start: 'Старт',
+  property: 'Собственность',
+  transport: 'Транспорт',
+  utility: 'Инфраструктура',
+  tax: 'Налог',
+  chance: 'Шанс',
+  trial: 'Испытание',
+  'micro-event': 'Микро-ивент',
+  contract: 'Контракт',
+  'goto-jail': 'Следственный комитет',
+  jail: 'Тюрьма',
+  parking: 'Стоянка'
+};
+
+const formatRent = (cell: BoardCell): string | null => {
+  if (!cell.rent) {
+    return null;
+  }
+
+  if (typeof cell.rent === 'number') {
+    return `${cell.rent}₽`;
+  }
+
+  if (typeof cell.rent.fixed === 'number') {
+    return `${cell.rent.fixed}₽`;
+  }
+
+  if (typeof cell.rent.base === 'number') {
+    return `${cell.rent.base}₽`;
+  }
+
+  if (typeof cell.rent.multiplier === 'number' && typeof cell.price === 'number') {
+    return `${Math.round(cell.price * cell.rent.multiplier)}₽`;
+  }
+
+  return null;
+};
+
+const formatTax = (cell: BoardCell): string | null => {
+  if (typeof cell.tax === 'number') {
+    return `${cell.tax}₽`;
+  }
+
+  if (typeof cell.amount === 'number') {
+    return `${cell.amount}₽`;
+  }
+
+  return null;
+};
+
 export function BoardView({ board, players, activeCellId, currentPlayerId }: BoardViewProps) {
   return (
     <section className="flex-1 rounded-3xl bg-surface p-4 shadow-soft" aria-labelledby="board-heading">
@@ -22,6 +73,10 @@ export function BoardView({ board, players, activeCellId, currentPlayerId }: Boa
           const occupants = players.filter((player) => player.position === index);
           const isActive = cell.id === activeCellId;
           const isCurrentPlayerOnCell = occupants.some((player) => player.id === currentPlayerId);
+          const rentLabel = formatRent(cell);
+          const taxLabel = formatTax(cell);
+          const typeLabel = typeLabels[cell.type] ?? cell.type;
+
           return (
             <article
               key={cell.id}
@@ -32,23 +87,24 @@ export function BoardView({ board, players, activeCellId, currentPlayerId }: Boa
                     ? 'border-success bg-success/10'
                     : 'border-slate-200 bg-white'
               }`}
-              aria-label={`${cell.name}. Тип: ${cell.type}`}
+              aria-label={`${cell.name}. Тип: ${typeLabel}`}
             >
               <header className="flex items-start justify-between gap-2">
-                <h3 className="text-sm font-semibold text-slate-700">{cell.name}</h3>
+                <div>
+                  <h3 className="text-sm font-semibold text-slate-700">{cell.name}</h3>
+                  {cell.category && (
+                    <p className="text-[11px] text-slate-400">{cell.category}</p>
+                  )}
+                </div>
                 <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] uppercase tracking-wide text-slate-500">
-                  {cell.type}
+                  {typeLabel}
                 </span>
               </header>
-              {cell.price && (
+              {typeof cell.price === 'number' && cell.price > 0 && (
                 <p className="text-xs text-slate-500">Стоимость: {cell.price}₽</p>
               )}
-              {cell.rent && (
-                <p className="text-xs text-slate-500">
-                  Аренда: {typeof cell.rent === 'number' ? cell.rent : cell.rent.base}₽
-                </p>
-              )}
-              {cell.tax && <p className="text-xs text-slate-500">Налог: {cell.tax}₽</p>}
+              {rentLabel && <p className="text-xs text-slate-500">Аренда: {rentLabel}</p>}
+              {taxLabel && <p className="text-xs text-slate-500">Налог: {taxLabel}</p>}
               {cell.description && <p className="text-xs text-slate-500">{cell.description}</p>}
               {occupants.length > 0 && (
                 <ul className="mt-auto flex flex-wrap gap-1" aria-label="Игроки на клетке">

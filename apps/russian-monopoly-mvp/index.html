@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Русская Монополия — Прототип</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="app-header" role="banner">
+    <h1 id="app-title">Русская Монополия</h1>
+    <div class="status-badges" id="status-badges" aria-live="polite"></div>
+  </header>
+
+  <main class="layout" role="main">
+    <section class="panel panel-setup" aria-labelledby="setup-title">
+      <h2 id="setup-title" data-i18n="setup_title">Подготовка</h2>
+      <form id="setup-form" aria-describedby="setup-help">
+        <label>
+          <span data-i18n="label_players">Количество игроков (2–6)</span>
+          <input type="number" id="player-count" name="player-count" min="2" max="6" value="4" required />
+        </label>
+        <label>
+          <span data-i18n="label_preset">Пресет баланса</span>
+          <select id="preset-select" name="preset-select"></select>
+        </label>
+        <label>
+          <span data-i18n="label_language">Язык интерфейса</span>
+          <select id="language-select" name="language-select"></select>
+        </label>
+        <label>
+          <span data-i18n="label_start_money">Стартовый капитал</span>
+          <input type="number" id="start-money" name="start-money" min="100" step="50" value="1500" required />
+        </label>
+        <button type="submit" class="btn primary" data-i18n="btn_start">Начать игру</button>
+      </form>
+      <p id="setup-help" class="help-text" data-i18n="setup_help">Заполните параметры и нажмите «Начать игру», чтобы сгенерировать поле.</p>
+    </section>
+
+    <section class="panel panel-board" aria-labelledby="board-title">
+      <div class="panel-header">
+        <h2 id="board-title" data-i18n="board_title">Игровое поле</h2>
+        <div class="board-controls">
+          <button id="btn-roll" class="btn" data-i18n="btn_roll" disabled>Бросить кубики</button>
+          <button id="btn-buy" class="btn" data-i18n="btn_buy" disabled>Купить / арендовать</button>
+          <button id="btn-end" class="btn" data-i18n="btn_end" disabled>Завершить ход</button>
+        </div>
+      </div>
+      <div id="board" class="board" role="grid" aria-label="Игровое поле"></div>
+    </section>
+
+    <aside class="panel panel-players" aria-labelledby="players-title">
+      <h2 id="players-title" data-i18n="players_title">Игроки</h2>
+      <ul id="players-list" class="players-list"></ul>
+    </aside>
+
+    <section class="panel panel-log" aria-labelledby="log-title">
+      <h2 id="log-title" data-i18n="log_title">Журнал событий</h2>
+      <div id="log" class="log" role="log" aria-live="polite"></div>
+    </section>
+
+    <section class="panel panel-card" aria-labelledby="card-title">
+      <h2 id="card-title" data-i18n="card_title">Активная карта</h2>
+      <article id="card-display" class="card" aria-live="polite"></article>
+    </section>
+  </main>
+
+  <template id="cell-template">
+    <button class="cell" role="gridcell">
+      <span class="cell-name"></span>
+      <span class="cell-price"></span>
+      <div class="cell-players" aria-hidden="true"></div>
+    </button>
+  </template>
+
+  <template id="player-template">
+    <li class="player" aria-live="polite">
+      <div class="player-header">
+        <img class="player-token" alt="" />
+        <div>
+          <span class="player-name"></span>
+          <span class="player-money"></span>
+        </div>
+      </div>
+      <div class="player-status"></div>
+      <ul class="player-assets"></ul>
+    </li>
+  </template>
+
+  <dialog id="modal" aria-modal="true">
+    <div id="modal-content"></div>
+    <button id="modal-close" class="btn" data-i18n="btn_close">Закрыть</button>
+  </dialog>
+
+  <footer class="app-footer" role="contentinfo">
+    <p>&copy; 2024 Русская Монополия — MVP. <span data-i18n="footer_hint">Сохранение происходит автоматически в локальном хранилище.</span></p>
+  </footer>
+
+  <script src="game.js"></script>
+</body>
+</html>

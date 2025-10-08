@@ -63,6 +63,26 @@ const defaultState = {
 
 const state = structuredClone(defaultState);
 
+const generationSessionKey = 'sochi-architect-openai-key';
+const generationState = {
+  scenes: [],
+  status: 'idle',
+  currentIndex: -1,
+  results: [],
+  completedCount: 0,
+  apiKey: '',
+  rememberKey: false,
+  showApiKey: false,
+  controller: null,
+  feedback: null,
+  feedbackType: 'info'
+};
+
+let rendersContainerRef = null;
+let feedbackTimeoutId = null;
+
+hydrateApiKeyFromSession();
+
 const app = document.querySelector('#app');
 
 if (!app) {
@@ -673,18 +693,613 @@ function renderSection(container, section) {
 }
 
 function renderScenes(container, scenes) {
-  container.innerHTML = scenes
-    .map(
-      (scene) => `
-        <article class="scene-card">
-          <h3>${escapeHtml(scene.title)}</h3>
-          <p><strong>Цель:</strong> ${escapeHtml(scene.goal)}</p>
-          <p><strong>Параметры:</strong> ${escapeHtml(scene.parameters)}</p>
-          <p><strong>Промпт:</strong> ${escapeHtml(scene.prompt)}</p>
-        </article>
-      `
-    )
-    .join('');
+  rendersContainerRef = container;
+  generationState.scenes = scenes.slice();
+  ensureSceneResultsLength(scenes.length);
+  markStaleSceneResults(scenes);
+  updateCompletedCountFromResults();
+
+  const controlsMarkup = renderSceneControlsMarkup(scenes);
+  const cardsMarkup = scenes.map((scene, index) => renderSceneCard(scene, index)).join('');
+
+  container.innerHTML = `${controlsMarkup}<div class="scene-grid">${cardsMarkup}</div>`;
+
+  attachSceneControlHandlers(container);
+}
+
+function renderSceneControlsMarkup(scenes) {
+  const totalScenes = scenes.length;
+  const progress = getProgressData(scenes);
+  const statusText = getSceneStatusText(totalScenes, progress);
+  const generateDisabled = generationState.status === 'running';
+  const cancelDisabled = generationState.status !== 'running' || !generationState.controller;
+  const toggleLabel = generationState.showApiKey ? 'Скрыть' : 'Показать';
+  const feedbackClass = resolveFeedbackClass(generationState.feedbackType);
+  const manualFeedback = generationState.feedback
+    ? `<p class="scene-feedback scene-feedback--${feedbackClass}">${escapeHtml(generationState.feedback)}</p>`
+    : '';
+  const staleFeedback = generationState.results.some((result) => result.status === 'stale')
+    ? `<p class="scene-feedback scene-feedback--warning">Параметры проекта изменились после последней генерации. Перезапустите процесс, чтобы получить актуальные рендеры.</p>`
+    : '';
+
+  const apiKeyField = `
+    <label class="input-group scene-key-group">
+      <span>OpenAI API ключ</span>
+      <div class="scene-key-field">
+        <input
+          type="${generationState.showApiKey ? 'text' : 'password'}"
+          name="openaiKey"
+          autocomplete="off"
+          data-role="api-key"
+          placeholder="sk-..."
+          value="${escapeHtml(generationState.apiKey)}"
+        />
+        <button type="button" class="scene-button scene-button--ghost" data-action="toggle-key">
+          ${escapeHtml(toggleLabel)}
+        </button>
+      </div>
+      <p class="scene-hint">Ключ используется только в вашем браузере. Отметьте «Запомнить», чтобы сохранить его до закрытия вкладки.</p>
+    </label>
+  `;
+
+  const controls = `
+    <div class="scene-controls">
+      <div class="scene-controls__row">
+        ${apiKeyField}
+        <label class="checkbox scene-remember">
+          <input type="checkbox" data-role="remember" ${generationState.rememberKey ? 'checked' : ''} />
+          <span>Запомнить ключ в sessionStorage</span>
+        </label>
+      </div>
+      <div class="scene-controls__row scene-controls__actions">
+        <div class="scene-button-group">
+          <button type="button" class="scene-button scene-button--primary" data-action="generate" ${generateDisabled ? 'disabled' : ''}>
+            Сгенерировать все сцены
+          </button>
+          <button type="button" class="scene-button scene-button--ghost" data-action="cancel" ${cancelDisabled ? 'disabled' : ''}>
+            Отменить
+          </button>
+        </div>
+        <div class="scene-status-text">
+          <span>${escapeHtml(statusText)}</span>
+          ${
+            totalScenes
+              ? `<div class="scene-progress-track" aria-hidden="true"><div class="scene-progress-fill" style="width: ${progress.percent}%"></div></div>`
+              : ''
+          }
+        </div>
+      </div>
+      ${manualFeedback}
+      ${!generationState.feedback || generationState.feedbackType === 'success' ? staleFeedback : ''}
+    </div>
+  `;
+
+  return controls;
+}
+
+function renderSceneCard(scene, index) {
+  const result = generationState.results[index] ?? { status: 'idle' };
+  const isRunning = generationState.status === 'running';
+  const isCurrent = isRunning && generationState.currentIndex === index;
+  let statusBlock = '';
+
+  if (result.status === 'success' && result.url) {
+    statusBlock = `
+      <figure class="scene-preview">
+        <img src="${escapeHtml(result.url)}" alt="${escapeHtml(scene.title)}" loading="lazy" />
+        <figcaption>
+          <span>Сцена готова. Изображение доступно по ссылке ниже.</span>
+          ${
+            result.revisedPrompt
+              ? `<span class="scene-note"><strong>Уточнённый промпт:</strong> ${escapeHtml(result.revisedPrompt)}</span>`
+              : ''
+          }
+        </figcaption>
+      </figure>
+    `;
+  } else if (result.status === 'error') {
+    statusBlock = `<p class="scene-error">Ошибка: ${escapeHtml(result.message)}</p>`;
+  } else if (result.status === 'stale') {
+    statusBlock = `
+      <div class="scene-warning">
+        <p>Параметры изменились, изображение может быть устаревшим.</p>
+        ${
+          result.url
+            ? `<a class="scene-button scene-button--primary-link" href="${escapeHtml(result.url)}" target="_blank" rel="noopener">Открыть последний рендер</a>`
+            : ''
+        }
+      </div>
+    `;
+  } else if (result.status === 'pending' && isCurrent) {
+    statusBlock = '<p class="scene-progress">Генерация сцены...</p>';
+  } else if (result.status === 'pending') {
+    statusBlock = '<p class="scene-status">Ожидает очереди на генерацию.</p>';
+  } else {
+    statusBlock = '<p class="scene-status scene-status--muted">Изображение ещё не создано.</p>';
+  }
+
+  const actions = [];
+
+  actions.push(
+    `<button type="button" class="scene-button scene-button--ghost" data-action="copy-prompt" data-index="${index}" ${
+      isRunning ? 'disabled' : ''
+    }>Скопировать промпт</button>`
+  );
+
+  if (result.status === 'success' && result.url) {
+    actions.push(
+      `<a class="scene-button scene-button--primary-link" href="${escapeHtml(result.url)}" target="_blank" rel="noopener">Открыть рендер</a>`
+    );
+  }
+
+  return `
+    <article class="scene-card" data-scene-index="${index}">
+      <h3>${escapeHtml(scene.title)}</h3>
+      <p><strong>Цель:</strong> ${escapeHtml(scene.goal)}</p>
+      <p><strong>Параметры:</strong> ${escapeHtml(scene.parameters)}</p>
+      ${renderScenePrompt(scene.prompt)}
+      ${statusBlock}
+      <div class="scene-actions">${actions.join('')}</div>
+    </article>
+  `;
+}
+
+function renderScenePrompt(prompt) {
+  return `
+    <div class="scene-prompt-block">
+      <span>Промпт:</span>
+      <pre>${escapeHtml(prompt)}</pre>
+    </div>
+  `;
+}
+
+function attachSceneControlHandlers(container) {
+  const generateButton = container.querySelector('[data-action="generate"]');
+  const cancelButton = container.querySelector('[data-action="cancel"]');
+  const toggleButton = container.querySelector('[data-action="toggle-key"]');
+  const apiKeyInput = container.querySelector('[data-role="api-key"]');
+  const rememberCheckbox = container.querySelector('[data-role="remember"]');
+  const copyButtons = container.querySelectorAll('[data-action="copy-prompt"]');
+
+  if (generateButton) {
+    generateButton.addEventListener('click', () => {
+      void startSceneGeneration();
+    });
+  }
+
+  if (cancelButton) {
+    cancelButton.addEventListener('click', () => {
+      cancelSceneGeneration();
+    });
+  }
+
+  if (toggleButton) {
+    toggleButton.addEventListener('click', () => {
+      generationState.showApiKey = !generationState.showApiKey;
+      refreshSceneView();
+    });
+  }
+
+  if (apiKeyInput instanceof HTMLInputElement) {
+    apiKeyInput.addEventListener('input', () => {
+      generationState.apiKey = apiKeyInput.value;
+
+      if (generationState.rememberKey) {
+        persistApiKey(generationState.apiKey);
+      }
+    });
+  }
+
+  if (rememberCheckbox instanceof HTMLInputElement) {
+    rememberCheckbox.addEventListener('change', () => {
+      generationState.rememberKey = rememberCheckbox.checked;
+
+      if (generationState.rememberKey) {
+        persistApiKey(generationState.apiKey);
+
+        if (generationState.status !== 'running') {
+          showTemporaryFeedback('Ключ сохранён до конца сессии.', 'info', 2200);
+        }
+      } else {
+        persistApiKey('');
+
+        if (generationState.status !== 'running') {
+          showTemporaryFeedback('Ключ удалён из sessionStorage.', 'info', 2200);
+        }
+      }
+    });
+  }
+
+  copyButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      const index = Number(button.getAttribute('data-index'));
+
+      if (!Number.isNaN(index)) {
+        void copyScenePrompt(index);
+      }
+    });
+  });
+}
+
+async function startSceneGeneration() {
+  if (generationState.status === 'running') {
+    return;
+  }
+
+  const scenes = generationState.scenes;
+
+  if (!scenes.length) {
+    generationState.feedback = 'Нет сцен для генерации.';
+    generationState.feedbackType = 'error';
+    refreshSceneView();
+    return;
+  }
+
+  const apiKey = generationState.apiKey.trim();
+
+  if (!apiKey) {
+    generationState.feedback = 'Введите API-ключ OpenAI, чтобы сгенерировать рендеры.';
+    generationState.feedbackType = 'error';
+    refreshSceneView();
+    return;
+  }
+
+  clearFeedbackTimeout();
+
+  if (generationState.rememberKey) {
+    persistApiKey(apiKey);
+  }
+
+  generationState.feedback = null;
+  generationState.feedbackType = 'info';
+  generationState.status = 'running';
+  generationState.currentIndex = -1;
+  generationState.controller = new AbortController();
+  generationState.results = scenes.map(() => ({ status: 'pending', promptSignature: '' }));
+
+  refreshSceneView();
+
+  let aborted = false;
+  let hasErrors = false;
+
+  for (let index = 0; index < scenes.length; index += 1) {
+    if (!generationState.controller || generationState.controller.signal.aborted) {
+      aborted = true;
+      break;
+    }
+
+    generationState.currentIndex = index;
+    refreshSceneView();
+
+    try {
+      const scene = scenes[index];
+      const signature = composeSceneSignature(scene);
+      const result = await requestDalleImage(scene, apiKey, generationState.controller.signal);
+
+      generationState.results[index] = {
+        status: 'success',
+        url: result.url,
+        revisedPrompt: result.revisedPrompt,
+        promptSignature: signature
+      };
+    } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        aborted = true;
+        break;
+      }
+
+      hasErrors = true;
+      generationState.results[index] = {
+        status: 'error',
+        message: error instanceof Error ? error.message : 'Неизвестная ошибка при обращении к API изображений.',
+        promptSignature: signature
+      };
+    }
+
+    refreshSceneView();
+  }
+
+  generationState.controller = null;
+  generationState.currentIndex = -1;
+
+  if (aborted) {
+    generationState.status = 'aborted';
+    generationState.feedback = 'Генерация остановлена.';
+    generationState.feedbackType = 'warning';
+  } else if (hasErrors) {
+    generationState.status = 'partial';
+    generationState.feedback = 'Некоторые сцены не удалось создать. Проверьте сообщения внутри карточек.';
+    generationState.feedbackType = 'warning';
+  } else {
+    generationState.status = 'completed';
+    generationState.feedback = 'Готово! Все сцены сгенерированы и доступны ниже.';
+    generationState.feedbackType = 'success';
+  }
+
+  refreshSceneView();
+}
+
+function cancelSceneGeneration() {
+  if (generationState.controller) {
+    generationState.controller.abort();
+  }
+}
+
+async function copyScenePrompt(index) {
+  const scene = generationState.scenes[index];
+
+  if (!scene) {
+    return;
+  }
+
+  try {
+    await copyTextToClipboard(composeSceneSignature(scene));
+
+    if (!generationState.feedback || generationState.feedbackType === 'info' || generationState.feedbackType === 'success') {
+      showTemporaryFeedback('Промпт скопирован в буфер обмена.', 'success', 2200);
+    }
+  } catch (error) {
+    generationState.feedback = 'Не удалось скопировать промпт. Разрешите доступ к буферу обмена.';
+    generationState.feedbackType = 'error';
+    refreshSceneView();
+  }
+}
+
+async function copyTextToClipboard(text) {
+  if (typeof navigator !== 'undefined' && navigator.clipboard && navigator.clipboard.writeText) {
+    await navigator.clipboard.writeText(text);
+    return;
+  }
+
+  const textArea = document.createElement('textarea');
+  textArea.value = text;
+  textArea.setAttribute('readonly', '');
+  textArea.style.position = 'absolute';
+  textArea.style.left = '-9999px';
+  document.body.appendChild(textArea);
+  const selection = document.getSelection();
+  const selectedRange = selection && selection.rangeCount > 0 ? selection.getRangeAt(0) : null;
+  textArea.select();
+  document.execCommand('copy');
+  document.body.removeChild(textArea);
+
+  if (selectedRange && selection) {
+    selection.removeAllRanges();
+    selection.addRange(selectedRange);
+  }
+}
+
+function refreshSceneView() {
+  if (rendersContainerRef && generationState.scenes.length) {
+    renderScenes(rendersContainerRef, generationState.scenes);
+  }
+}
+
+function ensureSceneResultsLength(length) {
+  if (generationState.results.length === length) {
+    return;
+  }
+
+  const nextResults = Array.from({ length }, (_, index) => generationState.results[index] ?? { status: 'idle' });
+  generationState.results = nextResults;
+}
+
+function markStaleSceneResults(scenes) {
+  generationState.results = scenes.map((scene, index) => {
+    const existing = generationState.results[index] ?? { status: 'idle' };
+    const signature = composeSceneSignature(scene);
+
+    if (existing.status === 'pending') {
+      return existing;
+    }
+
+    if (existing.status === 'success' || existing.status === 'stale') {
+      if (existing.promptSignature && existing.promptSignature !== signature) {
+        return { ...existing, status: 'stale' };
+      }
+
+      if (existing.status === 'stale' && existing.promptSignature === signature) {
+        return { ...existing, status: 'success' };
+      }
+
+      return existing;
+    }
+
+    if (existing.status === 'error' && existing.promptSignature && existing.promptSignature !== signature) {
+      return { status: 'idle' };
+    }
+
+    return existing;
+  });
+}
+
+function updateCompletedCountFromResults() {
+  if (generationState.status === 'running') {
+    return;
+  }
+
+  generationState.completedCount = generationState.results.filter((result) =>
+    result.status === 'success' || result.status === 'error' || result.status === 'stale'
+  ).length;
+}
+
+function getProgressData(scenes) {
+  const total = scenes.length;
+
+  if (total === 0) {
+    return { total: 0, finished: 0, effective: 0, percent: 0 };
+  }
+
+  const finished = generationState.results.reduce((count, result) => {
+    if (result.status === 'success' || result.status === 'error' || result.status === 'stale') {
+      return count + 1;
+    }
+
+    return count;
+  }, 0);
+
+  const inProgressBonus =
+    generationState.status === 'running' && generationState.currentIndex >= 0
+      ? Math.min(1, total - finished)
+      : 0;
+
+  const effective = Math.min(total, finished + inProgressBonus);
+  const percent = Math.round((effective / total) * 100);
+
+  return { total, finished, effective, percent };
+}
+
+function getSceneStatusText(totalScenes, progress) {
+  if (totalScenes === 0) {
+    return 'Нет сцен для генерации.';
+  }
+
+  switch (generationState.status) {
+    case 'running':
+      return `Генерация: ${progress.effective}/${totalScenes}`;
+    case 'completed':
+      return `Готово: ${progress.finished}/${totalScenes} сцен.`;
+    case 'partial':
+      return `Готово с предупреждениями: ${progress.finished}/${totalScenes} сцен.`;
+    case 'aborted':
+      return `Остановлено на ${progress.finished}/${totalScenes} сценах.`;
+    default:
+      if (progress.finished > 0) {
+        return `Доступно ${progress.finished}/${totalScenes} изображений.`;
+      }
+
+      return 'Готово к запуску генерации.';
+  }
+}
+
+function resolveFeedbackClass(type) {
+  return ['success', 'warning', 'error', 'info'].includes(type) ? type : 'info';
+}
+
+function composeSceneSignature(scene) {
+  return `${scene.goal}. ${scene.parameters}. ${scene.prompt}`;
+}
+
+async function requestDalleImage(scene, apiKey, signal) {
+  const finalPrompt = composeSceneSignature(scene);
+
+  const response = await fetch('https://api.openai.com/v1/images/generations', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${apiKey}`
+    },
+    body: JSON.stringify({
+      model: 'gpt-image-1',
+      prompt: finalPrompt,
+      size: '1024x1024',
+      quality: 'high',
+      n: 1,
+      response_format: 'url'
+    }),
+    signal
+  });
+
+  let payload;
+
+  try {
+    payload = await response.json();
+  } catch (error) {
+    payload = null;
+  }
+
+  if (!response.ok) {
+    const message = payload?.error?.message ?? `API изображений ответил ошибкой (${response.status}).`;
+    throw new Error(message);
+  }
+
+  const data = Array.isArray(payload?.data) ? payload.data[0] : null;
+
+  if (!data) {
+    throw new Error('API не вернуло данных об изображении.');
+  }
+
+  if (data.url) {
+    return { url: data.url, revisedPrompt: data.revised_prompt ?? '' };
+  }
+
+  if (data.b64_json) {
+    return {
+      url: `data:image/png;base64,${data.b64_json}`,
+      revisedPrompt: data.revised_prompt ?? ''
+    };
+  }
+
+  throw new Error('Ответ API не содержит ссылки на изображение.');
+}
+
+function hydrateApiKeyFromSession() {
+  if (!supportsSessionStorage()) {
+    return;
+  }
+
+  try {
+    const storedKey = window.sessionStorage.getItem(generationSessionKey);
+
+    if (storedKey) {
+      generationState.apiKey = storedKey;
+      generationState.rememberKey = true;
+    }
+  } catch (error) {
+    // Игнорируем ошибки доступа к sessionStorage
+  }
+}
+
+function persistApiKey(value) {
+  if (!supportsSessionStorage()) {
+    return;
+  }
+
+  try {
+    if (value) {
+      window.sessionStorage.setItem(generationSessionKey, value);
+    } else {
+      window.sessionStorage.removeItem(generationSessionKey);
+    }
+  } catch (error) {
+    generationState.feedback = 'Не удалось сохранить ключ в sessionStorage. Проверьте настройки браузера.';
+    generationState.feedbackType = 'warning';
+    refreshSceneView();
+  }
+}
+
+function supportsSessionStorage() {
+  return typeof window !== 'undefined' && typeof window.sessionStorage !== 'undefined';
+}
+
+function showTemporaryFeedback(message, type = 'info', duration = 2200) {
+  if (!rendersContainerRef) {
+    return;
+  }
+
+  if (generationState.status === 'running' && type !== 'error' && type !== 'warning') {
+    return;
+  }
+
+  clearFeedbackTimeout();
+  generationState.feedback = message;
+  generationState.feedbackType = type;
+  refreshSceneView();
+
+  if (typeof window !== 'undefined') {
+    feedbackTimeoutId = window.setTimeout(() => {
+      generationState.feedback = null;
+      feedbackTimeoutId = null;
+      refreshSceneView();
+    }, duration);
+  }
+}
+
+function clearFeedbackTimeout() {
+  if (feedbackTimeoutId && typeof window !== 'undefined') {
+    window.clearTimeout(feedbackTimeoutId);
+    feedbackTimeoutId = null;
+  }
 }
 
 function escapeHtml(value) {

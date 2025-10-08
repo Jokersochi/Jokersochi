@@ -1,6 +1,80 @@
 import { fallbackData } from './fallbackData';
 import type { BoardCell, Card, GameData } from './types';
 
+const pushUniqueWarning = (warnings: string[], message: string) => {
+  if (!warnings.includes(message)) {
+    warnings.push(message);
+  }
+};
+
+const validateDeck = (deck: Card[], name: string, warnings: string[]) => {
+  if (deck.length === 0) {
+    pushUniqueWarning(warnings, `Колода ${name} пуста.`);
+  }
+
+  const seenIds = new Set<string>();
+  deck.forEach((card) => {
+    if (seenIds.has(card.id)) {
+      pushUniqueWarning(warnings, `Колода ${name} содержит дубликат карты ${card.id}.`);
+    } else {
+      seenIds.add(card.id);
+    }
+  });
+};
+
+const validateGameData = (data: GameData, warnings: string[]) => {
+  if (data.board.length === 0) {
+    pushUniqueWarning(warnings, 'Поле не содержит клеток — используется резервный набор.');
+  }
+
+  const cellIds = new Set<string>();
+  let hasStart = false;
+  let hasJail = false;
+
+  data.board.forEach((cell) => {
+    if (cellIds.has(cell.id)) {
+      pushUniqueWarning(warnings, `Клетка с идентификатором ${cell.id} встречается более одного раза.`);
+    } else {
+      cellIds.add(cell.id);
+    }
+
+    if (cell.type === 'start') {
+      hasStart = true;
+    }
+
+    if (cell.type === 'jail') {
+      hasJail = true;
+    }
+  });
+
+  if (!hasStart) {
+    pushUniqueWarning(warnings, 'В наборе данных отсутствует клетка старта.');
+  }
+
+  if (!hasJail) {
+    pushUniqueWarning(warnings, 'В наборе данных отсутствует клетка тюрьмы.');
+  }
+
+  validateDeck(data.chance, '«Шанс»', warnings);
+  validateDeck(data.trial, '«Испытание»', warnings);
+
+  if (Object.keys(data.presets).length === 0) {
+    pushUniqueWarning(warnings, 'Не удалось найти пресеты экономики.');
+  }
+
+  if (Object.keys(data.locales).length === 0) {
+    pushUniqueWarning(warnings, 'Не удалось найти локализации интерфейса.');
+  }
+
+  if (data.microEvents.length === 0) {
+    pushUniqueWarning(warnings, 'Список микро-ивентов пуст.');
+  }
+
+  if (data.contracts.length === 0) {
+    pushUniqueWarning(warnings, 'Список контрактов пуст.');
+  }
+};
+
 async function safeImport<T>(path: string, warnings: string[]): Promise<T | undefined> {
   try {
     const module = await import(path);
@@ -69,6 +143,8 @@ export async function loadGameData(): Promise<{ data: GameData; warnings: string
     microEvents: microEvents ?? fallbackData.microEvents,
     contracts: contracts ?? fallbackData.contracts
   };
+
+  validateGameData(data, warnings);
 
   return { data, warnings };
 }

@@ -6,7 +6,7 @@ const fallbackBoard: BoardCell[] = [
   { id: 'tax-income', name: 'Подоходный налог', type: 'tax', tax: 100 },
   { id: 'chance-1', name: 'Шанс', type: 'chance' },
   { id: 'sochi', name: 'Сочи', type: 'property', price: 120, rent: 16, category: 'Курорты' },
-  { id: 'goto-jail', name: 'Отправиться в тюрьму', type: 'gotojail' },
+  { id: 'goto-jail', name: 'Отправиться в тюрьму', type: 'goto-jail' },
   { id: 'parking', name: 'Свободная стоянка', type: 'parking' }
 ];
 

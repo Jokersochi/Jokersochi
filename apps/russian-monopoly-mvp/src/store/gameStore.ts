@@ -79,6 +79,56 @@ const emptyPreset: GamePreset = {
 
 const clampLog = (log: string[]) => log.slice(-50);
 
+const addWarning = (state: GameStoreState, message: string) => {
+  if (!state.warnings.includes(message)) {
+    state.warnings.push(message);
+  }
+};
+
+const normalizePlayersAfterDataLoad = (state: GameStoreState) => {
+  const boardLength = state.board.length;
+  const validCellIds = new Set(state.board.map((cell) => cell.id));
+  const validContractIds = new Set(state.contracts.map((contract) => contract.id));
+
+  state.players.forEach((player) => {
+    if (boardLength > 0) {
+      const normalizedPosition = ((player.position % boardLength) + boardLength) % boardLength;
+      player.position = normalizedPosition;
+    } else {
+      player.position = 0;
+    }
+
+    player.properties = player.properties.filter((propertyId) => validCellIds.has(propertyId));
+    player.contracts = player.contracts.filter((contractId) => validContractIds.has(contractId));
+  });
+
+  if (state.players.length === 0) {
+    state.currentPlayerIndex = 0;
+    state.activeCell = boardLength > 0 ? state.board[0] : undefined;
+    state.isGameStarted = false;
+    state.turnPhase = 'setup';
+  } else {
+    state.currentPlayerIndex = Math.min(state.currentPlayerIndex, state.players.length - 1);
+    if (boardLength > 0) {
+      const currentPlayer = state.players[state.currentPlayerIndex];
+      state.activeCell = state.board[currentPlayer.position];
+    } else {
+      state.activeCell = undefined;
+    }
+  }
+
+  if (state.pendingPurchase && !validCellIds.has(state.pendingPurchase.cellId)) {
+    state.pendingPurchase = undefined;
+  }
+
+  if (state.pendingCard) {
+    const validCardIds = new Set([...state.chanceDeck, ...state.trialDeck].map((card) => card.id));
+    if (!validCardIds.has(state.pendingCard.id)) {
+      state.pendingCard = undefined;
+    }
+  }
+};
+
 function getRentValue(cell: BoardCell, preset: GamePreset): number {
   if (typeof cell.rent === 'number') {
     return cell.rent;
@@ -361,25 +411,68 @@ export const useGameStore = create<GameStoreState>()(
           state.contracts = data.contracts;
           state.presets = data.presets;
           state.locales = data.locales;
-          state.warnings = warnings;
+          state.warnings = Array.from(new Set(warnings));
           state.nextMicroEventIndex = 0;
-          const preset = data.presets[state.selectedPreset] ?? Object.values(data.presets)[0];
-          state.gameConfig = preset ?? emptyPreset;
+
+          const presetKeys = Object.keys(state.presets);
+          if (presetKeys.length > 0) {
+            const preferredPresetKey = presetKeys.includes(state.selectedPreset)
+              ? state.selectedPreset
+              : presetKeys[0];
+            if (preferredPresetKey !== state.selectedPreset) {
+              addWarning(
+                state,
+                `Пресет ${state.selectedPreset} недоступен и был заменён на ${preferredPresetKey}.`
+              );
+            }
+            state.selectedPreset = preferredPresetKey;
+            state.gameConfig = state.presets[preferredPresetKey];
+          } else {
+            state.selectedPreset = 'fallback';
+            state.gameConfig = emptyPreset;
+            addWarning(state, 'Используется резервный пресет экономики.');
+          }
+
+          const localeKeys = Object.keys(state.locales);
+          if (localeKeys.length === 0) {
+            state.locales = { ru: {} };
+            state.selectedLocale = 'ru';
+            addWarning(state, 'Локали отсутствуют, применяется пустая русская локаль.');
+          } else if (!localeKeys.includes(state.selectedLocale)) {
+            const fallbackLocale = localeKeys.includes('ru') ? 'ru' : localeKeys[0];
+            addWarning(
+              state,
+              `Локаль ${state.selectedLocale} недоступна и была заменена на ${fallbackLocale}.`
+            );
+            state.selectedLocale = fallbackLocale;
+          }
+
+          normalizePlayersAfterDataLoad(state);
         }),
 
       setPreset: (presetKey) =>
         set((state) => {
-          state.selectedPreset = presetKey;
           const preset = state.presets[presetKey];
-          if (preset) {
-            state.gameConfig = preset;
-            state.log.push(`Выбран пресет ${preset.name}.`);
+          if (!preset) {
+            addWarning(state, `Пресет ${presetKey} отсутствует в загруженных данных.`);
+            state.log.push(`Попытка выбрать недоступный пресет ${presetKey}.`);
+            state.log = clampLog(state.log);
+            return;
           }
+
+          state.selectedPreset = presetKey;
+          state.gameConfig = preset;
+          state.log.push(`Выбран пресет ${preset.name}.`);
           state.log = clampLog(state.log);
         }),
 
       setLocale: (locale) =>
         set((state) => {
+          if (!state.locales[locale]) {
+            addWarning(state, `Локаль ${locale} отсутствует в данных.`);
+            return;
+          }
+
           state.selectedLocale = locale;
         }),
 
@@ -521,7 +614,12 @@ export const useGameStore = create<GameStoreState>()(
 
       endTurn: () =>
         set((state) => {
-          if (!state.isGameStarted || state.turnPhase === 'card') return;
+          if (!state.isGameStarted || state.turnPhase === 'card' || state.players.length === 0) return;
+
+          if (state.currentPlayerIndex >= state.players.length) {
+            state.currentPlayerIndex = 0;
+          }
+
           const player = state.players[state.currentPlayerIndex];
           if (player.jailTurns > 0) {
             player.jailTurns -= 1;

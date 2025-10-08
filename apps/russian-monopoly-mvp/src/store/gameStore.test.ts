@@ -118,4 +118,88 @@ describe('gameStore mechanics', () => {
     expect(state.pendingPurchase?.cellId).toBe('beta');
     expect(state.turnPhase).toBe('purchase');
   });
+
+  it('reconciles preset, locale and player state when loading data', () => {
+    useGameStore.setState((state) => {
+      state.selectedPreset = 'missing';
+      state.selectedLocale = 'fr';
+      state.players = [
+        {
+          id: 'player-1',
+          name: 'Игрок 1',
+          token: 'balalaika',
+          position: 5,
+          balance: 500,
+          inJail: false,
+          jailTurns: 0,
+          freeJailCards: 0,
+          properties: ['city', 'ghost'],
+          contracts: ['lease-1', 'lost']
+        }
+      ];
+      state.currentPlayerIndex = 0;
+      state.isGameStarted = true;
+      state.turnPhase = 'idle';
+      state.pendingPurchase = { cellId: 'ghost', price: 150 };
+      state.pendingCard = {
+        id: 'legacy-card',
+        type: 'legacy',
+        text: 'Старый эффект',
+        effect: { money: 25 }
+      };
+      state.chanceDeck = [];
+      state.trialDeck = [];
+      state.warnings = [];
+    });
+
+    const board: BoardCell[] = [
+      { id: 'start', name: 'Старт', type: 'start' },
+      { id: 'city', name: 'Город', type: 'property', price: 100, rent: 20 }
+    ];
+
+    const chanceDeck = [
+      { id: 'chance-1', type: 'info', text: 'Новая карта', effect: { money: 10 } }
+    ];
+
+    const trialDeck = [
+      { id: 'trial-1', type: 'info', text: 'Испытание', effect: { money: -10 } }
+    ];
+
+    useGameStore.getState().loadData({
+      data: {
+        board,
+        chance: chanceDeck,
+        trial: trialDeck,
+        presets: { alt: preset },
+        locales: { ru: { TEST_KEY: 'тест' } },
+        microEvents: [
+          { id: 'micro-1', name: 'Бонус', type: 'bonus', trigger: 'Каждый круг', effect: { money: 15 } }
+        ],
+        contracts: [
+          {
+            id: 'lease-1',
+            name: 'Лизинг',
+            type: 'lease',
+            description: 'Получайте бонус.',
+            reward: 10,
+            upkeep: 2
+          }
+        ]
+      },
+      warnings: []
+    });
+
+    const state = useGameStore.getState();
+    expect(state.selectedPreset).toBe('alt');
+    expect(state.gameConfig).toEqual(preset);
+    expect(state.selectedLocale).toBe('ru');
+    expect(state.players[0].position).toBe(1);
+    expect(state.players[0].properties).toEqual(['city']);
+    expect(state.players[0].contracts).toEqual(['lease-1']);
+    expect(state.pendingPurchase).toBeUndefined();
+    expect(state.pendingCard).toBeUndefined();
+    expect(state.activeCell?.id).toBe('city');
+    expect(state.warnings.some((message) => message.includes('Локаль fr'))).toBe(true);
+    expect(state.warnings.some((message) => message.includes('Пресет missing'))).toBe(true);
+  });
 });

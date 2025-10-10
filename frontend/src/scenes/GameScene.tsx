@@ -40,7 +40,14 @@ export const GameScene = () => {
       updateMatch(transformMatchSnapshot(payload, localMatchPlayerId ?? playerId));
     };
     const handleTurn = (payload: any) => {
-      updateMatch(transformMatchSnapshot(payload.snapshot, localMatchPlayerId ?? playerId));
+      if (payload?.snapshot) {
+        updateMatch(transformMatchSnapshot(payload.snapshot, localMatchPlayerId ?? playerId));
+        return;
+      }
+
+      matchSocket.emit('sync_state', (snapshot: any) => {
+        updateMatch(transformMatchSnapshot(snapshot, localMatchPlayerId ?? playerId));
+      });
     };
     matchSocket.on('match_state', handleState);
     matchSocket.on('turn_result', handleTurn);

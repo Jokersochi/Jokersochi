@@ -46,11 +46,12 @@ class Player {
 
 const players = playerTemplates.map(t => new Player(t));
 let currentPlayerIndex = 0;
+let activePlayerIndex = null;
 let currentTile = null;
 let modifiers = { rent: 1, movement: null, movementBonus: 0 };
 
 buildBtn.addEventListener('click', () => {
-  const player = players[currentPlayerIndex];
+  const player = players[activePlayerIndex ?? currentPlayerIndex];
   if (currentTile && canBuildResidence(player, currentTile) && player.money >= currentTile.residenceCost) {
     player.money -= currentTile.residenceCost;
     currentTile.residence = true;
@@ -61,7 +62,7 @@ buildBtn.addEventListener('click', () => {
 });
 
 upgradeBtn.addEventListener('click', () => {
-  const player = players[currentPlayerIndex];
+  const player = players[activePlayerIndex ?? currentPlayerIndex];
   if (currentTile && canUpgrade(player, currentTile) && player.money >= currentTile.upgradeCost) {
     player.money -= currentTile.upgradeCost;
     currentTile.upgrades += 1;
@@ -225,7 +226,8 @@ function movePlayer(player, steps) {
 
 // main action: roll dice and move token
 document.getElementById('roll').addEventListener('click', () => {
-  const player = players[currentPlayerIndex];
+  activePlayerIndex = currentPlayerIndex;
+  const player = players[activePlayerIndex];
   applyRandomEvent();
   const roll = rollDice();
   renderLog(`${player.name} rolls ${roll}`);

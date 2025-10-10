@@ -8,10 +8,13 @@ from reportlab.lib import colors
 from reportlab.lib.pagesizes import A3, landscape
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import mm
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
 
 ROOT = Path(__file__).resolve().parents[1] / "SOCHI_HOUSE_PROJECT" / "v1.0"
 OUTPUT = ROOT.parents[0] / "SOCHI_HOUSE_PROJECT_v1.0.pdf"
+FONTS_DIR = Path(__file__).resolve().parents[1] / "assets" / "fonts"
 
 WOOD = colors.HexColor("#C89B6A")
 SKY = colors.HexColor("#5BA7D1")
@@ -32,8 +35,30 @@ def make_paragraph(text: str, style: ParagraphStyle):
     return Paragraph(text.replace("\n", "<br/>"), style)
 
 
+def register_cyrillic_fonts() -> None:
+    fonts = {
+        "DejaVuSans": FONTS_DIR / "DejaVuSans.ttf",
+        "DejaVuSans-Bold": FONTS_DIR / "DejaVuSans-Bold.ttf",
+        "DejaVuSans-Oblique": FONTS_DIR / "DejaVuSans-Oblique.ttf",
+    }
+
+    missing = [name for name, path in fonts.items() if not path.exists()]
+    if missing:
+        missing_list = ", ".join(missing)
+        raise SystemExit(
+            f"Missing required fonts for PDF generation: {missing_list}. "
+            "Ensure the DejaVu Sans font files are present in assets/fonts."
+        )
+
+    registered = set(pdfmetrics.getRegisteredFontNames())
+    for name, path in fonts.items():
+        if name not in registered:
+            pdfmetrics.registerFont(TTFont(name, str(path)))
+
+
 def build_pdf():
     metadata = load_metadata()
+    register_cyrillic_fonts()
     doc = SimpleDocTemplate(
         str(OUTPUT),
         pagesize=landscape(A3),
@@ -47,11 +72,34 @@ def build_pdf():
     )
 
     styles = getSampleStyleSheet()
-    styles.add(ParagraphStyle(name="CoverTitle", fontName="Helvetica-Bold", fontSize=32, leading=38))
-    styles.add(ParagraphStyle(name="Subtitle", fontName="Helvetica", fontSize=16, leading=20))
-    styles.add(ParagraphStyle(name="Heading", fontName="Helvetica-Bold", fontSize=20, leading=24, textColor=WOOD))
-    styles.add(ParagraphStyle(name="Body", fontName="Helvetica", fontSize=11, leading=14))
-    styles.add(ParagraphStyle(name="Small", fontName="Helvetica-Oblique", fontSize=9, leading=12, textColor=SKY))
+    styles.add(
+        ParagraphStyle(
+            name="CoverTitle",
+            fontName="DejaVuSans-Bold",
+            fontSize=32,
+            leading=38,
+        )
+    )
+    styles.add(ParagraphStyle(name="Subtitle", fontName="DejaVuSans", fontSize=16, leading=20))
+    styles.add(
+        ParagraphStyle(
+            name="Heading",
+            fontName="DejaVuSans-Bold",
+            fontSize=20,
+            leading=24,
+            textColor=WOOD,
+        )
+    )
+    styles.add(ParagraphStyle(name="Body", fontName="DejaVuSans", fontSize=11, leading=14))
+    styles.add(
+        ParagraphStyle(
+            name="Small",
+            fontName="DejaVuSans-Oblique",
+            fontSize=9,
+            leading=12,
+            textColor=SKY,
+        )
+    )
 
     flow = []
 
@@ -127,7 +175,8 @@ def build_pdf():
             [
                 ("BACKGROUND", (0, 0), (-1, 0), SKY),
                 ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
-                ("FONTNAME", (0, 0), (-1, -1), "Helvetica"),
+                ("FONTNAME", (0, 0), (-1, 0), "DejaVuSans-Bold"),
+                ("FONTNAME", (0, 1), (-1, -1), "DejaVuSans"),
                 ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.whitesmoke, colors.lightgrey]),
                 ("ALIGN", (0, 0), (-1, -1), "LEFT"),
                 ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),

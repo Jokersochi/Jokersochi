@@ -443,7 +443,7 @@ class Game {
                 }
                 break;
             case 'move':
-                player.moveToPosition(card.target, true);
+                player.moveToPosition(card.target, card.collectMoney !== false);
                 this.handleCellLanding(player, player.position);
                 break;
         }

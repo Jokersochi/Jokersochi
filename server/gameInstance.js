@@ -275,7 +275,7 @@ export class GameInstance {
 
             case 'move':
                 const oldPos = player.position;
-                const passedGo = player.moveToPosition(card.target, true);
+                const passedGo = player.moveToPosition(card.target, card.collectMoney !== false);
 
                 if (passedGo) {
                     this.addChatMessage('system', `${player.name} прошел СТАРТ и получил ${CONFIG.GAME.STARTING_MONEY / 10}.`);

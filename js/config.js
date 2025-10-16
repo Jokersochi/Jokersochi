@@ -403,6 +403,7 @@ const CONFIG = {
             id: 4,
             type: 'move',
             target: 9,
+            collectMoney: false,
             text: 'Отправляйтесь в тюрьму',
             en_text: 'Go to jail'
         },

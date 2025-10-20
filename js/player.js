@@ -42,13 +42,17 @@ class Player {
      * @param {string} reason - причина (для статистики)
      */
     addMoney(amount, reason = '') {
-        if (amount <= 0) {
-            return;
+        if (amount === 0) {
+            return true;
+        }
+
+        if (amount < 0) {
+            return this.removeMoney(-amount, reason);
         }
 
         this.money += amount;
         this.stats.totalMoneyEarned += amount;
-        
+
         if (reason === 'rent') {
             this.stats.totalRentReceived += amount;
         }
@@ -56,6 +60,8 @@ class Player {
         if (eventBus && typeof eventBus.emit === 'function') {
             eventBus.emit('moneyChanged', { player: this, amount: this.money, change: amount, reason });
         }
+
+        return true;
     }
 
     /**

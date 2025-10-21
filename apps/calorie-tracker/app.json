@@ -1,0 +1,36 @@
+{
+  "expo": {
+    "name": "CalorieVision",
+    "slug": "calorie-vision",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#101828"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "Нам нужна камера, чтобы распознавать блюда и рассчитывать калории",
+        "NSPhotoLibraryAddUsageDescription": "Сохраните распознанные блюда в вашу медиатеку"
+      }
+    },
+    "android": {
+      "permissions": ["CAMERA", "READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE"],
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#101828"
+      }
+    },
+    "plugins": ["expo-camera", "expo-image-picker"],
+    "extra": {
+      "apiBaseUrl": "http://localhost:4000"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single"
+    }
+  }
+}

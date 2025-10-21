@@ -54,6 +54,8 @@ export const HomeScreen = () => {
               fat: payload.fat,
             },
             notes: payload.notes,
+            photoUri: payload.photoUri,
+            recognition: payload.recognition,
           });
         }}
       />

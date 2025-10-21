@@ -1,5 +1,7 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
+  ActivityIndicator,
+  Image,
   Modal,
   Pressable,
   StyleSheet,
@@ -7,7 +9,8 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import type { MealType } from '../types/meal';
+import { useFoodRecognition } from '../hooks/useFoodRecognition';
+import type { MealEntry, MealType } from '../types/meal';
 import { palette, radius, spacing } from '../theme/colors';
 
 const mealTypeOptions: { label: string; value: MealType }[] = [
@@ -16,6 +19,8 @@ const mealTypeOptions: { label: string; value: MealType }[] = [
   { label: 'Ужин', value: 'dinner' },
   { label: 'Перекус', value: 'snack' },
 ];
+
+const formatConfidence = (confidence: number) => `${Math.round(confidence * 100)}% уверенность`;
 
 export interface AddMealSheetProps {
   visible: boolean;
@@ -28,6 +33,8 @@ export interface AddMealSheetProps {
     carbs: number;
     fat: number;
     notes?: string;
+    photoUri?: string;
+    recognition?: MealEntry['recognition'];
   }) => void;
 }
 
@@ -39,6 +46,57 @@ export const AddMealSheet = ({ visible, onClose, onSubmit }: AddMealSheetProps) 
   const [protein, setProtein] = useState('');
   const [carbs, setCarbs] = useState('');
   const [fat, setFat] = useState('');
+  const [photoUri, setPhotoUri] = useState<string | undefined>(undefined);
+  const [recognitionMeta, setRecognitionMeta] = useState<MealEntry['recognition']>();
+  const { captureAndRecognize, error, reset, result, status } = useFoodRecognition();
+
+  const resetFormState = useCallback(() => {
+    setTitle('');
+    setNotes('');
+    setMealType('lunch');
+    setCalories('');
+    setProtein('');
+    setCarbs('');
+    setFat('');
+    setPhotoUri(undefined);
+    setRecognitionMeta(undefined);
+    reset();
+  }, [reset]);
+
+  useEffect(() => {
+    if (!visible) {
+      resetFormState();
+    }
+  }, [visible, resetFormState]);
+
+  useEffect(() => {
+    if (!result) {
+      return;
+    }
+
+    setPhotoUri(result.photoUri);
+    setRecognitionMeta({
+      label: result.bestCandidate.label,
+      confidence: result.bestCandidate.confidence,
+      portionGrams: result.portionGrams,
+      inferenceSource: result.inference.source,
+      inferenceLatencyMs: result.inference.latencyMs,
+      modelVersion: result.inference.modelVersion,
+      alternatives: result.alternatives,
+    });
+
+    setTitle(result.bestCandidate.label);
+    setCalories(String(Math.round(result.macros.calories)));
+    setProtein(String(Math.round(result.macros.protein)));
+    setCarbs(String(Math.round(result.macros.carbs)));
+    setFat(String(Math.round(result.macros.fat)));
+  }, [result]);
+
+  const isAnalyzing = status === 'capturing' || status === 'analyzing';
+  const confidenceText = useMemo(
+    () => (recognitionMeta ? formatConfidence(recognitionMeta.confidence) : null),
+    [recognitionMeta]
+  );
 
   const handleSubmit = () => {
     if (!title.trim() || !calories || !protein || !carbs || !fat) {
@@ -53,16 +111,15 @@ export const AddMealSheet = ({ visible, onClose, onSubmit }: AddMealSheetProps) 
       carbs: Number(carbs),
       fat: Number(fat),
       notes: notes.trim() || undefined,
+      photoUri,
+      recognition: recognitionMeta,
     });
 
-    setTitle('');
-    setNotes('');
-    setCalories('');
-    setProtein('');
-    setCarbs('');
-    setFat('');
-    setMealType('lunch');
     onClose();
+  };
+
+  const handleRecognition = async () => {
+    await captureAndRecognize();
   };
 
   return (
@@ -70,6 +127,50 @@ export const AddMealSheet = ({ visible, onClose, onSubmit }: AddMealSheetProps) 
       <View style={styles.backdrop}>
         <View style={styles.sheet}>
           <Text style={styles.title}>Добавить блюдо</Text>
+          <View style={styles.recognitionBlock}>
+            <Text style={styles.label}>Фото и распознавание</Text>
+            <View style={styles.recognitionRow}>
+              {photoUri ? (
+                <Image source={{ uri: photoUri }} style={styles.previewImage} />
+              ) : (
+                <View style={styles.previewPlaceholder}>
+                  <Text style={styles.previewPlaceholderText}>
+                    Сделайте снимок блюда, чтобы получить расчет КБЖУ
+                  </Text>
+                </View>
+              )}
+              <View style={styles.recognitionActions}>
+                <Pressable
+                  style={[styles.captureButton, isAnalyzing && styles.captureButtonDisabled]}
+                  onPress={handleRecognition}
+                  disabled={isAnalyzing}
+                  accessibilityHint="Запустить съемку блюда"
+                >
+                  {isAnalyzing ? (
+                    <ActivityIndicator color="#0B1120" />
+                  ) : (
+                    <Text style={styles.captureButtonText}>Распознать по фото</Text>
+                  )}
+                </Pressable>
+                {recognitionMeta ? (
+                  <View style={styles.recognitionMeta}>
+                    <Text style={styles.recognitionMetaTitle}>{confidenceText}</Text>
+                    <Text style={styles.recognitionMetaSubtitle}>
+                      Порция ≈ {Math.round(recognitionMeta.portionGrams)} г ·{' '}
+                      {recognitionMeta.inferenceSource === 'cloud' ? 'Облако' : 'Устройство'} ·{' '}
+                      {recognitionMeta.inferenceLatencyMs} мс
+                    </Text>
+                    {recognitionMeta.alternatives?.length ? (
+                      <Text style={styles.recognitionAlternatives}>
+                        Альтернативы: {recognitionMeta.alternatives.map((alt) => alt.label).join(', ')}
+                      </Text>
+                    ) : null}
+                  </View>
+                ) : null}
+                {error ? <Text style={styles.errorText}>{error}</Text> : null}
+              </View>
+            </View>
+          </View>
           <Text style={styles.label}>Название</Text>
           <TextInput
             value={title}
@@ -88,9 +189,7 @@ export const AddMealSheet = ({ visible, onClose, onSubmit }: AddMealSheetProps) 
                   onPress={() => setMealType(option.value)}
                   style={[styles.choiceChip, isActive && styles.choiceChipActive]}
                 >
-                  <Text style={[styles.choiceText, isActive && styles.choiceTextActive]}>
-                    {option.label}
-                  </Text>
+                  <Text style={[styles.choiceText, isActive && styles.choiceTextActive]}>{option.label}</Text>
                 </Pressable>
               );
             })}
@@ -127,12 +226,7 @@ export const AddMealSheet = ({ visible, onClose, onSubmit }: AddMealSheetProps) 
             </View>
             <View style={styles.metricField}>
               <Text style={styles.label}>Жиры</Text>
-              <TextInput
-                value={fat}
-                onChangeText={setFat}
-                keyboardType="numeric"
-                style={styles.input}
-              />
+              <TextInput value={fat} onChangeText={setFat} keyboardType="numeric" style={styles.input} />
             </View>
           </View>
           <Text style={styles.label}>Заметки</Text>
@@ -176,13 +270,88 @@ const styles = StyleSheet.create({
     color: palette.text,
     fontSize: 20,
     fontWeight: '700',
-    marginBottom: spacing.sm,
   },
   label: {
     color: palette.textMuted,
     fontSize: 14,
     letterSpacing: 0.3,
     textTransform: 'uppercase',
+  },
+  recognitionBlock: {
+    borderWidth: 1,
+    borderColor: palette.border,
+    borderRadius: radius.md,
+    padding: spacing.md,
+    backgroundColor: palette.surfaceMuted,
+    gap: spacing.sm,
+  },
+  recognitionRow: {
+    flexDirection: 'row',
+    gap: spacing.md,
+  },
+  recognitionActions: {
+    flex: 1,
+    gap: spacing.xs,
+  },
+  captureButton: {
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+    borderRadius: radius.md,
+    backgroundColor: palette.primary,
+    alignItems: 'center',
+  },
+  captureButtonDisabled: {
+    opacity: 0.6,
+  },
+  captureButtonText: {
+    color: '#0B1120',
+    fontWeight: '700',
+  },
+  previewImage: {
+    width: 112,
+    height: 112,
+    borderRadius: radius.md,
+    backgroundColor: palette.surface,
+  },
+  previewPlaceholder: {
+    width: 112,
+    height: 112,
+    borderRadius: radius.md,
+    backgroundColor: '#0B1120',
+    opacity: 0.2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: spacing.sm,
+  },
+  previewPlaceholderText: {
+    color: palette.textMuted,
+    fontSize: 12,
+    textAlign: 'center',
+  },
+  recognitionMeta: {
+    backgroundColor: palette.surface,
+    borderRadius: radius.md,
+    padding: spacing.sm,
+    borderWidth: 1,
+    borderColor: palette.border,
+    gap: 4,
+  },
+  recognitionMetaTitle: {
+    color: palette.text,
+    fontWeight: '600',
+  },
+  recognitionMetaSubtitle: {
+    color: palette.textMuted,
+    fontSize: 12,
+  },
+  recognitionAlternatives: {
+    color: palette.textMuted,
+    fontSize: 12,
+    fontStyle: 'italic',
+  },
+  errorText: {
+    color: '#F97066',
+    fontSize: 12,
   },
   input: {
     backgroundColor: palette.surfaceMuted,

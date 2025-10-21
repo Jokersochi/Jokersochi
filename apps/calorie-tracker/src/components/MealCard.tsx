@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 import type { MealEntry } from '../types/meal';
 import { palette, radius, spacing } from '../theme/colors';
 
@@ -30,13 +30,31 @@ export const MealCard = memo(({ meal }: MealCardProps) => {
         <Text style={styles.time}>{formatTime(meal.capturedAt)}</Text>
       </View>
       <Text style={styles.title}>{meal.title}</Text>
-      <View style={styles.macrosRow}>
-        <Text style={styles.macro}>{meal.macros.calories} ккал</Text>
-        <Text style={styles.macro}>Б: {meal.macros.protein} г</Text>
-        <Text style={styles.macro}>Ж: {meal.macros.fat} г</Text>
-        <Text style={styles.macro}>У: {meal.macros.carbs} г</Text>
+      <View style={styles.contentRow}>
+        {meal.photoUri ? <Image source={{ uri: meal.photoUri }} style={styles.thumbnail} /> : null}
+        <View style={styles.contentText}>
+          <View style={styles.macrosRow}>
+            <Text style={styles.macro}>{meal.macros.calories} ккал</Text>
+            <Text style={styles.macro}>Б: {meal.macros.protein} г</Text>
+            <Text style={styles.macro}>Ж: {meal.macros.fat} г</Text>
+            <Text style={styles.macro}>У: {meal.macros.carbs} г</Text>
+          </View>
+          {meal.recognition ? (
+            <View style={styles.recognitionRow}>
+              <Text style={styles.recognitionConfidence}>
+                {Math.round(meal.recognition.confidence * 100)}% ·{' '}
+                {meal.recognition.inferenceSource === 'cloud' ? 'Облако' : 'Устройство'} ·{' '}
+                {meal.recognition.inferenceLatencyMs} мс
+              </Text>
+              <Text style={styles.recognitionDetails}>
+                Порция ≈ {Math.round(meal.recognition.portionGrams)} г
+                {meal.recognition.modelVersion ? ` · ${meal.recognition.modelVersion}` : ''}
+              </Text>
+            </View>
+          ) : null}
+          {meal.notes ? <Text style={styles.notes}>{meal.notes}</Text> : null}
+        </View>
       </View>
-      {meal.notes ? <Text style={styles.notes}>{meal.notes}</Text> : null}
     </View>
   );
 });
@@ -90,5 +108,31 @@ const styles = StyleSheet.create({
     color: palette.textMuted,
     fontSize: 13,
     lineHeight: 18,
+  },
+  contentRow: {
+    flexDirection: 'row',
+    gap: spacing.md,
+  },
+  thumbnail: {
+    width: 72,
+    height: 72,
+    borderRadius: radius.md,
+    backgroundColor: palette.surfaceMuted,
+  },
+  contentText: {
+    flex: 1,
+    gap: spacing.xs,
+  },
+  recognitionRow: {
+    gap: 2,
+  },
+  recognitionConfidence: {
+    color: palette.primary,
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  recognitionDetails: {
+    color: palette.textMuted,
+    fontSize: 12,
   },
 });

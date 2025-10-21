@@ -9,6 +9,18 @@ const initialMeals: MealEntry[] = [
     capturedAt: new Date(new Date().setHours(8, 15, 0, 0)).toISOString(),
     macros: { calories: 360, protein: 18, carbs: 52, fat: 9 },
     notes: 'Добавлен греческий йогурт',
+    recognition: {
+      label: 'Овсяная каша',
+      confidence: 0.82,
+      portionGrams: 320,
+      inferenceSource: 'cloud',
+      inferenceLatencyMs: 940,
+      modelVersion: 'foodnet-v0.4.2',
+      alternatives: [
+        { label: 'Гранола', confidence: 0.11 },
+        { label: 'Рисовая каша', confidence: 0.07 },
+      ],
+    },
   },
   {
     id: 'seed-2',
@@ -16,6 +28,14 @@ const initialMeals: MealEntry[] = [
     type: 'lunch',
     capturedAt: new Date(new Date().setHours(13, 5, 0, 0)).toISOString(),
     macros: { calories: 520, protein: 42, carbs: 48, fat: 16 },
+    recognition: {
+      label: 'Куриное филе с киноа',
+      confidence: 0.88,
+      portionGrams: 410,
+      inferenceSource: 'on-device',
+      inferenceLatencyMs: 420,
+      modelVersion: 'foodnet-lite-v1.1',
+    },
   },
   {
     id: 'seed-3',
@@ -23,6 +43,13 @@ const initialMeals: MealEntry[] = [
     type: 'snack',
     capturedAt: new Date(new Date().setHours(16, 30, 0, 0)).toISOString(),
     macros: { calories: 210, protein: 20, carbs: 18, fat: 7 },
+    recognition: {
+      label: 'Творог с ягодами',
+      confidence: 0.76,
+      portionGrams: 180,
+      inferenceSource: 'cloud',
+      inferenceLatencyMs: 1050,
+    },
   },
 ];
 
@@ -33,6 +60,8 @@ type AddMealPayload = {
   type: MealType;
   macros: MacroBreakdown;
   notes?: string;
+  photoUri?: string;
+  recognition?: MealEntry['recognition'];
 };
 
 type MealAction = { type: 'add'; payload: AddMealPayload };
@@ -44,7 +73,8 @@ function mealReducer(state: MealEntry[], action: MealAction): MealEntry[] {
         {
           id: createId(),
           capturedAt: new Date().toISOString(),
-          photoUri: undefined,
+          photoUri: action.payload.photoUri,
+          recognition: action.payload.recognition,
           ...action.payload,
         },
         ...state,

@@ -1,3 +1,5 @@
+import type { RecognitionCandidate, InferenceSource } from './inference';
+
 export type MacroBreakdown = {
   calories: number;
   protein: number;
@@ -15,4 +17,13 @@ export interface MealEntry {
   macros: MacroBreakdown;
   notes?: string;
   photoUri?: string;
+  recognition?: {
+    label: string;
+    confidence: number;
+    portionGrams: number;
+    inferenceSource: InferenceSource;
+    inferenceLatencyMs: number;
+    modelVersion?: string;
+    alternatives?: RecognitionCandidate[];
+  };
 }

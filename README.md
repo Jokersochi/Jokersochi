@@ -199,3 +199,7 @@ npm run lint:css:physical
 ---
 
 
+
+## 📚 Дополнительные руководства
+
+- [Установка WAN 2.2 для Image-to-Video и Text-to-Video в ComfyUI](docs/wan-2.2-comfyui-setup.md) — включает автоматический скрипт `scripts/setup-wan22-comfyui.sh`

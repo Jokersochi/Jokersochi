@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FoodLens — калорийность по фото</title>
+    <meta
+      name="description"
+      content="Загрузите фото блюда, получите распознавание и оценку калорийности c помощью нейросети."
+    />
+    <link rel="stylesheet" href="./style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.18.0/dist/tf.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.0" defer></script>
+    <script type="module" src="./main.js" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="app-header">
+        <div class="header-text">
+          <h1>FoodLens</h1>
+          <p>
+            Анализируйте фотографии блюд и получайте приблизительную калорийность. Используется модель MobileNet для
+            распознавания блюда и база калорийности популярных продуктов.
+          </p>
+        </div>
+        <label class="upload-button" for="photo-input">
+          <input id="photo-input" type="file" accept="image/*" />
+          <span>Загрузить фото</span>
+        </label>
+      </header>
+
+      <main class="app-main">
+        <section class="photo-panel" aria-label="Предпросмотр изображения">
+          <div class="photo-frame" data-role="photo-frame">
+            <p class="placeholder" data-role="placeholder">
+              Загрузите фотографию блюда или напитка. Поддерживаются изображения в форматах JPG, PNG и HEIC.
+            </p>
+            <img alt="Предпросмотр выбранного блюда" data-role="preview" hidden />
+            <div class="progress" data-role="progress" hidden>
+              <span class="progress__spinner" aria-hidden="true"></span>
+              <span data-role="progress-text">Загрузка модели…</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="result-panel" aria-live="polite">
+          <h2>Результат распознавания</h2>
+          <div class="result-card result-card--empty" data-role="result-card">
+            <p data-role="result-message">
+              После распознавания здесь появится список возможных блюд и оценка калорийности.
+            </p>
+          </div>
+
+          <div class="portion" hidden data-role="portion">
+            <label for="portion-slider">Масса порции: <output data-role="portion-value">150 г</output></label>
+            <input id="portion-slider" type="range" min="50" max="500" step="10" value="150" />
+          </div>
+
+          <table class="prediction-table" hidden data-role="prediction-table">
+            <thead>
+              <tr>
+                <th scope="col">Блюдо</th>
+                <th scope="col">Вероятность</th>
+                <th scope="col">Калорийность</th>
+              </tr>
+            </thead>
+            <tbody data-role="prediction-body"></tbody>
+          </table>
+        </section>
+      </main>
+
+      <aside class="tips" aria-label="Советы по улучшению распознавания">
+        <h2>Советы</h2>
+        <ul>
+          <li>Фотографируйте блюдо при хорошем освещении и без посторонних предметов.</li>
+          <li>Используйте крупные планы — чем крупнее блюдо в кадре, тем точнее распознавание.</li>
+          <li>
+            Измените массу порции с помощью ползунка, чтобы уточнить результат. По умолчанию расчёт ведётся на 150 граммов.
+          </li>
+          <li>
+            Для сложных блюд объединяйте несколько записей или корректируйте калорийность вручную в любимом трекере.
+          </li>
+        </ul>
+      </aside>
+    </div>
+  </body>
+</html>

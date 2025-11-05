@@ -18,9 +18,9 @@
     "optimize:svg": "node scripts/optimize-svg.js",
     "analyze": "vite-bundle-analyzer",
     "lighthouse": "lighthouse http://localhost:3000 --output=html --output-path=./lighthouse-report.html",
-    "old:build": "node build.js",
-    "old:dev": "python3 -m http.server 8000",
-    "old:serve": "python3 -m http.server 8000 -d dist",
+
+
+
     "lint:css": "stylelint '**/*.css'",
     "archive": "node scripts/archive.js",
     "archive:source": "node scripts/archive.js source",
@@ -45,7 +45,7 @@
     "babel-jest": "^30.1.2",
     "cssnano": "^6.0.1",
     "eslint": "^8.55.0",
-    "http-server": "^14.0.0",
+
     "imagemin": "^8.0.1",
     "imagemin-mozjpeg": "^10.0.0",
     "imagemin-pngquant": "^9.0.2",

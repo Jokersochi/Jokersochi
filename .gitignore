@@ -59,4 +59,5 @@ firestore-debug.log
 sw-cache/
 
 # Local development
-.local/ 
+.local/
+.expo/

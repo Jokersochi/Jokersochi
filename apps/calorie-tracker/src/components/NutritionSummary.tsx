@@ -1,3 +1,4 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import { memo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import type { MacroBreakdown } from '../types/meal';
@@ -23,80 +24,171 @@ const formatDelta = (value: number, target: number) => {
 
 export const NutritionSummary = memo(
   ({ totals, target = defaultTarget }: NutritionSummaryProps) => {
+    const calorieProgress = Math.min(100, Math.round((totals.calories / target.calories) * 100));
+
     return (
-      <View style={styles.container}>
+      <LinearGradient
+        colors={[palette.surfaceElevated, palette.surfaceMuted]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.container}
+      >
         <View style={styles.headerRow}>
-          <Text style={styles.title}>Сводка за день</Text>
-          <Text style={styles.subtitle}>Цель: {target.calories} ккал</Text>
+          <View style={styles.headerTitles}>
+            <Text style={styles.title}>Сводка за день</Text>
+            <Text style={styles.subtitle}>Цель: {target.calories} ккал</Text>
+          </View>
+          <View style={styles.pulsePill}>
+            <Text style={styles.pulseText}>AI баланс</Text>
+          </View>
         </View>
-        <View style={styles.row}>
-          <View style={styles.metricBox}>
+        <View style={styles.calorieRow}>
+          <LinearGradient
+            colors={[palette.primary, palette.accent]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.highlightBox}
+          >
             <Text style={styles.metricTitle}>Калории</Text>
             <Text style={styles.metricValue}>{totals.calories}</Text>
-            <Text style={styles.metricDelta}>
-              Осталось {formatDelta(totals.calories, target.calories)}
-            </Text>
-          </View>
-          <View style={styles.metricBox}>
-            <Text style={styles.metricTitle}>Белки</Text>
-            <Text style={styles.metricValue}>{totals.protein} г</Text>
-            <Text style={styles.metricDelta}>
-              {formatDelta(totals.protein, target.protein)} г
-            </Text>
+            <View style={styles.progressTrack}>
+              <View style={[styles.progressFill, { width: `${calorieProgress}%` }]} />
+            </View>
+            <Text style={styles.metricDelta}>Осталось {formatDelta(totals.calories, target.calories)}</Text>
+          </LinearGradient>
+          <View style={styles.statBlock}>
+            <Text style={styles.statLabel}>Баланс</Text>
+            <Text style={styles.statValue}>{formatDelta(totals.calories, target.calories)} ккал</Text>
+            <Text style={styles.statHint}>Плотность блюд оптимальна</Text>
           </View>
         </View>
         <View style={styles.row}>
-          <View style={styles.metricBox}>
+          <LinearGradient
+            colors={[palette.surface, palette.surfaceMuted]}
+            style={styles.metricBox}
+          >
+            <Text style={styles.metricTitle}>Белки</Text>
+            <Text style={styles.metricValue}>{totals.protein} г</Text>
+            <Text style={styles.metricDelta}>{formatDelta(totals.protein, target.protein)} г</Text>
+          </LinearGradient>
+          <LinearGradient
+            colors={[palette.surface, palette.surfaceMuted]}
+            style={styles.metricBox}
+          >
             <Text style={styles.metricTitle}>Жиры</Text>
             <Text style={styles.metricValue}>{totals.fat} г</Text>
-            <Text style={styles.metricDelta}>
-              {formatDelta(totals.fat, target.fat)} г
-            </Text>
-          </View>
-          <View style={styles.metricBox}>
+            <Text style={styles.metricDelta}>{formatDelta(totals.fat, target.fat)} г</Text>
+          </LinearGradient>
+          <LinearGradient
+            colors={[palette.surface, palette.surfaceMuted]}
+            style={styles.metricBox}
+          >
             <Text style={styles.metricTitle}>Углеводы</Text>
             <Text style={styles.metricValue}>{totals.carbs} г</Text>
-            <Text style={styles.metricDelta}>
-              {formatDelta(totals.carbs, target.carbs)} г
-            </Text>
-          </View>
+            <Text style={styles.metricDelta}>{formatDelta(totals.carbs, target.carbs)} г</Text>
+          </LinearGradient>
         </View>
-      </View>
+      </LinearGradient>
     );
   }
 );
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: palette.surfaceMuted,
     borderRadius: radius.lg,
     padding: spacing.lg,
     marginBottom: spacing.lg,
     borderWidth: 1,
     borderColor: palette.border,
+    gap: spacing.md,
+    shadowColor: '#000',
+    shadowOpacity: 0.25,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: 10 },
+    elevation: 12,
   },
   headerRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: spacing.md,
+    alignItems: 'center',
+  },
+  headerTitles: {
+    gap: 4,
   },
   title: {
     color: palette.text,
     fontSize: 20,
-    fontWeight: '700',
+    fontWeight: '800',
   },
   subtitle: {
     color: palette.textMuted,
     fontSize: 14,
   },
+  pulsePill: {
+    backgroundColor: palette.surface,
+    borderColor: palette.border,
+    borderWidth: 1,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+    borderRadius: 999,
+  },
+  pulseText: {
+    color: palette.accent,
+    fontWeight: '700',
+    letterSpacing: 0.2,
+  },
+  calorieRow: {
+    flexDirection: 'row',
+    gap: spacing.md,
+    alignItems: 'stretch',
+  },
+  highlightBox: {
+    flex: 1.2,
+    padding: spacing.md,
+    borderRadius: radius.md,
+    gap: spacing.sm,
+  },
+  statBlock: {
+    flex: 0.8,
+    backgroundColor: palette.surface,
+    borderWidth: 1,
+    borderColor: palette.border,
+    borderRadius: radius.md,
+    padding: spacing.md,
+    justifyContent: 'space-between',
+  },
+  statLabel: {
+    color: palette.textMuted,
+    fontSize: 12,
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
+  },
+  statValue: {
+    color: palette.text,
+    fontSize: 18,
+    fontWeight: '700',
+  },
+  statHint: {
+    color: palette.textMuted,
+    fontSize: 12,
+  },
+  progressTrack: {
+    height: 8,
+    backgroundColor: '#ffffff30',
+    borderRadius: 999,
+    overflow: 'hidden',
+  },
+  progressFill: {
+    height: '100%',
+    backgroundColor: '#0B1120',
+    opacity: 0.8,
+  },
   row: {
     flexDirection: 'row',
     gap: spacing.md,
-    marginBottom: spacing.md,
   },
   metricBox: {
     flex: 1,
-    backgroundColor: palette.surface,
     padding: spacing.md,
     borderRadius: radius.md,
     borderWidth: 1,
@@ -115,7 +207,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   metricDelta: {
-    color: palette.primary,
+    color: palette.text,
     marginTop: spacing.xs,
     fontSize: 14,
   },

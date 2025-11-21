@@ -25,30 +25,53 @@ export interface MealCardProps {
 export const MealCard = memo(({ meal }: MealCardProps) => {
   return (
     <View style={styles.container}>
+      <View style={styles.accentBar} />
       <View style={styles.headerRow}>
-        <Text style={styles.type}>{mealTypeLabels[meal.type]}</Text>
-        <Text style={styles.time}>{formatTime(meal.capturedAt)}</Text>
+        <View style={styles.headerTitleBlock}>
+          <Text style={styles.type}>{mealTypeLabels[meal.type]}</Text>
+          <Text style={styles.title}>{meal.title}</Text>
+        </View>
+        <View style={styles.timeBadge}>
+          <Text style={styles.time}>{formatTime(meal.capturedAt)}</Text>
+        </View>
       </View>
-      <Text style={styles.title}>{meal.title}</Text>
       <View style={styles.contentRow}>
         {meal.photoUri ? <Image source={{ uri: meal.photoUri }} style={styles.thumbnail} /> : null}
         <View style={styles.contentText}>
           <View style={styles.macrosRow}>
-            <Text style={styles.macro}>{meal.macros.calories} ккал</Text>
-            <Text style={styles.macro}>Б: {meal.macros.protein} г</Text>
-            <Text style={styles.macro}>Ж: {meal.macros.fat} г</Text>
-            <Text style={styles.macro}>У: {meal.macros.carbs} г</Text>
+            <View style={[styles.macro, styles.macroPrimary]}>
+              <Text style={styles.macroLabel}>Калории</Text>
+              <Text style={styles.macroValue}>{meal.macros.calories} ккал</Text>
+            </View>
+            <View style={styles.macro}>
+              <Text style={styles.macroLabel}>Б</Text>
+              <Text style={styles.macroValue}>{meal.macros.protein} г</Text>
+            </View>
+            <View style={styles.macro}>
+              <Text style={styles.macroLabel}>Ж</Text>
+              <Text style={styles.macroValue}>{meal.macros.fat} г</Text>
+            </View>
+            <View style={styles.macro}>
+              <Text style={styles.macroLabel}>У</Text>
+              <Text style={styles.macroValue}>{meal.macros.carbs} г</Text>
+            </View>
           </View>
           {meal.recognition ? (
             <View style={styles.recognitionRow}>
+              <View style={styles.sourcePill}>
+                <Text style={styles.recognitionSource}>
+                  {meal.recognition.inferenceSource === 'cloud' ? 'Облако' : 'Устройство'} ·{' '}
+                  {meal.recognition.modelVersion ?? 'vNext'}
+                </Text>
+              </View>
               <Text style={styles.recognitionConfidence}>
-                {Math.round(meal.recognition.confidence * 100)}% ·{' '}
-                {meal.recognition.inferenceSource === 'cloud' ? 'Облако' : 'Устройство'} ·{' '}
-                {meal.recognition.inferenceLatencyMs} мс
+                {Math.round(meal.recognition.confidence * 100)}% точность · {meal.recognition.inferenceLatencyMs} мс
               </Text>
               <Text style={styles.recognitionDetails}>
                 Порция ≈ {Math.round(meal.recognition.portionGrams)} г
-                {meal.recognition.modelVersion ? ` · ${meal.recognition.modelVersion}` : ''}
+                {meal.recognition.alternatives?.length
+                  ? ` · ${meal.recognition.alternatives.map((alt) => alt.label).slice(0, 2).join(', ')}`
+                  : ''}
               </Text>
             </View>
           ) : null}
@@ -61,48 +84,90 @@ export const MealCard = memo(({ meal }: MealCardProps) => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: palette.surface,
+    backgroundColor: palette.surfaceElevated,
     borderRadius: radius.lg,
     padding: spacing.lg,
     marginBottom: spacing.md,
     borderWidth: 1,
     borderColor: palette.border,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOpacity: 0.25,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: 12 },
+    elevation: 12,
+  },
+  accentBar: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    width: 6,
+    backgroundColor: palette.glow,
   },
   headerRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: spacing.xs,
+    alignItems: 'center',
+    marginBottom: spacing.sm,
+  },
+  headerTitleBlock: {
+    gap: 4,
   },
   type: {
     color: palette.primary,
-    fontSize: 14,
-    fontWeight: '600',
-    letterSpacing: 0.4,
+    fontSize: 12,
+    fontWeight: '700',
+    letterSpacing: 1,
     textTransform: 'uppercase',
   },
+  timeBadge: {
+    backgroundColor: palette.surface,
+    borderRadius: 999,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+    borderWidth: 1,
+    borderColor: palette.border,
+  },
   time: {
-    color: palette.textMuted,
+    color: palette.text,
     fontSize: 14,
+    fontWeight: '700',
   },
   title: {
     color: palette.text,
-    fontSize: 18,
-    fontWeight: '700',
-    marginBottom: spacing.sm,
+    fontSize: 20,
+    fontWeight: '800',
   },
   macrosRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: spacing.sm,
-    marginBottom: spacing.xs,
+    marginBottom: spacing.sm,
   },
   macro: {
-    color: palette.text,
-    fontSize: 14,
     backgroundColor: palette.surfaceMuted,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 4,
-    borderRadius: radius.sm,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: palette.border,
+    minWidth: 72,
+  },
+  macroPrimary: {
+    backgroundColor: palette.glow,
+    borderColor: palette.glow,
+  },
+  macroLabel: {
+    color: palette.textMuted,
+    fontSize: 12,
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
+  },
+  macroValue: {
+    color: palette.text,
+    fontSize: 16,
+    fontWeight: '700',
   },
   notes: {
     color: palette.textMuted,
@@ -124,10 +189,24 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   recognitionRow: {
-    gap: 2,
+    gap: 4,
+  },
+  sourcePill: {
+    alignSelf: 'flex-start',
+    backgroundColor: palette.surface,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: palette.border,
+  },
+  recognitionSource: {
+    color: palette.accent,
+    fontSize: 12,
+    fontWeight: '700',
   },
   recognitionConfidence: {
-    color: palette.primary,
+    color: palette.text,
     fontSize: 12,
     fontWeight: '600',
   },

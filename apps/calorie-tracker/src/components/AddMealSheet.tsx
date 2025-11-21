@@ -1,3 +1,4 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
@@ -126,7 +127,12 @@ export const AddMealSheet = ({ visible, onClose, onSubmit }: AddMealSheetProps) 
     <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
       <View style={styles.backdrop}>
         <View style={styles.sheet}>
-          <Text style={styles.title}>Добавить блюдо</Text>
+          <View style={styles.headerRow}>
+            <Text style={styles.title}>Добавить блюдо</Text>
+            <View style={styles.helperPill}>
+              <Text style={styles.helperText}>AI ready</Text>
+            </View>
+          </View>
           <View style={styles.recognitionBlock}>
             <Text style={styles.label}>Фото и распознавание</Text>
             <View style={styles.recognitionRow}>
@@ -146,11 +152,18 @@ export const AddMealSheet = ({ visible, onClose, onSubmit }: AddMealSheetProps) 
                   disabled={isAnalyzing}
                   accessibilityHint="Запустить съемку блюда"
                 >
-                  {isAnalyzing ? (
-                    <ActivityIndicator color="#0B1120" />
-                  ) : (
-                    <Text style={styles.captureButtonText}>Распознать по фото</Text>
-                  )}
+                  <LinearGradient
+                    colors={[palette.primary, palette.accent]}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={styles.captureGradient}
+                  >
+                    {isAnalyzing ? (
+                      <ActivityIndicator color="#0B1120" />
+                    ) : (
+                      <Text style={styles.captureButtonText}>Распознать по фото</Text>
+                    )}
+                  </LinearGradient>
                 </Pressable>
                 {recognitionMeta ? (
                   <View style={styles.recognitionMeta}>
@@ -244,7 +257,14 @@ export const AddMealSheet = ({ visible, onClose, onSubmit }: AddMealSheetProps) 
               <Text style={styles.secondaryButtonText}>Отмена</Text>
             </Pressable>
             <Pressable style={styles.primaryButton} onPress={handleSubmit}>
-              <Text style={styles.primaryButtonText}>Сохранить</Text>
+              <LinearGradient
+                colors={[palette.primary, palette.accentWarm]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.primaryGradient}
+              >
+                <Text style={styles.primaryButtonText}>Сохранить</Text>
+              </LinearGradient>
             </Pressable>
           </View>
         </View>
@@ -260,16 +280,34 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   sheet: {
-    backgroundColor: palette.surface,
+    backgroundColor: palette.surfaceElevated,
     padding: spacing.lg,
     borderTopLeftRadius: radius.lg,
     borderTopRightRadius: radius.lg,
     gap: spacing.sm,
   },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
   title: {
     color: palette.text,
     fontSize: 20,
     fontWeight: '700',
+  },
+  helperPill: {
+    backgroundColor: palette.surfaceMuted,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: palette.border,
+  },
+  helperText: {
+    color: palette.accent,
+    fontWeight: '700',
+    letterSpacing: 0.4,
   },
   label: {
     color: palette.textMuted,
@@ -294,14 +332,16 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   captureButton: {
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
     borderRadius: radius.md,
-    backgroundColor: palette.primary,
-    alignItems: 'center',
+    overflow: 'hidden',
   },
   captureButtonDisabled: {
     opacity: 0.6,
+  },
+  captureGradient: {
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+    alignItems: 'center',
   },
   captureButtonText: {
     color: '#0B1120',
@@ -376,10 +416,11 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     borderWidth: 1,
     borderColor: palette.border,
+    backgroundColor: palette.surface,
   },
   choiceChipActive: {
-    backgroundColor: palette.primary,
-    borderColor: palette.primary,
+    backgroundColor: palette.glow,
+    borderColor: palette.glow,
   },
   choiceText: {
     color: palette.text,
@@ -407,16 +448,20 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     borderWidth: 1,
     borderColor: palette.border,
+    backgroundColor: palette.surface,
   },
   secondaryButtonText: {
     color: palette.text,
     fontWeight: '600',
   },
   primaryButton: {
+    borderRadius: radius.md,
+    overflow: 'hidden',
+  },
+  primaryGradient: {
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.sm,
-    borderRadius: radius.md,
-    backgroundColor: palette.primary,
+    alignItems: 'center',
   },
   primaryButtonText: {
     color: '#0B1120',

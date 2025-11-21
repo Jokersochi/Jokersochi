@@ -1,0 +1,41 @@
+{
+  "name": "calorie-tracker",
+  "version": "0.1.0",
+  "private": true,
+  "main": "node_modules/expo/AppEntry.js",
+  "scripts": {
+    "start": "expo start",
+    "ios": "expo run:ios",
+    "android": "expo run:android",
+    "lint": "eslint . --ext .ts,.tsx",
+    "mock-api": "node scripts/mock-api.js",
+    "mock-api:once": "node scripts/mock-api.js --once"
+  },
+  "dependencies": {
+    "axios": "^1.6.8",
+    "expo": "^50.0.0",
+    "expo-camera": "~14.1.0",
+    "expo-constants": "^15.4.5",
+    "expo-file-system": "^16.0.6",
+    "expo-image-manipulator": "^11.1.6",
+    "expo-image-picker": "^14.7.1",
+    "expo-status-bar": "~1.11.1",
+    "react": "18.2.0",
+    "react-native": "0.73.0",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.23.0",
+    "@types/react": "^18.2.15",
+    "@types/react-native": "^0.73.0",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "babel-preset-expo": "^10.0.0",
+    "eslint": "^8.55.0",
+    "eslint-config-expo": "^7.1.2",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-native": "^4.1.0",
+    "typescript": "^5.3.3"
+  }
+}

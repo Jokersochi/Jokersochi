@@ -18,6 +18,40 @@ export const HomeScreen = () => {
   const { meals, totals, addMeal } = useMealLog();
   const [isSheetOpen, setSheetOpen] = useState(false);
 
+  const quickActions = [
+    {
+      title: 'Умная съемка',
+      subtitle: 'HDR + антиблики для вечерних блюд',
+      colors: [palette.accent, palette.primary],
+    },
+    {
+      title: 'Скан квитанции',
+      subtitle: 'Чек → точный расчет без фото',
+      colors: [palette.accentWarm, palette.accentDeep],
+    },
+  ];
+
+  const focusCards = [
+    {
+      title: 'Контроль углеводов',
+      subtitle: 'Оставайтесь < 220 г для чистой энергии',
+      badge: 'AI наблюдает',
+      colors: [palette.cyanHalo, palette.primary],
+    },
+    {
+      title: 'Гидратация',
+      subtitle: '1.4 л из 2.3 л · добавьте стакан',
+      badge: 'Recovery',
+      colors: [palette.accentWarm, palette.amberHalo],
+    },
+    {
+      title: 'Серия',
+      subtitle: '12 дней без пропусков · 3× streak',
+      badge: 'Фокус дня',
+      colors: [palette.emeraldHalo, palette.primaryMuted],
+    },
+  ];
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.container}>
@@ -27,6 +61,12 @@ export const HomeScreen = () => {
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
         >
+          <LinearGradient
+            colors={[palette.glowStrong, 'transparent']}
+            style={styles.heroGlow}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+          />
           <View style={styles.heroTopRow}>
             <Text style={styles.badge}>AI питания</Text>
             <Text style={styles.streak}>Серия 12 дней</Text>
@@ -48,7 +88,38 @@ export const HomeScreen = () => {
           </View>
         </LinearGradient>
         <View style={styles.content}>
+          <View style={styles.ribbonRow}>
+            {quickActions.map((action) => (
+              <LinearGradient
+                key={action.title}
+                colors={action.colors}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.quickAction}
+              >
+                <Text style={styles.quickActionTitle}>{action.title}</Text>
+                <Text style={styles.quickActionSubtitle}>{action.subtitle}</Text>
+              </LinearGradient>
+            ))}
+          </View>
           <NutritionSummary totals={totals} />
+          <View style={styles.focusRow}>
+            {focusCards.map((card) => (
+              <LinearGradient
+                key={card.title}
+                colors={card.colors}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.focusCard}
+              >
+                <View style={styles.focusBadge}>
+                  <Text style={styles.focusBadgeText}>{card.badge}</Text>
+                </View>
+                <Text style={styles.focusTitle}>{card.title}</Text>
+                <Text style={styles.focusSubtitle}>{card.subtitle}</Text>
+              </LinearGradient>
+            ))}
+          </View>
           <View style={styles.sectionHeader}>
             <View>
               <Text style={styles.sectionTitle}>Сегодня</Text>
@@ -120,6 +191,14 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 8 },
     elevation: 8,
     gap: spacing.sm,
+  },
+  heroGlow: {
+    position: 'absolute',
+    top: -spacing.sm,
+    left: spacing.sm,
+    right: spacing.sm,
+    height: 140,
+    borderRadius: radius.lg,
   },
   heroTopRow: {
     flexDirection: 'row',
@@ -193,6 +272,64 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     gap: spacing.lg,
     marginTop: -spacing.lg,
+  },
+  ribbonRow: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+  },
+  quickAction: {
+    flex: 1,
+    borderRadius: radius.md,
+    padding: spacing.md,
+    gap: spacing.xs,
+    shadowColor: palette.glowStrong,
+    shadowOpacity: 0.8,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 6 },
+  },
+  quickActionTitle: {
+    color: '#0B1120',
+    fontWeight: '800',
+    letterSpacing: 0.2,
+  },
+  quickActionSubtitle: {
+    color: '#0B1120',
+    opacity: 0.8,
+  },
+  focusRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.sm,
+  },
+  focusCard: {
+    flexBasis: '48%',
+    borderRadius: radius.md,
+    padding: spacing.md,
+    gap: spacing.xs,
+    minHeight: 120,
+    overflow: 'hidden',
+  },
+  focusBadge: {
+    alignSelf: 'flex-start',
+    backgroundColor: '#0B112040',
+    borderRadius: 999,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 6,
+  },
+  focusBadgeText: {
+    color: '#0B1120',
+    fontWeight: '800',
+    letterSpacing: 0.4,
+  },
+  focusTitle: {
+    color: '#0B1120',
+    fontWeight: '800',
+    fontSize: 16,
+  },
+  focusSubtitle: {
+    color: '#0B1120',
+    opacity: 0.9,
+    lineHeight: 18,
   },
   sectionHeader: {
     flexDirection: 'row',

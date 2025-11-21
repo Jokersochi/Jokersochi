@@ -10,6 +10,7 @@ export const palette = {
   primaryMuted: '#38BDF8',
   accent: '#C084FC',
   accentWarm: '#F472B6',
+  accentDeep: '#7C3AED',
   success: '#4ADE80',
   warning: '#FACC15',
   danger: '#F87171',
@@ -17,6 +18,10 @@ export const palette = {
   textMuted: '#94A3B8',
   border: '#1E2942',
   glow: '#7DD3FC30',
+  glowStrong: '#C084FC50',
+  cyanHalo: '#22D3EE',
+  amberHalo: '#FBBF24',
+  emeraldHalo: '#34D399',
 };
 
 export const spacing = {

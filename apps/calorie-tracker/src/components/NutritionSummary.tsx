@@ -25,6 +25,9 @@ const formatDelta = (value: number, target: number) => {
 export const NutritionSummary = memo(
   ({ totals, target = defaultTarget }: NutritionSummaryProps) => {
     const calorieProgress = Math.min(100, Math.round((totals.calories / target.calories) * 100));
+    const proteinProgress = Math.min(100, Math.round((totals.protein / target.protein) * 100));
+    const carbsProgress = Math.min(100, Math.round((totals.carbs / target.carbs) * 100));
+    const fatProgress = Math.min(100, Math.round((totals.fat / target.fat) * 100));
 
     return (
       <LinearGradient
@@ -62,6 +65,35 @@ export const NutritionSummary = memo(
             <Text style={styles.statHint}>Плотность блюд оптимальна</Text>
           </View>
         </View>
+        <View style={styles.macroProgressRow}>
+          <View style={styles.macroProgressItem}>
+            <Text style={styles.macroProgressLabel}>Белки</Text>
+            <View style={styles.progressTrackMuted}>
+              <View style={[styles.progressFillPrimary, { width: `${proteinProgress}%` }]} />
+            </View>
+            <Text style={styles.macroProgressValue}>
+              {totals.protein} г / {target.protein} г
+            </Text>
+          </View>
+          <View style={styles.macroProgressItem}>
+            <Text style={styles.macroProgressLabel}>Углеводы</Text>
+            <View style={styles.progressTrackMuted}>
+              <View style={[styles.progressFillAmber, { width: `${carbsProgress}%` }]} />
+            </View>
+            <Text style={styles.macroProgressValue}>
+              {totals.carbs} г / {target.carbs} г
+            </Text>
+          </View>
+          <View style={styles.macroProgressItem}>
+            <Text style={styles.macroProgressLabel}>Жиры</Text>
+            <View style={styles.progressTrackMuted}>
+              <View style={[styles.progressFillEmerald, { width: `${fatProgress}%` }]} />
+            </View>
+            <Text style={styles.macroProgressValue}>
+              {totals.fat} г / {target.fat} г
+            </Text>
+          </View>
+        </View>
         <View style={styles.row}>
           <LinearGradient
             colors={[palette.surface, palette.surfaceMuted]}
@@ -88,6 +120,18 @@ export const NutritionSummary = memo(
             <Text style={styles.metricDelta}>{formatDelta(totals.carbs, target.carbs)} г</Text>
           </LinearGradient>
         </View>
+        <LinearGradient
+          colors={[palette.glowStrong, palette.surface]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.tipCard}
+        >
+          <Text style={styles.tipBadge}>Совет дня</Text>
+          <Text style={styles.tipTitle}>Снимайте под углом 45°</Text>
+          <Text style={styles.tipText}>
+            Камера точнее оценивает объем и глубину, а AI будет ближе к ресторанной точности.
+          </Text>
+        </LinearGradient>
       </LinearGradient>
     );
   }
@@ -187,6 +231,47 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: spacing.md,
   },
+  macroProgressRow: {
+    flexDirection: 'row',
+    gap: spacing.md,
+  },
+  macroProgressItem: {
+    flex: 1,
+    backgroundColor: palette.surface,
+    padding: spacing.sm,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: palette.border,
+    gap: spacing.xs,
+  },
+  macroProgressLabel: {
+    color: palette.textMuted,
+    fontSize: 12,
+    letterSpacing: 0.4,
+    textTransform: 'uppercase',
+  },
+  progressTrackMuted: {
+    height: 8,
+    backgroundColor: '#ffffff15',
+    borderRadius: 999,
+    overflow: 'hidden',
+  },
+  progressFillPrimary: {
+    height: '100%',
+    backgroundColor: palette.primary,
+  },
+  progressFillAmber: {
+    height: '100%',
+    backgroundColor: palette.amberHalo,
+  },
+  progressFillEmerald: {
+    height: '100%',
+    backgroundColor: palette.emeraldHalo,
+  },
+  macroProgressValue: {
+    color: palette.text,
+    fontWeight: '700',
+  },
   metricBox: {
     flex: 1,
     padding: spacing.md,
@@ -210,5 +295,27 @@ const styles = StyleSheet.create({
     color: palette.text,
     marginTop: spacing.xs,
     fontSize: 14,
+  },
+  tipCard: {
+    borderRadius: radius.md,
+    padding: spacing.md,
+    borderWidth: 1,
+    borderColor: palette.border,
+    gap: 4,
+  },
+  tipBadge: {
+    color: '#0B1120',
+    fontWeight: '800',
+    letterSpacing: 0.4,
+    textTransform: 'uppercase',
+  },
+  tipTitle: {
+    color: palette.text,
+    fontSize: 18,
+    fontWeight: '800',
+  },
+  tipText: {
+    color: palette.textMuted,
+    lineHeight: 18,
   },
 });

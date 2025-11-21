@@ -23,6 +23,9 @@ export interface MealCardProps {
 }
 
 export const MealCard = memo(({ meal }: MealCardProps) => {
+  const confidencePercent = meal.recognition ? Math.round(meal.recognition.confidence * 100) : null;
+  const inferenceTone = meal.recognition?.inferenceSource === 'cloud' ? palette.accent : palette.primary;
+
   return (
     <View style={styles.container}>
       <View style={styles.accentBar} />
@@ -58,15 +61,22 @@ export const MealCard = memo(({ meal }: MealCardProps) => {
           </View>
           {meal.recognition ? (
             <View style={styles.recognitionRow}>
-              <View style={styles.sourcePill}>
-                <Text style={styles.recognitionSource}>
+              <View style={[styles.sourcePill, { borderColor: inferenceTone }]}>
+                <Text style={[styles.recognitionSource, { color: inferenceTone }]}>
                   {meal.recognition.inferenceSource === 'cloud' ? 'Облако' : 'Устройство'} ·{' '}
                   {meal.recognition.modelVersion ?? 'vNext'}
                 </Text>
               </View>
-              <Text style={styles.recognitionConfidence}>
-                {Math.round(meal.recognition.confidence * 100)}% точность · {meal.recognition.inferenceLatencyMs} мс
-              </Text>
+              <View style={styles.recognitionMeterRow}>
+                <Text style={styles.recognitionConfidence}>
+                  {confidencePercent}% точность · {meal.recognition.inferenceLatencyMs} мс
+                </Text>
+                <View style={styles.recognitionMeterTrack}>
+                  <View
+                    style={[styles.recognitionMeterFill, { width: `${confidencePercent ?? 0}%`, backgroundColor: inferenceTone }]}
+                  />
+                </View>
+              </View>
               <Text style={styles.recognitionDetails}>
                 Порция ≈ {Math.round(meal.recognition.portionGrams)} г
                 {meal.recognition.alternatives?.length
@@ -198,17 +208,28 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.xs,
     borderRadius: 999,
     borderWidth: 1,
-    borderColor: palette.border,
   },
   recognitionSource: {
-    color: palette.accent,
     fontSize: 12,
     fontWeight: '700',
+  },
+  recognitionMeterRow: {
+    gap: spacing.xs,
   },
   recognitionConfidence: {
     color: palette.text,
     fontSize: 12,
     fontWeight: '600',
+  },
+  recognitionMeterTrack: {
+    height: 6,
+    backgroundColor: palette.surfaceMuted,
+    borderRadius: 999,
+    overflow: 'hidden',
+  },
+  recognitionMeterFill: {
+    height: '100%',
+    borderRadius: 999,
   },
   recognitionDetails: {
     color: palette.textMuted,

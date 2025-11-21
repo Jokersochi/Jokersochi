@@ -50,6 +50,7 @@ export const AddMealSheet = ({ visible, onClose, onSubmit }: AddMealSheetProps) 
   const [photoUri, setPhotoUri] = useState<string | undefined>(undefined);
   const [recognitionMeta, setRecognitionMeta] = useState<MealEntry['recognition']>();
   const { captureAndRecognize, error, reset, result, status } = useFoodRecognition();
+  const handleAlternativeSelect = useCallback((label: string) => setTitle(label), []);
 
   const resetFormState = useCallback(() => {
     setTitle('');
@@ -133,8 +134,18 @@ export const AddMealSheet = ({ visible, onClose, onSubmit }: AddMealSheetProps) 
               <Text style={styles.helperText}>AI ready</Text>
             </View>
           </View>
-          <View style={styles.recognitionBlock}>
-            <Text style={styles.label}>Фото и распознавание</Text>
+          <LinearGradient
+            colors={[palette.surfaceMuted, palette.surface]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.recognitionBlock}
+          >
+            <View style={styles.recognitionHeader}>
+              <Text style={styles.label}>Фото и распознавание</Text>
+              <View style={styles.statusPill}>
+                <Text style={styles.statusText}>{isAnalyzing ? 'Анализируем…' : 'Топ качество'}</Text>
+              </View>
+            </View>
             <View style={styles.recognitionRow}>
               {photoUri ? (
                 <Image source={{ uri: photoUri }} style={styles.previewImage} />
@@ -174,16 +185,29 @@ export const AddMealSheet = ({ visible, onClose, onSubmit }: AddMealSheetProps) 
                       {recognitionMeta.inferenceLatencyMs} мс
                     </Text>
                     {recognitionMeta.alternatives?.length ? (
-                      <Text style={styles.recognitionAlternatives}>
-                        Альтернативы: {recognitionMeta.alternatives.map((alt) => alt.label).join(', ')}
-                      </Text>
+                      <View style={styles.alternativesChips}>
+                        {recognitionMeta.alternatives.map((alt) => (
+                          <Pressable
+                            key={alt.label}
+                            style={styles.altChip}
+                            onPress={() => handleAlternativeSelect(alt.label)}
+                          >
+                            <Text style={styles.altChipText}>{alt.label}</Text>
+                          </Pressable>
+                        ))}
+                      </View>
                     ) : null}
                   </View>
                 ) : null}
                 {error ? <Text style={styles.errorText}>{error}</Text> : null}
               </View>
             </View>
-          </View>
+            <View style={styles.tipList}>
+              <Text style={styles.tipItem}>• Держите камеру на уровне 45°, чтобы учесть объем.</Text>
+              <Text style={styles.tipItem}>• Добавьте ладонь в кадр — модель скорректирует порцию.</Text>
+              <Text style={styles.tipItem}>• При слабом свете включите вспышку в приложении.</Text>
+            </View>
+          </LinearGradient>
           <Text style={styles.label}>Название</Text>
           <TextInput
             value={title}
@@ -323,6 +347,23 @@ const styles = StyleSheet.create({
     backgroundColor: palette.surfaceMuted,
     gap: spacing.sm,
   },
+  recognitionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  statusPill: {
+    backgroundColor: palette.surface,
+    borderWidth: 1,
+    borderColor: palette.border,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+    borderRadius: 999,
+  },
+  statusText: {
+    color: palette.text,
+    fontWeight: '700',
+  },
   recognitionRow: {
     flexDirection: 'row',
     gap: spacing.md,
@@ -384,13 +425,34 @@ const styles = StyleSheet.create({
     color: palette.textMuted,
     fontSize: 12,
   },
-  recognitionAlternatives: {
-    color: palette.textMuted,
-    fontSize: 12,
-    fontStyle: 'italic',
+  alternativesChips: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.xs,
+    marginTop: spacing.xs,
+  },
+  altChip: {
+    backgroundColor: palette.surfaceMuted,
+    borderRadius: 999,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 6,
+    borderWidth: 1,
+    borderColor: palette.border,
+  },
+  altChipText: {
+    color: palette.text,
+    fontWeight: '600',
   },
   errorText: {
     color: '#F97066',
+    fontSize: 12,
+  },
+  tipList: {
+    gap: 6,
+    marginTop: spacing.xs,
+  },
+  tipItem: {
+    color: palette.textMuted,
     fontSize: 12,
   },
   input: {

@@ -1,0 +1,34 @@
+{
+  "name": "russian-monopoly-mvp",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "immer": "^10.0.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "zustand": "^4.5.2"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.1.4",
+    "@testing-library/react": "^14.0.0",
+    "@types/react": "^18.2.37",
+    "@types/react-dom": "^18.2.15",
+    "@vitejs/plugin-react-swc": "^3.5.0",
+    "autoprefixer": "^10.4.16",
+    "jsdom": "^22.1.0",
+    "postcss": "^8.4.32",
+    "tailwindcss": "^3.3.5",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.0",
+    "vitest": "^0.34.6"
+  }
+}

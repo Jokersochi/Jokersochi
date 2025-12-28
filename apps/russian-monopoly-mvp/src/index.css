@@ -1,0 +1,37 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --color-bg: #f4f6fb;
+  --color-surface: #ffffff;
+  --color-accent: #3b82f6;
+  --color-muted: #e2e8f0;
+  --color-success: #22c55e;
+  --color-danger: #ef4444;
+  --color-text: #0f172a;
+  --color-text-muted: #475569;
+  font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'Noto Sans', sans-serif;
+}
+
+body {
+  @apply bg-background text-slate-900 antialiased;
+}
+
+a {
+  @apply text-accent underline-offset-4 transition-colors duration-200;
+}
+
+a:hover {
+  @apply text-accent/80;
+}
+
+button:focus-visible,
+[role='button']:focus-visible {
+  @apply outline outline-2 outline-offset-2 outline-accent;
+}
+
+:focus-visible {
+  @apply outline outline-2 outline-offset-2 outline-accent;
+}

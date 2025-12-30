@@ -5,6 +5,7 @@ const promptPath = path.join(__dirname, '..', 'files', 'architectural-visuals.js
 const data = JSON.parse(fs.readFileSync(promptPath, 'utf-8'));
 
 const outputLines = [];
+const promptSuffix = data.globalConstraints.promptSuffix ? ` ${data.globalConstraints.promptSuffix}` : '';
 
 outputLines.push('АРХИТЕКТУРНЫЙ НАБОР ПРОМПТОВ');
 outputLines.push('='.repeat(34));
@@ -20,6 +21,12 @@ outputLines.push(`- Отметки этажей: ${data.project.floorLevelsMeter
 outputLines.push(`- Высота этажа: ${data.project.clearHeightMeters}`);
 outputLines.push(`- Лестница: ${data.project.staircase}`);
 outputLines.push(`- Крыша: ${data.project.roof}`);
+outputLines.push('');
+outputLines.push('Настройки рендера:');
+outputLines.push(`- Качество: ${data.globalConstraints.renderSettings.quality}`);
+outputLines.push(`- Освещение: ${data.globalConstraints.renderSettings.lighting}`);
+outputLines.push(`- Камера: ${data.globalConstraints.renderSettings.camera}`);
+outputLines.push(`- Тени: ${data.globalConstraints.renderSettings.shadows}`);
 outputLines.push('');
 outputLines.push('Обязательные условия:');
 for (const item of data.globalConstraints.must) {
@@ -40,7 +47,7 @@ outputLines.push('');
 const pushPromptBlock = (sectionTitle, { title, prompt, negative }) => {
   outputLines.push(`${sectionTitle}: ${title}`);
   outputLines.push('PROMPT:');
-  outputLines.push(prompt);
+  outputLines.push(`${prompt}${promptSuffix}`);
   outputLines.push('NEGATIVE:');
   outputLines.push(negative);
   outputLines.push('');

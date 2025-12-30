@@ -47,11 +47,13 @@ class Player {
 const players = playerTemplates.map(t => new Player(t));
 let currentPlayerIndex = 0;
 let activePlayerIndex = null;
+let pendingTurnAdvance = false;
 let currentTile = null;
 let modifiers = { rent: 1, movement: null, movementBonus: 0 };
 
 buildBtn.addEventListener('click', () => {
-  const player = players[activePlayerIndex ?? currentPlayerIndex];
+  if (activePlayerIndex === null) return;
+  const player = players[activePlayerIndex];
   if (currentTile && canBuildResidence(player, currentTile) && player.money >= currentTile.residenceCost) {
     player.money -= currentTile.residenceCost;
     currentTile.residence = true;
@@ -62,7 +64,8 @@ buildBtn.addEventListener('click', () => {
 });
 
 upgradeBtn.addEventListener('click', () => {
-  const player = players[activePlayerIndex ?? currentPlayerIndex];
+  if (activePlayerIndex === null) return;
+  const player = players[activePlayerIndex];
   if (currentTile && canUpgrade(player, currentTile) && player.money >= currentTile.upgradeCost) {
     player.money -= currentTile.upgradeCost;
     currentTile.upgrades += 1;
@@ -226,6 +229,10 @@ function movePlayer(player, steps) {
 
 // main action: roll dice and move token
 document.getElementById('roll').addEventListener('click', () => {
+  if (pendingTurnAdvance) {
+    nextTurn();
+    pendingTurnAdvance = false;
+  }
   activePlayerIndex = currentPlayerIndex;
   const player = players[activePlayerIndex];
   applyRandomEvent();
@@ -233,7 +240,7 @@ document.getElementById('roll').addEventListener('click', () => {
   renderLog(`${player.name} rolls ${roll}`);
   movePlayer(player, roll);
   renderBoard();
-  nextTurn();
+  pendingTurnAdvance = true;
 });
 
 // initial render

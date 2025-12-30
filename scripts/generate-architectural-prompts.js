@@ -5,7 +5,9 @@ const promptPath = path.join(__dirname, '..', 'files', 'architectural-visuals.js
 const data = JSON.parse(fs.readFileSync(promptPath, 'utf-8'));
 
 const outputLines = [];
-const promptSuffix = data.globalConstraints.promptSuffix ? ` ${data.globalConstraints.promptSuffix}` : '';
+const promptSuffix = data.globalConstraints.promptSuffix
+  ? data.globalConstraints.promptSuffix.trim()
+  : '';
 
 outputLines.push('АРХИТЕКТУРНЫЙ НАБОР ПРОМПТОВ');
 outputLines.push('='.repeat(34));
@@ -53,10 +55,21 @@ for (const item of data.deliverables) {
 }
 outputLines.push('');
 
+const appendPromptSuffix = (basePrompt) => {
+  const trimmedPrompt = basePrompt.trim();
+  if (!promptSuffix) {
+    return trimmedPrompt;
+  }
+  if (trimmedPrompt.endsWith(promptSuffix)) {
+    return trimmedPrompt;
+  }
+  return `${trimmedPrompt} ${promptSuffix}`;
+};
+
 const pushPromptBlock = (sectionTitle, { title, prompt, negative }) => {
   outputLines.push(`${sectionTitle}: ${title}`);
   outputLines.push('PROMPT:');
-  outputLines.push(`${prompt}${promptSuffix}`);
+  outputLines.push(appendPromptSuffix(prompt));
   outputLines.push('NEGATIVE:');
   outputLines.push(negative);
   outputLines.push('');

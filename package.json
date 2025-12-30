@@ -24,7 +24,8 @@
     "lint:css": "stylelint '**/*.css'",
     "archive": "node scripts/archive.js",
     "archive:source": "node scripts/archive.js source",
-    "archive:production": "node scripts/archive.js production"
+    "archive:production": "node scripts/archive.js production",
+    "prompts:architectural": "node scripts/generate-architectural-prompts.js"
   },
   "keywords": [
     "makeup",

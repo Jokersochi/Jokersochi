@@ -50,10 +50,10 @@
     }
   },
   "deliverables": [
-    "Exterior architectural render",
-    "Interior renders (hall/stair, living room, kitchen-dining, bedrooms, bathrooms, recreation 3rd floor)",
-    "3D views (exterior, axonometric cut, staircase section, roof plan)",
-    "2D floor plans for each floor"
+    "Экстерьерный архитектурный рендер",
+    "Интерьеры (вестибюль/лестница, гостиная, кухня-столовая, спальни, санузлы, рекреация 3-го этажа)",
+    "3D виды (экстерьер, аксонометрический разрез, разрез по лестнице, план кровли)",
+    "2D планы этажей"
   ],
   "prompts": {
     "exterior": {

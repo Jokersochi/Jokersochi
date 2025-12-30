@@ -22,6 +22,12 @@ outputLines.push(`- Высота этажа: ${data.project.clearHeightMeters}`)
 outputLines.push(`- Лестница: ${data.project.staircase}`);
 outputLines.push(`- Крыша: ${data.project.roof}`);
 outputLines.push('');
+outputLines.push('Стилистика:');
+outputLines.push(`- Экстерьер: ${data.globalConstraints.style.exterior}`);
+outputLines.push(`- Интерьер: ${data.globalConstraints.style.interior}`);
+outputLines.push(`- Материалы фасада: ${data.globalConstraints.style.materials.join(', ')}`);
+outputLines.push(`- Палитра: ${data.globalConstraints.style.palette.join(', ')}`);
+outputLines.push('');
 outputLines.push('Настройки рендера:');
 outputLines.push(`- Качество: ${data.globalConstraints.renderSettings.quality}`);
 outputLines.push(`- Освещение: ${data.globalConstraints.renderSettings.lighting}`);
@@ -37,6 +43,9 @@ outputLines.push('Запрещено:');
 for (const item of data.globalConstraints.forbidden) {
   outputLines.push(`- ${item}`);
 }
+outputLines.push('');
+outputLines.push('Общая приписка к промптам:');
+outputLines.push(`- ${data.globalConstraints.promptSuffix}`);
 outputLines.push('');
 outputLines.push('Список выдачи:');
 for (const item of data.deliverables) {

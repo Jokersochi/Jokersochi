@@ -117,6 +117,13 @@ const buildPromptBlock = (promptBlock) => ({
   prompt: appendPromptSuffix(promptBlock.prompt)
 });
 
+const promptSummary = {
+  interiors: data.prompts.interiors.length,
+  views3d: data.prompts.views3d.length,
+  floorPlans: data.prompts.floorPlans.length,
+  total: 1 + data.prompts.interiors.length + data.prompts.views3d.length + data.prompts.floorPlans.length
+};
+
 const title = 'АРХИТЕКТУРНЫЙ НАБОР ПРОМПТОВ';
 const divider = '='.repeat(34);
 
@@ -125,6 +132,7 @@ let output = '';
 if (format === 'json') {
   const jsonPayload = {
     promptSuffixApplied: shouldAppendSuffix,
+    promptSummary,
     ...data,
     prompts: {
       exterior: buildPromptBlock(data.prompts.exterior),
@@ -183,6 +191,13 @@ if (format === 'json') {
   for (const item of data.deliverables) {
     outputLines.push(`- ${item}`);
   }
+  outputLines.push('');
+  outputLines.push(format === 'markdown' ? '## Сводка промптов' : 'Сводка промптов:');
+  outputLines.push(`- Экстерьер: 1`);
+  outputLines.push(`- Интерьеры: ${promptSummary.interiors}`);
+  outputLines.push(`- 3D виды: ${promptSummary.views3d}`);
+  outputLines.push(`- Планы: ${promptSummary.floorPlans}`);
+  outputLines.push(`- Всего: ${promptSummary.total}`);
   outputLines.push('');
 
   const pushPromptBlock = (sectionTitle, { title: blockTitle, prompt, negative }) => {

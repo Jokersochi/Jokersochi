@@ -177,7 +177,7 @@ if (format === 'json') {
   }
   outputLines.push('');
   outputLines.push(format === 'markdown' ? '## Общая приписка к промптам' : 'Общая приписка к промптам:');
-  outputLines.push(`- ${data.globalConstraints.promptSuffix}`);
+  outputLines.push(`- ${data.globalConstraints.promptSuffix}${shouldAppendSuffix ? '' : ' (отключено)'}`);
   outputLines.push('');
   outputLines.push(format === 'markdown' ? '## Список выдачи' : 'Список выдачи:');
   for (const item of data.deliverables) {

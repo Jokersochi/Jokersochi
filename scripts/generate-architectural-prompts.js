@@ -8,17 +8,19 @@ const args = process.argv.slice(2);
 const outputLines = [];
 const usageText = [
   'Usage:',
-  '  node scripts/generate-architectural-prompts.js [--format plain|markdown|json] [--out <path>]',
+  '  node scripts/generate-architectural-prompts.js [--format plain|markdown|json] [--out <path>] [--no-suffix]',
   '',
   'Options:',
   '  --format <plain|markdown|json>  Output format (default: plain).',
   '  --out <path>               Write output to file instead of stdout.',
+  '  --no-suffix                Do not append the shared prompt suffix.',
   '  --help                     Show this help message.'
 ].join('\n');
 
 const parseArgs = (rawArgs) => {
   let formatValue = 'plain';
   let outputValue = null;
+  let disableSuffix = false;
 
   for (let index = 0; index < rawArgs.length; index += 1) {
     const arg = rawArgs[index];
@@ -63,10 +65,15 @@ const parseArgs = (rawArgs) => {
       continue;
     }
 
+    if (arg === '--no-suffix') {
+      disableSuffix = true;
+      continue;
+    }
+
     throw new Error(`Неизвестный аргумент: ${arg}`);
   }
 
-  return { format: formatValue, outputPath: outputValue };
+  return { format: formatValue, outputPath: outputValue, disableSuffix };
 };
 
 let parsedArgs = {};
@@ -93,9 +100,10 @@ const outputPath = parsedArgs.outputPath || null;
 const promptSuffix = data.globalConstraints.promptSuffix
   ? data.globalConstraints.promptSuffix.trim()
   : '';
+const shouldAppendSuffix = !parsedArgs.disableSuffix && promptSuffix.length > 0;
 const appendPromptSuffix = (basePrompt) => {
   const trimmedPrompt = basePrompt.trim();
-  if (!promptSuffix) {
+  if (!shouldAppendSuffix) {
     return trimmedPrompt;
   }
   if (trimmedPrompt.endsWith(promptSuffix)) {
@@ -116,6 +124,7 @@ let output = '';
 
 if (format === 'json') {
   const jsonPayload = {
+    promptSuffixApplied: shouldAppendSuffix,
     ...data,
     prompts: {
       exterior: buildPromptBlock(data.prompts.exterior),

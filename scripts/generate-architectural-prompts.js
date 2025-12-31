@@ -8,10 +8,10 @@ const args = process.argv.slice(2);
 const outputLines = [];
 const usageText = [
   'Usage:',
-  '  node scripts/generate-architectural-prompts.js [--format plain|markdown] [--out <path>]',
+  '  node scripts/generate-architectural-prompts.js [--format plain|markdown|json] [--out <path>]',
   '',
   'Options:',
-  '  --format <plain|markdown>  Output format (default: plain).',
+  '  --format <plain|markdown|json>  Output format (default: plain).',
   '  --out <path>               Write output to file instead of stdout.',
   '  --help                     Show this help message.'
 ].join('\n');
@@ -83,7 +83,7 @@ if (parsedArgs.help) {
   process.exit(0);
 }
 
-if (parsedArgs.format && !['plain', 'markdown'].includes(parsedArgs.format)) {
+if (parsedArgs.format && !['plain', 'markdown', 'json'].includes(parsedArgs.format)) {
   process.stderr.write(`Неподдерживаемый формат: ${parsedArgs.format}\n${usageText}\n`);
   process.exit(1);
 }
@@ -93,60 +93,6 @@ const outputPath = parsedArgs.outputPath || null;
 const promptSuffix = data.globalConstraints.promptSuffix
   ? data.globalConstraints.promptSuffix.trim()
   : '';
-
-const title = 'АРХИТЕКТУРНЫЙ НАБОР ПРОМПТОВ';
-const divider = '='.repeat(34);
-
-if (format === 'markdown') {
-  outputLines.push(`# ${title}`);
-} else {
-  outputLines.push(title);
-  outputLines.push(divider);
-}
-outputLines.push('');
-outputLines.push(format === 'markdown' ? '## Проектные ограничения' : 'Проектные ограничения:');
-outputLines.push(`- Тип здания: ${data.project.buildingType}`);
-outputLines.push(`- Габарит: ${data.project.footprintMeters} м`);
-outputLines.push(`- Сетка X: ${data.project.grid.xDirection}`);
-outputLines.push(`- Сетка Y: ${data.project.grid.yDirection}`);
-outputLines.push(`- Колонны: ${data.project.columns}`);
-outputLines.push(`- Стены: наружные ${data.project.walls.external}, внутренняя ${data.project.walls.internal}`);
-outputLines.push(`- Отметки этажей: ${data.project.floorLevelsMeters}`);
-outputLines.push(`- Высота этажа: ${data.project.clearHeightMeters}`);
-outputLines.push(`- Лестница: ${data.project.staircase}`);
-outputLines.push(`- Крыша: ${data.project.roof}`);
-outputLines.push('');
-outputLines.push(format === 'markdown' ? '## Стилистика' : 'Стилистика:');
-outputLines.push(`- Экстерьер: ${data.globalConstraints.style.exterior}`);
-outputLines.push(`- Интерьер: ${data.globalConstraints.style.interior}`);
-outputLines.push(`- Материалы фасада: ${data.globalConstraints.style.materials.join(', ')}`);
-outputLines.push(`- Палитра: ${data.globalConstraints.style.palette.join(', ')}`);
-outputLines.push('');
-outputLines.push(format === 'markdown' ? '## Настройки рендера' : 'Настройки рендера:');
-outputLines.push(`- Качество: ${data.globalConstraints.renderSettings.quality}`);
-outputLines.push(`- Освещение: ${data.globalConstraints.renderSettings.lighting}`);
-outputLines.push(`- Камера: ${data.globalConstraints.renderSettings.camera}`);
-outputLines.push(`- Тени: ${data.globalConstraints.renderSettings.shadows}`);
-outputLines.push('');
-outputLines.push(format === 'markdown' ? '## Обязательные условия' : 'Обязательные условия:');
-for (const item of data.globalConstraints.must) {
-  outputLines.push(`- ${item}`);
-}
-outputLines.push('');
-outputLines.push(format === 'markdown' ? '## Запрещено' : 'Запрещено:');
-for (const item of data.globalConstraints.forbidden) {
-  outputLines.push(`- ${item}`);
-}
-outputLines.push('');
-outputLines.push(format === 'markdown' ? '## Общая приписка к промптам' : 'Общая приписка к промптам:');
-outputLines.push(`- ${data.globalConstraints.promptSuffix}`);
-outputLines.push('');
-outputLines.push(format === 'markdown' ? '## Список выдачи' : 'Список выдачи:');
-for (const item of data.deliverables) {
-  outputLines.push(`- ${item}`);
-}
-outputLines.push('');
-
 const appendPromptSuffix = (basePrompt) => {
   const trimmedPrompt = basePrompt.trim();
   if (!promptSuffix) {
@@ -158,24 +104,97 @@ const appendPromptSuffix = (basePrompt) => {
   return `${trimmedPrompt} ${promptSuffix}`;
 };
 
-const pushPromptBlock = (sectionTitle, { title, prompt, negative }) => {
-  outputLines.push(format === 'markdown' ? `### ${sectionTitle}: ${title}` : `${sectionTitle}: ${title}`);
-  outputLines.push(format === 'markdown' ? '**PROMPT**:' : 'PROMPT:');
-  outputLines.push(appendPromptSuffix(prompt));
-  outputLines.push(format === 'markdown' ? '**NEGATIVE**:' : 'NEGATIVE:');
-  outputLines.push(negative);
+const buildPromptBlock = (promptBlock) => ({
+  ...promptBlock,
+  prompt: appendPromptSuffix(promptBlock.prompt)
+});
+
+const title = 'АРХИТЕКТУРНЫЙ НАБОР ПРОМПТОВ';
+const divider = '='.repeat(34);
+
+let output = '';
+
+if (format === 'json') {
+  const jsonPayload = {
+    ...data,
+    prompts: {
+      exterior: buildPromptBlock(data.prompts.exterior),
+      interiors: data.prompts.interiors.map((item) => buildPromptBlock(item)),
+      views3d: data.prompts.views3d.map((item) => buildPromptBlock(item)),
+      floorPlans: data.prompts.floorPlans.map((item) => buildPromptBlock(item))
+    }
+  };
+  output = `${JSON.stringify(jsonPayload, null, 2)}\n`;
+} else {
+  if (format === 'markdown') {
+    outputLines.push(`# ${title}`);
+  } else {
+    outputLines.push(title);
+    outputLines.push(divider);
+  }
   outputLines.push('');
-};
+  outputLines.push(format === 'markdown' ? '## Проектные ограничения' : 'Проектные ограничения:');
+  outputLines.push(`- Тип здания: ${data.project.buildingType}`);
+  outputLines.push(`- Габарит: ${data.project.footprintMeters} м`);
+  outputLines.push(`- Сетка X: ${data.project.grid.xDirection}`);
+  outputLines.push(`- Сетка Y: ${data.project.grid.yDirection}`);
+  outputLines.push(`- Колонны: ${data.project.columns}`);
+  outputLines.push(`- Стены: наружные ${data.project.walls.external}, внутренняя ${data.project.walls.internal}`);
+  outputLines.push(`- Отметки этажей: ${data.project.floorLevelsMeters}`);
+  outputLines.push(`- Высота этажа: ${data.project.clearHeightMeters}`);
+  outputLines.push(`- Лестница: ${data.project.staircase}`);
+  outputLines.push(`- Крыша: ${data.project.roof}`);
+  outputLines.push('');
+  outputLines.push(format === 'markdown' ? '## Стилистика' : 'Стилистика:');
+  outputLines.push(`- Экстерьер: ${data.globalConstraints.style.exterior}`);
+  outputLines.push(`- Интерьер: ${data.globalConstraints.style.interior}`);
+  outputLines.push(`- Материалы фасада: ${data.globalConstraints.style.materials.join(', ')}`);
+  outputLines.push(`- Палитра: ${data.globalConstraints.style.palette.join(', ')}`);
+  outputLines.push('');
+  outputLines.push(format === 'markdown' ? '## Настройки рендера' : 'Настройки рендера:');
+  outputLines.push(`- Качество: ${data.globalConstraints.renderSettings.quality}`);
+  outputLines.push(`- Освещение: ${data.globalConstraints.renderSettings.lighting}`);
+  outputLines.push(`- Камера: ${data.globalConstraints.renderSettings.camera}`);
+  outputLines.push(`- Тени: ${data.globalConstraints.renderSettings.shadows}`);
+  outputLines.push('');
+  outputLines.push(format === 'markdown' ? '## Обязательные условия' : 'Обязательные условия:');
+  for (const item of data.globalConstraints.must) {
+    outputLines.push(`- ${item}`);
+  }
+  outputLines.push('');
+  outputLines.push(format === 'markdown' ? '## Запрещено' : 'Запрещено:');
+  for (const item of data.globalConstraints.forbidden) {
+    outputLines.push(`- ${item}`);
+  }
+  outputLines.push('');
+  outputLines.push(format === 'markdown' ? '## Общая приписка к промптам' : 'Общая приписка к промптам:');
+  outputLines.push(`- ${data.globalConstraints.promptSuffix}`);
+  outputLines.push('');
+  outputLines.push(format === 'markdown' ? '## Список выдачи' : 'Список выдачи:');
+  for (const item of data.deliverables) {
+    outputLines.push(`- ${item}`);
+  }
+  outputLines.push('');
 
-pushPromptBlock('Экстерьер', data.prompts.exterior);
+  const pushPromptBlock = (sectionTitle, { title: blockTitle, prompt, negative }) => {
+    outputLines.push(format === 'markdown' ? `### ${sectionTitle}: ${blockTitle}` : `${sectionTitle}: ${blockTitle}`);
+    outputLines.push(format === 'markdown' ? '**PROMPT**:' : 'PROMPT:');
+    outputLines.push(appendPromptSuffix(prompt));
+    outputLines.push(format === 'markdown' ? '**NEGATIVE**:' : 'NEGATIVE:');
+    outputLines.push(negative);
+    outputLines.push('');
+  };
 
-data.prompts.interiors.forEach((item) => pushPromptBlock('Интерьер', item));
+  pushPromptBlock('Экстерьер', data.prompts.exterior);
 
-data.prompts.views3d.forEach((item) => pushPromptBlock('3D вид', item));
+  data.prompts.interiors.forEach((item) => pushPromptBlock('Интерьер', item));
 
-data.prompts.floorPlans.forEach((item) => pushPromptBlock('План', item));
+  data.prompts.views3d.forEach((item) => pushPromptBlock('3D вид', item));
 
-const output = outputLines.join('\n');
+  data.prompts.floorPlans.forEach((item) => pushPromptBlock('План', item));
+
+  output = outputLines.join('\n');
+}
 
 if (outputPath) {
   const resolvedPath = path.resolve(outputPath);

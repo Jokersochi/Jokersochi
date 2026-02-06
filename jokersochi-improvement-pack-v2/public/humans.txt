@@ -1,0 +1,6 @@
+/* TEAM */
+Developer: Jokersochi
+Site: https://github.com/Jokersochi
+
+/* THANKS */
+Tools: Vite, Playwright, Vitest, Lighthouse CI

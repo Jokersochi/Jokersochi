@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Monopoly Russia (Расширенная версия)</title>
+  <meta name="description"
+    content="Быстрая браузерная версия настольной игры Монополия с российской тематикой. Играйте онлайн бесплатно!">
+  <meta name="color-scheme" content="dark light">
+  <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="robots" content="index, follow">
+  <link rel="manifest" href="../manifest.json">
+  <link rel="icon" type="image/png" sizes="192x192" href="../icons/icon-192x192.png">
+  <link rel="apple-touch-icon" href="../icons/icon-192x192.png">
+  <link rel="canonical" href="https://yourdomain.com/">
+
+  <!-- Preload критических ресурсов -->
+  <link rel="preload" href="style.css" as="style">
+  <link rel="preload" href="../js/main.js" as="script" type="module">
+  <link rel="preload" href="../js/config.js" as="script" type="module">
+  <link rel="preload" href="../js/utils.js" as="script" type="module">
+  <link rel="dns-prefetch" href="https://www.googletagmanager.com">
+  <link rel="dns-prefetch" href="https://mc.yandex.ru">
+  <link rel="dns-prefetch" href="https://www.gstatic.com">
+  <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
+  <link rel="preconnect" href="https://mc.yandex.ru" crossorigin>
+  <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+  <meta property="og:title" content="Монополия Россия — браузерная настольная игра">
+  <meta property="og:description"
+    content="Быстрая браузерная версия настольной игры Монополия с российской тематикой. Играйте онлайн бесплатно!">
+  <meta property="og:image" content="../icons/icon-512x512.png">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://yourdomain.com/">
+  <meta property="og:site_name" content="Monopoly Russia">
+  <meta property="og:locale" content="ru_RU">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Монополия Россия — браузерная настольная игра">
+  <meta name="twitter:description" content="Играйте онлайн бесплатно в Монополию с российской тематикой.">
+  <meta name="twitter:image" content="../icons/icon-512x512.png">
+  <meta name="twitter:site" content="@your_handle">
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-XXXXXXX-X"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag('js', new Date());
+    gtag('config', 'UA-XXXXXXX-X');
+  </script>
+  <!-- Yandex.Metrica -->
+  <script type="text/javascript">
+    (function (m, e, t, r, i, k, a) {
+      m[i] = m[i] || function () {
+        (m[i].a = m[i].a || []).push(arguments)
+      };
+      m[i].l = 1 * new Date();
+      k = e.createElement(t), a = e.getElementsByTagName(t)[0], k.async = 1, k.src = r, a.parentNode.insertBefore(k,
+        a)
+    })(window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+    ym(XXXXXXX, "init", {
+      clickmap: true,
+      trackLinks: true,
+      accurateTrackBounce: true,
+      webvisor: true
+    });
+  </script>
+  <!-- Критический CSS для ускорения first paint -->
+  <style>
+    /* Критический CSS для ускорения first paint */
+
+    /* Основные переменные */
+    :root {
+      --primary-color: #3b82f6;
+      --primary-light: #60a5fa;
+      --primary-dark: #1d4ed8;
+      --success-color: #10b981;
+      --warning-color: #f59e0b;
+      --error-color: #ef4444;
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --bg-tertiary: #334155;
+      --text-primary: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-muted: #64748b;
+      --border-color: #475569;
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --radius-xl: 16px;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      --transition-fast: 0.15s ease;
+      --transition-normal: 0.3s ease;
+      --transition-slow: 0.5s ease;
+    }
+
+    /* Сброс стилей */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* Основные стили */
+    html {
+      font-size: 16px;
+      line-height: 1.5;
+      -webkit-text-size-adjust: 100%;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      min-block-size: 100dvh;
+      overflow-x: hidden;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation: none !important;
+        transition: none !important;
+        scroll-behavior: auto !important;
+      }
+    }
+
+    /* Контейнер игры */
+    #game-container {
+      position: relative;
+      width: 100%;
+      inline-size: 100%;
+      max-width: 1200px;
+      max-inline-size: 1200px;
+      margin: 0 auto;
+      margin-inline: auto;
+      padding: 1rem;
+      padding-inline: 1rem;
+      padding-block: 1rem;
+    }
+
+    /* Игровое поле */
+    .board {
+      display: grid;
+      grid-template-columns: repeat(11, 1fr);
+      grid-template-rows: repeat(11, 1fr);
+      gap: 2px;
+      gap-block: 2px;
+      gap-inline: 2px;
+      width: 100%;
+      inline-size: 100%;
+      max-width: 800px;
+      max-inline-size: 800px;
+      aspect-ratio: 1;
+      margin: 0 auto;
+      margin-inline: auto;
+      background: var(--bg-secondary);
+      border-radius: var(--radius-lg);
+      padding: 8px;
+      padding-inline: 8px;
+      padding-block: 8px;
+      box-shadow: var(--shadow-xl);
+    }
+
+    /* Клетки игрового поля */
+    .cell {
+      background: var(--bg-tertiary);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-align: center;
+      padding: 4px;
+      padding-inline: 4px;
+      padding-block: 4px;
+      transition: all var(--transition-fast);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cell:hover {
+      background: var(--primary-light);
+      transform: scale(1.05);
+    }
+
+    /* Панель игроков */
+    #players-panel {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      gap-block: 1rem;
+      gap-inline: 1rem;
+      margin-top: 1rem;
+      margin-block-start: 1rem;
+      padding: 1rem;
+      padding-inline: 1rem;
+      padding-block: 1rem;
+      background: var(--bg-secondary);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+    }
+
+    .player {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      gap-block: 0.5rem;
+      gap-inline: 0.5rem;
+      padding: 0.75rem;
+      padding-inline: 0.75rem;
+      padding-block: 0.75rem;
+      background: var(--bg-tertiary);
+      border-radius: var(--radius-md);
+      min-width: 200px;
+      min-inline-size: 200px;
+    }
+
+    /* Кнопки */
+    button {
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: var(--radius-md);
+      padding: 0.75rem 1.5rem;
+      padding-inline: 1.5rem;
+      padding-block: 0.75rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition-normal);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      gap-block: 0.5rem;
+      gap-inline: 0.5rem;
+    }
+
+    button:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    button:disabled {
+      background: var(--text-muted);
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    /* Модальные окна */
+    .modal {
+      position: fixed;
+      top: 0;
+      inset-block-start: 0;
+      left: 0;
+      inset-inline-start: 0;
+      width: 100%;
+      inline-size: 100%;
+      height: 100%;
+      block-size: 100dvh;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+
+    .modal-content {
+      background: var(--bg-secondary);
+      border-radius: var(--radius-xl);
+      padding: 2rem;
+      padding-inline: 2rem;
+      padding-block: 2rem;
+      max-width: 500px;
+      max-inline-size: 500px;
+      inline-size: 90%;
+      box-shadow: var(--shadow-2xl);
+      animation: modal-in 0.3s ease-out;
+    }
+
+    @keyframes modal-in {
+      from {
+        opacity: 0;
+        transform: scale(0.8);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    /* Утилиты */
+    .hidden {
+      display: none !important;
+    }
+
+    /* Лоадер поверх страницы */
+    #loader-overlay {
+      position: fixed;
+      top: 0;
+      inset-block-start: 0;
+      left: 0;
+      inset-inline-start: 0;
+      width: 100%;
+      inline-size: 100%;
+      height: 100%;
+      block-size: 100dvh;
+      background: linear-gradient(135deg, rgba(15,23,42,.98), rgba(30,41,59,.98));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10002;
+      transition: opacity var(--transition-normal);
+    }
+
+    #loader-overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .loader {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      gap-block: 12px;
+      gap-inline: 12px;
+      color: var(--text-primary);
+      font-weight: 700;
+      letter-spacing: .02em;
+    }
+
+    .loader-dots {
+      display: inline-flex;
+      gap: 6px;
+      gap-block: 6px;
+      gap-inline: 6px;
+    }
+
+    .loader-dots span {
+      width: 10px;
+      inline-size: 10px;
+      height: 10px;
+      block-size: 10px;
+      border-radius: 50%;
+      background: var(--primary-color);
+      box-shadow: 0 0 10px rgba(59,130,246,.6);
+      animation: pulse 1.2s infinite ease-in-out;
+    }
+
+    .loader-dots span:nth-child(2) { animation-delay: .15s; }
+    .loader-dots span:nth-child(3) { animation-delay: .3s; }
+
+    @keyframes pulse {
+      0%, 80%, 100% { transform: scale(0.6); opacity: .6; }
+      40% { transform: scale(1); opacity: 1; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .loader-dots span { animation: none; }
+    }
+
+    /* Адаптивность */
+    @media (max-inline-size: 768px) {
+      .board {
+        grid-template-columns: repeat(8, 1fr);
+        grid-template-rows: repeat(8, 1fr);
+        gap: 1px;
+        gap-block: 1px;
+        gap-inline: 1px;
+        padding: 4px;
+        padding-inline: 4px;
+        padding-block: 4px;
+      }
+
+      .cell {
+        font-size: 0.6rem;
+        padding: 2px;
+        padding-inline: 2px;
+        padding-block: 2px;
+      }
+
+      #players-panel {
+        flex-direction: column;
+      }
+
+      .player {
+        min-width: auto;
+        min-inline-size: auto;
+      }
+
+      .modal-content {
+        padding: 1rem;
+        padding-inline: 1rem;
+        padding-block: 1rem;
+        margin: 1rem;
+        margin-inline: 1rem;
+        margin-block: 1rem;
+      }
+    }
+
+    /* Темная/светлая тема */
+    .theme-light {
+      --bg-primary: #ffffff;
+      --bg-secondary: #f8fafc;
+      --bg-tertiary: #e2e8f0;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --border-color: #cbd5e1;
+    }
+    /* Онбординг */
+    #onboarding-overlay {
+      position: fixed;
+      top: 0;
+      inset-block-start: 0;
+      left: 0;
+      inset-inline-start: 0;
+      width: 100%;
+      inline-size: 100%;
+      height: 100%;
+      block-size: 100dvh;
+      background: rgba(0,0,0,.65);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 10003;
+      padding: 16px;
+      padding-inline: 16px;
+      padding-block: 16px;
+    }
+
+    #onboarding-overlay.active { display: flex; }
+
+    .onboarding-card {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-2xl);
+      max-width: 640px;
+      max-inline-size: 640px;
+      inline-size: 100%;
+      padding: 20px;
+      padding-inline: 20px;
+      padding-block: 20px;
+    }
+
+    .onboarding-steps { color: var(--text-secondary); font-size: .95rem; }
+    .onboarding-actions { display: flex; gap: 8px; gap-inline: 8px; gap-block: 8px; justify-content: flex-end; margin-top: 16px; margin-block-start: 16px; }
+    .onboarding-progress { height: 6px; block-size: 6px; background: var(--bg-tertiary); border-radius: 999px; overflow: hidden; margin: 12px 0; margin-block: 12px; }
+    .onboarding-progress > span { display: block; height: 100%; block-size: 100%; width: 0%; inline-size: 0%; background: linear-gradient(90deg, var(--primary-color), var(--primary-light)); transition: width var(--transition-normal); }
+  </style>
+
+  <!-- Остальные стили -->
+  <link rel="stylesheet" href="style.css">
+  <script>
+    // Синхронизация цвета темы адресной строки под текущую тему
+    (function () {
+      var themeMetaDark = document.querySelector('meta[name="theme-color"][media*="dark"]');
+      var themeMetaLight = document.querySelector('meta[name="theme-color"][media*="light"]');
+      function updateThemeMeta(theme) {
+        if (theme === 'light') {
+          themeMetaLight && themeMetaLight.setAttribute('content', '#ffffff');
+          themeMetaDark && themeMetaDark.setAttribute('content', '#0f172a');
+        } else {
+          themeMetaLight && themeMetaLight.setAttribute('content', '#ffffff');
+          themeMetaDark && themeMetaDark.setAttribute('content', '#0f172a');
+        }
+      }
+      var saved = localStorage.getItem('theme');
+      if (saved) updateThemeMeta(saved);
+    })();
+  </script>
+  <!-- Firebase SDK -->
+  <script defer src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script defer src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "ВАШ_API_KEY",
+      authDomain: "ВАШ_ДОМЕН.firebaseapp.com",
+      projectId: "ВАШ_PROJECT_ID",
+      appId: "ВАШ_APP_ID"
+    };
+    firebase.initializeApp(firebaseConfig);
+  </script>
+</head>
+
+<body>
+  <a href="#game-container" class="skip-link" style="position:absolute;inset-inline-start:-9999px;inset-block-start:auto;background:#0f172a;color:#fff;padding:.5rem 1rem;border-radius:8px;z-index:10001;">Перейти к игре</a>
+  <!-- Yandex.Metrica noscript fallback -->
+  <noscript>
+    <div><img src="https://mc.yandex.ru/watch/XXXXXXX" style="position:absolute; inset-inline-start:-9999px;" alt="" /></div>
+  </noscript>
+
+  <div id="loader-overlay" role="status" aria-live="polite" aria-atomic="true">
+    <div class="loader">
+      <div class="loader-dots" aria-hidden="true"><span></span><span></span><span></span></div>
+      <span>Загружаем игру…</span>
+    </div>
+  </div>
+  <div id="onboarding-overlay" role="dialog" aria-modal="true" aria-labelledby="onb-title">
+    <div class="onboarding-card">
+      <h2 id="onb-title">Добро пожаловать в Монополию!</h2>
+      <div class="onboarding-progress"><span id="onb-progress"></span></div>
+      <div id="onb-content" class="onboarding-steps"></div>
+      <div class="onboarding-actions">
+        <button id="onb-skip" type="button">Пропустить</button>
+        <button id="onb-prev" type="button">Назад</button>
+        <button id="onb-next" type="button">Дальше</button>
+        <button id="onb-done" type="button" class="hidden">Готово</button>
+      </div>
+    </div>
+  </div>
+  <main id="game-container" role="main" aria-label="Игровая область" aria-busy="true">
+    <!-- Игровое поле -->
+    <section id="board" class="board" role="grid" aria-label="Игровое поле" aria-live="polite"></section>
+
+    <!-- Панель игроков -->
+    <aside id="players-panel" aria-label="Панель игроков"></aside>
+
+    <!-- Текущий игрок -->
+    <section class="current-player" aria-live="polite" aria-atomic="true">
+      <div class="player-info">
+        <img class="player-token" src="" alt="Фишка текущего игрока" decoding="async" loading="lazy">
+        <span class="player-name"></span>
+      </div>
+    </section>
+
+    <!-- Погода и события -->
+    <section id="current-weather" aria-label="Погода"></section>
+    <section id="current-events" aria-label="События"></section>
+
+    <!-- Панель достижений -->
+    <section id="achievements-panel" aria-label="Достижения"></section>
+
+    <!-- Кнопки турнира и улучшений -->
+    <nav id="actions-panel" aria-label="Действия">
+      <button id="start-tournament-btn" type="button">Турнир</button>
+      <button id="build-improvement-btn" type="button">Построить улучшение</button>
+    </nav>
+
+    <!-- Кнопки сохранения/загрузки игры -->
+    <div id="save-load-controls" style="margin: 8px 0; text-align: center;">
+      <button type="button" onclick="game.saveGameToFile()">💾 Сохранить игру</button>
+      <label style="display:inline-block; cursor:pointer;">
+        <input type="file" accept="application/json" style="display:none;"
+          onchange="game.loadGameFromFile(this.files[0])">
+        <span style="padding:0 8px;">📂 Загрузить игру</span>
+      </label>
+    </div>
+
+    <!-- Чат -->
+    <section id="chat" aria-label="Чат">
+      <div id="chat-messages" role="log" aria-live="polite" aria-relevant="additions" style="block-size:120px;overflow-y:auto;"></div>
+      <input id="chat-input" type="text" placeholder="Сообщение..." aria-label="Поле ввода сообщения">
+      <button id="send-message-btn" type="button">Отправить</button>
+    </section>
+
+    <!-- Модальное окно для карточек -->
+    <div id="card-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="card-title">
+      <div class="modal-content" role="document">
+        <h2 id="card-title"></h2>
+        <p id="card-text"></p>
+        <button type="button" onclick="document.getElementById('card-modal').classList.add('hidden')">OK</button>
+      </div>
+    </div>
+
+    <!-- Модальное окно для покупки -->
+    <div id="modal-overlay" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <div class="modal-content" role="document">
+        <h2 id="modal-title"></h2>
+        <div id="modal-content"></div>
+        <button id="modal-confirm" type="button">Купить</button>
+        <button id="modal-cancel" type="button">Аукцион</button>
+      </div>
+    </div>
+
+    <!-- Модальное окно аукциона -->
+    <div id="auction-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="auction-property">
+      <div class="modal-content" role="document">
+        <h2>Аукцион: <span id="auction-property"></span></h2>
+        <div>
+          <span>Текущая ставка: <span id="current-bid-amount">0</span></span><br>
+          <span>Участник: <span id="current-bidder">-</span></span><br>
+          <span>Время: <span id="auction-time">0</span> сек</span>
+        </div>
+        <input id="bid-amount" type="number" min="1" placeholder="Ваша ставка">
+        <button id="place-bid-btn" type="button">Сделать ставку</button>
+        <button id="pass-bid-btn" type="button">Пас</button>
+      </div>
+    </div>
+    <div id="toast" class="toast hidden" role="status" aria-live="polite" aria-atomic="true"></div>
+    <button id="google-signin-btn" type="button" aria-label="Войти через Google">Войти через Google</button>
+    <button id="signout-btn" type="button" aria-label="Выйти из аккаунта">Выйти</button>
+    <button id="theme-toggle-btn" type="button" aria-pressed="false" aria-label="Переключить тему">🌙/☀️ Переключить тему</button>
+  </main>
+
+  <!-- Подключение JS через ES6-модули -->
+  <script type="module" src="../js/main.js"></script>
+  <script type="module">
+    // Инициализация кнопок турнира и улучшений
+    document.addEventListener('DOMContentLoaded', function () {
+      const tournamentBtn = document.getElementById('start-tournament-btn');
+      if (tournamentBtn) tournamentBtn.onclick = () => {
+        if (window.game) {
+          window.game.startTournament({
+            type: 'elimination',
+            maxRounds: 5
+          });
+        }
+      };
+      const improvementBtn = document.getElementById('build-improvement-btn');
+      if (improvementBtn) improvementBtn.onclick = () => {
+        if (window.game && window.game.players && window.game.currentPlayerIndex !== undefined) {
+          const pos = window.game.players[window.game.currentPlayerIndex].position;
+          window.game.players[window.game.currentPlayerIndex].addImprovement(pos);
+        }
+      };
+    });
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('../sw.js');
+      });
+    }
+    document.getElementById('google-signin-btn').onclick = function () {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      firebase.auth().signInWithPopup(provider)
+        .then(result => {
+          const user = result.user;
+          alert('Вход выполнен: ' + user.displayName);
+          // user.uid, user.email, user.photoURL
+        })
+        .catch(error => {
+          alert('Ошибка входа: ' + error.message);
+        });
+    };
+    document.getElementById('signout-btn').onclick = function () {
+      firebase.auth().signOut();
+    };
+    // Переключатель темы
+    const themeBtn = document.getElementById('theme-toggle-btn');
+
+    function applyTheme(theme) {
+      const isLight = theme === 'light';
+      document.body.classList.toggle('theme-light', isLight);
+      themeBtn.setAttribute('aria-pressed', String(isLight));
+      localStorage.setItem('theme', theme);
+      // Обновляем meta theme-color под выбранную тему
+      const metaDark = document.querySelector('meta[name="theme-color"][media*="dark"]');
+      const metaLight = document.querySelector('meta[name="theme-color"][media*="light"]');
+      if (metaDark && metaLight) {
+        if (isLight) {
+          metaLight.setAttribute('content', '#ffffff');
+          metaDark.setAttribute('content', '#0f172a');
+        } else {
+          metaLight.setAttribute('content', '#ffffff');
+          metaDark.setAttribute('content', '#0f172a');
+        }
+      }
+    }
+    themeBtn.onclick = function () {
+      const isLightNow = document.body.classList.contains('theme-light');
+      applyTheme(isLightNow ? 'dark' : 'light');
+    };
+    // Восстановление темы при загрузке
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+      applyTheme(savedTheme);
+    } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+      applyTheme('light');
+    }
+
+    // Логика лоадера: скрыть при готовности, с фолбэком по таймауту
+    (function () {
+      const overlay = document.getElementById('loader-overlay');
+      const gameRoot = document.getElementById('game-container');
+      function hideLoader() {
+        if (!overlay.classList.contains('hidden')) {
+          overlay.classList.add('hidden');
+          gameRoot && gameRoot.setAttribute('aria-busy', 'false');
+        }
+      }
+      // Фолбэк: максимум через 5 секунд
+      const fallback = setTimeout(hideLoader, 5000);
+      // Снимаем, когда страница загрузилась
+      window.addEventListener('load', () => {
+        // Если игра сигнализирует о готовности
+        if (window.game && (window.game.isReady || window.game.ready)) {
+          hideLoader();
+          clearTimeout(fallback);
+        } else {
+          // Проверяем готовность несколько раз после load
+          let checks = 20;
+          const iv = setInterval(() => {
+            if (window.game && (window.game.isReady || window.game.ready)) {
+              hideLoader();
+              clearInterval(iv);
+              clearTimeout(fallback);
+            }
+            if (--checks <= 0) {
+              clearInterval(iv);
+              hideLoader();
+            }
+          }, 150);
+        }
+      });
+    })();
+    // Онбординг: простые подсказки по UI
+    (function () {
+      const STORAGE_KEY = 'onboardingSeen_v1';
+      const overlay = document.getElementById('onboarding-overlay');
+      const content = document.getElementById('onb-content');
+      const progressEl = document.getElementById('onb-progress');
+      const btnSkip = document.getElementById('onb-skip');
+      const btnPrev = document.getElementById('onb-prev');
+      const btnNext = document.getElementById('onb-next');
+      const btnDone = document.getElementById('onb-done');
+
+      const steps = [
+        'Кнопкой «Турнир» запускайте соревнования между игроками.',
+        'Используйте «Построить улучшение», чтобы усилить свои владения.',
+        'Сохраняйте прогресс и загружайте игры в блоке «Сохранить/Загрузить».',
+        'Откройте чат для общения. Нажмите F1 — помощь, F11 — полноэкранный режим.'
+      ];
+      let index = 0;
+
+      function render() {
+        content.textContent = steps[index];
+        const pct = Math.round(((index + 1) / steps.length) * 100);
+        progressEl.style.width = pct + '%';
+        btnPrev.disabled = index === 0;
+        btnNext.classList.toggle('hidden', index === steps.length - 1);
+        btnDone.classList.toggle('hidden', index !== steps.length - 1);
+      }
+
+      function open() {
+        overlay.classList.add('active');
+        render();
+      }
+
+      function close(save = true) {
+        overlay.classList.remove('active');
+        if (save) localStorage.setItem(STORAGE_KEY, '1');
+      }
+
+      function clickSound(type = 'click') { try { window.audio && window.audio.playUISound(type); } catch(e){} }
+
+      btnSkip.onclick = function () { clickSound('close'); close(true); };
+      btnPrev.onclick = function () { if (index > 0) { index--; render(); } clickSound('click'); };
+      btnNext.onclick = function () { if (index < steps.length - 1) { index++; render(); } clickSound('click'); };
+      btnDone.onclick = function () { clickSound('open'); close(true); };
+
+      // Покажем онбординг только один раз, после скрытия лоадера
+      const maybeOpen = () => { if (!localStorage.getItem(STORAGE_KEY)) open(); };
+      window.addEventListener('load', () => setTimeout(maybeOpen, 600));
+    })();
+
+    // Звуки на клики по основным кнопкам
+    (function attachClickSounds(){
+      const root = document.getElementById('game-container');
+      if (!root) return;
+      root.addEventListener('click', (e) => {
+        const target = e.target.closest('button');
+        if (!target) return;
+        try { window.audio && window.audio.playUISound('click'); } catch(err){}
+      });
+    })();
+  </script>
+</body>
+
+</html>
+</html>

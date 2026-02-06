@@ -24,7 +24,8 @@ export class Board {
      */
     initializeBoard() {
         // Создаем все клетки
-        for (let i = 0; i < CONFIG.GAME.BOARD_SIZE; i++) {
+        const size = CONFIG.GAME.BOARD_SIZE;
+        for (let i = 0; i < size; i++) {
             this.cells[i] = this.createCell(i);
         }
 
@@ -74,11 +75,11 @@ export class Board {
         if (position === 20) return 'free_parking';
         if (position === 30) return 'go_to_jail';
 
-        // Клетки Шанс
-        if ([2, 7, 17, 22, 33, 36].includes(position)) return 'chance';
+        // Клетки Шанс (примерные позиции)
+        if ([7, 22, 36].includes(position)) return 'chance';
 
-        // Клетки Казна
-        if ([12, 22, 33].includes(position)) return 'treasure';
+        // Клетки Казна (примерные позиции)
+        if ([2, 17, 33].includes(position)) return 'treasure';
 
         // Налоговые клетки
         if ([4, 38].includes(position)) return 'tax';
@@ -102,14 +103,11 @@ export class Board {
             case 9: return 'jail';
             case 20: return 'free_parking';
             case 30: return 'go_to_jail';
-            case 2:
             case 7:
-            case 17:
             case 22:
-            case 33:
             case 36: return 'chance';
-            case 12:
-            case 22:
+            case 2:
+            case 17:
             case 33: return 'treasure';
             case 4:
             case 38: return 'tax';
@@ -127,8 +125,8 @@ export class Board {
         if (property) return property.price;
 
         // Налоговые клетки
-        if (position === 4) return 200;
-        if (position === 38) return 1000;
+        if (position === 4) return CONFIG.GAME.INCOME_TAX;
+        if (position === 38) return CONFIG.GAME.LUXURY_TAX;
 
         return 0;
     }
@@ -407,21 +405,28 @@ export class Board {
             rent *= 1.5;
         }
 
-        // Влияние погоды
-        const weatherEffect = CONFIG.WEATHER.find(w => w.type === this.weather)?.effects;
-        if (weatherEffect) {
-            rent *= weatherEffect.rent;
+        // Влияние погоды (используем массив WEATHER из CONFIG)
+        const weather = CONFIG.WEATHER.find(w => w.type === this.weather);
+        if (weather && weather.effects && typeof weather.effects.rent === 'number') {
+            rent *= weather.effects.rent;
         }
 
-        // Влияние экономических событий
+        // Влияние экономических событий (используем массив ECONOMIC_EVENTS)
         if (this.economicEvent) {
-            rent *= this.economicEvent.income;
+            const econ = CONFIG.ECONOMIC_EVENTS.find(e => e.type === this.economicEvent.type || e.id === this.economicEvent.id);
+            const multiplier = econ?.income ?? this.economicEvent.income ?? this.economicEvent.multiplier;
+            if (typeof multiplier === 'number') {
+                rent *= multiplier;
+            }
         }
 
-        // Влияние культурных событий
+        // Влияние культурных событий (flat bonus если указан bonus)
         if (this.culturalEvent) {
-            // Assuming cultural events add a flat bonus, which is not in config.
-            // This part might need adjustment based on final game rules.
+            const cult = CONFIG.CULTURAL_EVENTS.find(c => c.type === this.culturalEvent.type || c.id === this.culturalEvent.id);
+            const bonus = cult?.bonus ?? this.culturalEvent.bonus;
+            if (typeof bonus === 'number') {
+                rent += bonus;
+            }
         }
 
         return Math.floor(rent);
@@ -433,10 +438,11 @@ export class Board {
      */
     updateWeather() {
         this.weatherTimer++;
-        if (this.weatherTimer >= (CONFIG.WEATHER_CHANGE_INTERVAL || 10)) { // Default interval
+        const changeInterval = CONFIG.WEATHER_CHANGE_INTERVAL || CONFIG.WEATHER?.[0]?.duration || 10;
+        if (this.weatherTimer >= changeInterval) {
             this.weatherTimer = 0;
             const newWeather = randomChoice(CONFIG.WEATHER);
-            if (this.weather !== newWeather.type) {
+            if (newWeather) {
                 this.weather = newWeather.type;
                 return newWeather;
             }
@@ -453,7 +459,9 @@ export class Board {
         
         if (Math.random() < (CONFIG.ECONOMIC_EVENT_FREQUENCY || 0.1) && !this.economicEvent) {
             const event = randomChoice(CONFIG.ECONOMIC_EVENTS);
-            this.economicEvent = { ...event };
+            if (event) {
+                this.economicEvent = { ...event };
+            }
             return event;
         }
 
@@ -473,7 +481,9 @@ export class Board {
     updateCulturalEvents() {
         if (Math.random() < (CONFIG.CULTURAL_EVENT_FREQUENCY || 0.05) && !this.culturalEvent) {
             const event = randomChoice(CONFIG.CULTURAL_EVENTS);
-            this.culturalEvent = { ...event };
+            if (event) {
+                this.culturalEvent = { ...event };
+            }
             return event;
         }
 

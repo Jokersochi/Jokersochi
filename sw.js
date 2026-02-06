@@ -3,14 +3,16 @@
  * Обеспечивает кэширование и офлайн работу
  */
 
-const CACHE_NAME = 'monopoly-russia-v1.0.0';
-const STATIC_CACHE = 'monopoly-russia-static-v1.0.0';
-const DYNAMIC_CACHE = 'monopoly-russia-dynamic-v1.0.0';
+const SW_VERSION = '1.1.0';
+const CACHE_NAME = `monopoly-russia-${SW_VERSION}`;
+const STATIC_CACHE = `monopoly-russia-static-${SW_VERSION}`;
+const DYNAMIC_CACHE = `monopoly-russia-dynamic-${SW_VERSION}`;
 
 // Файлы для кэширования
 const STATIC_FILES = [
     '/',
     '/src/index.html',
+    '/src/offline.html',
     '/src/style.css',
     '/js/main.js',
     '/js/config.js',
@@ -247,7 +249,7 @@ async function handleOfflineFallback(request) {
     // Для HTML запросов показываем офлайн страницу
     if (request.headers.get('accept').includes('text/html')) {
         const cache = await caches.open(STATIC_CACHE);
-        const offlinePage = await cache.match('/src/index.html');
+        const offlinePage = await cache.match('/src/offline.html');
         
         if (offlinePage) {
             return new Response(offlinePage.body, {

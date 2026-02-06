@@ -1,6 +1,4 @@
-import { Player } from './player.js';
-import eventBus from './event-bus.js';
-import { CONFIG } from './config.js';
+const { describe, test, expect, beforeEach, afterEach } = require('@jest/globals');
 
 // Mock the eventBus to spy on its emit method.
 // This isolates the Player class for testing.
@@ -10,6 +8,10 @@ jest.mock('./event-bus.js', () => ({
   off: jest.fn(),
 }));
 
+const eventBus = require('./event-bus.js');
+const { Player } = require('./player.js');
+const CONFIG = require('./config.js').CONFIG || require('./config.js').default || require('./config.js');
+
 describe('Player Class', () => {
   let player;
   const startingMoney = CONFIG.GAME.STARTING_MONEY;
@@ -17,7 +19,8 @@ describe('Player Class', () => {
   beforeEach(() => {
     // Reset mocks and create a new player before each test
     eventBus.emit.mockClear();
-    player = new Player('p1', 'Joker', 'matryoshka');
+    player = new Player('p1', 'Joker', '
+      ');
   });
 
   test('should be instantiated with starting money and correct properties', () => {

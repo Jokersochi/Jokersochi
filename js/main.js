@@ -14,6 +14,7 @@ import { board } from './board.js';
 import { ui } from './ui.js';
 import { settingsManager } from './settings-manager.js';
 import { chat } from './chat.js';
+import AudioManager from './audio.js';
 
 // Глобальные переменные
 let audio;
@@ -185,8 +186,10 @@ class App {
      */
     async initializeAudio() {
         try {
-            // Аудио система будет инициализирована позже
-            console.log('Audio system initialization placeholder');
+            // Инициализируем аудио менеджер и пробрасываем в window
+            const audioManager = new AudioManager();
+            window.audio = audioManager;
+            console.log('Audio system initialized');
         } catch (error) {
             console.warn('Failed to initialize audio:', error);
         }

@@ -30,12 +30,6 @@ const modelResponses = [
   }
 ];
 
-const consensusReasons = [
-  'Сводит ключевые идеи без повторов и противоречий.',
-  'Убирает слабые допущения, заменяя их подтверждаемыми шагами.',
-  'Сохраняет краткость, но оставляет проверяемую структуру действий.'
-];
-
 const pipelineSteps = [
   {
     title: 'Prompt Optimizer',
@@ -108,6 +102,69 @@ const fullStackPlan = [
       'Наблюдаемость: метрики, алерты, трассировка.'
     ]
   }
+];
+
+const responseLibrary = {
+  chatgpt: {
+    score: '9.4',
+    headline: 'Чёткий план запуска с приоритетами и KPI',
+    summary:
+      'Структурирует путь: цели → гипотезы → каналы → измерение результата. Дает понятный backlog на 2 месяца и критерии качества.',
+    bullets: [
+      'Продуктовый фокус: ICP + болевые сценарии.',
+      'Маркетинг: платные каналы + партнёрские интеграции.',
+      'KPI: лиды, конверсия, стоимость лида, скорость цикла.'
+    ],
+    deliverables: ['Дорожная карта на 60 дней', 'Матрица каналов', 'Риск‑лог с действиями']
+  },
+  gemini: {
+    score: '9.1',
+    headline: 'Системный обзор с альтернативами и экспериментами',
+    summary:
+      'Добавляет контекст, сегментирует аудиторию, дает варианты Go‑To‑Market и тесты гипотез с порогами успеха.',
+    bullets: [
+      'Сегментация: Mid‑market vs Enterprise.',
+      'Эксперименты: 3 оффера и 2 ценовые модели.',
+      'Метрики: CAC, LTV, SQL→Closed Won.'
+    ],
+    deliverables: ['Гипотезы и A/B‑матрица', 'Фреймворк позиционирования', 'План экспериментов']
+  },
+  claude: {
+    score: '8.9',
+    headline: 'Ясная коммуникация и риск‑ориентированный подход',
+    summary:
+      'Подчеркивает риски, уточняет ожидания и дает фокус на понятной коммуникации ценности продукта.',
+    bullets: [
+      'Тезисы для сейлз‑команды и продукт‑маркетинга.',
+      'Риски: недостаточная дифференциация, длинный цикл сделки.',
+      'План улучшения качества лидов.'
+    ],
+    deliverables: ['Pitch‑deck структура', 'Список рисков', 'UX‑гайд по коммуникациям']
+  }
+};
+
+const consensusOutput = {
+  title: 'Final Best Answer',
+  description:
+    'Согласованный итог объединяет лучшие практики, устраняет противоречия и фиксирует измеримые шаги запуска.',
+  steps: [
+    'Определить ICP, единый KPI‑набор и цель на 60 дней.',
+    'Запустить 3 ключевых канала с контролируемыми бюджетами.',
+    'Проверить гипотезы через еженедельные спринты и ретроспективы.',
+    'Собрать итоговую стратегию в формате плана + таблицы метрик.'
+  ],
+  rationale: [
+    'Лучше всего балансирует глубину, ясность и применимость.',
+    'Содержит конкретные метрики и понятные критерии успеха.',
+    'Минимизирует риски за счёт валидации гипотез.'
+  ]
+};
+
+const runLogSteps = [
+  'Prompt Optimizer — структурирование запроса.',
+  'Parallel Multi‑Model — запуск 3 моделей.',
+  'Consensus Engine — сопоставление ответов.',
+  'Final Best Answer — синтез финала.'
 ];
 
 const focusLabels = {
@@ -198,8 +255,22 @@ app.innerHTML = `
               </article>
             `
             )
-            .join('')}
+          .join('')}
         </div>
+      </section>
+
+      <section class="run-status" aria-label="Статус выполнения">
+        <div class="run-status__header">
+          <div>
+            <span class="section-eyebrow">Execution Timeline</span>
+            <h2>Статус выполнения</h2>
+            <p>Движок демонстрирует ход процесса — от улучшения промта до финального ответа.</p>
+          </div>
+          <span class="status-pill" data-role="run-status">Ожидает запуска</span>
+        </div>
+        <ol class="run-status__log" data-role="run-log">
+          ${runLogSteps.map((step) => `<li>${step}</li>`).join('')}
+        </ol>
       </section>
 
       <section class="optimized" aria-label="Улучшенный промт">
@@ -235,19 +306,15 @@ app.innerHTML = `
                   <div>
                     <span class="model-badge">${model.title}</span>
                     <h3>${model.name}</h3>
+                    <div class="model-score">Score <span data-role="model-score" data-model="${model.id}">—</span></div>
                   </div>
                   <div class="model-actions">
                     <button class="chip-button" type="button" data-action="copy" data-model="${model.id}">Копировать</button>
                     <button class="chip-button" type="button" data-action="toggle" data-model="${model.id}">Свернуть</button>
                   </div>
                 </header>
-                <div class="model-content">
-                  <p class="model-summary">${model.summary}</p>
-                  <ul>
-                    <li><strong>Контекст:</strong> чётко обозначен, чтобы избежать домыслов.</li>
-                    <li><strong>Цель:</strong> измеримый результат и критерии качества.</li>
-                    <li><strong>Формат:</strong> структурированный план + краткий финал.</li>
-                  </ul>
+                <div class="model-content" data-role="model-body" data-model="${model.id}">
+                  <p class="model-placeholder">Ожидает запуска моделей.</p>
                 </div>
               </article>
             `
@@ -267,23 +334,13 @@ app.innerHTML = `
         </div>
         <div class="consensus__body" data-role="final">
           <div class="final-answer" data-role="final-answer">
-            <h3>Final Best Answer</h3>
-            <p>
-              Стартуем с улучшенного промта, фиксируем единый формат ответа, получаем 3 независимых результата. Затем
-              консилиум выделяет лучшую стратегию и формирует единый краткий план: цели, шаги, риски, KPI и формат
-              результата для клиента.
-            </p>
-            <ol>
-              <li>Определить цель и метрики успеха до отправки запроса.</li>
-              <li>Сравнить ответы по полноте, точности и соответствию целям.</li>
-              <li>Собрать единый итог, убрать противоречия и усилить аргументы.</li>
-            </ol>
+            <h3 data-role="final-title">Final Best Answer</h3>
+            <p data-role="final-description"></p>
+            <ol data-role="final-steps"></ol>
           </div>
           <aside class="final-notes">
             <h4>Почему этот ответ лучший</h4>
-            <ul>
-              ${consensusReasons.map((reason) => `<li>${reason}</li>`).join('')}
-            </ul>
+            <ul data-role="final-rationale"></ul>
             <div class="final-meta">
               <span>🔥 Победил баланс глубины и ясности</span>
               <span>🛡 Ошибки других ответов убраны</span>
@@ -315,10 +372,18 @@ const copyFinalButton = app.querySelector('[data-action="copy-final"]');
 const copyPlanButton = app.querySelector('[data-action="copy-plan"]');
 const collapseAllButton = app.querySelector('[data-action="collapse-all"]');
 const expandAllButton = app.querySelector('[data-action="expand-all"]');
+const runStatus = app.querySelector('[data-role="run-status"]');
+const runLog = app.querySelector('[data-role="run-log"]');
 
 const modelCards = [...app.querySelectorAll('.model-card')];
 const copyButtons = [...app.querySelectorAll('[data-action="copy"]')];
 const toggleButtons = [...app.querySelectorAll('[data-action="toggle"]')];
+const modelBodies = [...app.querySelectorAll('[data-role="model-body"]')];
+const modelScores = [...app.querySelectorAll('[data-role="model-score"]')];
+const finalTitle = app.querySelector('[data-role="final-title"]');
+const finalDescription = app.querySelector('[data-role="final-description"]');
+const finalSteps = app.querySelector('[data-role="final-steps"]');
+const finalRationale = app.querySelector('[data-role="final-rationale"]');
 
 const DEFAULT_PROMPT =
   'Сформируй стратегию запуска SaaS-продукта для B2B: цель — 500 квалифицированных лидов за 60 дней, бюджет ограничен.';
@@ -331,6 +396,7 @@ let focusMode = false;
 
 initializeTheme();
 updateOptimizedPrompt();
+renderConsensus();
 
 promptInput.addEventListener('input', () => {
   updateOptimizedPrompt();
@@ -428,14 +494,71 @@ function runSimulation() {
   runButton.textContent = 'Запуск моделей...';
 
   modelCards.forEach((card) => card.classList.add('is-loading'));
+  runStatus?.classList.add('is-active');
+  if (runStatus) {
+    runStatus.textContent = 'Выполнение...';
+  }
+  if (runLog) {
+    [...runLog.children].forEach((item) => item.classList.remove('is-active'));
+  }
 
   setTimeout(() => {
     modelCards.forEach((card) => card.classList.remove('is-loading'));
+    renderModelResponses();
+    renderConsensus();
+    if (runLog) {
+      [...runLog.children].forEach((item, index) => {
+        setTimeout(() => {
+          item.classList.add('is-active');
+        }, 120 * index);
+      });
+    }
+    if (runStatus) {
+      runStatus.textContent = 'Готово';
+    }
     runButton.disabled = false;
     runButton.textContent = 'Запустить 3 модели';
     isRunning = false;
     finalSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }, 900);
+}
+
+function renderModelResponses() {
+  modelBodies.forEach((block) => {
+    const modelId = block.dataset.model;
+    if (!modelId || !responseLibrary[modelId]) return;
+    const response = responseLibrary[modelId];
+    block.innerHTML = `
+      <p class="model-summary">${response.summary}</p>
+      <h4>${response.headline}</h4>
+      <ul>
+        ${response.bullets.map((item) => `<li>${item}</li>`).join('')}
+      </ul>
+      <div class="model-deliverables">
+        ${response.deliverables.map((item) => `<span>${item}</span>`).join('')}
+      </div>
+    `;
+  });
+
+  modelScores.forEach((score) => {
+    const modelId = score.dataset.model;
+    score.textContent = responseLibrary[modelId]?.score ?? '—';
+  });
+}
+
+function renderConsensus() {
+  if (finalTitle) {
+    finalTitle.textContent = consensusOutput.title;
+  }
+  if (finalDescription) {
+    finalDescription.textContent = consensusOutput.description;
+  }
+  if (finalSteps) {
+    finalSteps.innerHTML = consensusOutput.steps.map((item) => `<li>${item}</li>`).join('');
+  }
+  if (finalRationale) {
+    finalRationale.innerHTML = consensusOutput.rationale.map((item) => `<li>${item}</li>`).join('');
+  }
 }
 
 function copyToClipboard(text, button) {

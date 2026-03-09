@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hype Sprint — вирусная мультиплеерная мини‑игра</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="page">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">Real‑time • Mobile‑first • Invite‑only</p>
+        <h1>Hype Sprint</h1>
+        <p class="lede">
+          Быстрая кооперативная гонка кликов: собирайте монеты, врывайтесь в лидерборд и получайте бонусы за приглашения.
+          Работает с Firebase или в оффлайне для демо.
+        </p>
+        <div class="cta-row">
+          <button id="create-room" class="btn primary">Создать комнату</button>
+          <button id="join-room" class="btn ghost">Войти по коду</button>
+          <div class="pill" id="presence-indicator">Оффлайн демо</div>
+        </div>
+      </div>
+      <div class="ticker" id="live-feed" aria-live="polite"></div>
+    </header>
+
+    <main class="layout">
+      <section class="panel">
+        <div class="panel__header">
+          <div>
+            <p class="eyebrow">Комната</p>
+            <h2 id="room-title">Демо режим</h2>
+          </div>
+          <button class="btn icon" id="copy-code" title="Скопировать код комнаты">📋</button>
+        </div>
+        <div class="room-meta">
+          <div>
+            <p class="meta-label">Код</p>
+            <p class="meta-value" id="room-code">—</p>
+          </div>
+          <div>
+            <p class="meta-label">Игроков онлайн</p>
+            <p class="meta-value" id="online-count">1</p>
+          </div>
+          <div>
+            <p class="meta-label">Сражение</p>
+            <p class="meta-value" id="round-timer">∞</p>
+          </div>
+        </div>
+        <div class="input-group" id="join-form" hidden>
+          <label for="room-input">Введите код</label>
+          <div class="input-row">
+            <input id="room-input" placeholder="Например, RUSH42" maxlength="12" />
+            <button class="btn primary" id="confirm-join">Войти</button>
+          </div>
+        </div>
+        <div class="input-group">
+          <label for="name-input">Никнейм</label>
+          <input id="name-input" placeholder="Ваш ник" maxlength="16" />
+        </div>
+        <div class="input-group">
+          <label for="boost-input">Инвайт‑бонус</label>
+          <input id="boost-input" placeholder="Ссылка‑приманка (любой текст)" />
+        </div>
+        <div class="status" id="status-bar">Готовы к старту! Нажимайте, чтобы фармить монеты.</div>
+      </section>
+
+      <section class="panel scoreboard">
+        <div class="panel__header">
+          <div>
+            <p class="eyebrow">Лидерборд</p>
+            <h2>Топ за раунд</h2>
+          </div>
+          <button class="btn ghost" id="reset-local">Сбросить демо</button>
+        </div>
+        <ol id="leaderboard" class="board"></ol>
+      </section>
+
+      <section class="panel action">
+        <div class="panel__header">
+          <div>
+            <p class="eyebrow">Фарм</p>
+            <h2>Спамьте клики</h2>
+          </div>
+          <div class="pill" id="pps">0.0 кликов/с</div>
+        </div>
+        <button id="tap-btn" class="tap-btn">⚡ Блиц‑клик</button>
+        <div class="progress">
+          <div id="progress-bar" class="progress__bar"></div>
+        </div>
+        <p class="hint">Каждые 20 кликов — «Комбо» x2. Делитесь кодом, чтобы получить буст.</p>
+      </section>
+    </main>
+  </div>
+
+  <script type="module" src="game.js"></script>
+</body>
+</html>

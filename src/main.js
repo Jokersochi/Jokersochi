@@ -158,8 +158,8 @@ renderAll();
 
 uploadInput.addEventListener('change', handleUpload);
 demoButton.addEventListener('click', () => {
+  revokeObjectUrl();
   photoElement.src = demoFaceUrl;
-  delete photoElement.dataset.objectUrl;
   state.hintDismissed = false;
   stageHint.classList.remove('is-hidden');
   setStatus('Загружено демонстрационное фото.', 'success');
@@ -188,6 +188,7 @@ stageInner.addEventListener('pointerleave', () => {
 
 photoElement.addEventListener('load', handlePhotoLoad);
 photoElement.addEventListener('error', () => {
+  revokeObjectUrl();
   setStatus('Не удалось загрузить изображение. Попробуйте другой файл.', 'warning');
 });
 
@@ -591,6 +592,7 @@ function handleUpload(event) {
     return;
   }
 
+  revokeObjectUrl();
   const objectUrl = URL.createObjectURL(file);
   photoElement.src = objectUrl;
   photoElement.dataset.objectUrl = objectUrl;
@@ -609,8 +611,7 @@ function handlePhotoLoad() {
   }
 
   if (photoElement.dataset.objectUrl) {
-    URL.revokeObjectURL(photoElement.dataset.objectUrl);
-    delete photoElement.dataset.objectUrl;
+    revokeObjectUrl();
   }
 
   renderAll();
@@ -710,6 +711,16 @@ function applyTemplateDefaults(template) {
   state.exposure = defaults.exposure;
   state.offset = { ...defaults.offset };
   state.variantId = defaults.variantId;
+}
+
+function revokeObjectUrl() {
+  const objectUrl = photoElement.dataset.objectUrl;
+  if (!objectUrl) {
+    return;
+  }
+
+  URL.revokeObjectURL(objectUrl);
+  delete photoElement.dataset.objectUrl;
 }
 
 function createTemplateDefaults(template) {

@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: jokersochi-monopoly-demo
+    runtime: static
+    plan: free
+    branch: codex-84ahff
+    autoDeploy: true
+    buildCommand: sh render-build.sh
+    staticPublishPath: ./render-static
+    headers:
+      - path: /index.html
+        name: Cache-Control
+        value: no-cache, no-store, must-revalidate
+      - path: /css/*
+        name: Cache-Control
+        value: public, max-age=3600
+      - path: /js/*
+        name: Cache-Control
+        value: public, max-age=3600
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin

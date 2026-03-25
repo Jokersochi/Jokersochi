@@ -142,6 +142,11 @@ export default function ArchitectApp() {
   const [renders, setRenders] = useState(allProjects[currentProjectId]?.renders || []);
   const [generating, setGenerating] = useState(false);
   const threeMountRef = useRef(null);
+  const currentProjectIdRef = useRef(currentProjectId);
+
+  useEffect(() => {
+    currentProjectIdRef.current = currentProjectId;
+  }, [currentProjectId]);
 
   const saveProject = useCallback(() => {
     setAllProjects(prev => {
@@ -199,7 +204,35 @@ export default function ArchitectApp() {
     });
   }, [currentProjectId]);
 
-  const generateImages = async () => { setGenerating(true); const newRenders = prompts.map(p => ({ ...p, url: `https://dummyimage.com/1280x720/edf2f7/1f2937&text=${encodeURIComponent(p.goal)}`, id: Math.random() })); setTimeout(() => { setRenders(newRenders); setGenerating(false); }, 1200); };
+  const generateImages = async () => {
+    const startedProjectId = currentProjectId;
+    setGenerating(true);
+    const newRenders = prompts.map(p => ({
+      ...p,
+      url: `https://dummyimage.com/1280x720/edf2f7/1f2937&text=${encodeURIComponent(p.goal)}`,
+      id: Math.random(),
+    }));
+
+    setTimeout(() => {
+      setAllProjects(prev => {
+        if (!prev[startedProjectId]) return prev;
+        const next = {
+          ...prev,
+          [startedProjectId]: {
+            ...prev[startedProjectId],
+            renders: newRenders,
+          },
+        };
+        localStorage.setItem("archapp_all_projects", JSON.stringify(next));
+        return next;
+      });
+
+      if (currentProjectIdRef.current === startedProjectId) {
+        setRenders(newRenders);
+      }
+      setGenerating(false);
+    }, 1200);
+  };
 
   const exportPDF = useCallback(async () => { alert('Экспорт PDF (демо-версия)'); }, []);
   const exportDXF = useCallback(() => { alert('Экспорт DXF (демо-версия)'); }, []);

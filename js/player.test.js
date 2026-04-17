@@ -19,8 +19,7 @@ describe('Player Class', () => {
   beforeEach(() => {
     // Reset mocks and create a new player before each test
     eventBus.emit.mockClear();
-    player = new Player('p1', 'Joker', '
-      ');
+    player = new Player('p1', 'Joker', 'phoenix');
   });
 
   test('should be instantiated with starting money and correct properties', () => {

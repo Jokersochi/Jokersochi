@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import {
+  ActivityIndicator,
   Pressable,
   SafeAreaView,
   ScrollView,
@@ -10,27 +11,51 @@ import {
 import { AddMealSheet } from '../components/AddMealSheet';
 import { MealCard } from '../components/MealCard';
 import { NutritionSummary } from '../components/NutritionSummary';
-import { useMealLog } from '../hooks/useMealLog';
+import { useDashboardViewModel } from '../hooks/useDashboardViewModel';
 import { palette, radius, spacing } from '../theme/colors';
 
 export const HomeScreen = () => {
-  const { meals, totals, addMeal } = useMealLog();
+  const {
+    meals,
+    totals,
+    target,
+    addMeal,
+    greeting,
+    subtitle,
+    streakLabel,
+    todayLabel,
+    emptyMealsLabel,
+    isProfileLoading,
+    isProfileEmpty,
+    loadingProfileLabel,
+    emptyProfileLabel,
+  } = useDashboardViewModel();
   const [isSheetOpen, setSheetOpen] = useState(false);
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.greeting}>Привет, Анна 👋</Text>
-        <Text style={styles.subtitle}>
-          Сделайте фото блюда или добавьте вручную. Мы посчитаем КБЖУ и поможем
-          удерживать цель.
-        </Text>
-        <NutritionSummary totals={totals} />
+        <Text style={styles.greeting}>{greeting}</Text>
+
+        {isProfileLoading ? (
+          <View style={styles.profileStateRow}>
+            <ActivityIndicator color={palette.primary} />
+            <Text style={styles.profileStateText}>{loadingProfileLabel}</Text>
+          </View>
+        ) : null}
+
+        {isProfileEmpty ? <Text style={styles.profileStateText}>{emptyProfileLabel}</Text> : null}
+
+        <Text style={styles.subtitle}>{subtitle}</Text>
+        <Text style={styles.streak}>{streakLabel}</Text>
+        <NutritionSummary totals={totals} target={target} />
         <View>
-          <Text style={styles.sectionTitle}>Сегодня</Text>
-          {meals.map((meal) => (
-            <MealCard key={meal.id} meal={meal} />
-          ))}
+          <Text style={styles.sectionTitle}>{todayLabel}</Text>
+          {meals.length ? (
+            meals.map((meal) => <MealCard key={meal.id} meal={meal} />)
+          ) : (
+            <Text style={styles.emptyMeals}>{emptyMealsLabel}</Text>
+          )}
         </View>
       </ScrollView>
       <Pressable
@@ -82,13 +107,34 @@ const styles = StyleSheet.create({
     color: palette.textMuted,
     fontSize: 16,
     lineHeight: 22,
+    marginBottom: spacing.sm,
+  },
+  streak: {
+    color: palette.primary,
+    fontSize: 15,
+    fontWeight: '600',
     marginBottom: spacing.lg,
+  },
+  profileStateRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    marginBottom: spacing.sm,
+  },
+  profileStateText: {
+    color: palette.textMuted,
+    fontSize: 14,
+    marginBottom: spacing.sm,
   },
   sectionTitle: {
     color: palette.text,
     fontSize: 18,
     fontWeight: '600',
     marginBottom: spacing.md,
+  },
+  emptyMeals: {
+    color: palette.textMuted,
+    fontSize: 15,
   },
   fab: {
     position: 'absolute',

@@ -1,4 +1,4 @@
-import { useMemo, useReducer } from 'react';
+import { useEffect, useMemo, useReducer, useState } from 'react';
 import type { MacroBreakdown, MealEntry, MealType } from '../types/meal';
 
 const initialMeals: MealEntry[] = [
@@ -53,6 +53,17 @@ const initialMeals: MealEntry[] = [
   },
 ];
 
+const profileState = {
+  name: 'Анна',
+  calorieGoal: 2100,
+  streakDays: 5,
+  macroGoal: {
+    protein: 140,
+    carbs: 220,
+    fat: 70,
+  },
+};
+
 const createId = () => `meal-${Math.random().toString(36).slice(2, 9)}`;
 
 type AddMealPayload = {
@@ -97,6 +108,17 @@ const sumMacros = (entries: MealEntry[]): MacroBreakdown =>
 
 export const useMealLog = () => {
   const [meals, dispatch] = useReducer(mealReducer, initialMeals);
+  const [profile, setProfile] = useState<typeof profileState | null>(null);
+  const [isProfileLoading, setProfileLoading] = useState(true);
+
+  useEffect(() => {
+    const timerId = setTimeout(() => {
+      setProfile(profileState);
+      setProfileLoading(false);
+    }, 250);
+
+    return () => clearTimeout(timerId);
+  }, []);
 
   const totals = useMemo(() => sumMacros(meals), [meals]);
 
@@ -124,6 +146,10 @@ export const useMealLog = () => {
     totals,
     addMeal,
     groupedByType,
+    profile,
+    isProfileLoading,
+    calorieGoal: profile?.calorieGoal ?? 2100,
+    streakDays: profile?.streakDays ?? 0,
   };
 };
 

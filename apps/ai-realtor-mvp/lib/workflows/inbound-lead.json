@@ -1,0 +1,13 @@
+{
+  "name": "inbound-lead",
+  "nodes": [
+    { "name": "Webhook Trigger", "type": "n8n-nodes-base.webhook" },
+    { "name": "Normalize Message", "type": "n8n-nodes-base.function" },
+    { "name": "Create Lead", "type": "n8n-nodes-base.httpRequest" },
+    { "name": "Classify Lead", "type": "n8n-nodes-base.httpRequest" },
+    { "name": "Generate Reply", "type": "n8n-nodes-base.httpRequest" },
+    { "name": "Send Reply", "type": "n8n-nodes-base.httpRequest" },
+    { "name": "Write Audit Log", "type": "n8n-nodes-base.httpRequest" }
+  ],
+  "connections": {}
+}

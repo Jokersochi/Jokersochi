@@ -1,0 +1,12 @@
+{
+  "name": "reminders",
+  "nodes": [
+    { "name": "Cron", "type": "n8n-nodes-base.cron" },
+    { "name": "Find Viewings in 2h", "type": "n8n-nodes-base.httpRequest" },
+    { "name": "Send 2h Reminder", "type": "n8n-nodes-base.httpRequest" },
+    { "name": "Find Viewings in 30m", "type": "n8n-nodes-base.httpRequest" },
+    { "name": "Send 30m Reminder", "type": "n8n-nodes-base.httpRequest" },
+    { "name": "Cancel Overdue Unconfirmed", "type": "n8n-nodes-base.httpRequest" }
+  ],
+  "connections": {}
+}

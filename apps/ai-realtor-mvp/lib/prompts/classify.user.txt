@@ -1,0 +1,16 @@
+Классифицируй входящее сообщение лида.
+
+Input:
+- message: {{message}}
+- has_phone: {{has_phone}}
+
+Output JSON only:
+{
+  "temperature": "cold|warm|hot",
+  "status": "new|in_conversation|awaiting_phone|viewing_requested|escalated",
+  "should_escalate_to_whatsapp": true,
+  "reasons": ["..."]
+}
+
+Лид hot если просит показ, спрашивает документы для сделки, бронь/задаток или быстрый выход на сделку.
+Не считать hot если только торг или только вопрос "актуально ли".

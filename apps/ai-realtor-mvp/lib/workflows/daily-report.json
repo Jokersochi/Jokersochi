@@ -1,0 +1,12 @@
+{
+  "name": "daily-report",
+  "nodes": [
+    { "name": "Cron", "type": "n8n-nodes-base.cron" },
+    { "name": "Aggregate Leads", "type": "n8n-nodes-base.httpRequest" },
+    { "name": "Aggregate Viewings", "type": "n8n-nodes-base.httpRequest" },
+    { "name": "Count No-show", "type": "n8n-nodes-base.function" },
+    { "name": "Generate Recommendations", "type": "n8n-nodes-base.httpRequest" },
+    { "name": "Send Owner Summary", "type": "n8n-nodes-base.httpRequest" }
+  ],
+  "connections": {}
+}

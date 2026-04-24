@@ -72,12 +72,25 @@ apps/ai-realtor-mvp
 - `POST /api/ai/reply`
 - `POST /api/owner/daily-summary`
 
+### API contract notes
+- Critical endpoints now return unified envelope:
+  - success: `{ ok: true, request_id, data }`
+  - error: `{ ok: false, request_id, error: { code, message, details } }`
+- `POST /api/leads/inbound` supports idempotency via `x-idempotency-key`.
+
 ## Prompt pack
 Located in `prompts/` and duplicated in `lib/prompts/` for n8n compatibility.
 
 ## n8n workflows
 Blueprint docs: `docs/workflows/*.md`.
 Importable skeletons: `lib/workflows/*.json`.
+
+## Multi-agent execution board
+- `docs/agents/agent-1-security.md`
+- `docs/agents/agent-2-reliability.md`
+- `docs/agents/agent-3-observability.md`
+- `docs/agents/agent-4-api-contracts.md`
+- `docs/agents/agent-5-ops.md`
 
 ## AI test fixtures
 `test-fixtures/ai-classification-cases.json` covers key classification scenarios.

@@ -1,9 +1,12 @@
-import { NextResponse } from "next/server";
-import { ownerSummarySchema } from "../../../../shared/validators";
+import { failure, getRequestId, success } from "../../../../lib/api/response";
 import { sendTelegramMessage } from "../../../../lib/adapters/telegram-adapter";
 import { sendWhatsAppMessage } from "../../../../lib/adapters/whatsapp-adapter";
+import { log } from "../../../../lib/observability/logger";
+import { ownerSummarySchema } from "../../../../shared/validators";
 
 export async function POST(request: Request) {
+  const requestId = getRequestId(request);
+
   try {
     const body = await request.json();
     const payload = ownerSummarySchema.parse(body);
@@ -14,8 +17,10 @@ export async function POST(request: Request) {
       sendWhatsAppMessage("owner", text)
     ]);
 
-    return NextResponse.json({ ok: true, data: payload, delivery: { telegram, whatsapp } });
+    log("info", "owner.daily_summary.sent", { request_id: requestId, telegram: telegram.status, whatsapp: whatsapp.status });
+    return success(requestId, { payload, delivery: { telegram, whatsapp } });
   } catch (error) {
-    return NextResponse.json({ ok: false, error: (error as Error).message }, { status: 400 });
+    log("error", "owner.daily_summary.failed", { request_id: requestId, error: (error as Error).message });
+    return failure(requestId, "OWNER_SUMMARY_FAILED", (error as Error).message, 400);
   }
 }

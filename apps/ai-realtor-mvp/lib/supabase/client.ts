@@ -1,7 +1,8 @@
 import { createClient } from "@supabase/supabase-js";
+import { env } from "../config";
 
-const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const url = env.NEXT_PUBLIC_SUPABASE_URL;
+const anon = env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 export const isSupabaseConfigured = Boolean(url && anon);
 

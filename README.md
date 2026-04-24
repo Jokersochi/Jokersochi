@@ -25,6 +25,35 @@
 *   **Очистка зависимостей:** Удалена неиспользуемая зависимость `http-server` и устаревшие скрипты `old:build`, `old:dev`, `old:serve` из `package.json`.
 *   **Актуализация документации:** Обновлен `README.md` для профиля с информацией о проектах.
 
+## 🔐 Deployment environments (Vercel + Supabase)
+
+Для безопасного разделения окружений используются три независимых проекта:
+
+1. `dev` — отдельный Vercel Project + отдельный Supabase project.
+2. `staging` — отдельный Vercel Project + отдельный Supabase project.
+3. `prod` — отдельный Vercel Project + отдельный Supabase project.
+
+Секреты из `.env.example` не хранятся в git и должны быть загружены в environment secrets каждого окружения (Vercel Environment Variables / Supabase secrets).
+
+### Env matrix
+
+| Переменная | dev | staging | prod | Обязательность |
+| :--- | :---: | :---: | :---: | :--- |
+| `NODE_ENV` | ✅ | ✅ | ✅ | required |
+| `PORT` | ✅ | ✅ | ✅ | required |
+| `VERCEL_PROJECT_ID` | ✅ | ✅ | ✅ | required |
+| `VERCEL_ORG_ID` | ✅ | ✅ | ✅ | required |
+| `VERCEL_TOKEN` | ✅ | ✅ | ✅ | required |
+| `SUPABASE_URL` | ✅ | ✅ | ✅ | required |
+| `SUPABASE_ANON_KEY` | ✅ | ✅ | ✅ | required |
+| `SUPABASE_SERVICE_ROLE_KEY` | ✅ | ✅ | ✅ | required |
+| `TELEGRAM_BOT_TOKEN` | ✅ | ✅ | ✅ | optional |
+| `TELEGRAM_CHAT_ID` | ✅ | ✅ | ✅ | optional |
+| `WHATSAPP_ACCESS_TOKEN` | ✅ | ✅ | ✅ | optional |
+| `WHATSAPP_PHONE_NUMBER_ID` | ✅ | ✅ | ✅ | optional |
+
+> Поведение API при отсутствии Telegram/WhatsApp ключей: возвращается статус `not_configured` (без 500).
+
 ## 🤝 Связь со мной
 
 Вы можете связаться со мной через GitHub.

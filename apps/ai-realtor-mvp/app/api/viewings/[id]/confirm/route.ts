@@ -1,12 +1,14 @@
-import { NextResponse } from "next/server";
+import { failure, getRequestId, success } from "../../../../../lib/api/response";
 import { confirmViewing } from "../../../../../lib/services/viewing-service";
 
-export async function PATCH(_request: Request, context: { params: Promise<{ id: string }> }) {
+export async function PATCH(request: Request, context: { params: Promise<{ id: string }> }) {
+  const requestId = getRequestId(request);
+
   try {
     const { id } = await context.params;
     const data = await confirmViewing(id);
-    return NextResponse.json({ ok: true, data });
+    return success(requestId, data);
   } catch (error) {
-    return NextResponse.json({ ok: false, error: (error as Error).message }, { status: 400 });
+    return failure(requestId, "VIEWING_CONFIRM_FAILED", (error as Error).message, 400);
   }
 }

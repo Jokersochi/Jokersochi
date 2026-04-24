@@ -1,11 +1,13 @@
-import { NextResponse } from "next/server";
+import { failure, getRequestId, success } from "../../../lib/api/response";
 import { getDashboardMetrics } from "../../../lib/services/dashboard-service";
 
-export async function GET() {
+export async function GET(request: Request) {
+  const requestId = getRequestId(request);
+
   try {
     const data = await getDashboardMetrics();
-    return NextResponse.json({ ok: true, data });
+    return success(requestId, data);
   } catch (error) {
-    return NextResponse.json({ ok: false, error: (error as Error).message }, { status: 500 });
+    return failure(requestId, "DASHBOARD_LOAD_FAILED", (error as Error).message, 500);
   }
 }

@@ -3,5 +3,5 @@ import { listLeads } from "../../../lib/services/lead-service";
 
 export async function GET() {
   const data = await listLeads();
-  return NextResponse.json({ data });
+  return NextResponse.json({ ok: true, data });
 }

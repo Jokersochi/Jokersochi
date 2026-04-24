@@ -1,11 +1,10 @@
 import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  // TODO: wire environment management in deployment target.
-  console.warn("Supabase environment variables are not configured.");
-}
+export const isSupabaseConfigured = Boolean(url && anon);
 
-export const supabase = createClient(supabaseUrl ?? "https://example.supabase.co", supabaseAnonKey ?? "public-anon-key");
+export const supabase = createClient(url ?? "https://placeholder.supabase.co", anon ?? "placeholder-key", {
+  auth: { persistSession: false }
+});

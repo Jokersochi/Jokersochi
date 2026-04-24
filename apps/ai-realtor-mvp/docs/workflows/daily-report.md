@@ -1,8 +1,12 @@
 # daily-report
 
-1. Cron at 20:30 local timezone.
-2. Aggregate leads by status/temperature.
-3. Aggregate viewings by status.
-4. Count no-show events and 2x no-show leads.
-5. Generate owner recommendations.
-6. Send concise summary to owner messenger channel.
+Flow:
+1. Cron daily 20:00
+2. Aggregate leads
+3. Aggregate viewings
+4. Count hot leads and no-show
+5. Generate recommendations
+6. Send owner summary
+
+TODO:
+- Configure Telegram/WhatsApp credentials in n8n.

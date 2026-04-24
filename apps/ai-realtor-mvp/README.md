@@ -1,144 +1,111 @@
-# AI Realtor — Денежная версия v1 (MVP)
+# AI Realtor MVP (денежная версия v1)
 
-## 1) Folder tree
+Owner-first MVP для 1 объекта. Цель: не терять входящие лиды, доводить до показа и эскалировать только hot лиды.
+
+## Folder tree
 
 ```txt
 apps/ai-realtor-mvp
 ├─ app/
 │  ├─ api/
+│  │  ├─ ai/classify/route.ts
+│  │  ├─ ai/reply/route.ts
 │  │  ├─ dashboard/route.ts
 │  │  ├─ leads/route.ts
+│  │  ├─ leads/inbound/route.ts
+│  │  ├─ leads/[id]/route.ts
+│  │  ├─ owner/daily-summary/route.ts
 │  │  ├─ properties/route.ts
-│  │  └─ viewings/route.ts
+│  │  ├─ properties/[id]/route.ts
+│  │  ├─ viewings/route.ts
+│  │  └─ viewings/[id]/{confirm,cancel,complete}/route.ts
 │  ├─ dashboard/page.tsx
+│  ├─ properties/{page.tsx,new/page.tsx,[id]/page.tsx}
 │  ├─ leads/page.tsx
-│  ├─ properties/
-│  │  ├─ [id]/page.tsx
-│  │  ├─ new/page.tsx
-│  │  └─ page.tsx
 │  ├─ viewings/page.tsx
-│  ├─ globals.css
-│  ├─ layout.tsx
-│  └─ page.tsx
+│  └─ layout.tsx
 ├─ components/
-│  ├─ LeadTable.tsx
-│  ├─ MetricCard.tsx
-│  ├─ PropertyForm.tsx
-│  ├─ PropertyList.tsx
-│  ├─ RecommendationsPanel.tsx
-│  └─ ViewingCalendar.tsx
-├─ db/migrations/
-│  └─ 20260422_000001_init_ai_realtor.sql
-├─ docs/workflows/
-│  ├─ daily-report.md
-│  ├─ inbound-lead.md
-│  ├─ post-viewing.md
-│  ├─ reminders.md
-│  └─ viewing-scheduler.md
+├─ db/
+│  ├─ migrations/20260423_000001_ai_realtor_v1.sql
+│  └─ seed.sql
+├─ docs/workflows/*.md
 ├─ lib/
-│  ├─ prompts/
-│  │  ├─ classify.user.txt
-│  │  ├─ followup.user.txt
-│  │  ├─ owner-summary.user.txt
-│  │  ├─ schedule.user.txt
-│  │  └─ seller.system.txt
+│  ├─ adapters/
+│  ├─ ai/
 │  ├─ services/
-│  │  ├─ dashboard-service.ts
-│  │  ├─ lead-service.ts
-│  │  ├─ property-service.ts
-│  │  └─ viewing-service.ts
-│  ├─ supabase/client.ts
-│  └─ workflows/
-│     ├─ daily-report.json
-│     ├─ inbound-lead.json
-│     ├─ post-viewing.json
-│     ├─ reminders.json
-│     └─ viewing-scheduler.json
-├─ shared/
-│  ├─ types.ts
-│  └─ validators.ts
-├─ next.config.ts
-├─ package.json
-├─ postcss.config.mjs
-├─ tailwind.config.ts
-└─ tsconfig.json
+│  ├─ supabase/
+│  └─ workflows/*.json
+├─ prompts/*.txt
+├─ shared/{types.ts,validators.ts}
+└─ test-fixtures/ai-classification-cases.json
 ```
 
-## 2) Database schema
-- Основная схема реализована в SQL миграции: `db/migrations/20260422_000001_init_ai_realtor.sql`.
-- Включены таблицы: `properties`, `leads`, `lead_messages`, `viewings`, `audit_logs`.
-- Добавлены check constraints для статусов, температуры и ценового floor.
-- Добавлены индексы и триггер автообновления `updated_at`.
+## Supabase migration + RLS
+- Migration: `db/migrations/20260423_000001_ai_realtor_v1.sql`.
+- Includes enums, tables, constraints, indexes, `updated_at` triggers.
+- RLS enabled on core tables with owner-readable/writable baseline policies.
+- TODO: tighten policies by `owner_id = auth.uid()` once Auth flow is finalized.
 
-## 3) Shared types
-- Типы домена: `LeadStatus`, `LeadTemperature`, `ViewingStatus`, `Property`, `Lead`, `Viewing`, `AuditLog`, `DashboardMetrics`.
-- Валидаторы на Zod:
-  - `propertySchema` (включая `price_floor <= price_listing`),
-  - `leadClassifyResponseSchema`,
-  - `scheduleViewingSchema`.
+## Seed
+- Seed file: `db/seed.sql`.
+- Adds pilot property:
+  - title: `Квартира, пилотный объект`
+  - listing: `9 000 000`
+  - floor: `8 500 000`
+  - address: `demo address`
 
-## 4) Prompt pack
-Промпты находятся в `lib/prompts/`:
-1. `seller.system.txt`
-2. `classify.user.txt`
-3. `schedule.user.txt`
-4. `followup.user.txt`
-5. `owner-summary.user.txt`
+## API surface
+- `GET /api/dashboard`
+- `GET /api/properties`
+- `POST /api/properties`
+- `GET /api/properties/[id]`
+- `PATCH /api/properties/[id]`
+- `GET /api/leads`
+- `POST /api/leads/inbound`
+- `PATCH /api/leads/[id]`
+- `GET /api/viewings`
+- `POST /api/viewings`
+- `PATCH /api/viewings/[id]/confirm`
+- `PATCH /api/viewings/[id]/cancel`
+- `PATCH /api/viewings/[id]/complete`
+- `POST /api/ai/classify`
+- `POST /api/ai/reply`
+- `POST /api/owner/daily-summary`
 
-## 5) n8n workflow docs
-Документация:
-- `docs/workflows/inbound-lead.md`
-- `docs/workflows/viewing-scheduler.md`
-- `docs/workflows/reminders.md`
-- `docs/workflows/post-viewing.md`
-- `docs/workflows/daily-report.md`
+## Prompt pack
+Located in `prompts/` and duplicated in `lib/prompts/` for n8n compatibility.
 
-JSON skeletons:
-- `lib/workflows/inbound-lead.json`
-- `lib/workflows/viewing-scheduler.json`
-- `lib/workflows/reminders.json`
-- `lib/workflows/post-viewing.json`
-- `lib/workflows/daily-report.json`
+## n8n workflows
+Blueprint docs: `docs/workflows/*.md`.
+Importable skeletons: `lib/workflows/*.json`.
 
-## 6) API surface
-- `GET /api/dashboard` — агрегированные метрики dashboard.
-- `GET /api/properties` — список объектов.
-- `POST /api/properties` — создать объект.
-- `GET /api/leads` — список лидов.
-- `GET /api/viewings` — список показов.
+## AI test fixtures
+`test-fixtures/ai-classification-cases.json` covers key classification scenarios.
 
-## 7) Implementation plan (7 дней)
-1. День 1: развернуть Supabase, применить миграцию, добавить ENV.
-2. День 2: подключить inbound webhook и workflow `inbound-lead`.
-3. День 3: включить `viewing-scheduler` + правила подтверждения и автоотмены.
-4. День 4: включить `reminders` и контроль no-show.
-5. День 5: включить `post-viewing` + эскалацию hot лидов.
-6. День 6: включить `daily-report` в Telegram/WhatsApp.
-7. День 7: smoke test end-to-end, корректировка prompt pack по конверсии.
+## Local run
+```bash
+cd apps/ai-realtor-mvp
+npm install
+npm run dev
+```
 
-## Launch instructions
-1. Установить зависимости:
-   ```bash
-   cd apps/ai-realtor-mvp
-   npm install
-   ```
-2. Создать `.env.local`:
-   ```bash
-   NEXT_PUBLIC_SUPABASE_URL=...
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=...
-   OPENAI_API_KEY=...
-   ```
-3. Применить SQL миграцию в Supabase SQL Editor.
-4. Запустить локально:
-   ```bash
-   npm run dev
-   ```
-5. Проверка типов:
-   ```bash
-   npm run typecheck
-   ```
+### Validate
+```bash
+npm run typecheck
+npm run lint
+```
 
-## Explicit assumptions
-- Канальные интеграции (WhatsApp/Telegram/CRM source) подключаются через n8n HTTP nodes.
-- Для MVP один активный `property_id` используется в inbound workflow по умолчанию.
-- Auth владельца будет добавлен на следующей итерации; текущий scope — owner-first single-user pilot.
+## Environment variables
+Required:
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
+
+Optional adapters:
+- `TELEGRAM_BOT_TOKEN`
+- `TELEGRAM_CHAT_ID`
+- `WHATSAPP_API_URL`
+- `WHATSAPP_API_TOKEN`
+
+Notes:
+- If Telegram/WhatsApp credentials are missing, owner summary API returns `not_configured` status instead of crashing.

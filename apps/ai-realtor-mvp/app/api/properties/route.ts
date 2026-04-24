@@ -3,11 +3,15 @@ import { createProperty, listProperties } from "../../../lib/services/property-s
 
 export async function GET() {
   const data = await listProperties();
-  return NextResponse.json({ data });
+  return NextResponse.json({ ok: true, data });
 }
 
 export async function POST(request: Request) {
-  const body = await request.json();
-  const data = await createProperty(body);
-  return NextResponse.json({ data }, { status: 201 });
+  try {
+    const body = await request.json();
+    const data = await createProperty(body);
+    return NextResponse.json({ ok: true, data }, { status: 201 });
+  } catch (error) {
+    return NextResponse.json({ ok: false, error: (error as Error).message }, { status: 400 });
+  }
 }

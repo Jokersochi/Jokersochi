@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { metrics } from '../observability/metrics';
 import { useMealLog } from './useMealLog';
 
 const dictionary = {
@@ -54,6 +55,8 @@ export const useDashboardViewModel = () => {
     [calorieGoal, profile?.macroGoal.carbs, profile?.macroGoal.fat, profile?.macroGoal.protein]
   );
 
+  const healthReport = metrics.dailyHealthReport();
+
   return {
     meals,
     totals,
@@ -68,5 +71,6 @@ export const useDashboardViewModel = () => {
     emptyMealsLabel: t.emptyMeals,
     loadingProfileLabel: t.loadingProfile,
     emptyProfileLabel: t.emptyProfile,
+    healthReport,
   };
 };

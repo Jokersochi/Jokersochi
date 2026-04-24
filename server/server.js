@@ -5,12 +5,16 @@
 
 import { WebSocketServer } from 'ws';
 import { RoomManager } from './roomManager.js';
+import { loadEnv } from '../lib/config/env.js';
+import { getMessagingProviderStatuses } from './integrations/configStatus.js';
 
-const PORT = process.env.PORT || 8080;
+const env = loadEnv();
+const PORT = env.PORT;
 const wss = new WebSocketServer({ port: PORT });
 const roomManager = new RoomManager(wss);
 
 console.log(`🚀 WebSocket-сервер "Монополия Россия" запущен на порту ${PORT}`);
+console.log('⚙️ Messaging provider status:', getMessagingProviderStatuses(env));
 
 wss.on('connection', (ws) => {
     // Инициализируем состояние для нового подключения

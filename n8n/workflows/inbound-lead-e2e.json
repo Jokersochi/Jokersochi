@@ -1,0 +1,329 @@
+{
+  "name": "Inbound Lead E2E",
+  "meta": {
+    "template": "skeleton",
+    "description": "Webhook -> API -> reply -> audit -> escalation with retry/alert/DLQ"
+  },
+  "nodes": [
+    {
+      "id": "Webhook_InboundLead",
+      "name": "Webhook: Inbound Lead",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [200, 260],
+      "parameters": {
+        "path": "inbound-lead",
+        "httpMethod": "POST",
+        "responseMode": "responseNode"
+      }
+    },
+    {
+      "id": "Set_Normalize",
+      "name": "Normalize Lead Payload",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [430, 260],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            { "name": "leadId", "value": "={{$json.body.leadId || $json.body.id}}", "type": "string" },
+            { "name": "email", "value": "={{$json.body.email}}", "type": "string" },
+            { "name": "source", "value": "={{$json.body.source || 'web'}}", "type": "string" },
+            { "name": "receivedAt", "value": "={{$now}}", "type": "string" }
+          ]
+        }
+      }
+    },
+    {
+      "id": "HTTP_CreateLead",
+      "name": "API: Create Lead",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [670, 260],
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.LEAD_API_BASE_URL}}/v1/leads",
+        "sendBody": true,
+        "contentType": "json",
+        "jsonBody": "={{$json}}",
+        "options": {
+          "timeout": 15000,
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "LEAD_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "id": "IF_ApiSuccess",
+      "name": "IF: API success?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [900, 260],
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{$json.statusCode || 500}}",
+              "operation": "smallerEqual",
+              "value2": 299
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "Respond_Ok",
+      "name": "Reply: 202 Accepted",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [1380, 120],
+      "parameters": {
+        "respondWith": "json",
+        "responseCode": 202,
+        "responseBody": "={\"status\":\"accepted\",\"leadId\":\"{{$json.leadId || $json.body?.leadId}}\"}"
+      }
+    },
+    {
+      "id": "HTTP_Audit",
+      "name": "Audit: Write Event",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1140, 120],
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.AUDIT_API_BASE_URL}}/v1/events",
+        "sendBody": true,
+        "contentType": "json",
+        "jsonBody": "={\"event\":\"lead_ingested\",\"leadId\":\"{{$json.leadId}}\",\"timestamp\":\"{{$now}}\"}"
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "AUDIT_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "id": "IF_Escalate",
+      "name": "IF: Needs escalation?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [1380, 300],
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.source || ''}}",
+              "operation": "contains",
+              "value2": "enterprise"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "HTTP_Escalate",
+      "name": "Escalation: Notify Ops",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1610, 300],
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.ALERT_API_BASE_URL}}/v1/notify",
+        "sendBody": true,
+        "contentType": "json",
+        "jsonBody": "={\"severity\":\"high\",\"type\":\"lead_escalation\",\"leadId\":\"{{$json.leadId}}\"}"
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "ALERT_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "id": "Set_Failure",
+      "name": "Failure Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [1130, 470],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            { "name": "attempt", "value": 1, "type": "number" },
+            { "name": "failedAt", "value": "={{$now}}", "type": "string" },
+            { "name": "reason", "value": "primary_api_failed", "type": "string" }
+          ]
+        }
+      }
+    },
+    {
+      "id": "Wait_Retry",
+      "name": "Retry Delay 30s",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [1340, 470],
+      "parameters": {
+        "amount": 30,
+        "unit": "seconds"
+      }
+    },
+    {
+      "id": "HTTP_Retry",
+      "name": "API Retry: Create Lead",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1560, 470],
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.LEAD_API_BASE_URL}}/v1/leads",
+        "sendBody": true,
+        "contentType": "json",
+        "jsonBody": "={{$json}}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "LEAD_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "id": "IF_RetrySuccess",
+      "name": "IF: Retry success?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [1780, 470],
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{$json.statusCode || 500}}",
+              "operation": "smallerEqual",
+              "value2": 299
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "HTTP_Alert",
+      "name": "Alert: Workflow Failure",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [2010, 560],
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.ALERT_API_BASE_URL}}/v1/alerts",
+        "sendBody": true,
+        "contentType": "json",
+        "jsonBody": "={\"workflow\":\"inbound-lead-e2e\",\"message\":\"Create lead failed after retry\",\"leadId\":\"{{$json.leadId}}\"}"
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "ALERT_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "id": "HTTP_DLQ",
+      "name": "DLQ: Record Payload",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [2230, 560],
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.DLQ_API_BASE_URL}}/v1/dlq",
+        "sendBody": true,
+        "contentType": "json",
+        "jsonBody": "={\"workflow\":\"inbound-lead-e2e\",\"payload\":{{$json}},\"failedAt\":\"{{$now}}\"}"
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "DLQ_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "id": "Respond_Fail",
+      "name": "Reply: 500 Failed",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [2450, 560],
+      "parameters": {
+        "respondWith": "json",
+        "responseCode": 500,
+        "responseBody": "={\"status\":\"failed\",\"error\":\"lead_processing_failed\"}"
+      }
+    }
+  ],
+  "connections": {
+    "Webhook: Inbound Lead": {
+      "main": [[{ "node": "Normalize Lead Payload", "type": "main", "index": 0 }]]
+    },
+    "Normalize Lead Payload": {
+      "main": [[{ "node": "API: Create Lead", "type": "main", "index": 0 }]]
+    },
+    "API: Create Lead": {
+      "main": [[{ "node": "IF: API success?", "type": "main", "index": 0 }]]
+    },
+    "IF: API success?": {
+      "main": [
+        [
+          { "node": "Audit: Write Event", "type": "main", "index": 0 },
+          { "node": "IF: Needs escalation?", "type": "main", "index": 0 }
+        ],
+        [{ "node": "Failure Context", "type": "main", "index": 0 }]
+      ]
+    },
+    "Audit: Write Event": {
+      "main": [[{ "node": "Reply: 202 Accepted", "type": "main", "index": 0 }]]
+    },
+    "IF: Needs escalation?": {
+      "main": [[{ "node": "Escalation: Notify Ops", "type": "main", "index": 0 }], []]
+    },
+    "Failure Context": {
+      "main": [[{ "node": "Retry Delay 30s", "type": "main", "index": 0 }]]
+    },
+    "Retry Delay 30s": {
+      "main": [[{ "node": "API Retry: Create Lead", "type": "main", "index": 0 }]]
+    },
+    "API Retry: Create Lead": {
+      "main": [[{ "node": "IF: Retry success?", "type": "main", "index": 0 }]]
+    },
+    "IF: Retry success?": {
+      "main": [
+        [{ "node": "Reply: 202 Accepted", "type": "main", "index": 0 }],
+        [{ "node": "Alert: Workflow Failure", "type": "main", "index": 0 }]
+      ]
+    },
+    "Alert: Workflow Failure": {
+      "main": [[{ "node": "DLQ: Record Payload", "type": "main", "index": 0 }]]
+    },
+    "DLQ: Record Payload": {
+      "main": [[{ "node": "Reply: 500 Failed", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "UTC",
+    "saveExecutionProgress": true
+  },
+  "pinData": {},
+  "versionId": "00000000-0000-0000-0000-000000000001"
+}

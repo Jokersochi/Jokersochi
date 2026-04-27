@@ -1,0 +1,278 @@
+{
+  "name": "Daily Report 20:00",
+  "meta": {
+    "template": "skeleton",
+    "description": "Daily reporting workflow at 20:00 with retry/alert/DLQ failure branch"
+  },
+  "nodes": [
+    {
+      "id": "Cron_2000",
+      "name": "Cron: Daily 20:00",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [220, 220],
+      "parameters": {
+        "triggerTimes": {
+          "item": [
+            {
+              "mode": "everyDay",
+              "hour": 20,
+              "minute": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "HTTP_ReportData",
+      "name": "API: Collect Metrics",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [450, 220],
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "method": "GET",
+        "url": "={{$env.REPORT_API_BASE_URL}}/v1/metrics/daily",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "REPORT_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "id": "IF_ReportDataSuccess",
+      "name": "IF: Metrics success?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [680, 220],
+      "parameters": {
+        "conditions": {
+          "number": [
+            { "value1": "={{$json.statusCode || 500}}", "operation": "smallerEqual", "value2": 299 }
+          ]
+        }
+      }
+    },
+    {
+      "id": "Set_ReportBody",
+      "name": "Build Daily Report",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [920, 140],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            { "name": "subject", "type": "string", "value": "=Daily lead report {{$now}}" },
+            { "name": "body", "type": "string", "value": "={{JSON.stringify($json.body || $json)}}" }
+          ]
+        }
+      }
+    },
+    {
+      "id": "HTTP_SendReport",
+      "name": "API: Send Daily Report",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1160, 140],
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.REPORT_API_BASE_URL}}/v1/reports/send",
+        "sendBody": true,
+        "contentType": "json",
+        "jsonBody": "={{$json}}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "REPORT_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "id": "IF_SendSuccess",
+      "name": "IF: Report sent?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [1390, 140],
+      "parameters": {
+        "conditions": {
+          "number": [
+            { "value1": "={{$json.statusCode || 500}}", "operation": "smallerEqual", "value2": 299 }
+          ]
+        }
+      }
+    },
+    {
+      "id": "HTTP_Audit",
+      "name": "Audit: Daily Report Sent",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1620, 60],
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.AUDIT_API_BASE_URL}}/v1/events",
+        "sendBody": true,
+        "contentType": "json",
+        "jsonBody": "={\"event\":\"daily_report_sent\",\"timestamp\":\"{{$now}}\",\"payload\":{{$json}}}"
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "AUDIT_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "id": "Wait_Retry",
+      "name": "Retry Delay 60s",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [1620, 230],
+      "parameters": {
+        "amount": 60,
+        "unit": "seconds"
+      }
+    },
+    {
+      "id": "HTTP_RetryReport",
+      "name": "API Retry: Send Daily Report",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1860, 230],
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.REPORT_API_BASE_URL}}/v1/reports/send",
+        "sendBody": true,
+        "contentType": "json",
+        "jsonBody": "={{$json}}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "REPORT_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "id": "IF_RetrySuccess",
+      "name": "IF: Retry sent?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [2090, 230],
+      "parameters": {
+        "conditions": {
+          "number": [
+            { "value1": "={{$json.statusCode || 500}}", "operation": "smallerEqual", "value2": 299 }
+          ]
+        }
+      }
+    },
+    {
+      "id": "HTTP_Alert",
+      "name": "Alert: Daily Report Failure",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [2320, 300],
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.ALERT_API_BASE_URL}}/v1/alerts",
+        "sendBody": true,
+        "contentType": "json",
+        "jsonBody": "={\"workflow\":\"daily-report-2000\",\"message\":\"Daily report failed after retry\",\"payload\":{{$json}}}"
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "ALERT_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "id": "HTTP_DLQ",
+      "name": "DLQ: Daily Report Payload",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [2550, 300],
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.DLQ_API_BASE_URL}}/v1/dlq",
+        "sendBody": true,
+        "contentType": "json",
+        "jsonBody": "={\"workflow\":\"daily-report-2000\",\"payload\":{{$json}},\"failedAt\":\"{{$now}}\"}"
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "DLQ_API_CREDENTIAL"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Cron: Daily 20:00": {
+      "main": [[{ "node": "API: Collect Metrics", "type": "main", "index": 0 }]]
+    },
+    "API: Collect Metrics": {
+      "main": [[{ "node": "IF: Metrics success?", "type": "main", "index": 0 }]]
+    },
+    "IF: Metrics success?": {
+      "main": [
+        [{ "node": "Build Daily Report", "type": "main", "index": 0 }],
+        [{ "node": "Alert: Daily Report Failure", "type": "main", "index": 0 }]
+      ]
+    },
+    "Build Daily Report": {
+      "main": [[{ "node": "API: Send Daily Report", "type": "main", "index": 0 }]]
+    },
+    "API: Send Daily Report": {
+      "main": [[{ "node": "IF: Report sent?", "type": "main", "index": 0 }]]
+    },
+    "IF: Report sent?": {
+      "main": [
+        [{ "node": "Audit: Daily Report Sent", "type": "main", "index": 0 }],
+        [{ "node": "Retry Delay 60s", "type": "main", "index": 0 }]
+      ]
+    },
+    "Retry Delay 60s": {
+      "main": [[{ "node": "API Retry: Send Daily Report", "type": "main", "index": 0 }]]
+    },
+    "API Retry: Send Daily Report": {
+      "main": [[{ "node": "IF: Retry sent?", "type": "main", "index": 0 }]]
+    },
+    "IF: Retry sent?": {
+      "main": [
+        [{ "node": "Audit: Daily Report Sent", "type": "main", "index": 0 }],
+        [{ "node": "Alert: Daily Report Failure", "type": "main", "index": 0 }]
+      ]
+    },
+    "Alert: Daily Report Failure": {
+      "main": [[{ "node": "DLQ: Daily Report Payload", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "UTC"
+  },
+  "pinData": {},
+  "versionId": "00000000-0000-0000-0000-000000000003"
+}

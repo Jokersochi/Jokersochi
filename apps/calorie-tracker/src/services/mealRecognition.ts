@@ -120,7 +120,8 @@ const mockRecognition = (uri: string): RecognitionResult | null => {
 const resolveApiBaseUrl = (): string | null => {
   const expoExtra = (Constants.expoConfig as { extra?: Record<string, unknown> })?.extra ?? {};
   const fromExtra = typeof expoExtra.apiBaseUrl === 'string' ? expoExtra.apiBaseUrl : null;
-  const fromEnv = typeof process.env.EXPO_PUBLIC_API_BASE_URL === 'string' ? process.env.EXPO_PUBLIC_API_BASE_URL : null;
+  const processEnv = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env;
+  const fromEnv = typeof processEnv?.EXPO_PUBLIC_API_BASE_URL === 'string' ? processEnv.EXPO_PUBLIC_API_BASE_URL : null;
   return fromExtra ?? fromEnv;
 };
 

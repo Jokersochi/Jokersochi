@@ -1,7 +1,12 @@
 import Constants from 'expo-constants';
 import { logEvent } from './logger';
 
-let sentryModule: { captureException: (error: unknown, context?: unknown) => void } | null = null;
+interface SentryLike {
+  init: (config: Record<string, unknown>) => void;
+  captureException: (error: unknown, context?: unknown) => void;
+}
+
+let sentryModule: SentryLike | null = null;
 
 export const initErrorTracking = async (): Promise<void> => {
   const dsn = (Constants.expoConfig as { extra?: Record<string, string> })?.extra?.sentryDsn;
@@ -11,7 +16,8 @@ export const initErrorTracking = async (): Promise<void> => {
   }
 
   try {
-    const sentry = await import('@sentry/react-native');
+    const sentryModuleName = '@sentry/react-native';
+    const sentry = (await import(sentryModuleName)) as SentryLike;
     sentry.init({ dsn, tracesSampleRate: 0.1 });
     sentryModule = sentry;
     logEvent('info', 'error_tracking_enabled', { provider: 'sentry' });

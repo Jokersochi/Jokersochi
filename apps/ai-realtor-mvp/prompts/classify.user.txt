@@ -1,0 +1,15 @@
+Input:
+- message
+- has_phone
+- property_context
+
+Output strict JSON:
+{
+  "temperature": "cold|warm|hot",
+  "status": "new|in_conversation|awaiting_phone|viewing_requested|escalated",
+  "should_escalate_to_owner": true,
+  "reasons": ["..."]
+}
+
+Hot lead if: viewing intent, docs/deposit/fast close intent, or phone + explicit next step.
+Not hot: "актуально?", "дорого", discount without viewing intent.

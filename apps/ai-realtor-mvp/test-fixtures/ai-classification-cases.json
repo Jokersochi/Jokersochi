@@ -1,0 +1,45 @@
+[
+  {
+    "message": "Актуально?",
+    "has_phone": false,
+    "expected": {
+      "temperature": "cold|warm",
+      "should_escalate_to_owner": false
+    }
+  },
+  {
+    "message": "Хочу посмотреть квартиру завтра",
+    "has_phone": false,
+    "expected": {
+      "temperature": "hot",
+      "status": "viewing_requested|awaiting_phone",
+      "should_escalate_to_owner": true
+    }
+  },
+  {
+    "message": "Какие документы готовы?",
+    "has_phone": false,
+    "expected": {
+      "temperature": "hot",
+      "status": "escalated|awaiting_phone",
+      "should_escalate_to_owner": true
+    }
+  },
+  {
+    "message": "Дорого, уступите миллион?",
+    "has_phone": false,
+    "expected": {
+      "temperature": "warm",
+      "should_escalate_to_owner": false
+    }
+  },
+  {
+    "message": "Готов быстро выйти на сделку, номер +7 999 000 00 00",
+    "has_phone": true,
+    "expected": {
+      "temperature": "hot",
+      "status": "escalated|viewing_requested",
+      "should_escalate_to_owner": true
+    }
+  }
+]

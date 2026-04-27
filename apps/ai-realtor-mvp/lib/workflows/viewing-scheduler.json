@@ -1,0 +1,15 @@
+{
+  "name": "viewing-scheduler",
+  "meta": { "todo": "configure waiting and callback nodes" },
+  "nodes": [
+    { "name": "Get Lead", "type": "n8n-nodes-base.httpRequest", "notes": "GET /api/leads" },
+    { "name": "Check Phone", "type": "n8n-nodes-base.if" },
+    { "name": "Ask Phone", "type": "n8n-nodes-base.httpRequest" },
+    { "name": "Generate Slots", "type": "n8n-nodes-base.code" },
+    { "name": "Offer 2-3 Slots", "type": "n8n-nodes-base.httpRequest" },
+    { "name": "Create Viewing", "type": "n8n-nodes-base.httpRequest", "notes": "POST /api/viewings" },
+    { "name": "Wait Confirmation", "type": "n8n-nodes-base.wait" },
+    { "name": "Cancel Unconfirmed", "type": "n8n-nodes-base.httpRequest", "notes": "PATCH /api/viewings/:id/cancel" }
+  ],
+  "connections": {}
+}

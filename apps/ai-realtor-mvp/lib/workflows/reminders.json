@@ -1,0 +1,13 @@
+{
+  "name": "reminders",
+  "meta": { "todo": "connect sender adapters for reminders" },
+  "nodes": [
+    { "name": "Cron 15m", "type": "n8n-nodes-base.cron" },
+    { "name": "Find Viewings +2h", "type": "n8n-nodes-base.httpRequest", "notes": "GET /api/viewings" },
+    { "name": "Send 2h Reminder", "type": "n8n-nodes-base.httpRequest" },
+    { "name": "Find Viewings +30m", "type": "n8n-nodes-base.httpRequest" },
+    { "name": "Send 30m Reminder", "type": "n8n-nodes-base.httpRequest" },
+    { "name": "Cancel Overdue", "type": "n8n-nodes-base.httpRequest", "notes": "PATCH /api/viewings/:id/cancel" }
+  ],
+  "connections": {}
+}

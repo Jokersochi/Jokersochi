@@ -1,0 +1,12 @@
+{
+  "name": "daily-report",
+  "meta": { "todo": "set timezone and sender credentials" },
+  "nodes": [
+    { "name": "Cron 20:00", "type": "n8n-nodes-base.cron" },
+    { "name": "Aggregate Leads", "type": "n8n-nodes-base.httpRequest", "notes": "GET /api/leads" },
+    { "name": "Aggregate Viewings", "type": "n8n-nodes-base.httpRequest", "notes": "GET /api/viewings" },
+    { "name": "Compute Metrics", "type": "n8n-nodes-base.code" },
+    { "name": "Owner Summary", "type": "n8n-nodes-base.httpRequest", "notes": "POST /api/owner/daily-summary" }
+  ],
+  "connections": {}
+}

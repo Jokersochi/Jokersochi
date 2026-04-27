@@ -1,0 +1,15 @@
+{
+  "name": "inbound-lead",
+  "meta": { "todo": "set webhook url, app api base, telegram/whatsapp credentials" },
+  "nodes": [
+    { "name": "Webhook", "type": "n8n-nodes-base.webhook" },
+    { "name": "Normalize", "type": "n8n-nodes-base.code" },
+    { "name": "Upsert Lead", "type": "n8n-nodes-base.httpRequest", "notes": "POST /api/leads/inbound" },
+    { "name": "Classify", "type": "n8n-nodes-base.httpRequest", "notes": "POST /api/ai/classify" },
+    { "name": "Reply", "type": "n8n-nodes-base.httpRequest", "notes": "POST /api/ai/reply" },
+    { "name": "Send Message", "type": "n8n-nodes-base.httpRequest", "notes": "channel adapter" },
+    { "name": "Audit", "type": "n8n-nodes-base.httpRequest" },
+    { "name": "Escalate if Hot", "type": "n8n-nodes-base.if" }
+  ],
+  "connections": {}
+}

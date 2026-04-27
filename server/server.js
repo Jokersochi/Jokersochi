@@ -8,7 +8,8 @@ import { RoomManager } from './roomManager.js';
 import { observability } from './observability.js';
 import { captureBackendException, initErrorTracking } from './errorTracking.js';
 
-const PORT = process.env.PORT || 8080;
+const env = loadEnv();
+const PORT = env.PORT;
 const wss = new WebSocketServer({ port: PORT });
 const roomManager = new RoomManager(wss, observability);
 void initErrorTracking();

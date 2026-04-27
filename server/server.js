@@ -5,24 +5,25 @@
 
 import { WebSocketServer } from 'ws';
 import { RoomManager } from './roomManager.js';
-import { loadEnv } from '../lib/config/env.js';
-import { getMessagingProviderStatuses } from './integrations/configStatus.js';
+import { observability } from './observability.js';
+import { captureBackendException, initErrorTracking } from './errorTracking.js';
 
 const env = loadEnv();
 const PORT = env.PORT;
 const wss = new WebSocketServer({ port: PORT });
-const roomManager = new RoomManager(wss);
+const roomManager = new RoomManager(wss, observability);
+void initErrorTracking();
 
-console.log(`🚀 WebSocket-сервер "Монополия Россия" запущен на порту ${PORT}`);
-console.log('⚙️ Messaging provider status:', getMessagingProviderStatuses(env));
+observability.logger.info('server_started', { port: PORT });
 
 wss.on('connection', (ws) => {
     // Инициализируем состояние для нового подключения
     ws.isAlive = true;
+    ws.connectedAt = Date.now();
     ws.id = null; // ID игрока будет установлен после аутентификации
     ws.roomId = null; // ID комнаты, в которой находится игрок
 
-    console.log('🔌 Клиент подключился.');
+    observability.logger.info('client_connected', { remote: ws?._socket?.remoteAddress || 'unknown' });
 
     // Обработчик ответа на ping от сервера
     ws.on('pong', () => {
@@ -33,22 +34,24 @@ wss.on('connection', (ws) => {
     ws.on('message', (rawMessage) => {
         try {
             const message = JSON.parse(rawMessage);
+            observability.metrics.recordLeadResponseTime(Date.now() - ws.connectedAt);
             handleMessage(ws, message);
         } catch (e) {
-            console.error('❌ Ошибка парсинга JSON:', rawMessage.toString());
+            observability.metrics.incrementInboundDrop();
+            captureBackendException(e, { stage: 'parse_message', payload: rawMessage.toString() });
             ws.send(JSON.stringify({ type: 'error', data: { message: 'Неверный формат сообщения.' } }));
         }
     });
 
     // Обработчик закрытия соединения
     ws.on('close', () => {
-        console.log(`🔌 Клиент ${ws.id || ''} отключился.`);
+        observability.logger.info('client_disconnected', { playerId: ws.id || null });
         roomManager.handleDisconnect(ws);
     });
 
     // Обработчик ошибок
     ws.on('error', (error) => {
-        console.error(`❌ WebSocket ошибка у клиента ${ws.id || ''}:`, error);
+        captureBackendException(error, { stage: 'websocket', playerId: ws.id || null });
     });
 });
 
@@ -62,7 +65,8 @@ function handleMessage(ws, message) {
 
     // Первое сообщение от клиента должно быть 'auth'
     if (!ws.id && type !== 'auth') {
-        console.warn('⚠️ Попытка отправить сообщение без аутентификации. Тип:', type);
+        observability.metrics.incrementInboundDrop();
+        observability.logger.warn('message_without_auth', { type });
         ws.send(JSON.stringify({ type: 'error', data: { message: 'Требуется аутентификация.' } }));
         ws.terminate();
         return;
@@ -75,7 +79,7 @@ function handleMessage(ws, message) {
         case 'auth':
             ws.id = data.playerId;
             ws.send(JSON.stringify({ type: 'auth_success', data: { playerId: ws.id } }));
-            console.log(`✅ Игрок ${ws.id} аутентифицирован.`);
+            observability.logger.info('auth_success', { playerId: ws.id });
             // После аутентификации отправляем актуальный список комнат
             roomManager.broadcastRoomList();
             break;
@@ -102,12 +106,19 @@ function handleMessage(ws, message) {
             ws.isAlive = true;
             break;
 
+        case 'ops_health_report':
+            ws.send(JSON.stringify({
+                type: 'ops_health_report',
+                data: observability.metrics.dailyHealthReport(),
+            }));
+            break;
+
         default:
             // Если это сообщение для конкретной комнаты (например, start_game или player_action)
             if (ws.roomId) {
                 roomManager.routeMessageToRoom(ws, message);
             } else {
-                console.warn(`⚠️ Неизвестный тип сообщения от ${ws.id}: ${type}`);
+                observability.logger.warn('unknown_message_type', { playerId: ws.id, type });
             }
             break;
     }
@@ -120,7 +131,7 @@ function handleMessage(ws, message) {
 const heartbeatInterval = setInterval(() => {
     wss.clients.forEach(ws => {
         if (!ws.isAlive) {
-            console.log(`🔌 Завершение "мертвого" соединения с клиентом ${ws.id || '(не аутентифицирован)'}.`);
+            observability.logger.warn('heartbeat_terminated_connection', { playerId: ws.id || null });
             return ws.terminate();
         }
 

@@ -3,6 +3,9 @@ import Constants from 'expo-constants';
 import * as FileSystem from 'expo-file-system';
 import { Platform } from 'react-native';
 import { z } from 'zod';
+import { captureAppError } from '../observability/errorTracking';
+import { logEvent } from '../observability/logger';
+import { metrics } from '../observability/metrics';
 import type { RecognitionCandidate, RecognitionResult } from '../types/inference';
 
 const candidateSchema = z.object({
@@ -122,6 +125,9 @@ const resolveApiBaseUrl = (): string | null => {
 };
 
 export const analyzeMealFromUri = async (uri: string): Promise<RecognitionResult> => {
+  const startedAt = Date.now();
+  logEvent('info', 'meal_recognition_started', { uri });
+
   const base64 = await FileSystem.readAsStringAsync(uri, { encoding: FileSystem.EncodingType.Base64 });
   const apiBaseUrl = resolveApiBaseUrl();
 
@@ -140,16 +146,30 @@ export const analyzeMealFromUri = async (uri: string): Promise<RecognitionResult
         headers: { 'Content-Type': 'application/json' },
       });
       const parsed = responseSchema.parse(data);
+      metrics.recordLeadResponseTime(Date.now() - startedAt);
+      metrics.recordScheduleConversion(true);
+      logEvent('info', 'meal_recognition_cloud_success', { latencyMs: parsed.inference.latencyMs });
       return mapResponseToRecognition(uri, parsed);
     } catch (error) {
-      console.warn('[mealRecognition] cloud inference failed, falling back to heuristics', error);
+      metrics.recordScheduleConversion(false);
+      metrics.incrementEscalation();
+      captureAppError(error, { stage: 'cloud_inference' });
+      logEvent('warn', 'meal_recognition_cloud_failed', {
+        message: error instanceof Error ? error.message : String(error),
+      });
     }
   }
 
   const fallback = mockRecognition(uri);
   if (fallback) {
+    metrics.recordLeadResponseTime(Date.now() - startedAt);
+    metrics.recordNoShow(false);
+    logEvent('info', 'meal_recognition_fallback_success', { source: fallback.inference.source });
     return fallback;
   }
 
-  throw new Error('Не удалось получить результаты распознавания. Проверьте соединение или повторите снимок.');
+  metrics.recordNoShow(true);
+  const error = new Error('Не удалось получить результаты распознавания. Проверьте соединение или повторите снимок.');
+  captureAppError(error, { stage: 'fallback_inference' });
+  throw error;
 };

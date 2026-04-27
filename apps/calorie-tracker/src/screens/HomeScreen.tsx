@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { AddMealSheet } from '../components/AddMealSheet';
 import { MealCard } from '../components/MealCard';
+import { OperationalHealthCard } from '../components/OperationalHealthCard';
 import { NutritionSummary } from '../components/NutritionSummary';
 import { useDashboardViewModel } from '../hooks/useDashboardViewModel';
 import { palette, radius, spacing } from '../theme/colors';
@@ -29,6 +30,7 @@ export const HomeScreen = () => {
     isProfileEmpty,
     loadingProfileLabel,
     emptyProfileLabel,
+    healthReport,
   } = useDashboardViewModel();
   const [isSheetOpen, setSheetOpen] = useState(false);
 
@@ -49,6 +51,13 @@ export const HomeScreen = () => {
         <Text style={styles.subtitle}>{subtitle}</Text>
         <Text style={styles.streak}>{streakLabel}</Text>
         <NutritionSummary totals={totals} target={target} />
+        <OperationalHealthCard
+          generatedAt={healthReport.generatedAt}
+          leadResponseTimeMs={healthReport.metrics.leadResponseTimeMs}
+          scheduleConversion={healthReport.metrics.scheduleConversion}
+          noShowRatio={healthReport.metrics.noShowRatio}
+          escalationCount={healthReport.metrics.escalationCount}
+        />
         <View>
           <Text style={styles.sectionTitle}>{todayLabel}</Text>
           {meals.length ? (

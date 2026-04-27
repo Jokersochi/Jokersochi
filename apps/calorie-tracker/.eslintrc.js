@@ -12,6 +12,13 @@ module.exports = {
     project: './tsconfig.json',
     tsconfigRootDir: __dirname,
   },
+  settings: {
+    'import/resolver': {
+      node: {
+        extensions: ['.js', '.jsx', '.ts', '.tsx'],
+      },
+    },
+  },
   ignorePatterns: ['node_modules', 'dist', 'build'],
   rules: {
     '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
@@ -19,5 +26,8 @@ module.exports = {
     'react-native/no-raw-text': 'off',
     'react-native/sort-styles': 'off',
     'react/display-name': 'off',
+    'import/namespace': 'off',
+    'import/default': 'off',
+    'import/no-unresolved': 'off',
   },
 };

@@ -119,9 +119,10 @@ class Room {
  * Управляет всеми игровыми комнатами на сервере.
  */
 export class RoomManager {
-    constructor(wss) {
+    constructor(wss, observability) {
         this.wss = wss; // Экземпляр WebSocketServer
         this.rooms = new Map(); // Map<roomId, Room>
+        this.observability = observability;
     }
 
     createRoom(ws, config) {
@@ -134,7 +135,7 @@ export class RoomManager {
         // Автоматически присоединяем создателя к комнате
         this.joinRoom(ws, roomId, { id: hostId, name: config.playerName || 'Хост', token: config.playerToken || 'matryoshka' });
 
-        console.log(`Комната создана: ${room.name} (${roomId}) игроком ${hostId}`);
+        this.observability.logger.info('room_created', { roomId, roomName: room.name, hostId });
 
         this.broadcastRoomList();
         return room;
@@ -158,7 +159,8 @@ export class RoomManager {
         // Отправляем полное состояние комнаты новому игроку
         ws.send(JSON.stringify({ type: 'room_joined', data: room.getFullState() }));
 
-        console.log(`Игрок ${playerData.id} присоединился к комнате ${roomId}`);
+        this.observability.metrics.recordScheduleAttempt({ converted: true });
+        this.observability.logger.info('room_joined', { roomId, playerId: playerData.id });
 
         this.broadcastRoomList();
     }
@@ -173,11 +175,12 @@ export class RoomManager {
         const playerId = ws.id;
         room.removePlayer(playerId);
 
-        console.log(`Игрок ${playerId} покинул комнату ${roomId}`);
+        this.observability.metrics.recordAppointmentOutcome({ noShow: room.state === 'waiting' });
+        this.observability.logger.info('room_left', { roomId, playerId });
 
         if (room.isEmpty()) {
             this.rooms.delete(roomId);
-            console.log(`Комната ${roomId} пуста и была удалена.`);
+            this.observability.logger.info('room_deleted', { roomId });
         } else {
             // Уведомляем оставшихся игроков
             room.broadcast('player_left', { playerId });
@@ -200,6 +203,7 @@ export class RoomManager {
             if (room.startGame()) {
                 this.broadcastRoomList(); // Обновляем статус комнаты на 'playing'
             } else {
+                this.observability.metrics.incrementSchedulerFailure();
                 ws.send(JSON.stringify({ type: 'error', data: { message: 'Не удалось начать игру.' } }));
             }
             return;
@@ -220,7 +224,14 @@ export class RoomManager {
 
         this.wss.clients.forEach(client => {
             if (client.readyState === 1 /* WebSocket.OPEN */) {
-                client.send(message);
+                try {
+                    client.send(message);
+                } catch (error) {
+                    this.observability.metrics.incrementSummaryDeliveryFailure();
+                    this.observability.logger.error('room_list_delivery_failed', {
+                        error: error instanceof Error ? error.message : String(error),
+                    });
+                }
             }
         });
     }

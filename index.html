@@ -1,89 +1,133 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Monopoly Russia - Браузерная игра</title>
-    <meta name="description" content="Быстрая браузерная версия настольной игры Монополия с российской тематикой. Играйте онлайн бесплатно!">
-    <meta name="theme-color" content="#007bff">
-    <link rel="manifest" href="manifest.json">
-    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192x192.png">
-    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
-    <link rel="canonical" href="https://yourdomain.com/">
-    <meta property="og:title" content="Монополия Россия — браузерная настольная игра">
-    <meta property="og:description" content="Быстрая браузерная версия настольной игры Монополия с российской тематикой. Играйте онлайн бесплатно!">
-    <meta property="og:image" content="icons/icon-512x512.png">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://yourdomain.com/">
-    <meta name="twitter:card" content="summary_large_image">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 600px;
-            max-inline-size: 600px;
-            margin: 50px auto;
-            margin-block-start: 50px;
-            margin-inline: auto;
-            padding: 20px;
-            background: #f0f0f0;
-        }
-        .container {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            text-align: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        .btn {
-            display: inline-block;
-            padding: 12px 24px;
-            margin: 10px;
-            margin-inline: 10px;
-            text-decoration: none;
-            border-radius: 5px;
-            font-weight: bold;
-            transition: all 0.3s ease;
-        }
-        .btn-dev {
-            background: #007bff;
-            color: white;
-        }
-        .btn-prod {
-            background: #28a745;
-            color: white;
-        }
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
-    </style>
-    <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-XXXXXXXXXX'); // Замените на свой Measurement ID
-    </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Виртуальный визажист — примерка макияжа онлайн</title>
+  <meta name="description" content="Загрузите свою фотографию и примеряйте готовые варианты макияжа в режиме реального времени.">
+  <link rel="stylesheet" href="css/makeup.css">
 </head>
 <body>
-    <main class="container" role="main">
-        <h1>🎲 Monopoly Russia</h1>
-        <p>Браузерная версия настольной игры с российской тематикой</p>
-        
-        <h3>Выберите версию:</h3>
-        <a href="src/index.html" class="btn btn-dev">🔧 Development</a>
-        <a href="dist/index.html" class="btn btn-prod">🚀 Production</a>
-        
-        <hr style="margin: 30px 0; margin-block: 30px;">
-        
-        <h3>Команды для разработки:</h3>
-        <p><code>npm run dev</code> - запуск dev сервера</p>
-        <p><code>npm run build</code> - сборка проекта</p>
-        <p><code>npm run serve</code> - запуск production версии</p>
-    </main>
+  <header class="page-header">
+    <div class="page-header__inner">
+      <h1 class="page-title">Виртуальный визажист</h1>
+      <p class="page-subtitle">Загрузите портрет и примеряйте готовые варианты макияжа за пару кликов.</p>
+    </div>
+  </header>
 
-    <!-- Подключение основного скрипта -->
-    <script src="js/main.js" type="module"></script>
+  <main class="app" role="main">
+    <section class="app__stage" aria-label="Рабочая область визажиста">
+      <div class="panel panel--stage">
+        <div class="panel__header">
+          <div>
+            <h2 class="panel__title">1. Загрузите фотографию</h2>
+            <p class="panel__subtitle">Лучше всего подходят портреты при естественном освещении и с открытым лицом.</p>
+          </div>
+        </div>
+
+        <div class="upload-area" data-dropzone tabindex="0" role="button" aria-label="Загрузить фотографию для примерки макияжа">
+          <input class="upload-area__input" type="file" accept="image/*" data-file-input aria-hidden="true">
+          <div class="upload-area__content">
+            <button class="button button--primary" type="button" data-trigger-upload>Выбрать файл</button>
+            <p class="upload-area__hint">или перетащите изображение в эту область</p>
+            <p class="upload-area__formats">Поддерживаются JPG, PNG, HEIC до 10 МБ</p>
+            <p class="upload-area__file" data-file-name hidden></p>
+          </div>
+        </div>
+
+        <div class="photo-stage" data-stage>
+          <img class="photo-stage__image" data-photo alt="Загруженная фотография пользователя" hidden>
+          <div class="overlay-layers" data-overlay aria-hidden="true"></div>
+          <div class="photo-stage__placeholder" data-placeholder>
+            <span class="placeholder__icon" aria-hidden="true">💄</span>
+            <p class="placeholder__text">Добавьте фотографию, чтобы увидеть, как выбранный образ будет смотреться на вас.</p>
+          </div>
+        </div>
+
+        <div class="stage-controls" aria-label="Настройки посадки макияжа">
+          <div class="stage-controls__header">
+            <div>
+              <h2 class="panel__title">2. Настройте посадку</h2>
+              <p class="stage-controls__caption">Используйте ползунки, чтобы совместить шаблон с вашей фотографией.</p>
+            </div>
+            <div class="stage-controls__actions">
+              <button class="button button--ghost" type="button" data-reset-adjustments disabled>Сбросить</button>
+              <button class="button button--secondary" type="button" data-export disabled>Скачать результат</button>
+            </div>
+          </div>
+
+          <div class="control-grid">
+            <div class="control">
+              <label class="control__label" for="control-intensity">Интенсивность</label>
+              <div class="control__field">
+                <input class="control__input" id="control-intensity" type="range" min="0" max="1" step="0.01" value="0.85" data-control="intensity">
+                <span class="control__value" data-control-value="intensity">85%</span>
+              </div>
+            </div>
+            <div class="control">
+              <label class="control__label" for="control-scale">Масштаб</label>
+              <div class="control__field">
+                <input class="control__input" id="control-scale" type="range" min="0.8" max="1.3" step="0.01" value="1" data-control="scale">
+                <span class="control__value" data-control-value="scale">100%</span>
+              </div>
+            </div>
+            <div class="control">
+              <label class="control__label" for="control-offset-x">Смещение по горизонтали</label>
+              <div class="control__field">
+                <input class="control__input" id="control-offset-x" type="range" min="-120" max="120" step="1" value="0" data-control="offsetX">
+                <span class="control__value" data-control-value="offsetX">0 px</span>
+              </div>
+            </div>
+            <div class="control">
+              <label class="control__label" for="control-offset-y">Смещение по вертикали</label>
+              <div class="control__field">
+                <input class="control__input" id="control-offset-y" type="range" min="-120" max="120" step="1" value="0" data-control="offsetY">
+                <span class="control__value" data-control-value="offsetY">0 px</span>
+              </div>
+            </div>
+            <div class="control">
+              <label class="control__label" for="control-rotation">Поворот</label>
+              <div class="control__field">
+                <input class="control__input" id="control-rotation" type="range" min="-8" max="8" step="0.1" value="0" data-control="rotation">
+                <span class="control__value" data-control-value="rotation">0°</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="app-feedback" data-feedback role="status" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <aside class="app__sidebar" aria-label="Список готовых образов и подсказок">
+      <section class="panel panel--templates">
+        <div class="panel__header">
+          <div>
+            <h2 class="panel__title">3. Выберите образ</h2>
+            <p class="panel__subtitle">Готовые шаблоны с гармоничными оттенками для разных настроений.</p>
+          </div>
+        </div>
+        <div class="template-list" data-template-list></div>
+      </section>
+
+      <section class="panel panel--tips">
+        <div class="panel__header">
+          <h2 class="panel__title">Советы для идеальной примерки</h2>
+        </div>
+        <ul class="tip-list">
+          <li>Выбирайте фото с лицом крупным планом без резких теней и контрового света.</li>
+          <li>Чтобы оттенки совпали точнее, совместите линию глаз и губ с помощью ползунков смещения и масштаба.</li>
+          <li>Используйте ползунок интенсивности, чтобы добавить лёгкий оттенок или яркий вечерний образ.</li>
+          <li>Нажмите «Скачать результат», чтобы сохранить изображение и отправить друзьям или визажисту.</li>
+        </ul>
+      </section>
+    </aside>
+  </main>
+
+  <footer class="page-footer">
+    <p class="page-footer__text">© 2024 Виртуальный визажист. Экспериментируйте с образами и находите свои идеальные сочетания.</p>
+  </footer>
+
+  <script type="module" src="js/makeup-app.js"></script>
 </body>
 </html>

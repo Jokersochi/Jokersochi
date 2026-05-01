@@ -133,6 +133,7 @@ export class MatchGateway implements OnGatewayConnection, OnGatewayDisconnect {
       matchPlayerId: auth.matchPlayerId,
       playerId: auth.playerId,
     };
+    this.matchService.assertMatchPlayerOwnership(derived.matchId, derived.matchPlayerId, derived.playerId);
     client.data.handshake = derived;
     return derived;
   }

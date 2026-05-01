@@ -156,6 +156,17 @@ export class MatchService {
     };
   }
 
+  assertMatchPlayerOwnership(matchId: string, matchPlayerId: string, externalPlayerId: string): void {
+    const state = this.getMatch(matchId);
+    const matchPlayer = state.players[matchPlayerId];
+    if (!matchPlayer) {
+      throw new ForbiddenException('Invalid match player');
+    }
+    if (matchPlayer.externalPlayerId !== externalPlayerId) {
+      throw new ForbiddenException('Match player does not belong to this user');
+    }
+  }
+
   async takeTurn(matchId: string, matchPlayerId: string): Promise<{ outcome: TurnOutcome; snapshot: MatchSnapshot }> {
     const state = this.getMatch(matchId);
     const activePlayerId = state.turnOrder[state.activeTurn];

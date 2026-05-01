@@ -53,6 +53,10 @@ export class LobbyService {
     return lobby;
   }
 
+  hasLobby(lobbyId: string): boolean {
+    return this.lobbies.has(lobbyId);
+  }
+
   joinLobby(lobbyId: string, player: UpsertPlayerInput, asSpectator = false): LobbyState {
     const lobby = this.getLobby(lobbyId);
 
@@ -64,6 +68,9 @@ export class LobbyService {
 
     if (!asSpectator && lobby.players.length >= lobby.settings.maxPlayers) {
       throw new ForbiddenException('Lobby is full');
+    }
+    if (asSpectator && !lobby.settings.allowSpectators) {
+      throw new ForbiddenException('Spectators are disabled for this lobby');
     }
 
     targetArray.push(this.createPlayerState(player, false));

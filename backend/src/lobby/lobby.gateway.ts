@@ -171,6 +171,11 @@ export class LobbyGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   private emitLobby(lobbyId: string): void {
+    if (!this.lobbyService.hasLobby(lobbyId)) {
+      this.server.to(lobbyId).emit('lobby_closed', { lobbyId });
+      this.server.to('browser:lobbies').emit('lobbies_snapshot', this.lobbyService.listLobbies());
+      return;
+    }
     const lobby = this.lobbyService.getLobby(lobbyId);
     this.server.to(lobbyId).emit('lobby_state', lobby);
     this.server.to('browser:lobbies').emit('lobbies_snapshot', this.lobbyService.listLobbies());

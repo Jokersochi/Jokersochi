@@ -1,3 +1,4 @@
+import { jest } from '@jest/globals';
 import { Player } from './player.js';
 import eventBus from './event-bus.js';
 import { CONFIG } from './config.js';
@@ -5,9 +6,12 @@ import { CONFIG } from './config.js';
 // Mock the eventBus to spy on its emit method.
 // This isolates the Player class for testing.
 jest.mock('./event-bus.js', () => ({
-  emit: jest.fn(),
-  on: jest.fn(),
-  off: jest.fn(),
+  __esModule: true,
+  default: {
+    emit: jest.fn(),
+    on: jest.fn(),
+    off: jest.fn(),
+  }
 }));
 
 describe('Player Class', () => {

@@ -3,7 +3,7 @@
  * Содержит все настройки, данные карточек и многоязычную локализацию
  */
 
-const CONFIG = {
+export const CONFIG = {
     // Основные настройки игры
     GAME: {
         STARTING_MONEY: 2000,
@@ -721,10 +721,4 @@ const CONFIG = {
     },
 };
 
-// Экспорт конфигурации
-export { CONFIG };
-
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = CONFIG;
-} 
-export default CONFIG; 
+export default CONFIG;

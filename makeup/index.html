@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Виртуальный визажист — примерка макияжа</title>
+  <meta
+    name="description"
+    content="Загрузите собственную фотографию и примерьте популярные образы макияжа прямо в браузере."
+  />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="header__inner">
+      <div class="brand" role="banner">
+        <span class="brand__icon" aria-hidden="true">💄</span>
+        <div>
+          <h1 class="brand__title">Виртуальный визажист</h1>
+          <p class="brand__subtitle">Загрузите фото и примерьте готовые шаблоны макияжа</p>
+        </div>
+      </div>
+      <nav class="nav" aria-label="Навигация по странице">
+        <a href="#upload" class="nav__link">Загрузка</a>
+        <a href="#templates" class="nav__link">Шаблоны</a>
+        <a href="#controls" class="nav__link">Настройки</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section id="upload" class="panel upload" aria-labelledby="upload-title">
+      <div class="panel__header">
+        <h2 id="upload-title">1. Загрузите фотографию</h2>
+        <p class="panel__text">Лучше всего подходят фронтальные снимки с нейтральным макияжем.</p>
+      </div>
+      <div class="upload__dropzone" id="dropzone" role="button" tabindex="0" aria-describedby="upload-hint">
+        <input id="fileInput" type="file" accept="image/*" aria-label="Выбрать фотографию" />
+        <div class="upload__content">
+          <span class="upload__icon" aria-hidden="true">⬆️</span>
+          <p id="upload-hint" class="upload__hint">Перетащите фотографию сюда или нажмите, чтобы выбрать файл</p>
+          <button class="button button--secondary" type="button" id="chooseButton">Выбрать файл</button>
+        </div>
+      </div>
+      <p class="panel__hint">Изображение обрабатывается локально в вашем браузере и никуда не загружается.</p>
+    </section>
+
+    <section class="panel preview" aria-labelledby="preview-title">
+      <div class="panel__header">
+        <h2 id="preview-title">2. Предпросмотр</h2>
+        <p class="panel__text">Выберите образ и настройте интенсивность, чтобы увидеть результат.</p>
+      </div>
+      <figure class="preview__stage">
+        <canvas id="canvas" role="img" aria-live="polite"></canvas>
+        <figcaption id="placeholder" class="preview__placeholder">
+          <span aria-hidden="true">✨</span>
+          <p>Загрузите фото, чтобы начать примерку макияжа.</p>
+        </figcaption>
+      </figure>
+      <div class="preview__actions">
+        <button class="button" type="button" id="resetButton" disabled>Сбросить</button>
+        <button class="button button--primary" type="button" id="downloadButton" disabled>Скачать результат</button>
+      </div>
+    </section>
+
+    <section id="templates" class="panel templates" aria-labelledby="templates-title">
+      <div class="panel__header">
+        <h2 id="templates-title">3. Выберите шаблон</h2>
+        <p class="panel__text">Нажмите на понравившийся образ, чтобы примерить его на фото.</p>
+      </div>
+      <div id="templateList" class="templates__grid" role="list"></div>
+      <article id="templateInfo" class="templates__info" aria-live="polite">
+        <h3>Советы</h3>
+        <p>После загрузки фото выберите шаблон, чтобы увидеть описание выбранного образа.</p>
+      </article>
+    </section>
+
+    <section id="controls" class="panel controls" aria-labelledby="controls-title">
+      <div class="panel__header">
+        <h2 id="controls-title">4. Настройки</h2>
+        <p class="panel__text">Регулируйте интенсивность эффекта, чтобы добиться естественного результата.</p>
+      </div>
+      <form class="controls__form">
+        <label class="controls__label" for="intensity">Интенсивность: <span id="intensityValue">70%</span></label>
+        <input id="intensity" type="range" min="0" max="100" value="70" disabled />
+      </form>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>Совет: делайте снимок при хорошем освещении, смотрите прямо в камеру и не наклоняйте голову.</p>
+  </footer>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

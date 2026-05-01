@@ -117,6 +117,28 @@ class Game {
     }
 
     /**
+     * Обновляет пользовательский интерфейс на основе текущего состояния игры
+     */
+    updateGameUI() {
+        const currentPlayer = this.players[this.currentPlayerIndex] || null;
+
+        eventBus.emit('gameStateUpdated', {
+            state: this.gameState,
+            turnNumber: this.turnNumber,
+            currentPlayerIndex: this.currentPlayerIndex,
+            currentPlayer,
+            players: this.players.map(player => ({
+                id: player.id,
+                name: player.name,
+                money: player.money,
+                position: player.position,
+                bankrupt: player.bankrupt,
+                isCurrentPlayer: player.isCurrentPlayer || false
+            }))
+        });
+    }
+
+    /**
      * Starts a game within a tournament context.
      * @param {object} config - The tournament game configuration.
      */
@@ -367,13 +389,9 @@ class Game {
     handleBankruptcy(player, creditor, debt) {
         // Передаем все активы кредитору
         player.properties.forEach(position => {
-            const cell = this.board.getCell(position);
-            if (cell) {
-                cell.owner = creditor.id;
-                creditor.properties.push(position);
-            }
+            this.board.transferProperty(position, player.id, creditor ? creditor.id : null);
         });
-        
+
         // Передаем оставшиеся деньги
         if (player.money > 0) {
             creditor.addMoney(player.money);
@@ -693,7 +711,3 @@ const game = new Game();
 
 // Экспорт для использования в других модулях
 export { Game, game };
-
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = Game;
-} 

@@ -1,3 +1,4 @@
+import { jest } from '@jest/globals';
 import { Game } from './game.js';
 import { Player } from './player.js';
 import { board } from './board.js';
@@ -9,6 +10,7 @@ import * as random from './random.js';
 
 // Mock the Player class
 jest.mock('./player.js', () => ({
+    __esModule: true,
     Player: jest.fn().mockImplementation((id, name) => ({
         id,
         name,
@@ -31,28 +33,39 @@ jest.mock('./player.js', () => ({
 
 // Mock singletons and modules
 jest.mock('./board.js', () => ({
+    __esModule: true,
     board: {
         initializeBoard: jest.fn(),
         getCell: jest.fn(),
         calculateRent: jest.fn().mockReturnValue(50),
+        getState: jest.fn().mockReturnValue({ cells: [] }),
+        transferProperty: jest.fn(),
     },
 }));
 
 jest.mock('./event-bus.js', () => ({
-    emit: jest.fn(),
-    on: jest.fn(),
+    __esModule: true,
+    default: {
+        emit: jest.fn(),
+        on: jest.fn(),
+    }
 }));
 
 jest.mock('./auction-manager.js', () => ({
-    startAuction: jest.fn(),
+    __esModule: true,
+    default: {
+        startAuction: jest.fn(),
+    }
 }));
 
 jest.mock('./random.js', () => ({
+    __esModule: true,
     rollDice: jest.fn(),
     randomChoice: jest.fn(),
 }));
 
 jest.mock('./localization.js', () => ({
+    __esModule: true,
     getText: jest.fn(key => key), // Return the key itself for simplicity
 }));
 
@@ -68,6 +81,9 @@ describe('Game Class', () => {
         // Clear all mocks before each test
         jest.clearAllMocks();
         game = new Game();
+        game.updateGameUI = jest.fn();
+        game.saveGame = jest.fn();
+        game.saveGameStats = jest.fn();
     });
 
     describe('Initialization and Game Start', () => {

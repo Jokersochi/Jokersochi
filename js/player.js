@@ -3,6 +3,7 @@
  * Управляет состоянием игроков, их деньгами, свойствами и действиями
  */
 import { CONFIG } from './config.js';
+import eventBus from './event-bus.js';
 
 const passedStart = (oldPos, newPos) => newPos < oldPos;
 
@@ -41,12 +42,25 @@ class Player {
      * @param {string} reason - причина (для статистики)
      */
     addMoney(amount, reason = '') {
+        if (amount <= 0) {
+            return false;
+        }
+
         this.money += amount;
         this.stats.totalMoneyEarned += amount;
-        
+
         if (reason === 'rent') {
             this.stats.totalRentReceived += amount;
         }
+
+        eventBus.emit('moneyChanged', {
+            player: this,
+            amount: this.money,
+            change: amount,
+            reason
+        });
+
+        return true;
     }
 
     /**
@@ -56,16 +70,24 @@ class Player {
      * @returns {boolean} true если достаточно денег
      */
     removeMoney(amount, reason = '') {
-        if (this.money < amount) {
+        if (amount <= 0 || this.money < amount) {
             return false;
         }
-        
+
         this.money -= amount;
         this.stats.totalMoneySpent += amount;
-        
+
         if (reason === 'rent') {
             this.stats.totalRentPaid += amount;
         }
+
+        eventBus.emit('moneyChanged', {
+            player: this,
+            amount: this.money,
+            change: -amount,
+            reason
+        });
+
         return true;
     }
 
@@ -437,7 +459,3 @@ class Player {
 
 // Экспорт для использования в других модулей
 export { Player };
-
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = Player;
-} 

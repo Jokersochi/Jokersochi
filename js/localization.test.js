@@ -1,3 +1,4 @@
+import { jest } from '@jest/globals';
 import { getText, setLocale, loadLocales } from './localization.js';
 
 global.fetch = jest.fn(() => Promise.resolve({

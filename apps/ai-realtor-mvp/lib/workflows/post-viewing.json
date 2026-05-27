@@ -1,0 +1,13 @@
+{
+  "name": "post-viewing",
+  "meta": { "todo": "connect completed/no_show status update from calendar event" },
+  "nodes": [
+    { "name": "Trigger End", "type": "n8n-nodes-base.cron" },
+    { "name": "Mark Completed/No-show", "type": "n8n-nodes-base.httpRequest", "notes": "PATCH /api/viewings/:id/complete" },
+    { "name": "Generate Follow-up", "type": "n8n-nodes-base.httpRequest" },
+    { "name": "Send Follow-up", "type": "n8n-nodes-base.httpRequest" },
+    { "name": "Wait Response", "type": "n8n-nodes-base.wait" },
+    { "name": "Escalate Owner", "type": "n8n-nodes-base.httpRequest", "notes": "POST /api/owner/daily-summary" }
+  ],
+  "connections": {}
+}

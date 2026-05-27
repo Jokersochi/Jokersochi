@@ -3,32 +3,25 @@
  * Инициализирует все системы и управляет жизненным циклом приложения
  */
 
-import { loadLocales, setLocale, getText } from './localization.js';
-import { showToast } from './ui-utils.js';
-import { CONFIG } from './config.js';
-import { randomChoice } from './random.js';
-import { formatMoney, generateId } from './utils.js';
+import { setLocale } from './localization.js';
 import eventBus from './event-bus.js';
 import { game } from './game.js';
-import { board } from './board.js';
-import { ui } from './ui.js';
 import { settingsManager } from './settings-manager.js';
-import { chat } from './chat.js';
 import AudioManager from './audio.js';
 
 // Глобальные переменные
-let audio;
-let network;
-let tutorial;
-let achievements;
-let statistics;
-let tournaments;
-let roomManager;
-let eventManager;
-let tournamentManager;
-let tradeManager;
-let auctionManager;
-let allianceManager;
+let _audio;
+let _network;
+let _tutorial;
+let _achievements;
+let _statistics;
+let _tournaments;
+let _roomManager;
+let _eventManager;
+let _tournamentManager;
+let _tradeManager;
+let _auctionManager;
+let _allianceManager;
 
 // Настройки приложения
 const APP_CONFIG = {
@@ -115,7 +108,7 @@ class App {
     /**
      * Инициализирует утилиты
      */
-    async initializeUtils() {
+    initializeUtils() {
         // Проверяем поддержку браузера
         this.checkBrowserSupport();
         
@@ -184,7 +177,7 @@ class App {
     /**
      * Инициализирует аудио систему
      */
-    async initializeAudio() {
+    initializeAudio() {
         try {
             // Инициализируем аудио менеджер и пробрасываем в window
             const audioManager = new AudioManager();
@@ -198,7 +191,7 @@ class App {
     /**
      * Инициализирует сетевые функции
      */
-    async initializeNetwork() {
+    initializeNetwork() {
         try {
             // Сетевые функции будут инициализированы позже
             console.log('Network system initialization placeholder');
@@ -217,7 +210,7 @@ class App {
     /**
      * Инициализирует систему обучения
      */
-    async initializeTutorial() {
+    initializeTutorial() {
         try {
             // Система обучения будет инициализирована позже
             console.log('Tutorial system initialization placeholder');
@@ -229,7 +222,7 @@ class App {
     /**
      * Инициализирует игровые модули
      */
-    async initializeGameModules() {
+    initializeGameModules() {
         try {
             // Игровое поле и игра уже инициализированы через импорты
             console.log('Game modules initialized');
@@ -242,7 +235,7 @@ class App {
     /**
      * Инициализирует пользовательский интерфейс
      */
-    async initializeUI() {
+    initializeUI() {
         try {
             // UI уже инициализирован через импорт
             // Настраиваем обработчики событий
@@ -258,7 +251,7 @@ class App {
     /**
      * Инициализирует обработчики событий
      */
-    async initializeEventHandlers() {
+    initializeEventHandlers() {
         // Обработчики главного меню
         this.setupMainMenuHandlers();
         
@@ -353,7 +346,7 @@ class App {
     /**
      * Инициализирует систему мониторинга
      */
-    async initializeMonitoring() {
+    initializeMonitoring() {
         try {
             // Мониторинг производительности
             this.performanceMonitor = {
@@ -405,7 +398,7 @@ class App {
     /**
      * Загружает слоты сохранения
      */
-    async loadSaveSlots() {
+    loadSaveSlots() {
         console.log('Save slots loaded');
     }
 
@@ -722,7 +715,7 @@ class App {
      * Обрабатывает закрытие окна
      * @param {Event} e - событие
      */
-    handleBeforeUnload(e) {
+    handleBeforeUnload(_e) {
         console.log('Window closing');
     }
 

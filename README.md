@@ -1,62 +1,75 @@
-# 🃏 Jokersochi's GitHub Profile
+# Vladimir "Jokersochi" — AI Products • PropTech • Automation
 
-Привет! Я Jokersochi, и это мой профиль на GitHub.
+Предприниматель и разработчик, сфокусированный на AI-продуктах, automation-first сервисах и цифровых инструментах для бизнеса.
 
-## 🛠️ Обо мне
+## Focus Areas
 
-Я разработчик, который фокусируется на создании современных, оптимизированных и производительных веб-приложений. Мои интересы включают:
-*   **Frontend-разработка:** React, Vue, Nuxt.js, Vite.
-*   **AI/ML:** Интеграция больших языковых моделей (LLM) и генеративных моделей (Gemini, ComfyUI).
-*   **Оптимизация производительности:** PWA, Web Vitals, Lighthouse.
+- AI SaaS & AI Agents
+- PropTech / Real Estate Tech
+- Generative AI & Computer Vision
+- Automation & Workflow Systems
+- High-performance Web Apps
+- Product Design & Rapid MVP Launches
 
-## ✨ Избранные проекты
+## Selected Projects
 
-| Репозиторий | Описание | Технологии |
-| :--- | :--- | :--- |
-| **[primerochnaya](https://github.com/Jokersochi/primerochnaya)** | Виртуальная примерка одежды с использованием AI. | React, TypeScript, Gemini API |
-| **[Wan2.2](https://github.com/Jokersochi/Wan2.2)** | Open and Advanced Large-Scale Video Generative Models. | Python, PyTorch, Video Generation |
-| **[Product-Visualizer-AI](https://github.com/Jokersochi/Product-Visualizer-AI)** | AI-инструмент для визуализации продуктов. | React, AI |
-| **[russian-monopoly-local](https://github.com/Jokersochi/russian-monopoly-local)** | Прототип браузерной игры "Монополия" с российской тематикой. | JavaScript, HTML, CSS |
-| **[codesandbox-template-nuxt](https://github.com/Jokersochi/codesandbox-template-nuxt)** | Шаблон Nuxt.js для CodeSandbox. | Nuxt.js, Vue.js |
+| Project | Description | Stack |
+|---|---|---|
+| [Sentinel Markets AI](https://github.com/Jokersochi/sentinel-markets-ai) | AI-платформа для market intelligence и аналитики. | AI Agents, Python, TypeScript |
+| [Primerochnaya](https://github.com/Jokersochi/primerochnaya) | AI-виртуальная примерка одежды и fashion visualization. | React, TypeScript, AI APIs |
+| [Product-Visualizer-AI](https://github.com/Jokersochi/Product-Visualizer-AI) | Генерация и визуализация продуктов для e-commerce. | React, AI, Image Generation |
+| [russian-monopoly-local](https://github.com/Jokersochi/russian-monopoly-local) | Онлайн-игра в стиле Monopoly с multiplayer-механиками. | JavaScript, HTML, CSS |
+| [openai-agents-python](https://github.com/Jokersochi/openai-agents-python) | Эксперименты с AI agents и orchestration systems. | Python, LLMs |
 
-## 🚀 Улучшения в этом Pull Request
+## Current Direction
 
-*   **Улучшена структура проекта:** Добавлены файлы `.gitignore` и `.nvmrc` для лучшей совместимости и управления зависимостями.
-*   **Очистка зависимостей:** Удалена неиспользуемая зависимость `http-server` и устаревшие скрипты `old:build`, `old:dev`, `old:serve` из `package.json`.
-*   **Актуализация документации:** Обновлен `README.md` для профиля с информацией о проектах.
+Сейчас основной фокус:
 
-## 🔐 Deployment environments (Vercel + Supabase)
+- AI-инфраструктура и agent ecosystems
+- AI для продаж, недвижимости и e-commerce
+- Автоматизация бизнес-процессов
+- Multi-agent systems
+- MCP / AI tooling
+- Real-time analytics
 
-Для безопасного разделения окружений используются три независимых проекта:
+## Tech Stack
 
-1. `dev` — отдельный Vercel Project + отдельный Supabase project.
-2. `staging` — отдельный Vercel Project + отдельный Supabase project.
-3. `prod` — отдельный Vercel Project + отдельный Supabase project.
+**Frontend**
 
-Секреты из `.env.example` не хранятся в git и должны быть загружены в environment secrets каждого окружения (Vercel Environment Variables / Supabase secrets).
+- React
+- Next.js
+- Vue / Nuxt
+- TypeScript
 
-### Env matrix
+**Backend & Infra**
 
-| Переменная | dev | staging | prod | Обязательность |
-| :--- | :---: | :---: | :---: | :--- |
-| `NODE_ENV` | ✅ | ✅ | ✅ | required |
-| `PORT` | ✅ | ✅ | ✅ | required |
-| `VERCEL_PROJECT_ID` | ✅ | ✅ | ✅ | required |
-| `VERCEL_ORG_ID` | ✅ | ✅ | ✅ | required |
-| `VERCEL_TOKEN` | ✅ | ✅ | ✅ | required |
-| `SUPABASE_URL` | ✅ | ✅ | ✅ | required |
-| `SUPABASE_ANON_KEY` | ✅ | ✅ | ✅ | required |
-| `SUPABASE_SERVICE_ROLE_KEY` | ✅ | ✅ | ✅ | required |
-| `TELEGRAM_BOT_TOKEN` | ✅ | ✅ | ✅ | optional |
-| `TELEGRAM_CHAT_ID` | ✅ | ✅ | ✅ | optional |
-| `WHATSAPP_ACCESS_TOKEN` | ✅ | ✅ | ✅ | optional |
-| `WHATSAPP_PHONE_NUMBER_ID` | ✅ | ✅ | ✅ | optional |
+- Node.js
+- Python
+- Supabase
+- PostgreSQL
+- Vercel
+- Docker
 
-> Поведение API при отсутствии Telegram/WhatsApp ключей: возвращается статус `not_configured` (без 500).
+**AI Stack**
 
-## 🤝 Связь со мной
+- OpenAI
+- Gemini
+- Claude
+- ComfyUI
+- LangChain
+- MCP tools
 
-Вы можете связаться со мной через GitHub.
+## Repository Structure Strategy
+
+- `production-*` → production-ready systems
+- `lab-*` → experiments and R&D
+- `ai-*` → AI-first products
+- `archive-*` → frozen or deprecated repositories
+
+## Contact
+
+- GitHub: https://github.com/Jokersochi
 
 ---
-*Этот README был автоматически сгенерирован и улучшен AI-агентом Manus.*
+
+Building AI-native businesses and scalable digital products.

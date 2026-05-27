@@ -3,6 +3,7 @@
  * Создает модальное окно, обрабатывает события и отправляет действия пользователя.
  */
 
+import { CONFIG } from '../config.js';
 import { getText } from '../localization.js';
 
 export class AuctionUI {
@@ -114,7 +115,7 @@ export class AuctionUI {
         document.getElementById('auction-time').textContent = data.timeLeft;
     }
 
-    hide(data) {
+    hide() {
         // Здесь можно будет показать красивое уведомление о результате
         this.modal.classList.remove('active');
     }

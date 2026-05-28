@@ -436,7 +436,7 @@ class AudioManager {
      * @param {number} dice1 - первая кость
      * @param {number} dice2 - вторая кость
      */
-    playDiceRoll(dice1, dice2) {
+    playDiceRoll(_dice1, _dice2) {
         this.playSound('dice_roll', {
             volume: 0.8,
             rate: 1.0 + (Math.random() * 0.2 - 0.1) // небольшая вариация скорости

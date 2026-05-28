@@ -85,7 +85,7 @@ export class Player {
      * @param {boolean} passStart - прошел ли через СТАРТ
      */
     moveTo(newPosition, passStart = false) {
-        const oldPosition = this.position;
+        const _oldPosition = this.position;
         this.position = newPosition % CONFIG.GAME.BOARD_SIZE;
         
         if (passStart) {

@@ -1,4 +1,4 @@
-const { getText, setLocale, loadLocales, setLocales } = require('./localization.js');
+const { getText, setLocale, loadLocales } = require('./localization.js');
 const fetch = require('node-fetch');
 global.fetch = fetch;
 

@@ -78,7 +78,7 @@ class AuctionManager {
         }
     }
 
-    endAuction(force = false) {
+    endAuction(_force = false) {
         if (!this.auction) return;
 
         clearInterval(this.timer);

@@ -3,7 +3,6 @@
  * Обеспечивает интерактивное обучение и контекстные подсказки
  */
 
-import { showToast, escapeHTML } from './ui-utils.js';
 import { getText } from './localization.js';
 
 class TutorialManager {

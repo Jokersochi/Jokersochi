@@ -1,4 +1,4 @@
-const { describe, test, expect, beforeEach, afterEach } = require('@jest/globals');
+const { describe, test, expect, beforeEach } = require('@jest/globals');
 const _jest = require('@jest/globals').jest;
 // Module requires are intentionally delayed until after mocks are declared
 

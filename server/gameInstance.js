@@ -273,7 +273,7 @@ export class GameInstance {
                 this.broadcast('player_updated', { player: player.saveState() });
                 break;
 
-            case 'move':
+            case 'move': {
                 const oldPos = player.position;
                 const passedGo = player.moveToPosition(card.target, true);
 
@@ -292,6 +292,7 @@ export class GameInstance {
                 // Обрабатываем новую клетку
                 this.handleCellLanding(player, player.position);
                 break;
+            }
 
             case 'go_to_jail':
                 player.goToJail();

@@ -35,7 +35,7 @@ export const isStorageSupported = () => {
         localStorage.setItem(test, test);
         localStorage.removeItem(test);
         return true;
-    } catch (error) {
+    } catch (_error) {
         return false;
     }
 }; 

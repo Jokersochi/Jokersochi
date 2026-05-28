@@ -217,7 +217,7 @@ class StatisticsSystem {
      * @param {Player} player - игрок
      * @param {Object} property - недвижимость
      */
-    trackResidenceBuilt(player, property) {
+    trackResidenceBuilt(player, _property) {
         const stats = this.playerStats.get(player.id);
         if (stats) {
             stats.totalResidencesBuilt++;
@@ -286,7 +286,7 @@ class StatisticsSystem {
      * @param {Player} player - игрок
      * @param {Object} tournament - турнир
      */
-    trackTournamentWon(player, tournament) {
+    trackTournamentWon(player, _tournament) {
         const stats = this.playerStats.get(player.id);
         if (stats) {
             stats.totalTournamentsWon++;
@@ -311,7 +311,7 @@ class StatisticsSystem {
      * @param {Player} player - игрок
      * @param {Object} property - недвижимость
      */
-    trackPropertyImproved(player, property) {
+    trackPropertyImproved(player, _property) {
         const stats = this.playerStats.get(player.id);
         if (stats) {
             stats.totalImprovementsBuilt++;

@@ -165,7 +165,7 @@ class TournamentSystem {
             return false;
         }
 
-        const player = tournament.currentPlayers[playerIndex];
+        const _player = tournament.currentPlayers[playerIndex];
         tournament.currentPlayers.splice(playerIndex, 1);
 
         // Возвращаем вступительный взнос
@@ -239,7 +239,7 @@ class TournamentSystem {
      */
     createTournamentBrackets(tournament) {
         const players = [...tournament.currentPlayers];
-        const playerCount = players.length;
+        const _playerCount = players.length;
 
         switch (tournament.type) {
             case 'elimination':
@@ -265,7 +265,7 @@ class TournamentSystem {
         
         // Создаем пары для первого раунда
         const rounds = [];
-        let currentRound = [];
+        const currentRound = [];
         
         for (let i = 0; i < shuffledPlayers.length; i += 2) {
             if (i + 1 < shuffledPlayers.length) {
@@ -505,7 +505,7 @@ class TournamentSystem {
      * @param {Object} tournament - турнир
      * @param {Object} game - игра
      */
-    handleRoundRobinGameEnd(tournament, game) {
+    handleRoundRobinGameEnd(tournament, _game) {
         // Проверяем, все ли игры завершены
         const pendingGames = this.findPendingGame(tournament);
         if (!pendingGames) {

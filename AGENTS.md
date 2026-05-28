@@ -27,9 +27,8 @@ See `package.json` scripts. Key ones:
 
 ### Known issues (pre-existing)
 
-- **Jest tests fail** due to a version mismatch: `jest@29` is incompatible with `babel-jest@30` and `@jest/globals@30` listed in `package.json`. All 7 test suites error with `TypeError: Cannot read properties of undefined (reading 'extend')`.
-- **Stylelint fails** because the `stylelint-no-physical-properties` plugin referenced in `.stylelintrc.json` is not installed as a dependency.
-- **ESLint** reports 2 pre-existing errors in `js/ui/auction-ui.js` (undefined `CONFIG`, unused `data` variable).
+- **Stylelint** (`npm run lint:css`) fails because `stylelint-no-physical-properties` plugin referenced in `.stylelintrc.json` is not installed as a dependency.
+- **ESLint** (`npm run lint`) reports 2 pre-existing errors in `js/ui/auction-ui.js` (undefined `CONFIG`, unused `data` variable).
 
 ### Node.js version
 

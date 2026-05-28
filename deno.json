@@ -1,0 +1,22 @@
+{
+  "lint": {
+    "rules": {
+      "exclude": [
+        "no-window",
+        "no-window-prefix",
+        "no-node-globals"
+      ]
+    },
+    "exclude": [
+      "node_modules/",
+      "dist/",
+      "apps/",
+      "Make up Sochi/",
+      "jokersochi-improvement-pack-v2/",
+      "jokersochi-hardening-pack-v1/",
+      "docs/",
+      "js/dist/",
+      ".snapshots/"
+    ]
+  }
+}

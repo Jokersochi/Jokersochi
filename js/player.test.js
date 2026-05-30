@@ -1,4 +1,4 @@
-const { describe, test, expect, beforeEach, afterEach } = require('@jest/globals');
+const { describe, test, expect, beforeEach } = require('@jest/globals');
 
 // Mock the eventBus to spy on its emit method.
 // This isolates the Player class for testing.

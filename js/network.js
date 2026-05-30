@@ -6,7 +6,6 @@
 import { RoomManager } from './room-manager.js';
 import { TournamentManager } from './tournament-manager.js';
 import { generateId } from './utils.js';
-import { showToast } from './ui-utils.js';
 import { CONFIG } from './config.js';
 
 class NetworkManager {
@@ -593,7 +592,7 @@ class NetworkManager {
      * Получает задержку соединения
      * @returns {Promise<number>} задержка в миллисекундах
      */
-    async getLatency() {
+    getLatency() {
         if (!this.isConnected()) return null;
 
         const start = Date.now();

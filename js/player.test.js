@@ -1,4 +1,4 @@
-const { describe, test, expect, beforeEach, afterEach } = require('@jest/globals');
+const { describe, test, expect, beforeEach } = require('@jest/globals');
 
 // Mock the eventBus to spy on its emit method.
 // This isolates the Player class for testing.
@@ -19,8 +19,7 @@ describe('Player Class', () => {
   beforeEach(() => {
     // Reset mocks and create a new player before each test
     eventBus.emit.mockClear();
-    player = new Player('p1', 'Joker', '
-      ');
+    player = new Player('p1', 'Joker', 'matryoshka');
   });
 
   test('should be instantiated with starting money and correct properties', () => {

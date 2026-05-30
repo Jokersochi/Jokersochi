@@ -666,7 +666,7 @@ function onPointerUp() {
   if (dragState.pointerId !== null) {
     try {
       stageInner.releasePointerCapture(dragState.pointerId);
-    } catch (error) {
+    } catch (_error) {
       // ignore capture release errors
     }
   }

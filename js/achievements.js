@@ -5,7 +5,6 @@
 import eventBus from './event-bus.js';
 
 import { getText } from './localization.js';
-import { showToast } from './ui-utils.js';
 
 class AchievementSystem {
     constructor() {

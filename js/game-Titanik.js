@@ -6,7 +6,7 @@
 import { getText } from './localization.js';
 import { showToast } from './ui-utils.js';
 import { generateId } from './utils.js';
-import { saveToStorage, loadFromStorage } from './storage.js';
+import { saveToStorage } from './storage.js';
 import { randomChoice, rollDice } from './random.js';
 import eventBus from './event-bus.js';
 import { CONFIG } from './config.js';
@@ -69,7 +69,7 @@ class Game {
                     if (confirm('Обнаружена сохранённая игра. Продолжить?')) {
                         try {
                             this.loadGame(JSON.parse(saved));
-                        } catch (e) { alert('Ошибка восстановления игры!'); }
+                        } catch (_e) { alert('Ошибка восстановления игры!'); }
                     } else {
                         localStorage.removeItem('monopoly-autosave');
                     }
@@ -238,7 +238,7 @@ class Game {
      * Бросает кости
      * @returns {Object} результат броска
      */
-    async rollDice() {
+    rollDice() {
         const currentPlayer = this.players[this.currentPlayerIndex];
         if (!currentPlayer || currentPlayer.bankrupt) {
             return null;
@@ -392,7 +392,7 @@ class Game {
                         cell.owner = creditor ? creditor.id : null;
                         if (creditor) creditor.properties.push(position);
                     }
-                } catch (e) {
+                } catch (_e) {
                     // Fallback: directly assign owner if transfer fails
                     cell.owner = creditor ? creditor.id : null;
                     if (creditor) creditor.properties.push(position);
@@ -707,7 +707,7 @@ class Game {
             try {
                 const data = JSON.parse(e.target.result);
                 this.loadGame(data);
-            } catch (err) {
+            } catch (_err) {
                 showToast('Ошибка загрузки файла', 'error');
             }
         };
@@ -728,7 +728,7 @@ if (typeof module !== 'undefined' && module.exports) {
         module.exports.Game = Game;
         module.exports.game = game;
         module.exports.default = { Game, game };
-    } catch (e) {
+    } catch (_e) {
         // ignore in strict ESM environments
     }
 }

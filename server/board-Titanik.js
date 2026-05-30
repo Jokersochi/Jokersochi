@@ -198,7 +198,7 @@ export class Board {
      * @param {number} price - цена покупки
      * @returns {boolean} true если покупка успешна
      */
-    buyCell(position, playerId, price) {
+    buyCell(position, playerId, _price) {
         const cell = this.getCell(position);
         if (!cell || cell.type !== 'property' || cell.owner !== null) {
             return false;

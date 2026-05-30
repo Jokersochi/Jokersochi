@@ -114,7 +114,7 @@ export class AuctionUI {
         document.getElementById('auction-time').textContent = data.timeLeft;
     }
 
-    hide(data) {
+    hide(_data) {
         // Здесь можно будет показать красивое уведомление о результате
         this.modal.classList.remove('active');
     }

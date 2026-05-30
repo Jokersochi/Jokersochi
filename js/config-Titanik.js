@@ -725,7 +725,7 @@ if (typeof module !== 'undefined' && module.exports) {
         module.exports.CONFIG = CONFIG;
         // Also set default and direct export to be safe
         module.exports.default = CONFIG;
-    } catch (e) {
+    } catch (_e) {
         // ignore in strict ESM environments
     }
 }

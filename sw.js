@@ -4,7 +4,7 @@
  */
 
 const SW_VERSION = '1.1.0';
-const CACHE_NAME = `monopoly-russia-${SW_VERSION}`;
+const _CACHE_NAME = `monopoly-russia-${SW_VERSION}`;
 const STATIC_CACHE = `monopoly-russia-static-${SW_VERSION}`;
 const DYNAMIC_CACHE = `monopoly-russia-dynamic-${SW_VERSION}`;
 
@@ -128,7 +128,7 @@ function getCacheStrategy(request) {
 }
 
 // Обработка запросов
-async function handleRequest(request, strategy) {
+function handleRequest(request, strategy) {
     switch (strategy) {
         case CACHE_STRATEGIES.STATIC:
             return handleStaticCache(request);
@@ -158,7 +158,7 @@ async function handleStaticCache(request) {
             cache.put(request, networkResponse.clone());
         }
         return networkResponse;
-    } catch (error) {
+    } catch (_error) {
         throw new Error('Не удалось загрузить статический ресурс');
     }
 }
@@ -189,7 +189,7 @@ async function handleCacheFirst(request) {
             cache.put(request, networkResponse.clone());
         }
         return networkResponse;
-    } catch (error) {
+    } catch (_error) {
         throw new Error('Ресурс недоступен');
     }
 }
@@ -203,7 +203,7 @@ async function handleNetworkFirst(request) {
             cache.put(request, networkResponse.clone());
         }
         return networkResponse;
-    } catch (error) {
+    } catch (_error) {
         const cache = await caches.open(DYNAMIC_CACHE);
         const cachedResponse = await cache.match(request);
         
@@ -237,14 +237,14 @@ async function handleStaleWhileRevalidate(request) {
     
     try {
         return await fetchPromise;
-    } catch (error) {
+    } catch (_error) {
         throw new Error('Ресурс недоступен');
     }
 }
 
 // Офлайн fallback
 async function handleOfflineFallback(request) {
-    const url = new URL(request.url);
+    const _url = new URL(request.url);
     
     // Для HTML запросов показываем офлайн страницу
     if (request.headers.get('accept').includes('text/html')) {
@@ -275,7 +275,7 @@ async function handleOfflineFallback(request) {
 
 // Обработка сообщений от основного потока
 self.addEventListener('message', event => {
-    const { type, data } = event.data;
+    const { type, data: _data } = event.data;
     
     switch (type) {
         case 'SKIP_WAITING':
@@ -370,7 +370,7 @@ self.addEventListener('notificationclick', function(event) {
   const url = event.notification.data || '/';
   event.waitUntil(
     clients.matchAll({ type: 'window' }).then(windowClients => {
-      for (let client of windowClients) {
+      for (const client of windowClients) {
         if (client.url === url && 'focus' in client) {
           return client.focus();
         }

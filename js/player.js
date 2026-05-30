@@ -101,7 +101,7 @@ class Player {
      * @param {boolean} passStart - прошел ли через СТАРТ
      */
     moveTo(newPosition, passStart = false) {
-        const oldPosition = this.position;
+        const _oldPosition = this.position;
         this.position = newPosition % CONFIG.GAME.BOARD_SIZE;
         
         if (passStart) {
@@ -460,7 +460,7 @@ if (typeof module !== 'undefined' && module.exports) {
         module.exports = module.exports || {};
         module.exports.Player = Player;
         module.exports.default = Player;
-    } catch (e) {
+    } catch (_e) {
         // ignore
     }
 } 

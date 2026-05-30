@@ -114,7 +114,7 @@ class UIManager {
      * @param {HTMLElement} cell - элемент клетки
      * @param {number} position - позиция свойства
      */
-    showPropertyTooltip(cell, position) {
+    showPropertyTooltip(_cell, position) {
         // Реализация показа подсказки
         console.log(`Показываем подсказку для свойства на позиции ${position}`);
     }
@@ -372,7 +372,7 @@ class UIManager {
 }
 
 // Создаем глобальный экземпляр UI менеджера
-const ui = new UIManager();
+const _ui = new UIManager();
 
 // Экспорт для использования в других модулях
 if (typeof module !== 'undefined' && module.exports) {

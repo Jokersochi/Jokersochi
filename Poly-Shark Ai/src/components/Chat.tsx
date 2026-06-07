@@ -40,6 +40,7 @@ export function Chat() {
     appendToMessage,
   } = useStore();
   const [loading, setLoading] = useState(false);
+  const sendingRef = useRef(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const active = conversations.find((c) => c.id === activeId);
@@ -50,7 +51,9 @@ export function Chat() {
   }, [active?.messages.length, loading]);
 
   const send = async (text: string) => {
-    if (loading) return;
+    if (sendingRef.current) return;
+    sendingRef.current = true;
+    setLoading(true);
     let id = activeId;
     if (!id) id = newConversation(mode);
     const convId = id;
@@ -69,7 +72,6 @@ export function Chat() {
       createdAt: Date.now(),
     });
 
-    setLoading(true);
     try {
       const conv = useStore.getState().conversations.find((c) => c.id === convId)!;
       const msgs = conv.messages
@@ -121,6 +123,7 @@ export function Chat() {
       );
     } finally {
       setLoading(false);
+      sendingRef.current = false;
     }
   };
 

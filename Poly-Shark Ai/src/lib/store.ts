@@ -1,5 +1,50 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { persist, createJSONStorage, type StateStorage } from "zustand/middleware";
+
+const PERSIST_DEBOUNCE_MS = 300;
+
+function debouncedLocalStorage(): StateStorage {
+  let timer: ReturnType<typeof setTimeout> | null = null;
+  let pendingName: string | null = null;
+  let pendingValue: string | null = null;
+  const flush = () => {
+    if (pendingName !== null && pendingValue !== null) {
+      try {
+        localStorage.setItem(pendingName, pendingValue);
+      } catch {
+        /* quota or SSR */
+      }
+    }
+    pendingName = null;
+    pendingValue = null;
+    timer = null;
+  };
+  if (typeof window !== "undefined") {
+    window.addEventListener("beforeunload", flush);
+  }
+  return {
+    getItem: (name) => {
+      if (typeof window === "undefined") return null;
+      return localStorage.getItem(name);
+    },
+    setItem: (name, value) => {
+      pendingName = name;
+      pendingValue = value;
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(flush, PERSIST_DEBOUNCE_MS);
+    },
+    removeItem: (name) => {
+      if (typeof window === "undefined") return;
+      if (timer) {
+        clearTimeout(timer);
+        timer = null;
+        pendingName = null;
+        pendingValue = null;
+      }
+      localStorage.removeItem(name);
+    },
+  };
+}
 
 export type Role = "user" | "assistant" | "system";
 
@@ -127,6 +172,7 @@ export const useStore = create<State>()(
     }),
     {
       name: "poly-shark-store",
+      storage: createJSONStorage(debouncedLocalStorage),
       onRehydrateStorage: () => (state) => {
         if (!state?.activeId) return;
         const conv = state.conversations.find((c) => c.id === state.activeId);

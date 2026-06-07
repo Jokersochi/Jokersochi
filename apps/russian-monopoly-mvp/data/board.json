@@ -1,0 +1,379 @@
+[
+  {
+    "id": "B02",
+    "name": "Калининград",
+    "type": "property",
+    "price": 120,
+    "rent": {
+      "multiplier": 0.4
+    },
+    "category": "Города - Балтийский регион",
+    "order": 2,
+    "color": "#005f99"
+  },
+  {
+    "id": "B03",
+    "name": "Псков",
+    "type": "property",
+    "price": 140,
+    "rent": {
+      "multiplier": 0.42
+    },
+    "category": "Города - Балтийский регион",
+    "order": 3,
+    "color": "#1a6fb3"
+  },
+  {
+    "id": "B26",
+    "name": "Владивосток",
+    "type": "property",
+    "price": 300,
+    "rent": {
+      "multiplier": 0.68
+    },
+    "category": "Города - Дальний Восток",
+    "order": 26,
+    "color": "#264653"
+  },
+  {
+    "id": "B27",
+    "name": "Хабаровск",
+    "type": "property",
+    "price": 280,
+    "rent": {
+      "multiplier": 0.65
+    },
+    "category": "Города - Дальний Восток",
+    "order": 27,
+    "color": "#2a6f97"
+  },
+  {
+    "id": "B14",
+    "name": "Сочи",
+    "type": "property",
+    "price": 260,
+    "rent": {
+      "multiplier": 0.6
+    },
+    "category": "Города - Кавказ",
+    "order": 14,
+    "color": "#ff7f51"
+  },
+  {
+    "id": "B15",
+    "name": "Владикавказ",
+    "type": "property",
+    "price": 240,
+    "rent": {
+      "multiplier": 0.58
+    },
+    "category": "Города - Кавказ",
+    "order": 15,
+    "color": "#ff9f1c"
+  },
+  {
+    "id": "B07",
+    "name": "Мурманск",
+    "type": "property",
+    "price": 150,
+    "rent": {
+      "multiplier": 0.44
+    },
+    "category": "Города - Кольский полуостров",
+    "order": 7,
+    "color": "#0b4f6c"
+  },
+  {
+    "id": "B10",
+    "name": "Тула",
+    "type": "property",
+    "price": 200,
+    "rent": {
+      "multiplier": 0.55
+    },
+    "category": "Города - Московский регион",
+    "order": 10,
+    "color": "#8f2d56"
+  },
+  {
+    "id": "B11",
+    "name": "Коломна",
+    "type": "property",
+    "price": 210,
+    "rent": {
+      "multiplier": 0.56
+    },
+    "category": "Города - Московский регион",
+    "order": 11,
+    "color": "#a63d40"
+  },
+  {
+    "id": "B12",
+    "name": "Москва",
+    "type": "property",
+    "price": 340,
+    "rent": {
+      "multiplier": 0.72
+    },
+    "category": "Города - Московский регион",
+    "order": 12,
+    "color": "#d62828"
+  },
+  {
+    "id": "B17",
+    "name": "Казань",
+    "type": "property",
+    "price": 280,
+    "rent": {
+      "multiplier": 0.63
+    },
+    "category": "Города - Поволжье",
+    "order": 17,
+    "color": "#5a189a"
+  },
+  {
+    "id": "B18",
+    "name": "Нижний Новгород",
+    "type": "property",
+    "price": 260,
+    "rent": {
+      "multiplier": 0.6
+    },
+    "category": "Города - Поволжье",
+    "order": 18,
+    "color": "#7b2cbf"
+  },
+  {
+    "id": "B19",
+    "name": "Самара",
+    "type": "property",
+    "price": 250,
+    "rent": {
+      "multiplier": 0.59
+    },
+    "category": "Города - Поволжье",
+    "order": 19,
+    "color": "#9d4edd"
+  },
+  {
+    "id": "B05",
+    "name": "Санкт-Петербург",
+    "type": "property",
+    "price": 180,
+    "rent": {
+      "multiplier": 0.5
+    },
+    "category": "Города - Северо-Запад",
+    "order": 5,
+    "color": "#214091"
+  },
+  {
+    "id": "B06",
+    "name": "Великий Новгород",
+    "type": "property",
+    "price": 160,
+    "rent": {
+      "multiplier": 0.46
+    },
+    "category": "Города - Северо-Запад",
+    "order": 6,
+    "color": "#3560b5"
+  },
+  {
+    "id": "B23",
+    "name": "Новосибирск",
+    "type": "property",
+    "price": 280,
+    "rent": {
+      "multiplier": 0.65
+    },
+    "category": "Города - Сибирь",
+    "order": 23,
+    "color": "#073b4c"
+  },
+  {
+    "id": "B24",
+    "name": "Красноярск",
+    "type": "property",
+    "price": 270,
+    "rent": {
+      "multiplier": 0.63
+    },
+    "category": "Города - Сибирь",
+    "order": 24,
+    "color": "#26547c"
+  },
+  {
+    "id": "B25",
+    "name": "Иркутск",
+    "type": "property",
+    "price": 260,
+    "rent": {
+      "multiplier": 0.61
+    },
+    "category": "Города - Сибирь",
+    "order": 25,
+    "color": "#2a9d8f"
+  },
+  {
+    "id": "B21",
+    "name": "Екатеринбург",
+    "type": "property",
+    "price": 260,
+    "rent": {
+      "multiplier": 0.6
+    },
+    "category": "Города - Урал",
+    "order": 21,
+    "color": "#06d6a0"
+  },
+  {
+    "id": "B22",
+    "name": "Пермь",
+    "type": "property",
+    "price": 240,
+    "rent": {
+      "multiplier": 0.58
+    },
+    "category": "Города - Урал",
+    "order": 22,
+    "color": "#118ab2"
+  },
+  {
+    "id": "B30",
+    "name": "Северсвязь",
+    "type": "utility",
+    "price": 220,
+    "rent": {
+      "fixed": 120
+    },
+    "category": "Инфраструктура - Связь",
+    "order": 30,
+    "color": "#4cc9f0"
+  },
+  {
+    "id": "B13",
+    "name": "Аэроэкспресс",
+    "type": "transport",
+    "price": 220,
+    "rent": {
+      "fixed": 120
+    },
+    "category": "Инфраструктура - Транспорт",
+    "order": 13,
+    "color": "#ff4d6d"
+  },
+  {
+    "id": "B20",
+    "name": "ВолгаЭнерго",
+    "type": "utility",
+    "price": 200,
+    "rent": {
+      "fixed": 110
+    },
+    "category": "Инфраструктура - Энергетика",
+    "order": 20,
+    "color": "#ffd166"
+  },
+  {
+    "id": "B01",
+    "name": "Старт",
+    "type": "start",
+    "price": 0,
+    "rent": 0,
+    "category": "Особые",
+    "order": 1
+  },
+  {
+    "id": "B04",
+    "name": "Шанс",
+    "type": "chance",
+    "price": 0,
+    "rent": 0,
+    "category": "Особые",
+    "order": 4
+  },
+  {
+    "id": "B08",
+    "name": "Региональный налог",
+    "type": "tax",
+    "price": 0,
+    "rent": 0,
+    "amount": 180,
+    "category": "Особые",
+    "order": 8
+  },
+  {
+    "id": "B09",
+    "name": "Грантовый конкурс",
+    "type": "trial",
+    "price": 0,
+    "rent": 0,
+    "category": "Особые",
+    "order": 9
+  },
+  {
+    "id": "B16",
+    "name": "Шанс",
+    "type": "chance",
+    "price": 0,
+    "rent": 0,
+    "category": "Особые",
+    "order": 16
+  },
+  {
+    "id": "B28",
+    "name": "Фестиваль варенья",
+    "type": "micro-event",
+    "price": 0,
+    "rent": 0,
+    "category": "Особые",
+    "order": 28,
+    "microEvent": {
+      "id": "ME01",
+      "name": "Фестиваль варенья",
+      "type": "bonus",
+      "description": "Посетители фестиваля покупают ваш фирменный десерт.",
+      "effect": {
+        "money": 200
+      }
+    }
+  },
+  {
+    "id": "B29",
+    "name": "Полярный исследователь",
+    "type": "contract",
+    "price": 0,
+    "rent": 0,
+    "category": "Особые",
+    "order": 29,
+    "contract": {
+      "id": "CT01",
+      "name": "Полярный исследователь",
+      "type": "expedition",
+      "description": "Нанимает команду для экспедиции на Север и приносит премию.",
+      "cost": 150,
+      "effect": {
+        "money": 220
+      }
+    }
+  },
+  {
+    "id": "B31",
+    "name": "Общественный совет",
+    "type": "trial",
+    "price": 0,
+    "rent": 0,
+    "category": "Особые",
+    "order": 31
+  },
+  {
+    "id": "B32",
+    "name": "Следственный комитет",
+    "type": "goto-jail",
+    "price": 0,
+    "rent": 0,
+    "category": "Особые",
+    "order": 32
+  }
+]

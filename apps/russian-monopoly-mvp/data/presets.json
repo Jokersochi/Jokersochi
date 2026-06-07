@@ -1,0 +1,20 @@
+{
+  "intl-friendly": {
+    "name": "International Friendly",
+    "description": "Упрощённый режим с мягкими налогами и быстрыми партиями.",
+    "salary": 200,
+    "taxRate": 0.08,
+    "luxuryTax": 100,
+    "jailFine": 80,
+    "bailout": 180
+  },
+  "rus": {
+    "name": "Русский Классик",
+    "description": "Базовый баланс с акцентом на длинные партии.",
+    "salary": 200,
+    "taxRate": 0.1,
+    "luxuryTax": 150,
+    "jailFine": 100,
+    "bailout": 240
+  }
+}

@@ -180,6 +180,13 @@ export const useStore = create<State>()(
     {
       name: "poly-shark-store",
       storage: createJSONStorage(debouncedLocalStorage),
+      partialize: (s) => ({
+        conversations: s.conversations,
+        activeId: s.activeId,
+        mode: s.mode,
+        // streamingId намеренно НЕ персистится — иначе закрытие вкладки
+        // во время стрима оставит чат заблокированным навсегда
+      }),
       onRehydrateStorage: () => (state) => {
         if (!state?.activeId) return;
         const conv = state.conversations.find((c) => c.id === state.activeId);

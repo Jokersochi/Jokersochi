@@ -38,32 +38,39 @@ function getClientIp(req: NextRequest): string {
 }
 
 export async function POST(req: NextRequest) {
-  // Авторизация: всегда требуем same-origin (защита от cross-site). Дополнительно,
-  // если задан APP_ACCESS_TOKEN, требуем Authorization: Bearer <token>.
-  // NEXT_PUBLIC_APP_ACCESS_TOKEN не используется — публичные env не секреты.
+  // Авторизация:
+  //   • same-origin (есть Origin, совпадает с Host) → веб-UI, пропускаем
+  //   • cross-origin или без Origin (curl/серверные клиенты) → требуем
+  //     Bearer APP_ACCESS_TOKEN если он задан, иначе 403
   const origin = req.headers.get("origin");
   const host = req.headers.get("host");
+  let isSameOrigin = false;
   if (origin) {
     try {
-      const originHost = new URL(origin).host;
-      if (host && originHost !== host) {
-        return new Response(JSON.stringify({ error: "Cross-origin requests forbidden" }), {
-          status: 403,
-          headers: { "content-type": "application/json" },
-        });
-      }
+      isSameOrigin = !!host && new URL(origin).host === host;
     } catch {
       return new Response(JSON.stringify({ error: "Invalid Origin header" }), {
         status: 400,
         headers: { "content-type": "application/json" },
       });
     }
+    if (!isSameOrigin) {
+      return new Response(JSON.stringify({ error: "Cross-origin requests forbidden" }), {
+        status: 403,
+        headers: { "content-type": "application/json" },
+      });
+    }
   }
 
-  const accessToken = process.env.APP_ACCESS_TOKEN;
-  if (accessToken) {
-    const auth = req.headers.get("authorization");
-    if (auth !== `Bearer ${accessToken}`) {
+  if (!isSameOrigin) {
+    const accessToken = process.env.APP_ACCESS_TOKEN;
+    if (!accessToken) {
+      return new Response(
+        JSON.stringify({ error: "Forbidden: configure APP_ACCESS_TOKEN for non-browser clients" }),
+        { status: 403, headers: { "content-type": "application/json" } }
+      );
+    }
+    if (req.headers.get("authorization") !== `Bearer ${accessToken}`) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
         headers: { "content-type": "application/json" },

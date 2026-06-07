@@ -5,7 +5,40 @@
 import { CONFIG } from './config.js';
 import eventBus from './event-bus.js';
 
-const passedStart = (oldPos, newPos) => newPos < oldPos;
+const BOARD_SIZE = CONFIG.GAME.BOARD_SIZE;
+
+const normalizePosition = (position) => {
+    if (typeof position !== 'number' || Number.isNaN(position)) {
+        return 0;
+    }
+
+    const normalized = position % BOARD_SIZE;
+    return normalized >= 0 ? normalized : normalized + BOARD_SIZE;
+};
+
+const passedStartBySteps = (oldPos, steps) => {
+    if (typeof steps !== 'number' || Number.isNaN(steps) || steps <= 0) {
+        return false;
+    }
+
+    const normalizedOld = normalizePosition(oldPos);
+    return normalizedOld + steps >= BOARD_SIZE;
+};
+
+const passedStartToPosition = (oldPos, targetPosition) => {
+    if (typeof targetPosition !== 'number' || Number.isNaN(targetPosition)) {
+        return false;
+    }
+
+    const normalizedOld = normalizePosition(oldPos);
+
+    if (targetPosition - normalizedOld >= BOARD_SIZE) {
+        return true;
+    }
+
+    const normalizedTarget = normalizePosition(targetPosition);
+    return normalizedTarget < normalizedOld;
+};
 
 class Player {
     constructor(id, name, token) {
@@ -101,9 +134,8 @@ class Player {
      * @param {boolean} passStart - прошел ли через СТАРТ
      */
     moveTo(newPosition, passStart = false) {
-        const oldPosition = this.position;
-        this.position = newPosition % CONFIG.GAME.BOARD_SIZE;
-        
+        this.position = normalizePosition(newPosition);
+
         if (passStart) {
             this.addMoney(CONFIG.GAME.PASS_START_REWARD, 'start');
             this.stats.timesPassedStart++;
@@ -117,9 +149,10 @@ class Player {
      */
     move(steps) {
         const oldPosition = this.position;
-        const newPosition = (this.position + steps) % CONFIG.GAME.BOARD_SIZE;
-        const passedStartCheck = passedStart(oldPosition, newPosition);
-        
+        const targetPosition = this.position + steps;
+        const newPosition = normalizePosition(targetPosition);
+        const passedStartCheck = passedStartBySteps(oldPosition, steps);
+
         this.moveTo(newPosition, passedStartCheck);
         return passedStartCheck;
     }
@@ -131,10 +164,11 @@ class Player {
      */
     moveToPosition(position, collectMoney = true) {
         const oldPosition = this.position;
-        const newPosition = position % CONFIG.GAME.BOARD_SIZE;
-        const passedStartCheck = collectMoney && passedStart(oldPosition, newPosition);
-        
+        const passedStartCheck = collectMoney && passedStartToPosition(oldPosition, position);
+        const newPosition = normalizePosition(position);
+
         this.moveTo(newPosition, passedStartCheck);
+        return passedStartCheck;
     }
 
     /**

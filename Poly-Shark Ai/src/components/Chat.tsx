@@ -37,7 +37,7 @@ export function Chat() {
     mode,
     newConversation,
     addMessage,
-    updateLastAssistant,
+    appendToMessage,
   } = useStore();
   const [loading, setLoading] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -50,17 +50,20 @@ export function Chat() {
   }, [active?.messages.length, loading]);
 
   const send = async (text: string) => {
+    if (loading) return;
     let id = activeId;
     if (!id) id = newConversation(mode);
+    const convId = id;
     const userMsg = {
       id: Math.random().toString(36).slice(2),
       role: "user" as const,
       content: text,
       createdAt: Date.now(),
     };
-    addMessage(id, userMsg);
-    addMessage(id, {
-      id: Math.random().toString(36).slice(2),
+    const assistantId = Math.random().toString(36).slice(2);
+    addMessage(convId, userMsg);
+    addMessage(convId, {
+      id: assistantId,
       role: "assistant",
       content: "",
       createdAt: Date.now(),
@@ -68,7 +71,7 @@ export function Chat() {
 
     setLoading(true);
     try {
-      const conv = useStore.getState().conversations.find((c) => c.id === id)!;
+      const conv = useStore.getState().conversations.find((c) => c.id === convId)!;
       const msgs = conv.messages
         .filter((m) => !(m.role === "assistant" && !m.content))
         .map((m) => ({ role: m.role as "user" | "assistant", content: m.content }));
@@ -100,19 +103,20 @@ export function Chat() {
       while (true) {
         const { value, done } = await reader.read();
         if (done) break;
-        updateLastAssistant(id, decoder.decode(value, { stream: true }));
+        appendToMessage(convId, assistantId, decoder.decode(value, { stream: true }));
       }
       const tail = decoder.decode();
-      if (tail) updateLastAssistant(id, tail);
+      if (tail) appendToMessage(convId, assistantId, tail);
 
-      const final = useStore.getState().conversations.find((c) => c.id === id);
-      const last = final?.messages[final.messages.length - 1];
-      if (last && last.role === "assistant" && !last.content) {
-        updateLastAssistant(id, "_(пустой ответ)_");
+      const final = useStore.getState().conversations.find((c) => c.id === convId);
+      const target = final?.messages.find((m) => m.id === assistantId);
+      if (target && !target.content) {
+        appendToMessage(convId, assistantId, "_(пустой ответ)_");
       }
     } catch (e) {
-      updateLastAssistant(
-        id,
+      appendToMessage(
+        convId,
+        assistantId,
         `\n\n⚠️ Ошибка: ${e instanceof Error ? e.message : String(e)}`
       );
     } finally {

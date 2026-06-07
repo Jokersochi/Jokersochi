@@ -28,6 +28,7 @@ interface State {
   setActive: (id: string) => void;
   addMessage: (id: string, msg: Message) => void;
   updateLastAssistant: (id: string, delta: string) => void;
+  appendToMessage: (convId: string, msgId: string, delta: string) => void;
   deleteConversation: (id: string) => void;
   setMode: (m: AppMode) => void;
   renameConversation: (id: string, title: string) => void;
@@ -83,6 +84,19 @@ export const useStore = create<State>()(
             }
             return { ...c, messages: msgs };
           }),
+        })),
+      appendToMessage: (convId, msgId, delta) =>
+        set((s) => ({
+          conversations: s.conversations.map((c) =>
+            c.id !== convId
+              ? c
+              : {
+                  ...c,
+                  messages: c.messages.map((m) =>
+                    m.id === msgId ? { ...m, content: m.content + delta } : m
+                  ),
+                }
+          ),
         })),
       deleteConversation: (id) =>
         set((s) => ({

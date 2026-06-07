@@ -57,7 +57,11 @@ export const useStore = create<State>()(
         }));
         return id;
       },
-      setActive: (id) => set({ activeId: id }),
+      setActive: (id) =>
+        set((s) => {
+          const conv = s.conversations.find((c) => c.id === id);
+          return { activeId: id, mode: conv?.mode ?? s.mode };
+        }),
       addMessage: (id, msg) =>
         set((s) => ({
           conversations: s.conversations.map((c) =>
@@ -103,7 +107,17 @@ export const useStore = create<State>()(
           conversations: s.conversations.filter((c) => c.id !== id),
           activeId: s.activeId === id ? null : s.activeId,
         })),
-      setMode: (m) => set({ mode: m }),
+      setMode: (m) =>
+        set((s) => ({
+          mode: m,
+          conversations: s.activeId
+            ? s.conversations.map((c) =>
+                c.id === s.activeId && c.messages.length === 0
+                  ? { ...c, mode: m }
+                  : c
+              )
+            : s.conversations,
+        })),
       renameConversation: (id, title) =>
         set((s) => ({
           conversations: s.conversations.map((c) =>

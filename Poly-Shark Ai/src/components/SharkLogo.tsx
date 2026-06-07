@@ -1,7 +1,11 @@
 "use client";
 import { motion } from "framer-motion";
+import { useId } from "react";
 
 export function SharkLogo({ size = 40 }: { size?: number }) {
+  const uid = useId().replace(/:/g, "");
+  const gradId = `sharkGrad-${uid}`;
+  const glowId = `glow-${uid}`;
   return (
     <motion.svg
       width={size}
@@ -13,12 +17,12 @@ export function SharkLogo({ size = 40 }: { size?: number }) {
       transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
     >
       <defs>
-        <linearGradient id="sharkGrad" x1="0" y1="0" x2="1" y2="1">
+        <linearGradient id={gradId} x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stopColor="#0ea5e9" />
           <stop offset="50%" stopColor="#6366f1" />
           <stop offset="100%" stopColor="#8b5cf6" />
         </linearGradient>
-        <filter id="glow">
+        <filter id={glowId}>
           <feGaussianBlur stdDeviation="2" result="b" />
           <feMerge>
             <feMergeNode in="b" />
@@ -26,10 +30,10 @@ export function SharkLogo({ size = 40 }: { size?: number }) {
           </feMerge>
         </filter>
       </defs>
-      <g filter="url(#glow)">
+      <g filter={`url(#${glowId})`}>
         <path
           d="M6 34 C 14 18, 36 12, 50 22 L 58 16 L 56 28 C 60 32, 60 36, 56 40 L 58 52 L 50 46 C 36 56, 14 50, 6 34 Z"
-          fill="url(#sharkGrad)"
+          fill={`url(#${gradId})`}
         />
         <circle cx="44" cy="28" r="2.5" fill="#050d1c" />
         <circle cx="44.7" cy="27.3" r="0.8" fill="#fff" />

@@ -43,6 +43,7 @@ export function Chat() {
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const active = conversations.find((c) => c.id === activeId);
+  const displayMode = active?.mode ?? mode;
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -69,7 +70,7 @@ export function Chat() {
     try {
       const conv = useStore.getState().conversations.find((c) => c.id === id)!;
       const msgs = conv.messages
-        .filter((m) => m.role !== "assistant" || m.content)
+        .filter((m) => !(m.role === "assistant" && !m.content))
         .map((m) => ({ role: m.role as "user" | "assistant", content: m.content }));
 
       const res = await fetch("/api/chat", {
@@ -78,6 +79,21 @@ export function Chat() {
         body: JSON.stringify({ messages: msgs, mode: conv.mode }),
       });
 
+      if (!res.ok) {
+        let errText = `HTTP ${res.status}`;
+        try {
+          const data = await res.json();
+          if (data?.error) errText = data.error;
+        } catch {
+          try {
+            errText = (await res.text()) || errText;
+          } catch {
+            /* ignore */
+          }
+        }
+        throw new Error(errText);
+      }
+
       if (!res.body) throw new Error("Нет потока ответа");
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
@@ -85,6 +101,14 @@ export function Chat() {
         const { value, done } = await reader.read();
         if (done) break;
         updateLastAssistant(id, decoder.decode(value, { stream: true }));
+      }
+      const tail = decoder.decode();
+      if (tail) updateLastAssistant(id, tail);
+
+      const final = useStore.getState().conversations.find((c) => c.id === id);
+      const last = final?.messages[final.messages.length - 1];
+      if (last && last.role === "assistant" && !last.content) {
+        updateLastAssistant(id, "_(пустой ответ)_");
       }
     } catch (e) {
       updateLastAssistant(
@@ -96,7 +120,7 @@ export function Chat() {
     }
   };
 
-  const meta = MODE_META[mode];
+  const meta = MODE_META[displayMode];
 
   return (
     <main className="flex-1 flex flex-col h-screen">
@@ -132,7 +156,7 @@ export function Chat() {
               задайте вопрос.
             </p>
             <div className="grid sm:grid-cols-2 gap-3 w-full">
-              {SUGGESTIONS[mode].map((s) => (
+              {SUGGESTIONS[displayMode].map((s) => (
                 <button
                   key={s}
                   onClick={() => send(s)}

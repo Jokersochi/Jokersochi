@@ -33,10 +33,21 @@ class SupabaseDB:
     async def get_recent_prices(self, token_id: str, hours: int = 24) -> list:
         from datetime import datetime, timedelta
         cutoff = (datetime.utcnow() - timedelta(hours=hours)).isoformat()
+        # CLOB token id хранится в markets.yes_token_id / no_token_id,
+        # market_prices индексируется по market_id (FK на markets.id).
+        market = (
+            self.client.table("markets")
+            .select("id")
+            .or_(f"yes_token_id.eq.{token_id},no_token_id.eq.{token_id}")
+            .limit(1)
+            .execute()
+        )
+        if not market.data:
+            return []
         res = (
             self.client.table("market_prices")
             .select("*")
-            .eq("token_id", token_id)
+            .eq("market_id", market.data[0]["id"])
             .gte("recorded_at", cutoff)
             .order("recorded_at", desc=True)
             .execute()

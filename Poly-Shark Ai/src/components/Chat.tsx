@@ -78,9 +78,13 @@ export function Chat() {
         .filter((m) => !(m.role === "assistant" && !m.content))
         .map((m) => ({ role: m.role as "user" | "assistant", content: m.content }));
 
+      const accessToken = process.env.NEXT_PUBLIC_APP_ACCESS_TOKEN;
       const res = await fetch("/api/chat", {
         method: "POST",
-        headers: { "content-type": "application/json" },
+        headers: {
+          "content-type": "application/json",
+          ...(accessToken ? { authorization: `Bearer ${accessToken}` } : {}),
+        },
         body: JSON.stringify({ messages: msgs, mode: conv.mode }),
       });
 

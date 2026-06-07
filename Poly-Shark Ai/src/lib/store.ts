@@ -125,6 +125,13 @@ export const useStore = create<State>()(
           ),
         })),
     }),
-    { name: "poly-shark-store" }
+    {
+      name: "poly-shark-store",
+      onRehydrateStorage: () => (state) => {
+        if (!state?.activeId) return;
+        const conv = state.conversations.find((c) => c.id === state.activeId);
+        if (conv) state.mode = conv.mode;
+      },
+    }
   )
 );

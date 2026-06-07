@@ -1,0 +1,52 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html, body {
+  @apply bg-abyss-950 text-abyss-50 antialiased;
+  min-height: 100vh;
+}
+
+body {
+  background: radial-gradient(ellipse at top, #0b2545 0%, #050d1c 60%, #000 100%);
+  background-attachment: fixed;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(14,165,233,0.3);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(14,165,233,0.6); }
+
+.glass {
+  background: rgba(11, 31, 58, 0.5);
+  backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(14,165,233,0.15);
+}
+
+.glow-text {
+  text-shadow: 0 0 30px rgba(14,165,233,0.6);
+}
+
+.prose-shark {
+  @apply text-abyss-100;
+}
+.prose-shark code {
+  @apply bg-abyss-900 text-shark-tooth px-1.5 py-0.5 rounded text-sm font-mono;
+}
+.prose-shark pre {
+  @apply bg-abyss-950 border border-abyss-800 rounded-lg p-4 overflow-x-auto my-3;
+}
+.prose-shark pre code { @apply bg-transparent p-0; }
+.prose-shark a { @apply text-shark underline; }
+.prose-shark h1, .prose-shark h2, .prose-shark h3 { @apply font-bold mt-4 mb-2; }
+.prose-shark ul { @apply list-disc pl-5 my-2; }
+.prose-shark ol { @apply list-decimal pl-5 my-2; }
+.prose-shark p { @apply my-2 leading-relaxed; }

@@ -36,7 +36,7 @@ class SupabaseDB:
         res = (
             self.client.table("market_prices")
             .select("*")
-            .eq("polymarket_id", token_id)
+            .eq("token_id", token_id)
             .gte("recorded_at", cutoff)
             .order("recorded_at", desc=True)
             .execute()

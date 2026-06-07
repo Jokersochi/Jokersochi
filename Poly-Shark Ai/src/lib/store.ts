@@ -69,6 +69,8 @@ interface State {
   conversations: Conversation[];
   activeId: string | null;
   mode: AppMode;
+  streamingId: string | null;
+  setStreamingId: (id: string | null) => void;
   newConversation: (mode?: AppMode) => string;
   setActive: (id: string) => void;
   addMessage: (id: string, msg: Message) => void;
@@ -87,6 +89,8 @@ export const useStore = create<State>()(
       conversations: [],
       activeId: null,
       mode: "chat",
+      streamingId: null,
+      setStreamingId: (id) => set({ streamingId: id }),
       newConversation: (mode) => {
         const id = uid();
         const conv: Conversation = {
@@ -148,10 +152,13 @@ export const useStore = create<State>()(
           ),
         })),
       deleteConversation: (id) =>
-        set((s) => ({
-          conversations: s.conversations.filter((c) => c.id !== id),
-          activeId: s.activeId === id ? null : s.activeId,
-        })),
+        set((s) => {
+          if (s.streamingId === id) return s; // нельзя удалить пока стримится
+          return {
+            conversations: s.conversations.filter((c) => c.id !== id),
+            activeId: s.activeId === id ? null : s.activeId,
+          };
+        }),
       setMode: (m) =>
         set((s) => ({
           mode: m,

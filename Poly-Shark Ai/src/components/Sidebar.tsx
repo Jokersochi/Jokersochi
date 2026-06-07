@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 
 export function Sidebar() {
-  const { conversations, activeId, newConversation, setActive, deleteConversation, mode, setMode } =
+  const { conversations, activeId, newConversation, setActive, deleteConversation, mode, setMode, streamingId } =
     useStore();
 
   return (
@@ -83,9 +83,17 @@ export function Sidebar() {
               <button
                 onClick={(e) => {
                   e.stopPropagation();
+                  if (streamingId === c.id) return;
                   deleteConversation(c.id);
                 }}
-                className="opacity-0 group-hover:opacity-100 text-abyss-400 hover:text-red-400 transition"
+                disabled={streamingId === c.id}
+                title={streamingId === c.id ? "Дождитесь окончания ответа" : "Удалить"}
+                className={cn(
+                  "transition",
+                  streamingId === c.id
+                    ? "opacity-30 cursor-not-allowed text-abyss-500"
+                    : "opacity-0 group-hover:opacity-100 text-abyss-400 hover:text-red-400"
+                )}
               >
                 <Trash2 size={13} />
               </button>

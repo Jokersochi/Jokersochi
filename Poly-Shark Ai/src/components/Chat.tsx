@@ -38,6 +38,7 @@ export function Chat() {
     newConversation,
     addMessage,
     appendToMessage,
+    setStreamingId,
   } = useStore();
   const [loading, setLoading] = useState(false);
   const sendingRef = useRef(false);
@@ -71,6 +72,7 @@ export function Chat() {
       content: "",
       createdAt: Date.now(),
     });
+    setStreamingId(convId);
 
     try {
       const conv = useStore.getState().conversations.find((c) => c.id === convId)!;
@@ -78,13 +80,9 @@ export function Chat() {
         .filter((m) => !(m.role === "assistant" && !m.content))
         .map((m) => ({ role: m.role as "user" | "assistant", content: m.content }));
 
-      const accessToken = process.env.NEXT_PUBLIC_APP_ACCESS_TOKEN;
       const res = await fetch("/api/chat", {
         method: "POST",
-        headers: {
-          "content-type": "application/json",
-          ...(accessToken ? { authorization: `Bearer ${accessToken}` } : {}),
-        },
+        headers: { "content-type": "application/json" },
         body: JSON.stringify({ messages: msgs, mode: conv.mode }),
       });
 
@@ -128,6 +126,7 @@ export function Chat() {
     } finally {
       setLoading(false);
       sendingRef.current = false;
+      setStreamingId(null);
     }
   };
 

@@ -38,18 +38,37 @@ function getClientIp(req: NextRequest): string {
 }
 
 export async function POST(req: NextRequest) {
-  const accessToken = process.env.APP_ACCESS_TOKEN;
-  if (process.env.NODE_ENV === "production" && !accessToken) {
-    return new Response(
-      JSON.stringify({ error: "APP_ACCESS_TOKEN не задан для production" }),
-      { status: 500, headers: { "content-type": "application/json" } }
-    );
+  // Авторизация: всегда требуем same-origin (защита от cross-site). Дополнительно,
+  // если задан APP_ACCESS_TOKEN, требуем Authorization: Bearer <token>.
+  // NEXT_PUBLIC_APP_ACCESS_TOKEN не используется — публичные env не секреты.
+  const origin = req.headers.get("origin");
+  const host = req.headers.get("host");
+  if (origin) {
+    try {
+      const originHost = new URL(origin).host;
+      if (host && originHost !== host) {
+        return new Response(JSON.stringify({ error: "Cross-origin requests forbidden" }), {
+          status: 403,
+          headers: { "content-type": "application/json" },
+        });
+      }
+    } catch {
+      return new Response(JSON.stringify({ error: "Invalid Origin header" }), {
+        status: 400,
+        headers: { "content-type": "application/json" },
+      });
+    }
   }
-  if (accessToken && req.headers.get("authorization") !== `Bearer ${accessToken}`) {
-    return new Response(JSON.stringify({ error: "Unauthorized" }), {
-      status: 401,
-      headers: { "content-type": "application/json" },
-    });
+
+  const accessToken = process.env.APP_ACCESS_TOKEN;
+  if (accessToken) {
+    const auth = req.headers.get("authorization");
+    if (auth !== `Bearer ${accessToken}`) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "content-type": "application/json" },
+      });
+    }
   }
 
   const apiKey = process.env.ANTHROPIC_API_KEY;

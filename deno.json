@@ -1,0 +1,18 @@
+{
+  "lint": {
+    "exclude": [
+      "Poly-Shark Ai/",
+      "polyshark-ai/",
+      "js/dist/",
+      "node_modules/"
+    ]
+  },
+  "fmt": {
+    "exclude": [
+      "Poly-Shark Ai/",
+      "polyshark-ai/",
+      "js/dist/",
+      "node_modules/"
+    ]
+  }
+}

@@ -56,7 +56,7 @@ export function Chat() {
     sendingRef.current = true;
     setLoading(true);
     let id = activeId;
-    if (!id) id = newConversation(mode);
+    if (!id || !conversations.find((c) => c.id === id)) id = newConversation(mode);
     const convId = id;
     const userMsg = {
       id: Math.random().toString(36).slice(2),
@@ -75,7 +75,8 @@ export function Chat() {
     setStreamingId(convId);
 
     try {
-      const conv = useStore.getState().conversations.find((c) => c.id === convId)!;
+      const conv = useStore.getState().conversations.find((c) => c.id === convId);
+      if (!conv) throw new Error("Conversation not found");
       const msgs = conv.messages
         .filter((m) => !(m.role === "assistant" && !m.content))
         .map((m) => ({ role: m.role as "user" | "assistant", content: m.content }));

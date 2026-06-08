@@ -71,15 +71,29 @@ export function Sidebar() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -10 }}
               className={cn(
-                "group flex items-center gap-2 px-3 py-2 rounded-md cursor-pointer text-sm mb-1 transition",
+                "group flex items-center gap-2 px-3 py-2 rounded-md text-sm mb-1 transition",
                 activeId === c.id
                   ? "bg-shark/15 text-shark-tooth"
-                  : "text-abyss-200 hover:bg-abyss-900/50"
+                  : "text-abyss-200 hover:bg-abyss-900/50",
+                streamingId && streamingId !== c.id
+                  ? "cursor-not-allowed opacity-50"
+                  : "cursor-pointer"
               )}
-              onClick={() => setActive(c.id)}
+              onClick={() => {
+                if (streamingId && streamingId !== c.id) return;
+                setActive(c.id);
+              }}
+              title={
+                streamingId && streamingId !== c.id
+                  ? "Дождитесь окончания текущего ответа"
+                  : undefined
+              }
             >
               <MessageSquare size={14} className="shrink-0 opacity-60" />
               <span className="flex-1 truncate">{c.title}</span>
+              {streamingId === c.id && (
+                <span className="w-1.5 h-1.5 rounded-full bg-shark animate-pulse shrink-0" />
+              )}
               <button
                 onClick={(e) => {
                   e.stopPropagation();

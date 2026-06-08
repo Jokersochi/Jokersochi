@@ -108,6 +108,9 @@ export const useStore = create<State>()(
       },
       setActive: (id) =>
         set((s) => {
+          // Не уводим фокус с разговора, в который сейчас стримится ответ —
+          // иначе пользователь не увидит токены, прилетающие в исходный чат.
+          if (s.streamingId && s.streamingId !== id) return s;
           const conv = s.conversations.find((c) => c.id === id);
           return { activeId: id, mode: conv?.mode ?? s.mode };
         }),

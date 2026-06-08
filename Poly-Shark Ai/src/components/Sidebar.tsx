@@ -25,8 +25,10 @@ export function Sidebar() {
           </div>
         </div>
         <button
-          onClick={() => newConversation()}
-          className="w-full flex items-center justify-center gap-2 bg-shark-shine text-white font-medium py-2.5 rounded-lg hover:opacity-90 transition animate-pulse-glow"
+          onClick={() => { if (!streamingId) newConversation(); }}
+          disabled={!!streamingId}
+          title={streamingId ? "Дождитесь окончания текущего ответа" : undefined}
+          className="w-full flex items-center justify-center gap-2 bg-shark-shine text-white font-medium py-2.5 rounded-lg hover:opacity-90 transition animate-pulse-glow disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Plus size={16} /> Новый диалог
         </button>

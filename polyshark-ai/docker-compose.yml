@@ -1,0 +1,95 @@
+# ============================================
+# PolyShark AI — Docker Compose
+# Запуск: docker-compose up -d
+# ============================================
+
+version: '3.9'
+
+services:
+
+  # ---- Redis (кеш фич и рейтингов) ----
+  redis:
+    image: redis:7.2-alpine
+    container_name: polyshark_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ---- Основное приложение PolyShark ----
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: polyshark_app
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./models:/app/models        # сохранённые ML-модели
+      - ./logs:/app/logs            # логи
+      - ./data:/app/data            # исторические данные
+    ports:
+      - "8000:8000"                 # FastAPI дашборд API
+    command: python -m uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload
+
+  # ---- Агент (отдельный процесс) ----
+  agent:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: polyshark_agent
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./models:/app/models
+      - ./logs:/app/logs
+      - ./data:/app/data
+    command: python -m agents.orchestrator
+
+  # ---- Jupyter (для backtesting и исследований) ----
+  jupyter:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: polyshark_jupyter
+    restart: "no"
+    env_file:
+      - .env
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./notebooks:/app/notebooks
+      - ./data:/app/data
+      - ./models:/app/models
+    command: jupyter notebook --ip=0.0.0.0 --no-browser --allow-root --NotebookApp.token=polyshark
+    profiles:
+      - research  # запускается только с: docker-compose --profile research up jupyter
+
+volumes:
+  redis_data:
+    driver: local
+
+networks:
+  default:
+    name: polyshark_network

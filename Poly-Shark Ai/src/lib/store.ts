@@ -92,18 +92,20 @@ export const useStore = create<State>()(
       streamingId: null,
       setStreamingId: (id) => set({ streamingId: id }),
       newConversation: (mode) => {
+        const s = get();
+        if (s.streamingId) return s.streamingId;
         const id = uid();
         const conv: Conversation = {
           id,
           title: "Новый диалог",
           messages: [],
           createdAt: Date.now(),
-          mode: mode ?? get().mode,
+          mode: mode ?? s.mode,
         };
-        set((s) => ({
+        set({
           conversations: [conv, ...s.conversations],
           activeId: id,
-        }));
+        });
         return id;
       },
       setActive: (id) =>

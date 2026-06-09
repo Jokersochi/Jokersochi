@@ -56,7 +56,7 @@ export function Chat() {
     sendingRef.current = true;
     setLoading(true);
     let id = activeId;
-    if (!id) id = newConversation(mode);
+    if (!id || !conversations.some((c) => c.id === id)) id = newConversation(mode);
     const convId = id;
     const userMsg = {
       id: Math.random().toString(36).slice(2),

@@ -194,6 +194,7 @@ export const useStore = create<State>()(
         if (!state?.activeId) return;
         const conv = state.conversations.find((c) => c.id === state.activeId);
         if (conv) state.mode = conv.mode;
+        else state.activeId = null;
       },
     }
   )

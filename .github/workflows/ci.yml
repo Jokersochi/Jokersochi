@@ -1,15 +1,13 @@
 name: CI
 
-permissions:
-  contents: read
-  issues: write
-
 on:
+  push:
+    branches: [main]
   pull_request:
     branches: [main]
 
 jobs:
-  capture-tests:
+  test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -21,24 +19,7 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci
-      - name: Capture Jest errors
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set +e
-          npm test -- --runInBand > /tmp/jest.log 2>&1
-          status=$?
-          set -e
-          if [ "$status" -eq 0 ]; then
-            echo "Jest is clean"
-            exit 0
-          fi
-          {
-            echo 'Jest failed on PR #${{ github.event.pull_request.number }}.'
-            echo
-            echo '```text'
-            cat /tmp/jest.log
-            echo '```'
-          } > /tmp/jest-issue.md
-          gh issue create --title "[CI DIAGNOSTIC] Profile Jest PR #${{ github.event.pull_request.number }}" --body-file /tmp/jest-issue.md
-          exit 1
+      - name: Unit tests
+        run: npm test -- --runInBand
+      - name: Build
+        run: npm run build

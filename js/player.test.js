@@ -19,8 +19,7 @@ describe('Player Class', () => {
   beforeEach(() => {
     // Reset mocks and create a new player before each test
     eventBus.emit.mockClear();
-    player = new Player('p1', 'Joker', '
-      ');
+    player = new Player('p1', 'Joker', '');
   });
 
   test('should be instantiated with starting money and correct properties', () => {
@@ -38,7 +37,6 @@ describe('Player Class', () => {
 
       // Check if money was updated
       expect(player.money).toBe(startingMoney + amountToAdd);
-
       // Check if the event was emitted correctly
       expect(eventBus.emit).toHaveBeenCalledTimes(1);
       expect(eventBus.emit).toHaveBeenCalledWith('moneyChanged', {

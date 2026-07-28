@@ -1,18 +1,22 @@
 {
   "lint": {
+    "rules": {
+      "exclude": [
+        "no-window",
+        "no-window-prefix",
+        "no-node-globals"
+      ]
+    },
     "exclude": [
-      "Poly-Shark Ai/",
-      "polyshark-ai/",
+      "node_modules/",
+      "dist/",
+      "apps/",
+      "Make up Sochi/",
+      "jokersochi-improvement-pack-v2/",
+      "jokersochi-hardening-pack-v1/",
+      "docs/",
       "js/dist/",
-      "node_modules/"
-    ]
-  },
-  "fmt": {
-    "exclude": [
-      "Poly-Shark Ai/",
-      "polyshark-ai/",
-      "js/dist/",
-      "node_modules/"
+      ".snapshots/"
     ]
   }
 }

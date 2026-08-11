@@ -1,7 +1,6 @@
 module.exports = {
-  extends: ['stylelint-config-standard'],
   rules: {
-    // Запрещаем физические CSS-свойства (margin-left, padding-right и т.д.)
+    // Keep the project-specific logical-property policy without external plugins.
     'declaration-property-value-disallowed-list': {
       '/^(margin|padding|border)-(left|right|top|bottom)/': [/.*/],
       '/^(left|right|top|bottom)$/': [/.*/],
@@ -10,4 +9,4 @@ module.exports = {
       '/^border-(top|bottom|left|right)-(left|right)-radius$/': [/.*/]
     }
   }
-}; 
+};

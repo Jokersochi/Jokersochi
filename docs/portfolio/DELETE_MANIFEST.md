@@ -9,7 +9,7 @@ Each repository below passes the strict safety gate:
 - no local commits not present in upstream;
 - no side branches;
 - no open PR or issue;
-- no release, deployment, package or GitHub Pages site;
+- no release, tag, deployment, package or GitHub Pages site;
 - no indexed reference from another Jokersochi repository;
 - exact upstream and recovery commit recorded.
 
@@ -36,4 +36,4 @@ All other audited forks remain excluded from deletion because they have at least
 4. Record the exact time and result in Issue #58.
 5. Stop immediately if GitHub reports a dependency, transfer, or recovery concern.
 
-No repository was archived or deleted while this document was created.
+All three fork repositories were also verified to have zero tag refs.\n\nNo repository was archived or deleted while this document was created.

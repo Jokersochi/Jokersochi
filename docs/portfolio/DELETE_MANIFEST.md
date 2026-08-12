@@ -1,8 +1,8 @@
 # Proven-Clean Fork Deletion Manifest
 
-> Checked: 11 August 2026  
+> Checked: 12 August 2026  
 > Governing issue: [#58](https://github.com/Jokersochi/Jokersochi/issues/58)  
-> Status: deletion candidates only — do not delete through a bulk script.
+> Status: owner-authorized deletion candidates; delete one at a time only after the final live check.
 
 Each repository below passes the strict safety gate:
 
@@ -17,7 +17,7 @@ Each repository below passes the strict safety gate:
 |---|---|---|---|---|
 | `Jokersochi/flux` | `black-forest-labs/flux` | `802fb4713906133fcbd0d8dc5351620ca4773036` | main is identical, ahead 0 / behind 0 | DELETE CANDIDATE |
 | `Jokersochi/shellcheck.net` | `koalaman/shellcheck.net` | `7edea01d7cda00acb9f12f5746fd00dc4271f689` | master is identical, ahead 0 / behind 0 | DELETE CANDIDATE |
-| `Jokersochi/opensre` | `Tracer-Cloud/opensre` | `08b33468850bfda5f955f6343544521efd11bc35` | main is an upstream ancestor, ahead 0 / behind 2066 | DELETE CANDIDATE |
+| `Jokersochi/opensre` | `Tracer-Cloud/opensre` | `08b33468850bfda5f955f6343544521efd11bc35` | main is an upstream ancestor, ahead 0 / behind 2082 | DELETE CANDIDATE |
 
 ## Exclusions
 
@@ -36,4 +36,6 @@ All other audited forks remain excluded from deletion because they have at least
 4. Record the exact time and result in Issue #58.
 5. Stop immediately if GitHub reports a dependency, transfer, or recovery concern.
 
-All three fork repositories were also verified to have zero tag refs.\n\nNo repository was archived or deleted while this document was created.
+All three fork repositories were rechecked on 12 August 2026: each has one upstream-only branch, zero tag refs, zero releases, zero open pull requests, and no GitHub Pages site. `flux` and `shellcheck.net` remain identical to upstream; `opensre` remains an upstream ancestor with zero local commits.
+
+The owner explicitly confirmed deletion on 12 August 2026. The final GitHub Settings action remains pending until an authenticated settings session is available; no repository is recorded as deleted before a post-action 404 check.

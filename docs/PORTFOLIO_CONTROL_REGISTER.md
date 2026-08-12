@@ -1,6 +1,6 @@
 # GitHub Portfolio Control Register
 
-> Updated: 11 August 2026  
+> Updated: 12 August 2026  
 > Owner: Jokersochi  
 > Control issue: [#57](https://github.com/Jokersochi/Jokersochi/issues/57)
 
@@ -41,13 +41,21 @@ The detailed fork decision record lives in [#58](https://github.com/Jokersochi/J
 
 | Order | Action | Evidence / tracker | State |
 |---:|---|---|---|
-| 1 | Switch SochiHouseApp default branch to `main` | `codex/launch-readiness` has no unique commits and is one commit behind `main`; [#1](https://github.com/Jokersochi/SochiHouseApp/issues/1) | ready; GitHub settings action pending |
+| 1 | Switch SochiHouseApp default branch to `main` | `codex/launch-readiness` has no unique commits and is one commit behind `main`; [#1](https://github.com/Jokersochi/SochiHouseApp/issues/1) | owner confirmed 12 Aug; authenticated GitHub Settings action pending |
 | 2 | Stop PR fan-out and create a disposition register | Wan2.2, russian-monopoly-local, `-` | active audit |
-| 3 | Complete fork forensics and prepare exact deletion manifest | [#58](https://github.com/Jokersochi/Jokersochi/issues/58) | active audit |
-| 4 | Fix Vercel configuration drift for RealtyAI | duplicate Next.js projects and stale Vite project; [#37](https://github.com/Jokersochi/ai-realtor/issues/37) | root cause confirmed |
+| 3 | Delete only the three proven-clean forks in the manifest | [#58](https://github.com/Jokersochi/Jokersochi/issues/58) | live gate rechecked and owner confirmed 12 Aug; authenticated deletion pending |
+| 4 | Fix Vercel configuration drift for RealtyAI | `ai-realtor` confirmed canonical; `ai-realtor-web` duplicates successful builds and `frontend` is stale Vite; [#37](https://github.com/Jokersochi/ai-realtor/issues/37) | owner confirmed 12 Aug; authenticated Vercel settings action pending |
 | 5 | Reconnect MonopolyLux Vercel project | project currently deploys `Wan2.2`; [#6](https://github.com/Jokersochi/monopolylux/issues/6) | root cause confirmed |
 | 6 | Extract Sentinel Android UX safely | mobile prototype contains client-side provider access and simulated data; [#3](https://github.com/Jokersochi/sentinel-markets-ai/issues/3) | planned |
 | 7 | Consolidate RealtyAI and Monopoly sources | [RealtyAI #28](https://github.com/Jokersochi/ai-realtor/issues/28), [Monopoly #2](https://github.com/Jokersochi/monopolylux/issues/2) | active audit |
+
+## Execution log — 12 August 2026
+
+- RealtyAI environment ignore policy merged in [ai-realtor #39](https://github.com/Jokersochi/ai-realtor/pull/39).
+- Sentinel type baseline merged in [sentinel-markets-ai #7](https://github.com/Jokersochi/sentinel-markets-ai/pull/7); CI passed.
+- Sentinel explicit CORS policy merged in [sentinel-markets-ai #5](https://github.com/Jokersochi/sentinel-markets-ai/pull/5); CI passed after rebasing on #7.
+- Profile Pages permissions [#64](https://github.com/Jokersochi/Jokersochi/pull/64), portable Vite assets [#65](https://github.com/Jokersochi/Jokersochi/pull/65), and self-contained Stylelint [#63](https://github.com/Jokersochi/Jokersochi/pull/63) are merged.
+- Repository deletion, default-branch switching, and Vercel Git-link changes are not marked complete until verified from an authenticated settings session.
 
 ## Quarantine rules
 

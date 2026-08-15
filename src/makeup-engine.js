@@ -140,12 +140,11 @@ export function analyzeFace(width, height, { boundingBox } = {}) {
   const top = rect.y;
   const faceWidth = rect.w;
   const faceHeight = rect.h;
-  const eyeY = top + faceHeight * 0.385;
-  const eyeOffset = faceWidth * 0.265;
-  const eyeWidth = faceWidth * 0.22;
-  const eyeHeight = faceHeight * 0.075;
-  const lipY = top + faceHeight * 0.745;
-  const cheekY = top + faceHeight * 0.61;
+  const eyeY = top + faceHeight * 0.405;
+  const eyeWidth = faceWidth * 0.2;
+  const eyeHeight = faceHeight * 0.055;
+  const lipY = top + faceHeight * 0.69;
+  const cheekY = top + faceHeight * 0.55;
   const jawY = top + faceHeight * 0.79;
 
   return {
@@ -155,22 +154,22 @@ export function analyzeFace(width, height, { boundingBox } = {}) {
       right: { center: point(left + faceWidth * 0.68, eyeY), width: eyeWidth, height: eyeHeight, angle: 0.04 }
     },
     brows: {
-      left: point(left + faceWidth * 0.32, top + faceHeight * 0.305),
-      right: point(left + faceWidth * 0.68, top + faceHeight * 0.305)
+      left: point(left + faceWidth * 0.32, top + faceHeight * 0.34),
+      right: point(left + faceWidth * 0.68, top + faceHeight * 0.34)
     },
     cheeks: {
       left: point(left + faceWidth * 0.225, cheekY),
       right: point(left + faceWidth * 0.775, cheekY)
     },
     nose: {
-      bridge: point(left + faceWidth * 0.5, top + faceHeight * 0.47),
-      tip: point(left + faceWidth * 0.5, top + faceHeight * 0.62),
+      bridge: point(left + faceWidth * 0.5, top + faceHeight * 0.45),
+      tip: point(left + faceWidth * 0.5, top + faceHeight * 0.59),
       width: faceWidth * 0.16
     },
     lips: {
       center: point(left + faceWidth * 0.5, lipY),
-      width: faceWidth * 0.29,
-      height: faceHeight * 0.09
+      width: faceWidth * 0.28,
+      height: faceHeight * 0.065
     },
     jaw: {
       left: point(left + faceWidth * 0.12, jawY),
@@ -246,14 +245,14 @@ function liner(ctx, eye, color, alpha, widthFactor = 1) {
   ctx.globalCompositeOperation = 'multiply';
   ctx.globalAlpha = clamp(alpha);
   ctx.strokeStyle = rgba(color, 0.82);
-  ctx.lineWidth = Math.max(1.15, width * 0.065 * widthFactor);
+  ctx.lineWidth = Math.max(1.1, width * 0.05 * widthFactor);
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
   ctx.filter = 'blur(.32px)';
   ctx.beginPath();
-  ctx.moveTo(x - width * 0.56, y + height * 0.13);
-  ctx.quadraticCurveTo(x, y - height * 0.72, x + width * 0.56, y + height * 0.1);
-  ctx.quadraticCurveTo(x + width * 0.72, y - height * 0.02, x + width * 0.84, y - height * 0.2);
+  ctx.moveTo(x - width * 0.56, y + height * 0.08);
+  ctx.quadraticCurveTo(x, y - height * 0.2, x + width * 0.56, y + height * 0.04);
+  ctx.quadraticCurveTo(x + width * 0.7, y - height * 0.02, x + width * 0.82, y - height * 0.15);
   ctx.stroke();
   ctx.restore();
 }
@@ -383,6 +382,7 @@ export function renderMakeup({
   const roles = variant?.roles ?? {};
   const layerMix = variant?.intensity ?? {};
   const widthUnit = geometry.rect.w;
+  const linerColor = roles.liner ?? (template?.id === 'soft-glow' ? '#49363e' : '#352a36');
   const alphaFor = (layer, multiplier = 1) => style[layer]
     * strength(layer, (layerMix[layer] ?? 1) * multiplier, intensity, groupMix, visibleGroups);
 
@@ -402,8 +402,8 @@ export function renderMakeup({
 
   eyeShape(context, geometry.eyes.left, roles.shadow ?? '#a68caa', alphaFor('shadow'), widthUnit * 0.018, intensity);
   eyeShape(context, geometry.eyes.right, roles.shadow ?? '#a68caa', alphaFor('shadow'), widthUnit * 0.018, intensity);
-  liner(context, geometry.eyes.left, roles.liner ?? roles.shadow ?? '#352a36', alphaFor('liner'), template?.id === 'color-pop' ? 1.08 : 0.92);
-  liner(context, geometry.eyes.right, roles.liner ?? roles.shadow ?? '#352a36', alphaFor('liner'), template?.id === 'color-pop' ? 1.08 : 0.92);
+  liner(context, geometry.eyes.left, linerColor, alphaFor('liner'), template?.id === 'color-pop' ? 1.08 : 0.92);
+  liner(context, geometry.eyes.right, linerColor, alphaFor('liner'), template?.id === 'color-pop' ? 1.08 : 0.92);
 
   browHighlight(context, geometry.brows.left, roles.highlight ?? '#fff2e9', alphaFor('highlight', 0.44), widthUnit);
   browHighlight(context, geometry.brows.right, roles.highlight ?? '#fff2e9', alphaFor('highlight', 0.44), widthUnit);

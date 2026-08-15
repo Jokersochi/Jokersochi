@@ -3,13 +3,13 @@ import { templates } from './templates.js';
 import demoPortraitUrl from './assets/demo-portrait.jpg?url';
 import { analyzeFace, detectFace, renderMakeup } from './makeup-engine.js';
 
-const STORAGE_KEY = 'visage-studio-session-v3';
+const STORAGE_KEY = 'visage-studio-session-v4';
 const primaryTemplate = templates[0];
 
 const GROUPS = [
-  { id: 'base', label: 'Кожа', sublabel: 'Румянец, сияние и контур', layers: ['blush', 'contour', 'highlight'], defaultValue: 0.76 },
-  { id: 'eyes', label: 'Глаза', sublabel: 'Тени и линия ресниц', layers: ['shadow', 'liner'], defaultValue: 0.78 },
-  { id: 'lips', label: 'Губы', sublabel: 'Цвет и мягкий блеск', layers: ['lips'], defaultValue: 0.74 }
+  { id: 'base', label: 'Кожа', sublabel: 'Румянец, сияние и контур', layers: ['blush', 'contour', 'highlight'], defaultValue: 0.9 },
+  { id: 'eyes', label: 'Глаза', sublabel: 'Тени и линия ресниц', layers: ['shadow', 'liner'], defaultValue: 0.92 },
+  { id: 'lips', label: 'Губы', sublabel: 'Цвет и мягкий блеск', layers: ['lips'], defaultValue: 0.9 }
 ];
 
 const ICONS = {

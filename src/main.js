@@ -1,6 +1,6 @@
 import './style.css';
 import { templates } from './templates.js';
-import demoPortraitUrl from './assets/demo-portrait.png?url';
+import demoPortraitUrl from './assets/demo-portrait.jpg?url';
 import { analyzeFace, detectFace, renderMakeup } from './makeup-engine.js';
 
 const STORAGE_KEY = 'visage-studio-session-v3';
@@ -50,7 +50,7 @@ const state = {
   photoMode: 'demo',
   photoFileName: '',
   photoObjectUrl: '',
-  face: analyzeFace(1122, 1402),
+  face: analyzeFace(720, 900),
   faceStatus: 'estimated'
 };
 
@@ -512,7 +512,7 @@ function loadDemoPhoto() {
   state.photoMode = 'demo';
   state.photoFileName = '';
   state.showBefore = false;
-  state.face = analyzeFace(1122, 1402);
+  state.face = analyzeFace(720, 900);
   state.faceStatus = 'estimated';
   photoElement.src = demoPortraitUrl;
   setStatus('Демо‑портрет открыт. Выберите образ справа.', 'success');

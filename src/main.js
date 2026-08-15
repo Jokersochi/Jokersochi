@@ -1,6 +1,7 @@
 import './style.css';
 import { templates } from './templates.js';
-import demoFaceUrl from './assets/demo-face.svg?url';
+import demoPortraitUrl from './assets/demo-portrait.jpg?url';
+import { analyzeFace, detectFace, renderMakeup } from './makeup-engine.js';
 
 const STORAGE_KEY = 'visage-studio-session-v3';
 const primaryTemplate = templates[0];
@@ -10,15 +11,6 @@ const GROUPS = [
   { id: 'eyes', label: 'Глаза', sublabel: 'Тени и линия ресниц', layers: ['shadow', 'liner'], defaultValue: 0.78 },
   { id: 'lips', label: 'Губы', sublabel: 'Цвет и мягкий блеск', layers: ['lips'], defaultValue: 0.74 }
 ];
-
-const SOFTNESS = {
-  blush: 0.7,
-  contour: 0.42,
-  highlight: 0.5,
-  shadow: 0.72,
-  liner: 0.66,
-  lips: 0.78
-};
 
 const ICONS = {
   sparkle: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 1.35 6.65L20 10l-6.65 1.35L12 18l-1.35-6.65L4 10l6.65-1.35L12 2Z"/><path d="m19 16 .6 2.4L22 19l-2.4.6L19 22l-.6-2.4L16 19l2.4-.6L19 16Z"/></svg>',
@@ -57,7 +49,9 @@ const state = {
   zoom: 1,
   photoMode: 'demo',
   photoFileName: '',
-  photoObjectUrl: ''
+  photoObjectUrl: '',
+  face: analyzeFace(720, 900),
+  faceStatus: 'estimated'
 };
 
 app.innerHTML = `
@@ -129,7 +123,7 @@ app.innerHTML = `
         <section class="stage" aria-label="Предпросмотр образа">
           <div class="stage__frame" data-role="stage-frame" data-mode="demo">
             <div class="stage__grid" aria-hidden="true"></div>
-            <img class="stage__photo" src="${demoFaceUrl}" alt="Демонстрационный портрет" data-role="photo" draggable="false" />
+            <img class="stage__photo" src="${demoPortraitUrl}" alt="Демонстрационный портрет" data-role="photo" draggable="false" />
             <canvas class="stage__overlay" data-role="overlay" aria-hidden="true"></canvas>
             <div class="stage__caption"><span class="stage__caption-dot"></span><span data-role="photo-label">Демонстрационный портрет</span></div>
             <div class="stage__hint" data-role="drag-hint">Потяните изображение, чтобы выровнять образ</div>
@@ -453,67 +447,24 @@ function drawOverlay() {
   const ratio = window.devicePixelRatio || 1;
   overlayContext.setTransform(1, 0, 0, 1, 0, 0);
   overlayContext.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
-  if (state.showBefore || !width || !height) return;
+  if (!width || !height) return;
   overlayContext.setTransform(ratio, 0, 0, ratio, 0, 0);
-  const template = getCurrentTemplate();
-  const variant = getCurrentVariant();
-  if (!template) return;
-
-  overlayContext.save();
-  overlayContext.translate(width / 2 + state.offset.x * width, height / 2 + state.offset.y * height);
-  overlayContext.rotate((state.rotation * Math.PI) / 180);
-  overlayContext.scale(state.scale * state.zoom, state.scale * state.zoom);
-  overlayContext.translate(-width / 2, -height / 2);
-  template.overlays.forEach((layer) => {
-    const groupId = groupForLayer(layer.group);
-    if (groupId && !state.visibleGroups[groupId]) return;
-    const color = resolveLayerColor(layer, variant);
-    const opacity = resolveLayerOpacity(layer, variant, groupId);
-    if (!color || opacity <= 0) return;
-    overlayContext.save();
-    overlayContext.globalAlpha = opacity;
-    overlayContext.globalCompositeOperation = layer.blend ?? 'source-over';
-    overlayContext.filter = layer.blur ? `blur(${(layer.blur * Math.max(width, height)).toFixed(2)}px)` : 'none';
-    drawLayer(overlayContext, layer, width, height, color);
-    overlayContext.restore();
+  renderMakeup({
+    context: overlayContext,
+    width,
+    height,
+    face: state.face,
+    template: getCurrentTemplate(),
+    variant: getCurrentVariant(),
+    intensity: state.intensity,
+    groupMix: state.groupMix,
+    visibleGroups: state.visibleGroups,
+    scale: state.scale * state.zoom,
+    rotation: state.rotation,
+    offset: state.offset,
+    showBefore: state.showBefore
   });
-  overlayContext.restore();
   overlayContext.setTransform(1, 0, 0, 1, 0, 0);
-}
-
-function drawLayer(ctx, layer, width, height, color) {
-  const x = layer.x * width;
-  const y = layer.y * height;
-  const rx = (layer.rx ?? 0) * width;
-  const ry = (layer.ry ?? 0) * height;
-  const rotation = ((layer.rotation ?? 0) * Math.PI) / 180;
-  ctx.save();
-  ctx.translate(x, y);
-  if (rotation) ctx.rotate(rotation);
-  if (layer.type === 'ellipse') {
-    ctx.beginPath();
-    ctx.ellipse(0, 0, rx, ry, 0, 0, Math.PI * 2);
-    ctx.fillStyle = color;
-    ctx.fill();
-  } else if (layer.type === 'rect') {
-    const w = (layer.width ?? 0.1) * width;
-    const h = (layer.height ?? 0.05) * height;
-    ctx.fillStyle = color;
-    ctx.fillRect(-w / 2, -h / 2, w, h);
-  }
-  ctx.restore();
-}
-
-function resolveLayerColor(layer, variant) {
-  return variant?.roles?.[layer.group] ?? layer.color ?? null;
-}
-
-function resolveLayerOpacity(layer, variant, groupId) {
-  const base = layer.opacity ?? 1;
-  const variantMix = variant?.intensity?.[layer.group] ?? 1;
-  const groupMix = groupId ? state.groupMix[groupId] : 1;
-  const softness = SOFTNESS[layer.group] ?? 0.72;
-  return clamp(base * state.intensity * variantMix * groupMix * softness, 0, 1);
 }
 
 function updateImageFilter() {
@@ -524,10 +475,10 @@ function updateImageFilter() {
     return;
   }
   const filters = template.filters ?? {};
-  const brightness = clamp((filters.brightness ?? 1) * (1 + state.exposure), 0.25, 2).toFixed(2);
-  const contrast = clamp(filters.contrast ?? 1, 0.5, 2).toFixed(2);
-  const saturate = clamp(filters.saturate ?? 1, 0.5, 2).toFixed(2);
-  const warmth = (filters.warmth ?? 0) + state.warmth;
+  const brightness = clamp(1 + ((filters.brightness ?? 1) - 1) * 0.32 + state.exposure * 0.28, 0.96, 1.06).toFixed(3);
+  const contrast = clamp(1 + ((filters.contrast ?? 1) - 1) * 0.28, 0.97, 1.05).toFixed(3);
+  const saturate = clamp(1 + ((filters.saturate ?? 1) - 1) * 0.22, 0.98, 1.05).toFixed(3);
+  const warmth = ((filters.warmth ?? 0) + state.warmth) * 0.35;
   const parts = [`brightness(${brightness})`, `contrast(${contrast})`, `saturate(${saturate})`];
   if (Math.abs(warmth) > 0.001) parts.push(`hue-rotate(${(warmth * 24).toFixed(1)}deg)`);
   photoElement.style.filter = parts.join(' ');
@@ -564,16 +515,29 @@ function loadDemoPhoto() {
   state.photoMode = 'demo';
   state.photoFileName = '';
   state.showBefore = false;
-  photoElement.src = demoFaceUrl;
+  state.face = analyzeFace(720, 900);
+  state.faceStatus = 'estimated';
+  photoElement.src = demoPortraitUrl;
   setStatus('Демо‑портрет открыт. Выберите образ справа.', 'success');
 }
 
-function handlePhotoLoad() {
+async function handlePhotoLoad() {
   const { naturalWidth, naturalHeight } = photoElement;
   stageFrame.style.aspectRatio = naturalWidth > 0 && naturalHeight > 0 ? `${naturalWidth} / ${naturalHeight}` : '4 / 5';
   stageFrame.dataset.mode = state.photoMode;
+  state.face = analyzeFace(naturalWidth, naturalHeight);
+  state.faceStatus = 'estimated';
   updatePhotoUi();
   scheduleRender();
+  const boundingBox = await detectFace(photoElement);
+  if (boundingBox) {
+    state.face = analyzeFace(naturalWidth, naturalHeight, { boundingBox });
+    state.faceStatus = 'detected';
+    readinessTitle.textContent = state.photoMode === 'demo' ? 'Демо‑портрет распознан' : 'Лицо распознано';
+    readinessText.textContent = 'Зоны макияжа выровнены по чертам лица';
+    setStatus('Лицо распознано: маски выровнены по чертам.', 'success');
+    scheduleRender();
+  }
 }
 
 function updatePhotoUi() {
@@ -582,12 +546,12 @@ function updatePhotoUi() {
   stageEmpty.hidden = true;
   photoLabel.textContent = isDemo ? 'Демонстрационный портрет' : state.photoFileName || 'Ваш портрет';
   if (isDemo) {
-    readinessTitle.textContent = 'Демо‑портрет готов';
-    readinessText.textContent = 'Можно сразу выбирать образ';
+    readinessTitle.textContent = state.faceStatus === 'detected' ? 'Демо‑портрет распознан' : 'Демо‑портрет готов';
+    readinessText.textContent = state.faceStatus === 'detected' ? 'Зоны макияжа выровнены по чертам лица' : 'Можно сразу выбирать образ';
   } else {
     const ready = photoElement.naturalWidth >= 720 && photoElement.naturalHeight >= 720;
-    readinessTitle.textContent = ready ? 'Фото подходит' : 'Проверьте разрешение';
-    readinessText.textContent = ready ? `${photoElement.naturalWidth} × ${photoElement.naturalHeight} px` : 'Рекомендуется минимум 720 px';
+    readinessTitle.textContent = state.faceStatus === 'detected' ? 'Лицо распознано' : ready ? 'Фото подходит' : 'Проверьте разрешение';
+    readinessText.textContent = state.faceStatus === 'detected' ? 'Зоны макияжа выровнены по чертам лица' : ready ? `${photoElement.naturalWidth} × ${photoElement.naturalHeight} px` : 'Рекомендуется минимум 720 px';
   }
 }
 
@@ -733,10 +697,6 @@ function getCurrentTemplate() { return templates.find((template) => template.id 
 function getCurrentVariant() {
   const variants = getCurrentTemplate()?.variants ?? [];
   return variants.find((variant) => variant.id === state.variantId) ?? variants[0] ?? null;
-}
-function groupForLayer(layer) {
-  const layerName = typeof layer === 'string' ? layer : layer?.group;
-  return GROUPS.find((group) => group.layers.includes(layerName))?.id ?? null;
 }
 function createTemplateDefaults(template) {
   const defaults = template.defaults ?? {};

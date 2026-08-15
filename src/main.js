@@ -734,7 +734,10 @@ function getCurrentVariant() {
   const variants = getCurrentTemplate()?.variants ?? [];
   return variants.find((variant) => variant.id === state.variantId) ?? variants[0] ?? null;
 }
-function groupForLayer(layer) { return GROUPS.find((group) => group.layers.includes(layer))?.id ?? null; }
+function groupForLayer(layer) {
+  const layerName = typeof layer === 'string' ? layer : layer?.group;
+  return GROUPS.find((group) => group.layers.includes(layerName))?.id ?? null;
+}
 function createTemplateDefaults(template) {
   const defaults = template.defaults ?? {};
   return { intensity: defaults.intensity ?? 0.82, scale: defaults.scale ?? 1, rotation: defaults.rotation ?? 0, warmth: defaults.warmth ?? 0, exposure: defaults.exposure ?? 0, offset: { x: defaults.offsetX ?? 0, y: defaults.offsetY ?? 0 }, variantId: template.defaultVariant ?? template.variants?.[0]?.id ?? null };

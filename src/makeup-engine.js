@@ -2,34 +2,34 @@ const TAU = Math.PI * 2;
 
 const STYLE_BY_TEMPLATE = {
   'soft-glow': {
-    blush: 0.22,
-    shadow: 0.1,
-    liner: 0.12,
-    lips: 0.24,
-    contour: 0.1,
-    highlight: 0.16,
-    gloss: 0.16,
-    softness: 1.2
+    blush: 0.44,
+    shadow: 0.34,
+    liner: 0.48,
+    lips: 0.52,
+    contour: 0.2,
+    highlight: 0.28,
+    gloss: 0.22,
+    softness: 0.78
   },
   'evening-drama': {
-    blush: 0.28,
-    shadow: 0.34,
-    liner: 0.34,
-    lips: 0.38,
-    contour: 0.2,
-    highlight: 0.18,
-    gloss: 0.08,
-    softness: 0.8
+    blush: 0.52,
+    shadow: 0.74,
+    liner: 0.82,
+    lips: 0.76,
+    contour: 0.4,
+    highlight: 0.34,
+    gloss: 0.12,
+    softness: 0.66
   },
   'color-pop': {
-    blush: 0.25,
-    shadow: 0.28,
-    liner: 0.3,
-    lips: 0.34,
-    contour: 0.12,
-    highlight: 0.18,
-    gloss: 0.18,
-    softness: 0.92
+    blush: 0.48,
+    shadow: 0.68,
+    liner: 0.78,
+    lips: 0.72,
+    contour: 0.3,
+    highlight: 0.34,
+    gloss: 0.24,
+    softness: 0.72
   }
 };
 
@@ -51,6 +51,63 @@ function rgba(color, alpha = 1) {
 }
 
 function point(x, y) { return { x, y }; }
+
+function canvasPoint(source, width, height) {
+  return point(source.x * width, source.y * height);
+}
+
+/**
+ * The face model is stored in normalized image coordinates so the same
+ * landmarks work at preview and export resolutions. Canvas APIs use pixels,
+ * therefore every position and size must be projected before painting.
+ */
+export function faceToCanvasGeometry(face, width, height) {
+  if (!face || !width || !height) return null;
+  return {
+    rect: {
+      x: face.rect.x * width,
+      y: face.rect.y * height,
+      w: face.rect.w * width,
+      h: face.rect.h * height
+    },
+    eyes: {
+      left: {
+        ...face.eyes.left,
+        center: canvasPoint(face.eyes.left.center, width, height),
+        width: face.eyes.left.width * width,
+        height: face.eyes.left.height * height
+      },
+      right: {
+        ...face.eyes.right,
+        center: canvasPoint(face.eyes.right.center, width, height),
+        width: face.eyes.right.width * width,
+        height: face.eyes.right.height * height
+      }
+    },
+    brows: {
+      left: canvasPoint(face.brows.left, width, height),
+      right: canvasPoint(face.brows.right, width, height)
+    },
+    cheeks: {
+      left: canvasPoint(face.cheeks.left, width, height),
+      right: canvasPoint(face.cheeks.right, width, height)
+    },
+    nose: {
+      bridge: canvasPoint(face.nose.bridge, width, height),
+      tip: canvasPoint(face.nose.tip, width, height),
+      width: face.nose.width * width
+    },
+    lips: {
+      center: canvasPoint(face.lips.center, width, height),
+      width: face.lips.width * width,
+      height: face.lips.height * height
+    },
+    jaw: {
+      left: canvasPoint(face.jaw.left, width, height),
+      right: canvasPoint(face.jaw.right, width, height)
+    }
+  };
+}
 
 function normalizedBoundingBox(width, height, boundingBox) {
   if (!boundingBox || !width || !height) return null;
@@ -146,9 +203,9 @@ function ellipse(ctx, center, radiusX, radiusY, color, alpha, blend = 'soft-ligh
   ctx.globalAlpha = clamp(alpha);
   if (blur) ctx.filter = `blur(${blur}px)`;
   const gradient = ctx.createRadialGradient(center.x, center.y, 0, center.x, center.y, Math.max(radiusX, radiusY));
-  gradient.addColorStop(0, rgba(color, 0.95));
-  gradient.addColorStop(0.38, rgba(color, 0.52));
-  gradient.addColorStop(0.76, rgba(color, 0.12));
+  gradient.addColorStop(0, rgba(color, 1));
+  gradient.addColorStop(0.4, rgba(color, 0.72));
+  gradient.addColorStop(0.78, rgba(color, 0.16));
   gradient.addColorStop(1, rgba(color, 0));
   ctx.fillStyle = gradient;
   ctx.beginPath();
@@ -166,7 +223,7 @@ function eyeShape(ctx, eye, color, alpha, blur, intensity) {
   ctx.globalCompositeOperation = 'soft-light';
   ctx.globalAlpha = clamp(alpha);
   ctx.filter = `blur(${blur}px)`;
-  const gradient = ctx.createLinearGradient(x, y - height * 2.2, x, y + height * 2.8);
+  const gradient = ctx.createLinearGradient(x, y - height * 1.7, x, y + height * 1.1);
   gradient.addColorStop(0, rgba(color, 0));
   gradient.addColorStop(0.22, rgba(color, 0.35));
   gradient.addColorStop(0.55, rgba(color, 0.82));
@@ -174,8 +231,8 @@ function eyeShape(ctx, eye, color, alpha, blur, intensity) {
   ctx.fillStyle = gradient;
   ctx.beginPath();
   ctx.moveTo(x - width * 0.6, y + height * 0.25);
-  ctx.quadraticCurveTo(x, y - height * (3.0 + intensity), x + width * 0.6, y + height * 0.25);
-  ctx.quadraticCurveTo(x, y + height * 2.7, x - width * 0.6, y + height * 0.25);
+  ctx.quadraticCurveTo(x, y - height * (1.05 + intensity * 0.38), x + width * 0.6, y + height * 0.25);
+  ctx.quadraticCurveTo(x, y + height * 0.58, x - width * 0.6, y + height * 0.25);
   ctx.fill();
   ctx.restore();
 }
@@ -189,7 +246,7 @@ function liner(ctx, eye, color, alpha, widthFactor = 1) {
   ctx.globalCompositeOperation = 'multiply';
   ctx.globalAlpha = clamp(alpha);
   ctx.strokeStyle = rgba(color, 0.82);
-  ctx.lineWidth = Math.max(0.8, width * 0.055 * widthFactor);
+  ctx.lineWidth = Math.max(1.15, width * 0.065 * widthFactor);
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
   ctx.filter = 'blur(.32px)';
@@ -207,7 +264,7 @@ function browHighlight(ctx, brow, color, alpha, width) {
   ctx.globalCompositeOperation = 'screen';
   ctx.globalAlpha = clamp(alpha);
   ctx.strokeStyle = rgba(color, 0.55);
-  ctx.lineWidth = Math.max(1, width * 0.045);
+  ctx.lineWidth = Math.max(1, width * 0.028);
   ctx.lineCap = 'round';
   ctx.filter = 'blur(2px)';
   ctx.beginPath();
@@ -321,11 +378,13 @@ export function renderMakeup({
     return;
   }
   context.clearRect(0, 0, width, height);
-  const geometry = face ?? analyzeFace(width, height);
+  const geometry = faceToCanvasGeometry(face ?? analyzeFace(width, height), width, height);
   const style = STYLE_BY_TEMPLATE[template?.id] ?? STYLE_BY_TEMPLATE['soft-glow'];
   const roles = variant?.roles ?? {};
-  const widthUnit = geometry.rect.w * width;
-  const baseAlpha = intensity * (groupMix.base ?? 1);
+  const layerMix = variant?.intensity ?? {};
+  const widthUnit = geometry.rect.w;
+  const alphaFor = (layer, multiplier = 1) => style[layer]
+    * strength(layer, (layerMix[layer] ?? 1) * multiplier, intensity, groupMix, visibleGroups);
 
   context.save();
   context.translate(width / 2 + (offset?.x ?? 0) * width, height / 2 + (offset?.y ?? 0) * height);
@@ -333,25 +392,25 @@ export function renderMakeup({
   context.scale(scale, scale);
   context.translate(-width / 2, -height / 2);
 
-  // Every effect below is a low-alpha, soft mask. The original photo remains
-  // visible underneath, which keeps pores, fine hairs and uneven light intact.
-  ellipse(context, geometry.cheeks.left, widthUnit * 0.23, widthUnit * 0.13, roles.blush ?? '#e5969a', style.blush * strength('blush', 1, intensity, groupMix, visibleGroups), 'soft-light', widthUnit * style.softness * 0.04);
-  ellipse(context, geometry.cheeks.right, widthUnit * 0.23, widthUnit * 0.13, roles.blush ?? '#e5969a', style.blush * strength('blush', 1, intensity, groupMix, visibleGroups), 'soft-light', widthUnit * style.softness * 0.04);
-  cheekContour(context, geometry, roles.contour ?? '#6e493d', style.contour * strength('contour', 1, intensity, groupMix, visibleGroups), widthUnit, 'left');
-  cheekContour(context, geometry, roles.contour ?? '#6e493d', style.contour * strength('contour', 1, intensity, groupMix, visibleGroups), widthUnit, 'right');
-  noseContour(context, geometry.nose, roles.contour ?? '#6e493d', style.contour * 0.55 * strength('contour', 1, intensity, groupMix, visibleGroups), widthUnit);
+  // Every effect below is a translucent, face-shaped mask. The original photo
+  // stays visible underneath, preserving pores, fine hairs and uneven light.
+  ellipse(context, geometry.cheeks.left, widthUnit * 0.23, widthUnit * 0.13, roles.blush ?? '#e5969a', alphaFor('blush'), 'soft-light', widthUnit * style.softness * 0.04);
+  ellipse(context, geometry.cheeks.right, widthUnit * 0.23, widthUnit * 0.13, roles.blush ?? '#e5969a', alphaFor('blush'), 'soft-light', widthUnit * style.softness * 0.04);
+  cheekContour(context, geometry, roles.contour ?? '#6e493d', alphaFor('contour'), widthUnit, 'left');
+  cheekContour(context, geometry, roles.contour ?? '#6e493d', alphaFor('contour'), widthUnit, 'right');
+  noseContour(context, geometry.nose, roles.contour ?? '#6e493d', alphaFor('contour', 0.55), widthUnit);
 
-  eyeShape(context, geometry.eyes.left, roles.shadow ?? '#a68caa', style.shadow * strength('shadow', 1, intensity, groupMix, visibleGroups), widthUnit * 0.018, intensity);
-  eyeShape(context, geometry.eyes.right, roles.shadow ?? '#a68caa', style.shadow * strength('shadow', 1, intensity, groupMix, visibleGroups), widthUnit * 0.018, intensity);
-  liner(context, geometry.eyes.left, roles.liner ?? roles.shadow ?? '#352a36', style.liner * strength('liner', 1, intensity, groupMix, visibleGroups), template?.id === 'color-pop' ? 1.08 : 0.86);
-  liner(context, geometry.eyes.right, roles.liner ?? roles.shadow ?? '#352a36', style.liner * strength('liner', 1, intensity, groupMix, visibleGroups), template?.id === 'color-pop' ? 1.08 : 0.86);
+  eyeShape(context, geometry.eyes.left, roles.shadow ?? '#a68caa', alphaFor('shadow'), widthUnit * 0.018, intensity);
+  eyeShape(context, geometry.eyes.right, roles.shadow ?? '#a68caa', alphaFor('shadow'), widthUnit * 0.018, intensity);
+  liner(context, geometry.eyes.left, roles.liner ?? roles.shadow ?? '#352a36', alphaFor('liner'), template?.id === 'color-pop' ? 1.08 : 0.92);
+  liner(context, geometry.eyes.right, roles.liner ?? roles.shadow ?? '#352a36', alphaFor('liner'), template?.id === 'color-pop' ? 1.08 : 0.92);
 
-  browHighlight(context, geometry.brows.left, roles.highlight ?? '#fff2e9', style.highlight * 0.44 * strength('highlight', 1, intensity, groupMix, visibleGroups), widthUnit);
-  browHighlight(context, geometry.brows.right, roles.highlight ?? '#fff2e9', style.highlight * 0.44 * strength('highlight', 1, intensity, groupMix, visibleGroups), widthUnit);
-  ellipse(context, point(geometry.nose.bridge.x, geometry.nose.bridge.y - widthUnit * 0.01), widthUnit * 0.052, widthUnit * 0.16, roles.highlight ?? '#fff2e9', style.highlight * strength('highlight', 1, intensity, groupMix, visibleGroups), 'screen', widthUnit * 0.025);
-  ellipse(context, geometry.cheeks.left, widthUnit * 0.12, widthUnit * 0.07, roles.highlight ?? '#fff2e9', style.highlight * 0.55 * strength('highlight', 1, intensity, groupMix, visibleGroups), 'screen', widthUnit * 0.026);
-  ellipse(context, geometry.cheeks.right, widthUnit * 0.12, widthUnit * 0.07, roles.highlight ?? '#fff2e9', style.highlight * 0.55 * strength('highlight', 1, intensity, groupMix, visibleGroups), 'screen', widthUnit * 0.026);
-  lips(context, geometry.lips, roles.lips ?? '#bb6f77', style.lips * strength('lips', 1, intensity, groupMix, visibleGroups), style.gloss * strength('lips', 1, intensity, groupMix, visibleGroups), intensity);
+  browHighlight(context, geometry.brows.left, roles.highlight ?? '#fff2e9', alphaFor('highlight', 0.44), widthUnit);
+  browHighlight(context, geometry.brows.right, roles.highlight ?? '#fff2e9', alphaFor('highlight', 0.44), widthUnit);
+  ellipse(context, point(geometry.nose.bridge.x, geometry.nose.bridge.y - widthUnit * 0.01), widthUnit * 0.052, widthUnit * 0.16, roles.highlight ?? '#fff2e9', alphaFor('highlight'), 'screen', widthUnit * 0.025);
+  ellipse(context, geometry.cheeks.left, widthUnit * 0.12, widthUnit * 0.07, roles.highlight ?? '#fff2e9', alphaFor('highlight', 0.55), 'screen', widthUnit * 0.026);
+  ellipse(context, geometry.cheeks.right, widthUnit * 0.12, widthUnit * 0.07, roles.highlight ?? '#fff2e9', alphaFor('highlight', 0.55), 'screen', widthUnit * 0.026);
+  lips(context, geometry.lips, roles.lips ?? '#bb6f77', alphaFor('lips'), style.gloss * strength('lips', layerMix.lips ?? 1, intensity, groupMix, visibleGroups), intensity);
 
   context.restore();
 }

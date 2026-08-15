@@ -11,6 +11,8 @@ describe('makeup face geometry', () => {
     expect(canvas.eyes.right.width).toBeCloseTo(normalized.eyes.right.width * 640);
     expect(canvas.lips.height).toBeCloseTo(normalized.lips.height * 800);
     expect(canvas.rect.w).toBeCloseTo(normalized.rect.w * 640);
+    expect(canvas.eyes.left.center.y).toBeCloseTo(291);
+    expect(canvas.lips.center.y).toBeCloseTo(462);
   });
 
   test('keeps landmarks inside the portrait canvas', () => {

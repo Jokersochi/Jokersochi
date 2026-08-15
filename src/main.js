@@ -444,9 +444,11 @@ function renderAll() {
 function drawOverlay() {
   const width = overlayCanvas.clientWidth || stageFrame.clientWidth;
   const height = overlayCanvas.clientHeight || stageFrame.clientHeight;
+  const ratio = window.devicePixelRatio || 1;
   overlayContext.setTransform(1, 0, 0, 1, 0, 0);
   overlayContext.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
   if (!width || !height) return;
+  overlayContext.setTransform(ratio, 0, 0, ratio, 0, 0);
   renderMakeup({
     context: overlayContext,
     width,
@@ -462,6 +464,7 @@ function drawOverlay() {
     offset: state.offset,
     showBefore: state.showBefore
   });
+  overlayContext.setTransform(1, 0, 0, 1, 0, 0);
 }
 
 function updateImageFilter() {

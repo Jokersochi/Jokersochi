@@ -26,29 +26,79 @@ concurrency:
 jobs:
   refresh:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v7.0.1
         with:
           ref: main
+
       - name: Setup Node
         uses: actions/setup-node@v7.0.0
         with:
           node-version: 22
+          cache: npm
+
       - name: Strategy and source tests
         run: node --test scripts/loto-strategy.test.mjs
+
       - name: Refresh verified official archive
+        id: refresh
+        continue-on-error: true
         run: node scripts/loto-refresh.mjs
-      - name: Commit only a validated changed snapshot
+
+      - name: Read safe refresh status
+        id: status
+        shell: bash
+        run: |
+          node - <<'NODE' >> "$GITHUB_OUTPUT"
+          const fs = require('fs');
+          const status = JSON.parse(fs.readFileSync('.lotoos/refresh-status.json', 'utf8'));
+          console.log(`ok=${status.ok === true ? 'true' : 'false'}`);
+          console.log(`last=${status.last ?? ''}`);
+          console.log(`count=${status.count ?? ''}`);
+          NODE
+          cat .lotoos/refresh-status.json
+
+      - name: Persist diagnostics and last verified snapshot
+        id: persist
         shell: bash
         run: |
           if git diff --quiet -- public/loto-analytics-4x20/data/draws.json; then
-            echo "No new verified draws"
-            exit 0
+            echo "snapshot_changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "snapshot_changed=true" >> "$GITHUB_OUTPUT"
           fi
+
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/loto-analytics-4x20/data/draws.json
-          git commit -m "data(lotoos): refresh verified 4x20 archive"
-          git push origin main
+          git add .lotoos/refresh-status.json public/loto-analytics-4x20/data/draws.json
+
+          if git diff --cached --quiet; then
+            echo "No persisted changes"
+          else
+            git commit -m "data(lotoos): persist refresh result"
+            git push origin main
+          fi
+
+      - name: Install dependencies for verified publish
+        if: steps.status.outputs.ok == 'true'
+        run: npm ci
+
+      - name: Build verified site
+        if: steps.status.outputs.ok == 'true'
+        run: npm run build
+
+      - name: Publish verified site in the same workflow
+        if: steps.status.outputs.ok == 'true'
+        uses: peaceiris/actions-gh-pages@v4.1.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          publish_branch: gh-pages
+
+      - name: Fail closed after saving diagnostics
+        if: steps.status.outputs.ok != 'true'
+        run: |
+          echo "Official archive refresh did not pass validation; publication was intentionally skipped."
+          exit 1

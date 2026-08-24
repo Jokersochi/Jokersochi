@@ -102,3 +102,5 @@ jobs:
         run: |
           echo "Official archive refresh did not pass validation; publication was intentionally skipped."
           exit 1
+
+# safe-trigger: pipeline-v2

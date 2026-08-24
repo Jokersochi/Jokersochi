@@ -1,0 +1,41 @@
+name: LotoOS CI
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/loto-ci.yml"
+      - "scripts/loto-*.mjs"
+      - "public/loto-analytics-4x20/**"
+  push:
+    branches:
+      - "lotoos/**"
+    paths:
+      - ".github/workflows/loto-ci.yml"
+      - "scripts/loto-*.mjs"
+      - "public/loto-analytics-4x20/**"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lotoos-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
+
+      - name: Setup Node
+        uses: actions/setup-node@v7.0.0
+        with:
+          node-version: 22
+
+      - name: Unit tests
+        run: node --test scripts/loto-strategy.test.mjs
+
+      - name: Live Supabase smoke
+        run: node scripts/loto-live-smoke.mjs

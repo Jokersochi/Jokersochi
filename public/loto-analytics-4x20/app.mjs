@@ -1,4 +1,5 @@
 import { STRATEGIES, generateTickets, maxUsefulTickets } from "./lib/strategy.mjs";
+import { loadLiveArchive } from "./lib/live-data.mjs";
 
 const strategyGrid = document.querySelector("#strategyGrid");
 const strategySelect = document.querySelector("#strategy");
@@ -8,6 +9,8 @@ const results = document.querySelector("#results");
 const errorBox = document.querySelector("#error");
 const status = document.querySelector("#dataStatus");
 const countNote = document.querySelector("#countNote");
+const qualityGrid = document.querySelector("#qualityGrid");
+const latestDraw = document.querySelector("#latestDraw");
 let archive = null;
 
 function escapeHtml(value) {
@@ -36,24 +39,44 @@ function updateCountLimit() {
     : "Можно создать до 10 независимых случайных билетов.";
 }
 
-async function loadArchive() {
-  try {
-    const response = await fetch("./data/draws.json", { headers: { accept: "application/json" }, cache: "no-store" });
-    const data = await response.json();
-    if (!response.ok || !Array.isArray(data.draws)) throw new Error(data.detail || data.error || "Ошибка источника");
-    if (!data || !Array.isArray(data.draws) || data.draws.length < 200 || data.source !== "official") throw new Error("Нет подтверждённого среза архива");
-    archive = data;
-    status.className = `status ${data.quality?.continuous ? "ok" : "warn"}`;
-    status.textContent = `Данные: ${data.count} тиражей · до №${data.last}${data.quality?.continuous ? " · без пропусков" : " · есть разрывы"}`;
-  } catch (error) {
-    status.className = "status warn";
-    status.textContent = "Данные: официальный источник временно недоступен";
-    throw error;
-  }
-}
-
 function balls(numbers, cls) {
   return `<div class="balls ${cls}">${numbers.map((n) => `<span class="ball">${n}</span>`).join("")}</div>`;
+}
+
+function renderDataQuality(data) {
+  const cards = [
+    ["Проверено до", `№${data.last}`],
+    ["Всего в архиве", data.totalCount.toLocaleString("ru-RU")],
+    ["Пропуски", "0"],
+    ["Некорректные", "0"],
+  ];
+  qualityGrid.innerHTML = cards.map(([label, value]) => `<div class="quality-item"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div>`).join("");
+
+  const draw = data.draws.at(-1);
+  const date = new Date(draw.date).toLocaleString("ru-RU", { dateStyle: "medium", timeStyle: "short" });
+  latestDraw.innerHTML = `<div class="latest-head"><div><span class="eyebrow">Последний подтверждённый тираж</span><h2>№${draw.number}</h2></div><span class="chip">${escapeHtml(date)}</span></div><div class="fields"><div class="lotto-field field-a"><strong>Поле 1</strong>${balls(draw.fieldA, "field-a")}</div><div class="lotto-field field-b"><strong>Поле 2</strong>${balls(draw.fieldB, "field-b")}</div></div>`;
+}
+
+async function loadArchive() {
+  status.className = "status warn";
+  status.textContent = "Данные: проверяю live-backend…";
+  try {
+    const data = await loadLiveArchive();
+    archive = data;
+    status.className = "status ok";
+    status.textContent = `LIVE · официальный архив · до №${data.last} · без пропусков`;
+    renderDataQuality(data);
+    generateButton.disabled = false;
+    return data;
+  } catch (error) {
+    archive = null;
+    generateButton.disabled = true;
+    status.className = "status danger";
+    status.textContent = "BLOCKED · live-архив не прошёл проверку";
+    qualityGrid.innerHTML = "";
+    latestDraw.innerHTML = "";
+    throw error;
+  }
 }
 
 function renderTicket(ticket, index) {
@@ -81,10 +104,10 @@ async function generate() {
     results.innerHTML = tickets.map(renderTicket).join("");
     results.scrollIntoView({ behavior: "smooth", block: "start" });
   } catch (error) {
-    errorBox.textContent = `Не удалось безопасно сгенерировать билет: ${error instanceof Error ? error.message : String(error)}. Неподтверждённые данные не используются.`;
+    errorBox.textContent = `Не удалось безопасно сгенерировать билет: ${error instanceof Error ? error.message : String(error)}. Неподтверждённые или устаревшие данные не используются.`;
     errorBox.classList.remove("hidden");
   } finally {
-    generateButton.disabled = false;
+    generateButton.disabled = archive == null;
     generateButton.textContent = "Сгенерировать";
   }
 }
@@ -92,4 +115,8 @@ async function generate() {
 strategySelect.addEventListener("change", updateCountLimit);
 generateButton.addEventListener("click", generate);
 renderStrategies();
-loadArchive().catch(() => {});
+generateButton.disabled = true;
+loadArchive().catch((error) => {
+  errorBox.textContent = `Live-backend заблокировал генерацию: ${error instanceof Error ? error.message : String(error)}.`;
+  errorBox.classList.remove("hidden");
+});

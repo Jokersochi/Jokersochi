@@ -1,0 +1,9 @@
+{
+  "source": "pending",
+  "retrievedAt": null,
+  "count": 0,
+  "first": null,
+  "last": null,
+  "quality": {"duplicates": 0, "gaps": [], "continuous": false},
+  "draws": []
+}

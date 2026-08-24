@@ -1,0 +1,95 @@
+import { STRATEGIES, generateTickets, maxUsefulTickets } from "./lib/strategy.mjs";
+
+const strategyGrid = document.querySelector("#strategyGrid");
+const strategySelect = document.querySelector("#strategy");
+const countInput = document.querySelector("#count");
+const generateButton = document.querySelector("#generate");
+const results = document.querySelector("#results");
+const errorBox = document.querySelector("#error");
+const status = document.querySelector("#dataStatus");
+const countNote = document.querySelector("#countNote");
+let archive = null;
+
+function escapeHtml(value) {
+  return String(value).replace(/[&<>'"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" })[c]);
+}
+
+function renderStrategies() {
+  strategyGrid.innerHTML = STRATEGIES.map((s) => `
+    <article class="card">
+      <div class="strategy-name"><h2>${escapeHtml(s.name)}</h2><span class="chip">${s.lookback ? `${s.lookback} тиражей` : "без истории"}</span></div>
+      <p><strong>${escapeHtml(s.shortDescription)}</strong></p>
+      <p class="muted">${escapeHtml(s.plainDescription)}</p>
+    </article>`).join("");
+  strategySelect.innerHTML = STRATEGIES.map((s) => `<option value="${s.key}">${escapeHtml(s.name)}</option>`).join("");
+  updateCountLimit();
+}
+
+function updateCountLimit() {
+  const key = strategySelect.value;
+  const max = maxUsefulTickets(key);
+  countInput.max = String(max);
+  if (Number(countInput.value) > max) countInput.value = String(max);
+  countInput.disabled = max === 1;
+  countNote.textContent = max === 1
+    ? "Эта стратегия по текущим данным даёт одну определённую комбинацию. LotoOS не создаёт искусственные варианты с выдуманными причинами."
+    : "Можно создать до 10 независимых случайных билетов.";
+}
+
+async function loadArchive() {
+  try {
+    const response = await fetch("./data/draws.json", { headers: { accept: "application/json" }, cache: "no-store" });
+    const data = await response.json();
+    if (!response.ok || !Array.isArray(data.draws)) throw new Error(data.detail || data.error || "Ошибка источника");
+    if (!data || !Array.isArray(data.draws) || data.draws.length < 200 || data.source !== "official") throw new Error("Нет подтверждённого среза архива");
+    archive = data;
+    status.className = `status ${data.quality?.continuous ? "ok" : "warn"}`;
+    status.textContent = `Данные: ${data.count} тиражей · до №${data.last}${data.quality?.continuous ? " · без пропусков" : " · есть разрывы"}`;
+  } catch (error) {
+    status.className = "status warn";
+    status.textContent = "Данные: официальный источник временно недоступен";
+    throw error;
+  }
+}
+
+function balls(numbers, cls) {
+  return `<div class="balls ${cls}">${numbers.map((n) => `<span class="ball">${n}</span>`).join("")}</div>`;
+}
+
+function renderTicket(ticket, index) {
+  const fields = ticket.explanation.fields.map((field, i) => `
+    <details class="reason" ${i === 0 ? "open" : ""}>
+      <summary>${escapeHtml(field.summary)}</summary>
+      <ul>${field.details.map((d) => `<li>${escapeHtml(d)}</li>`).join("")}</ul>
+    </details>`).join("");
+  return `<article class="ticket">
+    <div class="ticket-head"><h2>Билет ${index + 1}</h2><span class="chip">${escapeHtml(ticket.explanation.strategyName)}</span></div>
+    <div class="fields"><div class="lotto-field field-a"><strong>Поле 1</strong>${balls(ticket.fieldA, "field-a")}</div><div class="lotto-field field-b"><strong>Поле 2</strong>${balls(ticket.fieldB, "field-b")}</div></div>
+    <section class="why"><h3>Почему выбраны эти числа</h3><p class="muted">${escapeHtml(ticket.explanation.summary)}</p>${fields}<div class="disclaimer">${escapeHtml(ticket.explanation.disclaimer)}</div></section>
+  </article>`;
+}
+
+async function generate() {
+  errorBox.classList.add("hidden");
+  generateButton.disabled = true;
+  generateButton.textContent = "Считаю…";
+  try {
+    if (!archive) await loadArchive();
+    const strategy = strategySelect.value;
+    const count = Math.max(1, Number(countInput.value) || 1);
+    const tickets = generateTickets(strategy, archive.draws, count, Date.now());
+    results.innerHTML = tickets.map(renderTicket).join("");
+    results.scrollIntoView({ behavior: "smooth", block: "start" });
+  } catch (error) {
+    errorBox.textContent = `Не удалось безопасно сгенерировать билет: ${error instanceof Error ? error.message : String(error)}. Неподтверждённые данные не используются.`;
+    errorBox.classList.remove("hidden");
+  } finally {
+    generateButton.disabled = false;
+    generateButton.textContent = "Сгенерировать";
+  }
+}
+
+strategySelect.addEventListener("change", updateCountLimit);
+generateButton.addEventListener("click", generate);
+renderStrategies();
+loadArchive().catch(() => {});

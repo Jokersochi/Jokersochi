@@ -1,0 +1,54 @@
+name: LotoOS refresh 4x20
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 * * * *"
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/loto-refresh.yml"
+      - "scripts/loto-refresh.mjs"
+      - "scripts/loto-source.mjs"
+      - "scripts/loto-strategy.test.mjs"
+      - "public/loto-analytics-4x20/index.html"
+      - "public/loto-analytics-4x20/app.mjs"
+      - "public/loto-analytics-4x20/styles.css"
+      - "public/loto-analytics-4x20/lib/**"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: lotoos-4x20-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
+        with:
+          ref: main
+      - name: Setup Node
+        uses: actions/setup-node@v7.0.0
+        with:
+          node-version: 22
+      - name: Strategy and source tests
+        run: node --test scripts/loto-strategy.test.mjs
+      - name: Refresh verified official archive
+        run: node scripts/loto-refresh.mjs
+      - name: Commit only a validated changed snapshot
+        shell: bash
+        run: |
+          if git diff --quiet -- public/loto-analytics-4x20/data/draws.json; then
+            echo "No new verified draws"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/loto-analytics-4x20/data/draws.json
+          git commit -m "data(lotoos): refresh verified 4x20 archive"
+          git push origin main

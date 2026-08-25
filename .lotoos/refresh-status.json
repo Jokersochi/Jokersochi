@@ -1,8 +1,6 @@
 {
-  "ok": true,
+  "ok": false,
   "source": "official",
-  "count": 14748,
-  "first": 1,
-  "last": 14748,
-  "continuous": true
+  "stage": "refresh-or-validation",
+  "error": "Архив 4 из 20 содержит разрывы: [{\"after\":9796,\"before\":9798,\"missingFrom\":9797,\"missingTo\":9797}]"
 }

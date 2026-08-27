@@ -8,13 +8,13 @@
   "starting_equity": 1000.0,
   "target_equity": 2000.0,
   "bankrupt_equity": 0.0,
-  "cash": 935.383644,
-  "equity": 986.041915,
+  "cash": 886.081544,
+  "equity": 982.059501,
   "realized_pnl": -14.616357,
-  "unrealized_pnl": 0.658272,
-  "fees_paid": 2.69684,
-  "ticks": 2,
-  "last_tick_at": "2026-08-27T21:53:52+00:00",
+  "unrealized_pnl": -3.324142,
+  "fees_paid": 4.10958,
+  "ticks": 3,
+  "last_tick_at": "2026-08-27T22:41:45+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -46,6 +46,32 @@
       "mark_price": 0.725,
       "mark_spread": 0.01,
       "mark_net_liquidation": 50.658271
+    },
+    {
+      "position_id": "601819-NO-1787870506",
+      "market_id": "601819",
+      "question": "Will Luiz Inácio Lula da Silva win the 2026 Brazilian presidential election?",
+      "category": "Other",
+      "outcome": "NO",
+      "token_id": "79191939610100241429039499950443680906623179487184628479206155805558220344190",
+      "opened_at": "2026-08-27T22:41:45+00:00",
+      "entry_mid": 0.405,
+      "entry_spread": 0.01,
+      "entry_price": 0.41,
+      "shares": 116.8033162,
+      "gross_trade": 47.88936,
+      "entry_fee": 1.41274,
+      "cash_outlay": 49.3021,
+      "fee_rate": 0.05,
+      "momentum_24h": -0.03,
+      "momentum_6h": -0.02,
+      "liquidity": 265242.78,
+      "volume_24h": 167073.53,
+      "end_date": "2026-10-04",
+      "paper": true,
+      "mark_price": 0.405,
+      "mark_spread": 0.01,
+      "mark_net_liquidation": 45.319686
     }
   ],
   "closed_positions": [
@@ -122,6 +148,17 @@
       "exit_price": 0.456,
       "pnl": -14.616357,
       "reason": "stop_loss"
+    },
+    {
+      "ts": "2026-08-27T22:41:45+00:00",
+      "event": "PAPER_OPEN",
+      "market_id": "601819",
+      "question": "Will Luiz Inácio Lula da Silva win the 2026 Brazilian presidential election?",
+      "outcome": "NO",
+      "entry_price": 0.41,
+      "cash_outlay": 49.3021,
+      "momentum_24h": -0.03,
+      "momentum_6h": -0.02
     }
   ]
 }

@@ -1,0 +1,69 @@
+name: PolyShark Paper Trading
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "polyshark-ai/runtime/paper_trader.py"
+      - "polyshark-ai/tests/test_paper_trader_runtime.py"
+      - ".github/workflows/polyshark-paper-trading.yml"
+  schedule:
+    - cron: "*/5 * * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: polyshark-paper-trading
+  cancel-in-progress: false
+
+jobs:
+  paper-tick:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Prove paper-only invariants
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          text = Path('polyshark-ai/runtime/paper_trader.py').read_text()
+          forbidden = ['create_order(', 'post_order(', 'cancel_all(', 'POLYMARKET_PRIVATE_KEY']
+          hits = [x for x in forbidden if x in text]
+          if hits:
+              raise SystemExit(f'Unsafe trading primitives found: {hits}')
+          print('Paper-only static guard: PASS')
+          PY
+
+      - name: Unit tests
+        run: python polyshark-ai/tests/test_paper_trader_runtime.py -q
+
+      - name: Run one live-quote paper tick
+        env:
+          PAPER_STARTING_EQUITY: "1000"
+          PAPER_TARGET_EQUITY: "2000"
+          PAPER_BANKRUPT_EQUITY: "0"
+          PAPER_MAX_POSITION_PCT: "0.05"
+          PAPER_MAX_OPEN_POSITIONS: "8"
+        run: python polyshark-ai/runtime/paper_trader.py --state polyshark-ai/runtime/paper_state.json
+
+      - name: Persist paper session state
+        run: |
+          if git diff --quiet -- polyshark-ai/runtime/paper_state.json; then
+            echo "No state change"
+            exit 0
+          fi
+          git config user.name "polyshark-paper-bot"
+          git config user.email "polyshark-paper-bot@users.noreply.github.com"
+          git add polyshark-ai/runtime/paper_state.json
+          git commit -m "chore(polyshark): persist paper-trading tick [skip ci]"
+          git pull --rebase origin main
+          git push origin HEAD:main

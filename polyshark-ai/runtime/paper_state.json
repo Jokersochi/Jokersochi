@@ -1,0 +1,35 @@
+{
+  "schema_version": 2,
+  "session_id": "paper-20260827-restart-1000",
+  "status": "running",
+  "started_at": "2026-08-27T17:13:00+00:00",
+  "stopped_at": null,
+  "stop_reason": null,
+  "starting_equity": 1000.0,
+  "target_equity": 2000.0,
+  "bankrupt_equity": 0.0,
+  "cash": 1000.0,
+  "equity": 1000.0,
+  "realized_pnl": 0.0,
+  "unrealized_pnl": 0.0,
+  "fees_paid": 0.0,
+  "ticks": 0,
+  "last_tick_at": null,
+  "last_error": null,
+  "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
+  "real_orders_enabled": false,
+  "paper_only": true,
+  "strategy": "liquid-market dual-horizon momentum v2",
+  "open_positions": [],
+  "closed_positions": [],
+  "audit": [
+    {
+      "ts": "2026-08-27T17:13:00+00:00",
+      "event": "SESSION_RESET",
+      "starting_equity": 1000.0,
+      "target_equity": 2000.0,
+      "bankrupt_equity": 0.0,
+      "paper_only": true
+    }
+  ]
+}

@@ -23,6 +23,10 @@ function safeError(error) {
   return message.replace(/[\r\n\t]+/g, " ").slice(0, 300);
 }
 
+function isGapError(error) {
+  return /содержит разрывы/i.test(safeError(error));
+}
+
 async function fetchPage(page, attempt = 1) {
   const url = new URL(ENDPOINT);
   url.searchParams.set("game", "4x20");
@@ -43,7 +47,7 @@ async function fetchPage(page, attempt = 1) {
   }
 }
 
-async function refresh() {
+async function fetchArchivePass() {
   const normalized = [];
   let sawEnd = false;
 
@@ -64,6 +68,37 @@ async function refresh() {
   }
 
   if (!sawEnd) throw new Error(`Архив не завершился за ${MAX_PAGES} страниц — публикация остановлена`);
+  return normalized;
+}
+
+async function fetchHeadRows() {
+  const raw = await fetchPage(1);
+  return raw.map(normalizeDraw).filter(Boolean);
+}
+
+async function refresh() {
+  let passes = 1;
+  let retryReason = null;
+  let normalized = await fetchArchivePass();
+
+  // Re-read the head after the long scan so draws completed during pagination
+  // are included without creating a stale-but-contiguous snapshot.
+  normalized.push(...(await fetchHeadRows()));
+
+  try {
+    validateArchive(normalized, 1000);
+  } catch (error) {
+    if (!isGapError(error)) throw error;
+    retryReason = safeError(error);
+    passes = 2;
+    console.warn(`Transient pagination gap detected; repeating official archive pass: ${retryReason}`);
+
+    // Page-number pagination can shift while a new draw is inserted at the head.
+    // Unioning two independent official passes recovers a boundary omission;
+    // validateArchive still rejects conflicting duplicates or any remaining gap.
+    normalized.push(...(await fetchArchivePass()));
+    normalized.push(...(await fetchHeadRows()));
+  }
 
   const snapshot = validateArchive(normalized, 1000);
   await writeAtomic(OUT, `${JSON.stringify(snapshot, null, 2)}\n`);
@@ -74,8 +109,10 @@ async function refresh() {
     first: snapshot.first,
     last: snapshot.last,
     continuous: snapshot.quality.continuous,
+    passes,
+    recoveredTransientGap: passes > 1,
   });
-  console.log(`LotoOS snapshot verified: ${snapshot.count} draws, #${snapshot.first}–#${snapshot.last}`);
+  console.log(`LotoOS snapshot verified: ${snapshot.count} draws, #${snapshot.first}–#${snapshot.last}, passes=${passes}`);
 }
 
 try {

@@ -21,6 +21,10 @@ function liveRows(first = 1001, count = 1000) {
   })).reverse();
 }
 
+function archiveRows(numbers) {
+  return numbers.map((number) => ({ number, date: `d-${number}`, fieldA:[1,2,3,4], fieldB:[5,6,7,8] }));
+}
+
 test("six strategies remain explanatory and non-promissory", () => {
   assert.equal(STRATEGIES.length, 6);
   for (const strategy of STRATEGIES) {
@@ -57,10 +61,26 @@ test("source normalization rejects unfinished and invalid draws", () => {
 });
 
 test("archive validation fails on gaps and accepts continuity", () => {
-  const rows = [1,2,3,4].map((number) => ({ number, date: null, fieldA:[1,2,3,4], fieldB:[5,6,7,8] }));
+  const rows = archiveRows([1,2,3,4]);
   const ok = validateArchive(rows, 4);
   assert.equal(ok.quality.continuous, true);
   assert.throws(() => validateArchive([rows[0], rows[2], rows[3]], 3), /разрывы/);
+});
+
+test("two official passes recover a transient pagination omission without hiding conflicts", () => {
+  const firstPass = archiveRows([1,2,4,5]);
+  const secondPass = archiveRows([1,2,3,4,5]);
+  const recovered = validateArchive([...firstPass, ...secondPass], 5);
+  assert.equal(recovered.quality.continuous, true);
+  assert.equal(recovered.first, 1);
+  assert.equal(recovered.last, 5);
+  assert.equal(recovered.quality.duplicates, 4);
+
+  const conflictingThree = { ...secondPass[2], fieldA: [9,10,11,12] };
+  assert.throws(
+    () => validateArchive([...firstPass, ...secondPass.slice(0, 2), conflictingThree, ...secondPass.slice(3)], 5),
+    /Конфликтующие дубли/,
+  );
 });
 
 test("live backend status is fail-closed", () => {

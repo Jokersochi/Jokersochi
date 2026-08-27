@@ -78,7 +78,7 @@ test("two official passes recover a transient pagination omission without hiding
 
   const conflictingThree = { ...secondPass[2], fieldA: [9,10,11,12] };
   assert.throws(
-    () => validateArchive([...firstPass, ...secondPass.slice(0, 2), conflictingThree, ...secondPass.slice(3)], 5),
+    () => validateArchive([...firstPass, ...secondPass, conflictingThree], 5),
     /Конфликтующие дубли/,
   );
 });

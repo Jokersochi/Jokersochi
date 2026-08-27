@@ -3,6 +3,12 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - "public/loto-analytics-4x20/**"
+      - "scripts/loto-*.mjs"
+      - ".lotoos/**"
+      - ".github/workflows/loto-refresh.yml"
+      - ".github/workflows/gh-pages.yml"
   workflow_dispatch:
 
 permissions:

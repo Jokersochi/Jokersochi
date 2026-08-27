@@ -2,15 +2,15 @@ name: PolyShark Paper Trading
 
 on:
   workflow_dispatch:
+  schedule:
+    # Explicit off-peak quarter-hour slots; renamed workflow resets a stuck schedule registration.
+    - cron: "11,26,41,56 * * * *"
   push:
     branches: [main]
     paths:
       - "polyshark-ai/runtime/paper_trader.py"
       - "polyshark-ai/tests/test_paper_trader_runtime.py"
-      - ".github/workflows/polyshark-paper-trading.yml"
-  schedule:
-    # Explicit off-peak quarter-hour slots are more reliable than dense stepped cron.
-    - cron: "7,22,37,52 * * * *"
+      - ".github/workflows/polyshark-paper-trading-v2.yml"
 
 permissions:
   contents: write

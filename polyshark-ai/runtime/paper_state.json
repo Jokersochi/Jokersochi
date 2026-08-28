@@ -8,13 +8,13 @@
   "starting_equity": 1000.0,
   "target_equity": 2000.0,
   "bankrupt_equity": 0.0,
-  "cash": 886.081544,
-  "equity": 986.565589,
+  "cash": 836.71668,
+  "equity": 985.468461,
   "realized_pnl": -14.616357,
-  "unrealized_pnl": 1.181946,
-  "fees_paid": 4.10958,
-  "ticks": 6,
-  "last_tick_at": "2026-08-28T05:30:59+00:00",
+  "unrealized_pnl": 0.084818,
+  "fees_paid": 4.69493,
+  "ticks": 7,
+  "last_tick_at": "2026-08-28T07:07:12+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -43,9 +43,9 @@
       "volume_24h": 118771.91,
       "end_date": "2026-10-01",
       "paper": true,
-      "mark_price": 0.755,
+      "mark_price": 0.765,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 52.849313
+      "mark_net_liquidation": 53.58109
     },
     {
       "position_id": "601819-NO-1787870506",
@@ -72,6 +72,32 @@
       "mark_price": 0.425,
       "mark_spread": 0.01,
       "mark_net_liquidation": 47.634733
+    },
+    {
+      "position_id": "1130012-YES-1787900832",
+      "market_id": "1130012",
+      "question": "Will United Russia (ER) gain the most seats in the next Russian parliamentary election?",
+      "category": "Other",
+      "outcome": "YES",
+      "token_id": "20915769520649892253891152116814645067070024223185517956799957803974344024878",
+      "opened_at": "2026-08-28T07:07:12+00:00",
+      "entry_mid": 0.755,
+      "entry_spread": 0.01,
+      "entry_price": 0.76,
+      "shares": 64.18357129,
+      "gross_trade": 48.779514,
+      "entry_fee": 0.58535,
+      "cash_outlay": 49.364864,
+      "fee_rate": 0.05,
+      "momentum_24h": 0.03,
+      "momentum_6h": 0.02,
+      "liquidity": 393213.21,
+      "volume_24h": 185796.92,
+      "end_date": "2026-09-30",
+      "paper": true,
+      "mark_price": 0.755,
+      "mark_spread": 0.01,
+      "mark_net_liquidation": 47.535958
     }
   ],
   "closed_positions": [
@@ -159,6 +185,17 @@
       "cash_outlay": 49.3021,
       "momentum_24h": -0.03,
       "momentum_6h": -0.02
+    },
+    {
+      "ts": "2026-08-28T07:07:12+00:00",
+      "event": "PAPER_OPEN",
+      "market_id": "1130012",
+      "question": "Will United Russia (ER) gain the most seats in the next Russian parliamentary election?",
+      "outcome": "YES",
+      "entry_price": 0.76,
+      "cash_outlay": 49.364864,
+      "momentum_24h": 0.03,
+      "momentum_6h": 0.02
     }
   ]
 }

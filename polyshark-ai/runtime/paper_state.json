@@ -8,13 +8,13 @@
   "starting_equity": 1000.0,
   "target_equity": 2000.0,
   "bankrupt_equity": 0.0,
-  "cash": 692.887174,
-  "equity": 930.483493,
+  "cash": 646.398729,
+  "equity": 926.953811,
   "realized_pnl": -64.704603,
-  "unrealized_pnl": -4.811904,
-  "fees_paid": 18.62291,
-  "ticks": 18,
-  "last_tick_at": "2026-08-29T20:00:03+00:00",
+  "unrealized_pnl": -8.341586,
+  "fees_paid": 19.97475,
+  "ticks": 19,
+  "last_tick_at": "2026-08-29T21:50:11+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -95,8 +95,8 @@
       "volume_24h": 185796.92,
       "end_date": "2026-09-30",
       "paper": true,
-      "mark_price": 0.735,
-      "mark_spread": 0.01,
+      "mark_price": 0.74,
+      "mark_spread": 0.02,
       "mark_net_liquidation": 46.221477
     },
     {
@@ -147,9 +147,35 @@
       "volume_24h": 177586.8,
       "end_date": "2026-09-01",
       "paper": true,
-      "mark_price": 0.64,
-      "mark_spread": 0.02,
-      "mark_net_liquidation": 43.639209
+      "mark_price": 0.635,
+      "mark_spread": 0.03,
+      "mark_net_liquidation": 42.924647
+    },
+    {
+      "position_id": "601826-YES-1788040212",
+      "market_id": "601826",
+      "question": "Will Flávio Bolsonaro win the 2026 Brazilian presidential election?",
+      "category": "Other",
+      "outcome": "YES",
+      "token_id": "109876868437950584369987384406356259939519193117253465815665152916226511121427",
+      "opened_at": "2026-08-29T21:50:11+00:00",
+      "entry_mid": 0.4005,
+      "entry_spread": 0.001,
+      "entry_price": 0.401,
+      "shares": 112.56011278,
+      "gross_trade": 45.136605,
+      "entry_fee": 1.35184,
+      "cash_outlay": 46.488445,
+      "fee_rate": 0.05,
+      "momentum_24h": 0.032,
+      "momentum_6h": 0.023,
+      "liquidity": 276365.05,
+      "volume_24h": 109975.42,
+      "end_date": "2026-10-04",
+      "paper": true,
+      "mark_price": 0.4005,
+      "mark_spread": 0.001,
+      "mark_net_liquidation": 43.673325
     }
   ],
   "closed_positions": [
@@ -535,6 +561,17 @@
       "cash_outlay": 46.676013,
       "momentum_24h": -0.36,
       "momentum_6h": -0.225
+    },
+    {
+      "ts": "2026-08-29T21:50:11+00:00",
+      "event": "PAPER_OPEN",
+      "market_id": "601826",
+      "question": "Will Flávio Bolsonaro win the 2026 Brazilian presidential election?",
+      "outcome": "YES",
+      "entry_price": 0.401,
+      "cash_outlay": 46.488445,
+      "momentum_24h": 0.032,
+      "momentum_6h": 0.023
     }
   ]
 }

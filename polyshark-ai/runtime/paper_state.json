@@ -8,13 +8,13 @@
   "starting_equity": 1000.0,
   "target_equity": 2000.0,
   "bankrupt_equity": 0.0,
-  "cash": 664.38697,
-  "equity": 947.752509,
-  "realized_pnl": -49.711805,
-  "unrealized_pnl": -2.535686,
-  "fees_paid": 22.68715,
-  "ticks": 28,
-  "last_tick_at": "2026-08-30T17:36:14+00:00",
+  "cash": 718.863666,
+  "equity": 951.955931,
+  "realized_pnl": -42.280166,
+  "unrealized_pnl": -5.763903,
+  "fees_paid": 22.79632,
+  "ticks": 29,
+  "last_tick_at": "2026-08-30T18:34:10+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -95,9 +95,9 @@
       "volume_24h": 1869578.86,
       "end_date": "2026-09-16",
       "paper": true,
-      "mark_price": 0.475,
+      "mark_price": 0.485,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 47.608927
+      "mark_net_liquidation": 48.646857
     },
     {
       "position_id": "601826-YES-1788040212",
@@ -121,8 +121,8 @@
       "volume_24h": 109975.42,
       "end_date": "2026-10-04",
       "paper": true,
-      "mark_price": 0.409,
-      "mark_spread": 0.002,
+      "mark_price": 0.4085,
+      "mark_spread": 0.001,
       "mark_net_liquidation": 44.565156
     },
     {
@@ -147,35 +147,9 @@
       "volume_24h": 952602.22,
       "end_date": "2026-09-16",
       "paper": true,
-      "mark_price": 0.495,
+      "mark_price": 0.505,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 43.451101
-    },
-    {
-      "position_id": "3810130-NO-1788094814",
-      "market_id": "3810130",
-      "question": "Will Ethereum dip to $2,400 in August?",
-      "category": "Other",
-      "outcome": "NO",
-      "token_id": "16452503807171203765163764339828725057420138646691824475076039506871221023349",
-      "opened_at": "2026-08-30T13:00:13+00:00",
-      "entry_mid": 0.815,
-      "entry_spread": 0.01,
-      "entry_price": 0.82,
-      "shares": 56.86027666,
-      "gross_trade": 46.625427,
-      "entry_fee": 0.41963,
-      "cash_outlay": 47.045057,
-      "fee_rate": 0.05,
-      "momentum_24h": -0.4,
-      "momentum_6h": -0.09,
-      "liquidity": 32944.56,
-      "volume_24h": 177941.93,
-      "end_date": "2026-09-01",
-      "paper": true,
-      "mark_price": 0.94,
-      "mark_spread": 0.036,
-      "mark_net_liquidation": 52.220715
+      "mark_net_liquidation": 44.360612
     }
   ],
   "closed_positions": [
@@ -442,6 +416,39 @@
       "pnl": 5.046775,
       "return_pct": 10.0936,
       "close_reason": "max_hold"
+    },
+    {
+      "position_id": "3810130-NO-1788094814",
+      "market_id": "3810130",
+      "question": "Will Ethereum dip to $2,400 in August?",
+      "category": "Other",
+      "outcome": "NO",
+      "token_id": "16452503807171203765163764339828725057420138646691824475076039506871221023349",
+      "opened_at": "2026-08-30T13:00:13+00:00",
+      "entry_mid": 0.815,
+      "entry_spread": 0.01,
+      "entry_price": 0.82,
+      "shares": 56.86027666,
+      "gross_trade": 46.625427,
+      "entry_fee": 0.41963,
+      "cash_outlay": 47.045057,
+      "fee_rate": 0.05,
+      "momentum_24h": -0.4,
+      "momentum_6h": -0.09,
+      "liquidity": 32944.56,
+      "volume_24h": 177941.93,
+      "end_date": "2026-09-01",
+      "paper": true,
+      "mark_price": 0.94,
+      "mark_spread": 0.036,
+      "mark_net_liquidation": 52.220715,
+      "closed_at": "2026-08-30T18:34:10+00:00",
+      "exit_price": 0.96,
+      "exit_fee": 0.10917,
+      "net_proceeds": 54.476696,
+      "pnl": 7.431639,
+      "return_pct": 15.7969,
+      "close_reason": "take_profit"
     }
   ],
   "audit": [
@@ -678,6 +685,15 @@
       "exit_price": 0.78,
       "pnl": 5.046775,
       "reason": "max_hold"
+    },
+    {
+      "ts": "2026-08-30T18:34:10+00:00",
+      "event": "PAPER_CLOSE",
+      "market_id": "3810130",
+      "outcome": "NO",
+      "exit_price": 0.96,
+      "pnl": 7.431639,
+      "reason": "take_profit"
     }
   ]
 }

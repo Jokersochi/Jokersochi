@@ -8,13 +8,13 @@
   "starting_equity": 1000.0,
   "target_equity": 2000.0,
   "bankrupt_equity": 0.0,
-  "cash": 718.863666,
-  "equity": 951.955931,
+  "cash": 670.939697,
+  "equity": 952.229834,
   "realized_pnl": -42.280166,
-  "unrealized_pnl": -5.763903,
-  "fees_paid": 22.79632,
-  "ticks": 29,
-  "last_tick_at": "2026-08-30T18:34:10+00:00",
+  "unrealized_pnl": -5.49,
+  "fees_paid": 24.68382,
+  "ticks": 30,
+  "last_tick_at": "2026-08-30T21:16:54+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -95,9 +95,9 @@
       "volume_24h": 1869578.86,
       "end_date": "2026-09-16",
       "paper": true,
-      "mark_price": 0.485,
+      "mark_price": 0.515,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 48.646857
+      "mark_net_liquidation": 51.766886
     },
     {
       "position_id": "601826-YES-1788040212",
@@ -121,9 +121,9 @@
       "volume_24h": 109975.42,
       "end_date": "2026-10-04",
       "paper": true,
-      "mark_price": 0.4085,
+      "mark_price": 0.4145,
       "mark_spread": 0.001,
-      "mark_net_liquidation": 44.565156
+      "mark_net_liquidation": 45.234507
     },
     {
       "position_id": "2252244-NO-1788068737",
@@ -147,9 +147,35 @@
       "volume_24h": 952602.22,
       "end_date": "2026-09-16",
       "paper": true,
-      "mark_price": 0.505,
+      "mark_price": 0.535,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 44.360612
+      "mark_net_liquidation": 47.094586
+    },
+    {
+      "position_id": "3399458-NO-1788124614",
+      "market_id": "3399458",
+      "question": "Israel x Iran ceasefire continues through September 30?",
+      "category": "Other",
+      "outcome": "NO",
+      "token_id": "27584284826455438094347446510379196256289720442108190871721085592324191711749",
+      "opened_at": "2026-08-30T21:16:54+00:00",
+      "entry_mid": 0.175,
+      "entry_spread": 0.01,
+      "entry_price": 0.18,
+      "shares": 255.75816122,
+      "gross_trade": 46.036469,
+      "entry_fee": 1.8875,
+      "cash_outlay": 47.923969,
+      "fee_rate": 0.05,
+      "momentum_24h": -0.06,
+      "momentum_6h": -0.08,
+      "liquidity": 38633.99,
+      "volume_24h": 108189.57,
+      "end_date": "2026-09-30",
+      "paper": true,
+      "mark_price": 0.175,
+      "mark_spread": 0.01,
+      "mark_net_liquidation": 41.674517
     }
   ],
   "closed_positions": [
@@ -694,6 +720,17 @@
       "exit_price": 0.96,
       "pnl": 7.431639,
       "reason": "take_profit"
+    },
+    {
+      "ts": "2026-08-30T21:16:54+00:00",
+      "event": "PAPER_OPEN",
+      "market_id": "3399458",
+      "question": "Israel x Iran ceasefire continues through September 30?",
+      "outcome": "NO",
+      "entry_price": 0.18,
+      "cash_outlay": 47.923969,
+      "momentum_24h": -0.06,
+      "momentum_6h": -0.08
     }
   ]
 }

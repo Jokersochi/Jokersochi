@@ -8,45 +8,19 @@
   "starting_equity": 1000.0,
   "target_equity": 2000.0,
   "bankrupt_equity": 0.0,
-  "cash": 609.340196,
-  "equity": 943.149729,
-  "realized_pnl": -54.75858,
-  "unrealized_pnl": -2.091691,
-  "fees_paid": 22.0749,
-  "ticks": 27,
-  "last_tick_at": "2026-08-30T15:04:02+00:00",
+  "cash": 664.38697,
+  "equity": 947.752509,
+  "realized_pnl": -49.711805,
+  "unrealized_pnl": -2.535686,
+  "fees_paid": 22.68715,
+  "ticks": 28,
+  "last_tick_at": "2026-08-30T17:36:14+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
   "paper_only": true,
   "strategy": "liquid-market dual-horizon momentum v2",
   "open_positions": [
-    {
-      "position_id": "3128887-NO-1787851244",
-      "market_id": "3128887",
-      "question": "US announces end of Iranian blockade by September 30, 2026?",
-      "category": "Other",
-      "outcome": "NO",
-      "token_id": "56465933220082022835700817063946174635909725507734416248556389304448520396318",
-      "opened_at": "2026-08-27T17:20:43+00:00",
-      "entry_mid": 0.685,
-      "entry_spread": 0.01,
-      "entry_price": 0.69,
-      "shares": 71.3577234,
-      "gross_trade": 49.236829,
-      "entry_fee": 0.76317,
-      "cash_outlay": 49.999999,
-      "fee_rate": 0.05,
-      "momentum_24h": -0.06,
-      "momentum_6h": -0.05,
-      "liquidity": 132886.92,
-      "volume_24h": 118771.91,
-      "end_date": "2026-10-01",
-      "paper": true,
-      "mark_price": 0.785,
-      "mark_spread": 0.01,
-      "mark_net_liquidation": 55.046774
-    },
     {
       "position_id": "601819-NO-1787870506",
       "market_id": "601819",
@@ -147,9 +121,9 @@
       "volume_24h": 109975.42,
       "end_date": "2026-10-04",
       "paper": true,
-      "mark_price": 0.4135,
-      "mark_spread": 0.001,
-      "mark_net_liquidation": 45.122927
+      "mark_price": 0.409,
+      "mark_spread": 0.002,
+      "mark_net_liquidation": 44.565156
     },
     {
       "position_id": "2252244-NO-1788068737",
@@ -173,9 +147,9 @@
       "volume_24h": 952602.22,
       "end_date": "2026-09-16",
       "paper": true,
-      "mark_price": 0.485,
+      "mark_price": 0.495,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 42.54251
+      "mark_net_liquidation": 43.451101
     },
     {
       "position_id": "3810130-NO-1788094814",
@@ -199,9 +173,9 @@
       "volume_24h": 177941.93,
       "end_date": "2026-09-01",
       "paper": true,
-      "mark_price": 0.865,
-      "mark_spread": 0.03,
-      "mark_net_liquidation": 47.968755
+      "mark_price": 0.94,
+      "mark_spread": 0.036,
+      "mark_net_liquidation": 52.220715
     }
   ],
   "closed_positions": [
@@ -435,6 +409,39 @@
       "pnl": 9.946023,
       "return_pct": 21.3086,
       "close_reason": "take_profit"
+    },
+    {
+      "position_id": "3128887-NO-1787851244",
+      "market_id": "3128887",
+      "question": "US announces end of Iranian blockade by September 30, 2026?",
+      "category": "Other",
+      "outcome": "NO",
+      "token_id": "56465933220082022835700817063946174635909725507734416248556389304448520396318",
+      "opened_at": "2026-08-27T17:20:43+00:00",
+      "entry_mid": 0.685,
+      "entry_spread": 0.01,
+      "entry_price": 0.69,
+      "shares": 71.3577234,
+      "gross_trade": 49.236829,
+      "entry_fee": 0.76317,
+      "cash_outlay": 49.999999,
+      "fee_rate": 0.05,
+      "momentum_24h": -0.06,
+      "momentum_6h": -0.05,
+      "liquidity": 132886.92,
+      "volume_24h": 118771.91,
+      "end_date": "2026-10-01",
+      "paper": true,
+      "mark_price": 0.785,
+      "mark_spread": 0.01,
+      "mark_net_liquidation": 55.046774,
+      "closed_at": "2026-08-30T17:36:14+00:00",
+      "exit_price": 0.78,
+      "exit_fee": 0.61225,
+      "net_proceeds": 55.046774,
+      "pnl": 5.046775,
+      "return_pct": 10.0936,
+      "close_reason": "max_hold"
     }
   ],
   "audit": [
@@ -662,6 +669,15 @@
       "cash_outlay": 47.045057,
       "momentum_24h": -0.4,
       "momentum_6h": -0.09
+    },
+    {
+      "ts": "2026-08-30T17:36:14+00:00",
+      "event": "PAPER_CLOSE",
+      "market_id": "3128887",
+      "outcome": "NO",
+      "exit_price": 0.78,
+      "pnl": 5.046775,
+      "reason": "max_hold"
     }
   ]
 }

@@ -8,13 +8,13 @@
   "starting_equity": 1000.0,
   "target_equity": 2000.0,
   "bankrupt_equity": 0.0,
-  "cash": 646.398729,
-  "equity": 937.347062,
+  "cash": 599.763217,
+  "equity": 929.525863,
   "realized_pnl": -64.704603,
-  "unrealized_pnl": 2.051665,
-  "fees_paid": 19.97475,
-  "ticks": 22,
-  "last_tick_at": "2026-08-30T00:38:31+00:00",
+  "unrealized_pnl": -5.769534,
+  "fees_paid": 21.1122,
+  "ticks": 23,
+  "last_tick_at": "2026-08-30T05:45:35+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -95,9 +95,9 @@
       "volume_24h": 185796.92,
       "end_date": "2026-09-30",
       "paper": true,
-      "mark_price": 0.74,
-      "mark_spread": 0.02,
-      "mark_net_liquidation": 46.221477
+      "mark_price": 0.725,
+      "mark_spread": 0.01,
+      "mark_net_liquidation": 45.565201
     },
     {
       "position_id": "2252245-YES-1788013538",
@@ -147,9 +147,9 @@
       "volume_24h": 177586.8,
       "end_date": "2026-09-01",
       "paper": true,
-      "mark_price": 0.73,
+      "mark_price": 0.67,
       "mark_spread": 0.02,
-      "mark_net_liquidation": 50.102038
+      "mark_net_liquidation": 45.787135
     },
     {
       "position_id": "601826-YES-1788040212",
@@ -173,9 +173,35 @@
       "volume_24h": 109975.42,
       "end_date": "2026-10-04",
       "paper": true,
-      "mark_price": 0.4015,
+      "mark_price": 0.4045,
       "mark_spread": 0.001,
-      "mark_net_liquidation": 43.784765
+      "mark_net_liquidation": 44.119156
+    },
+    {
+      "position_id": "2252244-NO-1788068737",
+      "market_id": "2252244",
+      "question": "Will there be no change in Fed interest rates after the September 2026 meeting?",
+      "category": "Other",
+      "outcome": "NO",
+      "token_id": "97050921740416192996389806693742575608111328819185493163189880975611314813724",
+      "opened_at": "2026-08-30T05:45:35+00:00",
+      "entry_mid": 0.495,
+      "entry_spread": 0.01,
+      "entry_price": 0.5,
+      "shares": 90.99612429,
+      "gross_trade": 45.498062,
+      "entry_fee": 1.13745,
+      "cash_outlay": 46.635512,
+      "fee_rate": 0.05,
+      "momentum_24h": -0.03,
+      "momentum_6h": -0.04,
+      "liquidity": 538928.92,
+      "volume_24h": 952602.22,
+      "end_date": "2026-09-16",
+      "paper": true,
+      "mark_price": 0.495,
+      "mark_spread": 0.01,
+      "mark_net_liquidation": 43.451101
     }
   ],
   "closed_positions": [
@@ -572,6 +598,17 @@
       "cash_outlay": 46.488445,
       "momentum_24h": 0.032,
       "momentum_6h": 0.023
+    },
+    {
+      "ts": "2026-08-30T05:45:35+00:00",
+      "event": "PAPER_OPEN",
+      "market_id": "2252244",
+      "question": "Will there be no change in Fed interest rates after the September 2026 meeting?",
+      "outcome": "NO",
+      "entry_price": 0.5,
+      "cash_outlay": 46.635512,
+      "momentum_24h": -0.03,
+      "momentum_6h": -0.04
     }
   ]
 }

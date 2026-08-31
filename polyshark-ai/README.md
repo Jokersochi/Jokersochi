@@ -1,79 +1,105 @@
-# 🦈 PolyShark AI
+# 🦈 PolyShark AI v4
 
-> Автономный мультиагентный торговый сервис для Polymarket  
-> **Цель:** Selective Win Rate ≥ 80% через математическое право на воздержание
+> Evidence-first prediction-market research and paper-trading platform.
 
-## Архитектура
+## Mission
 
+PolyShark evaluates whether a calibrated probabilistic forecast contains a **robust, out-of-sample, after-cost, risk-adjusted edge** relative to market/crowd pricing.
+
+The product is **paper-only**. It must never send real orders or move real money.
+
+## Safety invariants
+
+```text
+PAPER_ONLY = TRUE
+REAL_ORDERS_ENABLED = FALSE
+REAL_MONEY = FALSE
 ```
-Data Stream → Feature Engine → ML Ensemble → Venn-Abers → EV/Kelly → Execute
+
+Any violation is a critical defect and must fail closed.
+
+## Decision pipeline
+
+```text
+REAL DATA
+  ↓
+VALIDATE + PROVENANCE
+  ↓
+INDEPENDENT FORECASTS
+  ↓
+CALIBRATION
+  ↓
+CROWD PRIOR COMPARISON
+  ↓
+NET EDGE + COST MODEL
+  ↓
+EXECUTION SIMULATION
+  ↓
+PORTFOLIO RISK / VETO
+  ↓
+PAPER DECISION
+  ↓
+OFFICIAL RESOLUTION
+  ↓
+RECONCILIATION
+  ↓
+OOS EVALUATION
+  ↓
+CHAMPION / CHALLENGER REVIEW
 ```
 
-## Быстрый старт
+## Current baseline
 
-### 1. Клонирование и настройка
+The existing production baseline is retained as **Champion / control** until a challenger demonstrates superiority on fresh OOS data. The current runtime strategy is `liquid-market dual-horizon momentum v2`.
+
+It is **not** treated as proven alpha merely because it has a positive backtest or win rate.
+
+## Research contracts
+
+`runtime/research_contracts.py` defines strict contracts for:
+
+- calibrated forecast outputs;
+- cost estimates;
+- trade dossiers;
+- explicit NO_TRADE reasons;
+- fail-closed paper-only validation;
+- canonical equity reconciliation.
+
+These contracts do not authorize execution.
+
+## Verification standard
+
+Claims must be labeled:
+
+- `NO EVIDENCE`
+- `PROMISING`
+- `IMPROVED BUT UNPROVEN`
+- `STATISTICALLY SUPPORTED`
+
+Unknown or unverified values must never be presented as facts.
+
+## Development
+
+Run the test suite from `polyshark-ai/`:
+
 ```bash
-cp .env.example .env
-# Заполни .env своими ключами (MetaMask, Supabase, Alchemy)
+python -m unittest discover -s tests -p 'test_*.py'
 ```
 
-### 2. База данных
-```bash
-# Открой Supabase Dashboard → SQL Editor
-# Выполни: database/schema.sql
-```
+## Release gate
 
-### 3. Запуск через Docker
-```bash
-docker-compose up -d redis    # сначала Redis
-docker-compose up app         # API + агент
-```
+No production release is acceptable with a critical failure in:
 
-### 4. Paper trading (обязательно сначала!)
-```
-DRY_RUN=true в .env
-Мониторь логи: docker-compose logs -f agent
-Жди 100+ сигналов перед включением реальных ордеров
-```
+- paper-only integrity;
+- ledger/reconciliation;
+- official settlement;
+- risk controls;
+- data integrity;
+- OOS validation;
+- security;
+- observability;
+- frontend/browser QA;
+- accessibility;
+- performance.
 
-## Ключевые метрики перехода в прод
-
-| Метрика | Порог |
-|---------|-------|
-| Win Rate | ≥ 70% на paper |
-| Abstention Rate | ≥ 60% |
-| Avg EV | > 0.05 |
-| Brier Score | < 0.22 |
-
-## Модули
-
-| Файл | Функция |
-|------|---------|
-| `modules/flb_cleaner.py` | Очистка FLB (Shin/FL-GLM/OO-EPC) |
-| `modules/calibration.py` | Venn-Abers IVAP калибровка |
-| `modules/ev_kelly.py` | EV + дробный Kelly |
-| `modules/validation.py` | Walk-Forward + Purging/Embargo |
-| `services/polymarket_client.py` | CLOB API (EIP-712) |
-| `services/ws_handler.py` | WebSocket стриминг |
-| `agents/orchestrator.py` | Главный агент |
-| `database/schema.sql` | Supabase DDL |
-
-## Структура файлов
-```
-polyshark-ai/
-├── agents/          # Оркестратор
-├── modules/         # Математическое ядро
-│   └── features/    # Feature engineering
-├── models/          # ML модели (LightGBM + CatBoost)
-├── services/        # Polymarket API + WebSocket
-├── database/        # Supabase schema + client
-├── api/             # FastAPI (дашборд)
-├── tests/           # Unit тесты
-└── notebooks/       # Backtesting (Jupyter)
-```
-
-## Важно
-
-⚠️ **НИКОГДА** не запускай с реальными деньгами без минимум 2 недель paper trading  
-⚠️ **НИКОГДА** не храни приватный ключ в git (добавь `.env` в `.gitignore`)  
-⚠️ Максимальная позиция: 5% банкролла (настраивается в `MAX_POSITION_PCT`)
+See `V4_AUDIT.md` for the evidence-backed baseline audit and current blockers.

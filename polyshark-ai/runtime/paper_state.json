@@ -8,13 +8,13 @@
   "starting_equity": 1000.0,
   "target_equity": 2000.0,
   "bankrupt_equity": 0.0,
-  "cash": 648.21562,
-  "equity": 920.919479,
-  "realized_pnl": -71.469023,
-  "unrealized_pnl": -7.611498,
-  "fees_paid": 43.60576,
-  "ticks": 38,
-  "last_tick_at": "2026-08-31T15:22:44+00:00",
+  "cash": 687.564961,
+  "equity": 917.816641,
+  "realized_pnl": -78.476465,
+  "unrealized_pnl": -3.706894,
+  "fees_paid": 45.03294,
+  "ticks": 39,
+  "last_tick_at": "2026-08-31T20:15:12+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -43,9 +43,9 @@
       "volume_24h": 109975.42,
       "end_date": "2026-10-04",
       "paper": true,
-      "mark_price": 0.3905,
+      "mark_price": 0.3925,
       "mark_spread": 0.001,
-      "mark_net_liquidation": 42.559544
+      "mark_net_liquidation": 42.782204
     },
     {
       "position_id": "2252244-NO-1788068737",
@@ -69,9 +69,9 @@
       "volume_24h": 952602.22,
       "end_date": "2026-09-16",
       "paper": true,
-      "mark_price": 0.565,
+      "mark_price": 0.575,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 49.83676
+      "mark_net_liquidation": 50.752631
     },
     {
       "position_id": "3953844-NO-1788133145",
@@ -95,9 +95,9 @@
       "volume_24h": 111328.86,
       "end_date": "2026-09-01",
       "paper": true,
-      "mark_price": 0.895,
+      "mark_price": 0.865,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 49.919425
+      "mark_net_liquidation": 48.164002
     },
     {
       "position_id": "2252245-YES-1788184850",
@@ -121,9 +121,9 @@
       "volume_24h": 925244.22,
       "end_date": "2026-09-16",
       "paper": true,
-      "mark_price": 0.555,
+      "mark_price": 0.565,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 43.890843
+      "mark_net_liquidation": 44.711717
     },
     {
       "position_id": "908713-YES-1788189765",
@@ -147,35 +147,9 @@
       "volume_24h": 123008.01,
       "end_date": "2026-12-09",
       "paper": true,
-      "mark_price": 0.725,
+      "mark_price": 0.715,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 44.481162
-    },
-    {
-      "position_id": "1130012-NO-1788189765",
-      "market_id": "1130012",
-      "question": "Will United Russia (ER) gain the most seats in the next Russian parliamentary election?",
-      "category": "Other",
-      "outcome": "NO",
-      "token_id": "115351075585746600277716377744935410125916932950844626289798775482755919708780",
-      "opened_at": "2026-08-31T15:22:44+00:00",
-      "entry_mid": 0.325,
-      "entry_spread": 0.01,
-      "entry_price": 0.33,
-      "shares": 135.92173726,
-      "gross_trade": 44.854173,
-      "entry_fee": 1.50261,
-      "cash_outlay": 46.356783,
-      "fee_rate": 0.05,
-      "momentum_24h": -0.05,
-      "momentum_6h": -0.04,
-      "liquidity": 448148.28,
-      "volume_24h": 386170.48,
-      "end_date": "2026-09-30",
-      "paper": true,
-      "mark_price": 0.325,
-      "mark_spread": 0.01,
-      "mark_net_liquidation": 42.016126
+      "mark_net_liquidation": 43.841126
     }
   ],
   "closed_positions": [
@@ -706,6 +680,39 @@
       "pnl": -5.224375,
       "return_pct": -11.1815,
       "close_reason": "stop_loss"
+    },
+    {
+      "position_id": "1130012-NO-1788189765",
+      "market_id": "1130012",
+      "question": "Will United Russia (ER) gain the most seats in the next Russian parliamentary election?",
+      "category": "Other",
+      "outcome": "NO",
+      "token_id": "115351075585746600277716377744935410125916932950844626289798775482755919708780",
+      "opened_at": "2026-08-31T15:22:44+00:00",
+      "entry_mid": 0.325,
+      "entry_spread": 0.01,
+      "entry_price": 0.33,
+      "shares": 135.92173726,
+      "gross_trade": 44.854173,
+      "entry_fee": 1.50261,
+      "cash_outlay": 46.356783,
+      "fee_rate": 0.05,
+      "momentum_24h": -0.05,
+      "momentum_6h": -0.04,
+      "liquidity": 448148.28,
+      "volume_24h": 386170.48,
+      "end_date": "2026-09-30",
+      "paper": true,
+      "mark_price": 0.325,
+      "mark_spread": 0.01,
+      "mark_net_liquidation": 42.016126,
+      "closed_at": "2026-08-31T20:15:12+00:00",
+      "exit_price": 0.3,
+      "exit_fee": 1.42718,
+      "net_proceeds": 39.349341,
+      "pnl": -7.007442,
+      "return_pct": -15.1163,
+      "close_reason": "stop_loss"
     }
   ],
   "audit": [
@@ -1102,6 +1109,15 @@
       "cash_outlay": 46.356783,
       "momentum_24h": -0.05,
       "momentum_6h": -0.04
+    },
+    {
+      "ts": "2026-08-31T20:15:12+00:00",
+      "event": "PAPER_CLOSE",
+      "market_id": "1130012",
+      "outcome": "NO",
+      "exit_price": 0.3,
+      "pnl": -7.007442,
+      "reason": "stop_loss"
     }
   ]
 }

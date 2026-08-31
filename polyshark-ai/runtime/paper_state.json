@@ -8,13 +8,13 @@
   "starting_equity": 1000.0,
   "target_equity": 2000.0,
   "bankrupt_equity": 0.0,
-  "cash": 687.564961,
-  "equity": 918.98636,
+  "cash": 641.47595,
+  "equity": 917.62319,
   "realized_pnl": -78.476465,
-  "unrealized_pnl": -2.537175,
-  "fees_paid": 45.03294,
-  "ticks": 40,
-  "last_tick_at": "2026-08-31T20:52:58+00:00",
+  "unrealized_pnl": -3.900345,
+  "fees_paid": 46.48368,
+  "ticks": 41,
+  "last_tick_at": "2026-08-31T23:57:47+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -69,9 +69,9 @@
       "volume_24h": 952602.22,
       "end_date": "2026-09-16",
       "paper": true,
-      "mark_price": 0.575,
+      "mark_price": 0.565,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 50.752631
+      "mark_net_liquidation": 49.83676
     },
     {
       "position_id": "3953844-NO-1788133145",
@@ -95,9 +95,9 @@
       "volume_24h": 111328.86,
       "end_date": "2026-09-01",
       "paper": true,
-      "mark_price": 0.89,
-      "mark_spread": 0.02,
-      "mark_net_liquidation": 49.33372
+      "mark_price": 0.9775,
+      "mark_spread": 0.013,
+      "mark_net_liquidation": 54.68445
     },
     {
       "position_id": "2252245-YES-1788184850",
@@ -121,9 +121,9 @@
       "volume_24h": 925244.22,
       "end_date": "2026-09-16",
       "paper": true,
-      "mark_price": 0.565,
+      "mark_price": 0.545,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 44.711717
+      "mark_net_liquidation": 43.070789
     },
     {
       "position_id": "908713-YES-1788189765",
@@ -150,6 +150,32 @@
       "mark_price": 0.715,
       "mark_spread": 0.01,
       "mark_net_liquidation": 43.841126
+    },
+    {
+      "position_id": "1088472-YES-1788220668",
+      "market_id": "1088472",
+      "question": "Will Carlos Alcaraz win the 2026 Men's US Open?",
+      "category": "Other",
+      "outcome": "YES",
+      "token_id": "71401904010247427754329784277924205841820460862761252985878735510347215917540",
+      "opened_at": "2026-08-31T23:57:47+00:00",
+      "entry_mid": 0.345,
+      "entry_spread": 0.01,
+      "entry_price": 0.35,
+      "shares": 127.53791629,
+      "gross_trade": 44.638271,
+      "entry_fee": 1.45074,
+      "cash_outlay": 46.089011,
+      "fee_rate": 0.05,
+      "momentum_24h": 0.09,
+      "momentum_6h": 0.06,
+      "liquidity": 100104.89,
+      "volume_24h": 125956.79,
+      "end_date": "2026-09-13",
+      "paper": true,
+      "mark_price": 0.345,
+      "mark_spread": 0.01,
+      "mark_net_liquidation": 41.931912
     }
   ],
   "closed_positions": [
@@ -1118,6 +1144,17 @@
       "exit_price": 0.3,
       "pnl": -7.007442,
       "reason": "stop_loss"
+    },
+    {
+      "ts": "2026-08-31T23:57:47+00:00",
+      "event": "PAPER_OPEN",
+      "market_id": "1088472",
+      "question": "Will Carlos Alcaraz win the 2026 Men's US Open?",
+      "outcome": "YES",
+      "entry_price": 0.35,
+      "cash_outlay": 46.089011,
+      "momentum_24h": 0.09,
+      "momentum_6h": 0.06
     }
   ]
 }

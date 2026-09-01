@@ -1,9 +1,9 @@
 {
   "source": "official",
-  "retrievedAt": "2026-09-01T15:00:21.857Z",
-  "count": 14900,
+  "retrievedAt": "2026-09-01T18:38:11.837Z",
+  "count": 14905,
   "first": 1,
-  "last": 14900,
+  "last": 14905,
   "quality": {
     "duplicates": 50,
     "gaps": [],
@@ -268208,6 +268208,96 @@
         16
       ],
       "sourceUrl": "https://www.stoloto.ru/4x20/archive/14900",
+      "validationStatus": "verified"
+    },
+    {
+      "number": 14901,
+      "date": "2026-09-01T18:00:00+0300",
+      "fieldA": [
+        17,
+        8,
+        4,
+        11
+      ],
+      "fieldB": [
+        12,
+        15,
+        16,
+        13
+      ],
+      "sourceUrl": "https://www.stoloto.ru/4x20/archive/14901",
+      "validationStatus": "verified"
+    },
+    {
+      "number": 14902,
+      "date": "2026-09-01T19:07:30+0300",
+      "fieldA": [
+        8,
+        4,
+        19,
+        11
+      ],
+      "fieldB": [
+        5,
+        13,
+        4,
+        11
+      ],
+      "sourceUrl": "https://www.stoloto.ru/4x20/archive/14902",
+      "validationStatus": "verified"
+    },
+    {
+      "number": 14903,
+      "date": "2026-09-01T19:37:30+0300",
+      "fieldA": [
+        2,
+        12,
+        14,
+        11
+      ],
+      "fieldB": [
+        14,
+        10,
+        6,
+        9
+      ],
+      "sourceUrl": "https://www.stoloto.ru/4x20/archive/14903",
+      "validationStatus": "verified"
+    },
+    {
+      "number": 14904,
+      "date": "2026-09-01T20:37:30+0300",
+      "fieldA": [
+        15,
+        12,
+        6,
+        18
+      ],
+      "fieldB": [
+        13,
+        17,
+        7,
+        16
+      ],
+      "sourceUrl": "https://www.stoloto.ru/4x20/archive/14904",
+      "validationStatus": "verified"
+    },
+    {
+      "number": 14905,
+      "date": "2026-09-01T21:07:30+0300",
+      "fieldA": [
+        9,
+        16,
+        15,
+        13
+      ],
+      "fieldB": [
+        2,
+        4,
+        14,
+        3
+      ],
+      "sourceUrl": "https://www.stoloto.ru/4x20/archive/14905",
       "validationStatus": "verified"
     }
   ]

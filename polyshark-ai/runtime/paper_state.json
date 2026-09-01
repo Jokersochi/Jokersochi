@@ -8,13 +8,13 @@
   "starting_equity": 1000.0,
   "target_equity": 2000.0,
   "bankrupt_equity": 0.0,
-  "cash": 636.187639,
-  "equity": 917.26456,
+  "cash": 590.112769,
+  "equity": 915.947407,
   "realized_pnl": -83.887894,
-  "unrealized_pnl": 1.152454,
-  "fees_paid": 48.30361,
-  "ticks": 48,
-  "last_tick_at": "2026-09-01T15:00:45+00:00",
+  "unrealized_pnl": -0.164699,
+  "fees_paid": 50.05441,
+  "ticks": 49,
+  "last_tick_at": "2026-09-01T17:59:36+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -43,9 +43,9 @@
       "volume_24h": 109975.42,
       "end_date": "2026-10-04",
       "paper": true,
-      "mark_price": 0.3905,
+      "mark_price": 0.3915,
       "mark_spread": 0.001,
-      "mark_net_liquidation": 42.559544
+      "mark_net_liquidation": 42.670864
     },
     {
       "position_id": "2252244-NO-1788068737",
@@ -69,9 +69,9 @@
       "volume_24h": 952602.22,
       "end_date": "2026-09-16",
       "paper": true,
-      "mark_price": 0.585,
+      "mark_price": 0.605,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 51.669422
+      "mark_net_liquidation": 53.505725
     },
     {
       "position_id": "3953844-NO-1788133145",
@@ -121,9 +121,9 @@
       "volume_24h": 925244.22,
       "end_date": "2026-09-16",
       "paper": true,
-      "mark_price": 0.575,
+      "mark_price": 0.595,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 45.533411
+      "mark_net_liquidation": 47.17924
     },
     {
       "position_id": "908713-YES-1788189765",
@@ -147,9 +147,9 @@
       "volume_24h": 123008.01,
       "end_date": "2026-12-09",
       "paper": true,
-      "mark_price": 0.705,
+      "mark_price": 0.715,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 43.20172
+      "mark_net_liquidation": 43.841126
     },
     {
       "position_id": "3128887-NO-1788240099",
@@ -176,6 +176,32 @@
       "mark_price": 0.795,
       "mark_spread": 0.01,
       "mark_net_liquidation": 43.428374
+    },
+    {
+      "position_id": "3399458-NO-1788285578",
+      "market_id": "3399458",
+      "question": "Israel x Iran ceasefire continues through September 30?",
+      "category": "Other",
+      "outcome": "NO",
+      "token_id": "27584284826455438094347446510379196256289720442108190871721085592324191711749",
+      "opened_at": "2026-09-01T17:59:36+00:00",
+      "entry_mid": 0.205,
+      "entry_spread": 0.01,
+      "entry_price": 0.21,
+      "shares": 211.06700039,
+      "gross_trade": 44.32407,
+      "entry_fee": 1.7508,
+      "cash_outlay": 46.07487,
+      "fee_rate": 0.05,
+      "momentum_24h": -0.045,
+      "momentum_6h": -0.07,
+      "liquidity": 50587.51,
+      "volume_24h": 197006.13,
+      "end_date": "2026-09-30",
+      "paper": true,
+      "mark_price": 0.205,
+      "mark_spread": 0.01,
+      "mark_net_liquidation": 40.52486
     }
   ],
   "closed_positions": [
@@ -1208,6 +1234,17 @@
       "exit_price": 0.33,
       "pnl": -5.411429,
       "reason": "stop_loss"
+    },
+    {
+      "ts": "2026-09-01T17:59:36+00:00",
+      "event": "PAPER_OPEN",
+      "market_id": "3399458",
+      "question": "Israel x Iran ceasefire continues through September 30?",
+      "outcome": "NO",
+      "entry_price": 0.21,
+      "cash_outlay": 46.07487,
+      "momentum_24h": -0.045,
+      "momentum_6h": -0.07
     }
   ]
 }

@@ -8,13 +8,13 @@
   "starting_equity": 1000.0,
   "target_equity": 2000.0,
   "bankrupt_equity": 0.0,
-  "cash": 641.47595,
-  "equity": 919.957329,
+  "cash": 595.510057,
+  "equity": 917.924864,
   "realized_pnl": -78.476465,
-  "unrealized_pnl": -1.566206,
-  "fees_paid": 46.48368,
-  "ticks": 43,
-  "last_tick_at": "2026-09-01T04:58:37+00:00",
+  "unrealized_pnl": -3.598671,
+  "fees_paid": 46.89368,
+  "ticks": 44,
+  "last_tick_at": "2026-09-01T05:21:37+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -147,9 +147,9 @@
       "volume_24h": 123008.01,
       "end_date": "2026-12-09",
       "paper": true,
-      "mark_price": 0.715,
+      "mark_price": 0.705,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 43.841126
+      "mark_net_liquidation": 43.20172
     },
     {
       "position_id": "1088472-YES-1788220668",
@@ -176,6 +176,32 @@
       "mark_price": 0.345,
       "mark_spread": 0.01,
       "mark_net_liquidation": 41.931912
+    },
+    {
+      "position_id": "3128887-NO-1788240099",
+      "market_id": "3128887",
+      "question": "US announces end of Iranian blockade by September 30, 2026?",
+      "category": "Other",
+      "outcome": "NO",
+      "token_id": "56465933220082022835700817063946174635909725507734416248556389304448520396318",
+      "opened_at": "2026-09-01T05:21:37+00:00",
+      "entry_mid": 0.815,
+      "entry_spread": 0.01,
+      "entry_price": 0.82,
+      "shares": 55.55596721,
+      "gross_trade": 45.555893,
+      "entry_fee": 0.41,
+      "cash_outlay": 45.965893,
+      "fee_rate": 0.05,
+      "momentum_24h": -0.03,
+      "momentum_6h": -0.02,
+      "liquidity": 117070.14,
+      "volume_24h": 85522.06,
+      "end_date": "2026-10-01",
+      "paper": true,
+      "mark_price": 0.815,
+      "mark_spread": 0.01,
+      "mark_net_liquidation": 44.572833
     }
   ],
   "closed_positions": [
@@ -1155,6 +1181,17 @@
       "cash_outlay": 46.089011,
       "momentum_24h": 0.09,
       "momentum_6h": 0.06
+    },
+    {
+      "ts": "2026-09-01T05:21:37+00:00",
+      "event": "PAPER_OPEN",
+      "market_id": "3128887",
+      "question": "US announces end of Iranian blockade by September 30, 2026?",
+      "outcome": "NO",
+      "entry_price": 0.82,
+      "cash_outlay": 45.965893,
+      "momentum_24h": -0.03,
+      "momentum_6h": -0.02
     }
   ]
 }

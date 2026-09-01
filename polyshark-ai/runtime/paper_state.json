@@ -13,8 +13,8 @@
   "realized_pnl": -83.887894,
   "unrealized_pnl": 1.152454,
   "fees_paid": 48.30361,
-  "ticks": 46,
-  "last_tick_at": "2026-09-01T10:15:40+00:00",
+  "ticks": 47,
+  "last_tick_at": "2026-09-01T14:45:57+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -147,8 +147,8 @@
       "volume_24h": 123008.01,
       "end_date": "2026-12-09",
       "paper": true,
-      "mark_price": 0.71,
-      "mark_spread": 0.02,
+      "mark_price": 0.705,
+      "mark_spread": 0.01,
       "mark_net_liquidation": 43.20172
     },
     {
@@ -173,8 +173,8 @@
       "volume_24h": 85522.06,
       "end_date": "2026-10-01",
       "paper": true,
-      "mark_price": 0.8,
-      "mark_spread": 0.02,
+      "mark_price": 0.795,
+      "mark_spread": 0.01,
       "mark_net_liquidation": 43.428374
     }
   ],

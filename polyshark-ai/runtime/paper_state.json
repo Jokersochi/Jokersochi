@@ -8,13 +8,13 @@
   "starting_equity": 1000.0,
   "target_equity": 2000.0,
   "bankrupt_equity": 0.0,
-  "cash": 632.044041,
-  "equity": 905.958788,
-  "realized_pnl": -89.778871,
-  "unrealized_pnl": -4.262341,
-  "fees_paid": 56.59899,
-  "ticks": 57,
-  "last_tick_at": "2026-09-02T05:41:31+00:00",
+  "cash": 666.54711,
+  "equity": 897.951188,
+  "realized_pnl": -100.964092,
+  "unrealized_pnl": -1.08472,
+  "fees_paid": 58.0741,
+  "ticks": 58,
+  "last_tick_at": "2026-09-02T09:45:13+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -69,9 +69,9 @@
       "volume_24h": 925244.22,
       "end_date": "2026-09-16",
       "paper": true,
-      "mark_price": 0.595,
+      "mark_price": 0.585,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 47.17924
+      "mark_net_liquidation": 46.355915
     },
     {
       "position_id": "908713-YES-1788189765",
@@ -95,9 +95,9 @@
       "volume_24h": 123008.01,
       "end_date": "2026-12-09",
       "paper": true,
-      "mark_price": 0.725,
+      "mark_price": 0.715,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 44.481162
+      "mark_net_liquidation": 43.841126
     },
     {
       "position_id": "3128887-NO-1788240099",
@@ -126,32 +126,6 @@
       "mark_net_liquidation": 44.000324
     },
     {
-      "position_id": "3399458-NO-1788327693",
-      "market_id": "3399458",
-      "question": "Israel x Iran ceasefire continues through September 30?",
-      "category": "Other",
-      "outcome": "NO",
-      "token_id": "27584284826455438094347446510379196256289720442108190871721085592324191711749",
-      "opened_at": "2026-09-02T05:41:31+00:00",
-      "entry_mid": 0.215,
-      "entry_spread": 0.01,
-      "entry_price": 0.22,
-      "shares": 199.87877198,
-      "gross_trade": 43.97333,
-      "entry_fee": 1.71496,
-      "cash_outlay": 45.68829,
-      "fee_rate": 0.05,
-      "momentum_24h": -0.07,
-      "momentum_6h": -0.055,
-      "liquidity": 35581.19,
-      "volume_24h": 207248.03,
-      "end_date": "2026-09-30",
-      "paper": true,
-      "mark_price": 0.215,
-      "mark_spread": 0.01,
-      "mark_net_liquidation": 40.316552
-    },
-    {
       "position_id": "2252244-NO-1788327693",
       "market_id": "2252244",
       "question": "Will there be no change in Fed interest rates after the September 2026 meeting?",
@@ -173,9 +147,9 @@
       "volume_24h": 1220122.6,
       "end_date": "2026-09-16",
       "paper": true,
-      "mark_price": 0.615,
+      "mark_price": 0.605,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 43.25302
+      "mark_net_liquidation": 42.522263
     }
   ],
   "closed_positions": [
@@ -871,6 +845,39 @@
       "pnl": 7.789724,
       "return_pct": 16.7034,
       "close_reason": "take_profit"
+    },
+    {
+      "position_id": "3399458-NO-1788327693",
+      "market_id": "3399458",
+      "question": "Israel x Iran ceasefire continues through September 30?",
+      "category": "Other",
+      "outcome": "NO",
+      "token_id": "27584284826455438094347446510379196256289720442108190871721085592324191711749",
+      "opened_at": "2026-09-02T05:41:31+00:00",
+      "entry_mid": 0.215,
+      "entry_spread": 0.01,
+      "entry_price": 0.22,
+      "shares": 199.87877198,
+      "gross_trade": 43.97333,
+      "entry_fee": 1.71496,
+      "cash_outlay": 45.68829,
+      "fee_rate": 0.05,
+      "momentum_24h": -0.07,
+      "momentum_6h": -0.055,
+      "liquidity": 35581.19,
+      "volume_24h": 207248.03,
+      "end_date": "2026-09-30",
+      "paper": true,
+      "mark_price": 0.215,
+      "mark_spread": 0.01,
+      "mark_net_liquidation": 40.316552,
+      "closed_at": "2026-09-02T09:45:13+00:00",
+      "exit_price": 0.18,
+      "exit_fee": 1.47511,
+      "net_proceeds": 34.503069,
+      "pnl": -11.185221,
+      "return_pct": -24.4816,
+      "close_reason": "stop_loss"
     }
   ],
   "audit": [
@@ -1367,6 +1374,15 @@
       "cash_outlay": 45.688288,
       "momentum_24h": -0.04,
       "momentum_6h": -0.03
+    },
+    {
+      "ts": "2026-09-02T09:45:13+00:00",
+      "event": "PAPER_CLOSE",
+      "market_id": "3399458",
+      "outcome": "NO",
+      "exit_price": 0.18,
+      "pnl": -11.185221,
+      "reason": "stop_loss"
     }
   ]
 }

@@ -9,12 +9,12 @@
   "target_equity": 2000.0,
   "bankrupt_equity": 0.0,
   "cash": 661.455376,
-  "equity": 889.026316,
+  "equity": 888.386911,
   "realized_pnl": -107.045928,
-  "unrealized_pnl": -3.927756,
+  "unrealized_pnl": -4.567161,
   "fees_paid": 60.20364,
-  "ticks": 64,
-  "last_tick_at": "2026-09-02T20:57:48+00:00",
+  "ticks": 65,
+  "last_tick_at": "2026-09-02T22:06:24+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -95,9 +95,9 @@
       "volume_24h": 123008.01,
       "end_date": "2026-12-09",
       "paper": true,
-      "mark_price": 0.715,
+      "mark_price": 0.705,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 43.841126
+      "mark_net_liquidation": 43.20172
     },
     {
       "position_id": "3128887-NO-1788240099",

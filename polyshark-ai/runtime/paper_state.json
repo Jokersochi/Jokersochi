@@ -8,13 +8,13 @@
   "starting_equity": 1000.0,
   "target_equity": 2000.0,
   "bankrupt_equity": 0.0,
-  "cash": 565.122982,
-  "equity": 885.430361,
-  "realized_pnl": -117.93359,
-  "unrealized_pnl": 3.363951,
-  "fees_paid": 74.88512,
-  "ticks": 75,
-  "last_tick_at": "2026-09-03T18:00:04+00:00",
+  "cash": 559.650335,
+  "equity": 878.706372,
+  "realized_pnl": -123.744645,
+  "unrealized_pnl": 2.451017,
+  "fees_paid": 78.30468,
+  "ticks": 76,
+  "last_tick_at": "2026-09-03T19:59:50+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -95,9 +95,9 @@
       "volume_24h": 132954.23,
       "end_date": "2027-01-01",
       "paper": true,
-      "mark_price": 0.705,
-      "mark_spread": 0.01,
-      "mark_net_liquidation": 47.165356
+      "mark_price": 0.725,
+      "mark_spread": 0.03,
+      "mark_net_liquidation": 47.863427
     },
     {
       "position_id": "2252245-NO-1788414280",
@@ -121,9 +121,9 @@
       "volume_24h": 886646.74,
       "end_date": "2026-09-16",
       "paper": true,
-      "mark_price": 0.585,
+      "mark_price": 0.575,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 50.361133
+      "mark_net_liquidation": 49.467563
     },
     {
       "position_id": "2252244-YES-1788445661",
@@ -147,9 +147,9 @@
       "volume_24h": 1575926.79,
       "end_date": "2026-09-16",
       "paper": true,
-      "mark_price": 0.585,
+      "mark_price": 0.575,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 42.921755
+      "mark_net_liquidation": 42.160181
     },
     {
       "position_id": "1088472-YES-1788445661",
@@ -178,30 +178,30 @@
       "mark_net_liquidation": 41.277772
     },
     {
-      "position_id": "1163699-YES-1788458406",
+      "position_id": "1163699-YES-1788465592",
       "market_id": "1163699",
       "question": "Clarity Act (H.R.3633) signed into law in 2026?",
       "category": "Other",
       "outcome": "YES",
       "token_id": "35198549486569600595408965368290795524428922595732253580266052028158040373233",
-      "opened_at": "2026-09-03T18:00:04+00:00",
+      "opened_at": "2026-09-03T19:59:50+00:00",
       "entry_mid": 0.175,
       "entry_spread": 0.01,
       "entry_price": 0.18,
-      "shares": 237.81658021,
-      "gross_trade": 42.806984,
-      "entry_fee": 1.75509,
-      "cash_outlay": 44.562074,
+      "shares": 236.01058998,
+      "gross_trade": 42.481906,
+      "entry_fee": 1.74176,
+      "cash_outlay": 44.223666,
       "fee_rate": 0.05,
       "momentum_24h": 0.03,
       "momentum_6h": 0.02,
-      "liquidity": 272029.32,
-      "volume_24h": 294054.15,
+      "liquidity": 269311.05,
+      "volume_24h": 294241.91,
       "end_date": "2027-01-01",
       "paper": true,
       "mark_price": 0.175,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 38.751019
+      "mark_net_liquidation": 38.45675
     }
   ],
   "closed_positions": [
@@ -1128,6 +1128,39 @@
       "pnl": -5.840039,
       "return_pct": -13.0404,
       "close_reason": "stop_loss"
+    },
+    {
+      "position_id": "1163699-YES-1788458406",
+      "market_id": "1163699",
+      "question": "Clarity Act (H.R.3633) signed into law in 2026?",
+      "category": "Other",
+      "outcome": "YES",
+      "token_id": "35198549486569600595408965368290795524428922595732253580266052028158040373233",
+      "opened_at": "2026-09-03T18:00:04+00:00",
+      "entry_mid": 0.175,
+      "entry_spread": 0.01,
+      "entry_price": 0.18,
+      "shares": 237.81658021,
+      "gross_trade": 42.806984,
+      "entry_fee": 1.75509,
+      "cash_outlay": 44.562074,
+      "fee_rate": 0.05,
+      "momentum_24h": 0.03,
+      "momentum_6h": 0.02,
+      "liquidity": 272029.32,
+      "volume_24h": 294054.15,
+      "end_date": "2027-01-01",
+      "paper": true,
+      "mark_price": 0.175,
+      "mark_spread": 0.01,
+      "mark_net_liquidation": 38.751019,
+      "closed_at": "2026-09-03T19:59:50+00:00",
+      "exit_price": 0.17,
+      "exit_fee": 1.6778,
+      "net_proceeds": 38.751019,
+      "pnl": -5.811055,
+      "return_pct": -13.0404,
+      "close_reason": "stop_loss"
     }
   ],
   "audit": [
@@ -1773,6 +1806,26 @@
       "outcome": "YES",
       "entry_price": 0.18,
       "cash_outlay": 44.562074,
+      "momentum_24h": 0.03,
+      "momentum_6h": 0.02
+    },
+    {
+      "ts": "2026-09-03T19:59:50+00:00",
+      "event": "PAPER_CLOSE",
+      "market_id": "1163699",
+      "outcome": "YES",
+      "exit_price": 0.17,
+      "pnl": -5.811055,
+      "reason": "stop_loss"
+    },
+    {
+      "ts": "2026-09-03T19:59:50+00:00",
+      "event": "PAPER_OPEN",
+      "market_id": "1163699",
+      "question": "Clarity Act (H.R.3633) signed into law in 2026?",
+      "outcome": "YES",
+      "entry_price": 0.18,
+      "cash_outlay": 44.223666,
       "momentum_24h": 0.03,
       "momentum_6h": 0.02
     }

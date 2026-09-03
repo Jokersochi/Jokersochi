@@ -8,13 +8,13 @@
   "starting_equity": 1000.0,
   "target_equity": 2000.0,
   "bankrupt_equity": 0.0,
-  "cash": 598.107085,
-  "equity": 878.58191,
+  "cash": 554.216026,
+  "equity": 873.503017,
   "realized_pnl": -129.511561,
-  "unrealized_pnl": 8.093471,
-  "fees_paid": 79.96973,
-  "ticks": 78,
-  "last_tick_at": "2026-09-03T22:51:36+00:00",
+  "unrealized_pnl": 3.014578,
+  "fees_paid": 81.16521,
+  "ticks": 79,
+  "last_tick_at": "2026-09-03T23:13:31+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -147,9 +147,9 @@
       "volume_24h": 1575926.79,
       "end_date": "2026-09-16",
       "paper": true,
-      "mark_price": 0.575,
+      "mark_price": 0.565,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 42.160181
+      "mark_net_liquidation": 41.399367
     },
     {
       "position_id": "1088472-YES-1788445661",
@@ -173,9 +173,35 @@
       "volume_24h": 164370.64,
       "end_date": "2026-09-13",
       "paper": true,
-      "mark_price": 0.425,
-      "mark_spread": 0.01,
+      "mark_price": 0.43,
+      "mark_spread": 0.02,
       "mark_net_liquidation": 41.277772
+    },
+    {
+      "position_id": "3866000-NO-1788477212",
+      "market_id": "3866000",
+      "question": "Will Ethereum dip to $2,250 by December 31, 2026?",
+      "category": "Other",
+      "outcome": "NO",
+      "token_id": "63382519856399132244485492020084100091374236550290181904952415637486462703240",
+      "opened_at": "2026-09-03T23:13:31+00:00",
+      "entry_mid": 0.43,
+      "entry_spread": 0.02,
+      "entry_price": 0.44,
+      "shares": 97.0354058,
+      "gross_trade": 42.695579,
+      "entry_fee": 1.19548,
+      "cash_outlay": 43.891059,
+      "fee_rate": 0.05,
+      "momentum_24h": -0.225,
+      "momentum_6h": -0.025,
+      "liquidity": 36753.36,
+      "volume_24h": 186648.1,
+      "end_date": "2027-01-01",
+      "paper": true,
+      "mark_price": 0.43,
+      "mark_spread": 0.02,
+      "mark_net_liquidation": 39.57298
     }
   ],
   "closed_positions": [
@@ -1844,6 +1870,17 @@
       "exit_price": 0.17,
       "pnl": -5.766916,
       "reason": "stop_loss"
+    },
+    {
+      "ts": "2026-09-03T23:13:31+00:00",
+      "event": "PAPER_OPEN",
+      "market_id": "3866000",
+      "question": "Will Ethereum dip to $2,250 by December 31, 2026?",
+      "outcome": "NO",
+      "entry_price": 0.44,
+      "cash_outlay": 43.891059,
+      "momentum_24h": -0.225,
+      "momentum_6h": -0.025
     }
   ]
 }

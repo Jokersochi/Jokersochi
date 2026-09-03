@@ -8,13 +8,13 @@
   "starting_equity": 1000.0,
   "target_equity": 2000.0,
   "bankrupt_equity": 0.0,
-  "cash": 612.936239,
-  "equity": 885.28253,
+  "cash": 568.637481,
+  "equity": 882.461914,
   "realized_pnl": -113.153708,
-  "unrealized_pnl": -1.563762,
-  "fees_paid": 63.11995,
-  "ticks": 69,
-  "last_tick_at": "2026-09-03T05:44:39+00:00",
+  "unrealized_pnl": -4.384378,
+  "fees_paid": 64.36841,
+  "ticks": 70,
+  "last_tick_at": "2026-09-03T05:55:39+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -147,9 +147,9 @@
       "volume_24h": 132954.23,
       "end_date": "2027-01-01",
       "paper": true,
-      "mark_price": 0.63,
+      "mark_price": 0.64,
       "mark_spread": 0.02,
-      "mark_net_liquidation": 41.605384
+      "mark_net_liquidation": 42.297985
     },
     {
       "position_id": "2252245-NO-1788414280",
@@ -176,6 +176,32 @@
       "mark_price": 0.485,
       "mark_spread": 0.01,
       "mark_net_liquidation": 41.465316
+    },
+    {
+      "position_id": "1088472-YES-1788414940",
+      "market_id": "1088472",
+      "question": "Will Carlos Alcaraz win the 2026 Men's US Open?",
+      "category": "Other",
+      "outcome": "YES",
+      "token_id": "71401904010247427754329784277924205841820460862761252985878735510347215917540",
+      "opened_at": "2026-09-03T05:55:39+00:00",
+      "entry_mid": 0.415,
+      "entry_spread": 0.01,
+      "entry_price": 0.42,
+      "shares": 102.50070943,
+      "gross_trade": 43.050298,
+      "entry_fee": 1.24846,
+      "cash_outlay": 44.298758,
+      "fee_rate": 0.05,
+      "momentum_24h": 0.06,
+      "momentum_6h": 0.04,
+      "liquidity": 59074.66,
+      "volume_24h": 114053.22,
+      "end_date": "2026-09-13",
+      "paper": true,
+      "mark_price": 0.415,
+      "mark_spread": 0.01,
+      "mark_net_liquidation": 40.785541
     }
   ],
   "closed_positions": [
@@ -1526,6 +1552,17 @@
       "cash_outlay": 44.567327,
       "momentum_24h": -0.06,
       "momentum_6h": -0.02
+    },
+    {
+      "ts": "2026-09-03T05:55:39+00:00",
+      "event": "PAPER_OPEN",
+      "market_id": "1088472",
+      "question": "Will Carlos Alcaraz win the 2026 Men's US Open?",
+      "outcome": "YES",
+      "entry_price": 0.42,
+      "cash_outlay": 44.298758,
+      "momentum_24h": 0.06,
+      "momentum_6h": 0.04
     }
   ]
 }

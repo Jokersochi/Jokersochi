@@ -8,13 +8,13 @@
   "starting_equity": 1000.0,
   "target_equity": 2000.0,
   "bankrupt_equity": 0.0,
-  "cash": 568.637481,
-  "equity": 882.461914,
-  "realized_pnl": -113.153708,
-  "unrealized_pnl": -4.384378,
-  "fees_paid": 64.36841,
-  "ticks": 70,
-  "last_tick_at": "2026-09-03T05:55:39+00:00",
+  "cash": 607.393508,
+  "equity": 885.426745,
+  "realized_pnl": -118.696439,
+  "unrealized_pnl": 4.123184,
+  "fees_paid": 65.58766,
+  "ticks": 71,
+  "last_tick_at": "2026-09-03T10:07:51+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -95,8 +95,8 @@
       "volume_24h": 85522.06,
       "end_date": "2026-10-01",
       "paper": true,
-      "mark_price": 0.825,
-      "mark_spread": 0.01,
+      "mark_price": 0.83,
+      "mark_spread": 0.02,
       "mark_net_liquidation": 45.145893
     },
     {
@@ -121,9 +121,9 @@
       "volume_24h": 959383.2,
       "end_date": "2026-09-16",
       "paper": true,
-      "mark_price": 0.475,
+      "mark_price": 0.505,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 46.243528
+      "mark_net_liquidation": 49.271043
     },
     {
       "position_id": "3865999-NO-1788414280",
@@ -147,9 +147,9 @@
       "volume_24h": 132954.23,
       "end_date": "2027-01-01",
       "paper": true,
-      "mark_price": 0.64,
-      "mark_spread": 0.02,
-      "mark_net_liquidation": 42.297985
+      "mark_price": 0.625,
+      "mark_spread": 0.01,
+      "mark_net_liquidation": 41.605384
     },
     {
       "position_id": "2252245-NO-1788414280",
@@ -173,35 +173,9 @@
       "volume_24h": 886646.74,
       "end_date": "2026-09-16",
       "paper": true,
-      "mark_price": 0.485,
+      "mark_price": 0.515,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 41.465316
-    },
-    {
-      "position_id": "1088472-YES-1788414940",
-      "market_id": "1088472",
-      "question": "Will Carlos Alcaraz win the 2026 Men's US Open?",
-      "category": "Other",
-      "outcome": "YES",
-      "token_id": "71401904010247427754329784277924205841820460862761252985878735510347215917540",
-      "opened_at": "2026-09-03T05:55:39+00:00",
-      "entry_mid": 0.415,
-      "entry_spread": 0.01,
-      "entry_price": 0.42,
-      "shares": 102.50070943,
-      "gross_trade": 43.050298,
-      "entry_fee": 1.24846,
-      "cash_outlay": 44.298758,
-      "fee_rate": 0.05,
-      "momentum_24h": 0.06,
-      "momentum_6h": 0.04,
-      "liquidity": 59074.66,
-      "volume_24h": 114053.22,
-      "end_date": "2026-09-13",
-      "paper": true,
-      "mark_price": 0.415,
-      "mark_spread": 0.01,
-      "mark_net_liquidation": 40.785541
+      "mark_net_liquidation": 44.124748
     }
   ],
   "closed_positions": [
@@ -996,6 +970,39 @@
       "pnl": -6.10778,
       "return_pct": -13.0722,
       "close_reason": "stop_loss"
+    },
+    {
+      "position_id": "1088472-YES-1788414940",
+      "market_id": "1088472",
+      "question": "Will Carlos Alcaraz win the 2026 Men's US Open?",
+      "category": "Other",
+      "outcome": "YES",
+      "token_id": "71401904010247427754329784277924205841820460862761252985878735510347215917540",
+      "opened_at": "2026-09-03T05:55:39+00:00",
+      "entry_mid": 0.415,
+      "entry_spread": 0.01,
+      "entry_price": 0.42,
+      "shares": 102.50070943,
+      "gross_trade": 43.050298,
+      "entry_fee": 1.24846,
+      "cash_outlay": 44.298758,
+      "fee_rate": 0.05,
+      "momentum_24h": 0.06,
+      "momentum_6h": 0.04,
+      "liquidity": 59074.66,
+      "volume_24h": 114053.22,
+      "end_date": "2026-09-13",
+      "paper": true,
+      "mark_price": 0.415,
+      "mark_spread": 0.01,
+      "mark_net_liquidation": 40.785541,
+      "closed_at": "2026-09-03T10:07:51+00:00",
+      "exit_price": 0.39,
+      "exit_fee": 1.21925,
+      "net_proceeds": 38.756027,
+      "pnl": -5.542731,
+      "return_pct": -12.5122,
+      "close_reason": "stop_loss"
     }
   ],
   "audit": [
@@ -1563,6 +1570,15 @@
       "cash_outlay": 44.298758,
       "momentum_24h": 0.06,
       "momentum_6h": 0.04
+    },
+    {
+      "ts": "2026-09-03T10:07:51+00:00",
+      "event": "PAPER_CLOSE",
+      "market_id": "1088472",
+      "outcome": "YES",
+      "exit_price": 0.39,
+      "pnl": -5.542731,
+      "reason": "stop_loss"
     }
   ]
 }

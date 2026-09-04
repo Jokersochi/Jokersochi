@@ -126,8 +126,14 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
-          text = Path('polyshark-ai/runtime/paper_trader.py').read_text()
-          forbidden = ['create_order(', 'post_order(', 'cancel_all(', 'POLYMARKET_PRIVATE_KEY']
+          text = '\n'.join(
+              Path(path).read_text()
+              for path in (
+                  'polyshark-ai/runtime/paper_trader.py',
+                  'polyshark-ai/runtime/leader_consensus.py',
+              )
+          )
+          forbidden = ['create_order(', 'post_order(', 'cancel_all(', 'POLYMARKET_PRIVATE_KEY', '/order', '/orders']
           hits = [x for x in forbidden if x in text]
           if hits:
               raise SystemExit(f'Unsafe trading primitives found: {hits}')
@@ -142,8 +148,11 @@ jobs:
           PAPER_STARTING_EQUITY: "1000"
           PAPER_TARGET_EQUITY: "2000"
           PAPER_BANKRUPT_EQUITY: "0"
-          PAPER_MAX_POSITION_PCT: "0.05"
-          PAPER_MAX_OPEN_POSITIONS: "8"
+          PAPER_MAX_POSITION_PCT: "0.02"
+          PAPER_MAX_TOTAL_EXPOSURE_PCT: "0.08"
+          PAPER_MAX_OPEN_POSITIONS: "5"
+          PAPER_MAX_NEW_POSITIONS_PER_TICK: "1"
+          PAPER_MAX_DAILY_REALIZED_LOSS: "20"
         run: python polyshark-ai/runtime/paper_trader.py --state polyshark-ai/runtime/paper_state.json
 
       - name: Persist paper session state

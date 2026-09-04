@@ -8,13 +8,13 @@
   "starting_equity": 1000.0,
   "target_equity": 2000.0,
   "bankrupt_equity": 0.0,
-  "cash": 554.216026,
-  "equity": 873.503017,
+  "cash": 510.562431,
+  "equity": 871.894729,
   "realized_pnl": -129.511561,
-  "unrealized_pnl": 3.014578,
-  "fees_paid": 81.16521,
-  "ticks": 79,
-  "last_tick_at": "2026-09-03T23:13:31+00:00",
+  "unrealized_pnl": 1.40629,
+  "fees_paid": 81.49017,
+  "ticks": 80,
+  "last_tick_at": "2026-09-04T01:03:44+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -95,9 +95,9 @@
       "volume_24h": 132954.23,
       "end_date": "2027-01-01",
       "paper": true,
-      "mark_price": 0.71,
+      "mark_price": 0.69,
       "mark_spread": 0.02,
-      "mark_net_liquidation": 47.165356
+      "mark_net_liquidation": 45.771253
     },
     {
       "position_id": "2252245-NO-1788414280",
@@ -173,8 +173,8 @@
       "volume_24h": 164370.64,
       "end_date": "2026-09-13",
       "paper": true,
-      "mark_price": 0.43,
-      "mark_spread": 0.02,
+      "mark_price": 0.425,
+      "mark_spread": 0.01,
       "mark_net_liquidation": 41.277772
     },
     {
@@ -199,9 +199,35 @@
       "volume_24h": 186648.1,
       "end_date": "2027-01-01",
       "paper": true,
-      "mark_price": 0.43,
+      "mark_price": 0.44,
       "mark_spread": 0.02,
-      "mark_net_liquidation": 39.57298
+      "mark_net_liquidation": 40.536054
+    },
+    {
+      "position_id": "4052420-YES-1788483826",
+      "market_id": "4052420",
+      "question": "Will Bitcoin reach $82,500 in September?",
+      "category": "Other",
+      "outcome": "YES",
+      "token_id": "53215408497553350036933045219943771968236137036851543128018382156435662039010",
+      "opened_at": "2026-09-04T01:03:44+00:00",
+      "entry_mid": 0.845,
+      "entry_spread": 0.01,
+      "entry_price": 0.85,
+      "shares": 50.97486428,
+      "gross_trade": 43.328635,
+      "entry_fee": 0.32496,
+      "cash_outlay": 43.653595,
+      "fee_rate": 0.05,
+      "momentum_24h": 0.4,
+      "momentum_6h": 0.02,
+      "liquidity": 37217.01,
+      "volume_24h": 121716.41,
+      "end_date": "2026-10-01",
+      "paper": true,
+      "mark_price": 0.845,
+      "mark_spread": 0.01,
+      "mark_net_liquidation": 42.476336
     }
   ],
   "closed_positions": [
@@ -1881,6 +1907,17 @@
       "cash_outlay": 43.891059,
       "momentum_24h": -0.225,
       "momentum_6h": -0.025
+    },
+    {
+      "ts": "2026-09-04T01:03:44+00:00",
+      "event": "PAPER_OPEN",
+      "market_id": "4052420",
+      "question": "Will Bitcoin reach $82,500 in September?",
+      "outcome": "YES",
+      "entry_price": 0.85,
+      "cash_outlay": 43.653595,
+      "momentum_24h": 0.4,
+      "momentum_6h": 0.02
     }
   ]
 }

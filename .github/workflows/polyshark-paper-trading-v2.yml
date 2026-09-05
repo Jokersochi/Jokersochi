@@ -3,13 +3,14 @@ name: PolyShark Paper Trading
 on:
   workflow_dispatch:
   schedule:
-    # Explicit off-peak quarter-hour slots; renamed workflow resets a stuck schedule registration.
+    # Existing scheduler is retained as a baseline until a continuously monitored worker is proven.
     - cron: "11,26,41,56 * * * *"
   push:
     branches: [main]
     paths:
       - "polyshark-ai/runtime/paper_trader.py"
-      - "polyshark-ai/tests/test_paper_trader_runtime.py"
+      - "polyshark-ai/runtime/research_contracts.py"
+      - "polyshark-ai/tests/**"
       - ".github/workflows/polyshark-paper-trading-v2.yml"
 
 permissions:
@@ -37,15 +38,19 @@ jobs:
           python - <<'PY'
           from pathlib import Path
           text = Path('polyshark-ai/runtime/paper_trader.py').read_text()
-          forbidden = ['create_order(', 'post_order(', 'cancel_all(', 'POLYMARKET_PRIVATE_KEY']
-          hits = [x for x in forbidden if x in text]
+          forbidden = [
+              'create_order(', 'post_order(', 'cancel_all(',
+              'POLYMARKET_PRIVATE_KEY', 'POLYMARKET_API_SECRET',
+              'real_orders_enabled=true', 'live_trading=true', 'DRY_RUN=false',
+          ]
+          hits = [x for x in forbidden if x.lower() in text.lower()]
           if hits:
               raise SystemExit(f'Unsafe trading primitives found: {hits}')
           print('Paper-only static guard: PASS')
           PY
 
-      - name: Unit tests
-        run: python polyshark-ai/tests/test_paper_trader_runtime.py -q
+      - name: Unit and contract tests
+        run: python -m unittest discover -s polyshark-ai/tests -p 'test_*.py' -q
 
       - name: Run one live-quote paper tick
         env:

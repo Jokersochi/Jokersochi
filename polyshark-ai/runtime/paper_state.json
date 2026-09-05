@@ -8,13 +8,13 @@
   "starting_equity": 1000.0,
   "target_equity": 2000.0,
   "bankrupt_equity": 0.0,
-  "cash": 533.469832,
-  "equity": 732.282289,
+  "cash": 496.811426,
+  "equity": 728.518418,
   "realized_pnl": -264.296723,
-  "unrealized_pnl": -3.420988,
-  "fees_paid": 133.5023,
-  "ticks": 104,
-  "last_tick_at": "2026-09-05T17:33:23+00:00",
+  "unrealized_pnl": -7.184859,
+  "fees_paid": 134.92918,
+  "ticks": 105,
+  "last_tick_at": "2026-09-05T19:13:21+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -121,9 +121,9 @@
       "volume_24h": 535541.74,
       "end_date": "2026-09-16",
       "paper": true,
-      "mark_price": 0.505,
+      "mark_price": 0.495,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 34.903732
+      "mark_net_liquidation": 34.188118
     },
     {
       "position_id": "3701690-YES-1788629605",
@@ -147,9 +147,35 @@
       "volume_24h": 603387.43,
       "end_date": "2026-10-01",
       "paper": true,
-      "mark_price": 0.68,
-      "mark_spread": 0.02,
-      "mark_net_liquidation": 34.535401
+      "mark_price": 0.705,
+      "mark_spread": 0.01,
+      "mark_net_liquidation": 36.136786
+    },
+    {
+      "position_id": "2243896-YES-1788635603",
+      "market_id": "2243896",
+      "question": "Russia x Ukraine ceasefire agreement by October 31, 2026?",
+      "category": "Other",
+      "outcome": "YES",
+      "token_id": "10861802947610899379330568332287100318869035186187733531205554992019689450318",
+      "opened_at": "2026-09-05T19:13:21+00:00",
+      "entry_mid": 0.185,
+      "entry_spread": 0.01,
+      "entry_price": 0.19,
+      "shares": 185.42908495,
+      "gross_trade": 35.231526,
+      "entry_fee": 1.42688,
+      "cash_outlay": 36.658406,
+      "fee_rate": 0.05,
+      "momentum_24h": 0.05,
+      "momentum_6h": 0.01,
+      "liquidity": 65934.33,
+      "volume_24h": 447020.8,
+      "end_date": "2026-11-01",
+      "paper": true,
+      "mark_price": 0.185,
+      "mark_spread": 0.01,
+      "mark_net_liquidation": 32.008765
     }
   ],
   "closed_positions": [
@@ -3238,6 +3264,17 @@
       "cash_outlay": 36.723524,
       "momentum_24h": 0.585,
       "momentum_6h": 0.025
+    },
+    {
+      "ts": "2026-09-05T19:13:21+00:00",
+      "event": "PAPER_OPEN",
+      "market_id": "2243896",
+      "question": "Russia x Ukraine ceasefire agreement by October 31, 2026?",
+      "outcome": "YES",
+      "entry_price": 0.19,
+      "cash_outlay": 36.658406,
+      "momentum_24h": 0.05,
+      "momentum_6h": 0.01
     }
   ]
 }

@@ -9,12 +9,12 @@
   "target_equity": 2000.0,
   "bankrupt_equity": 0.0,
   "cash": 460.392216,
-  "equity": 695.612431,
+  "equity": 693.301067,
   "realized_pnl": -302.321752,
-  "unrealized_pnl": -2.065817,
+  "unrealized_pnl": -4.377181,
   "fees_paid": 150.41882,
-  "ticks": 117,
-  "last_tick_at": "2026-09-06T12:55:40+00:00",
+  "ticks": 118,
+  "last_tick_at": "2026-09-06T14:21:59+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -69,9 +69,9 @@
       "volume_24h": 245321.34,
       "end_date": "2026-12-09",
       "paper": true,
-      "mark_price": 0.715,
+      "mark_price": 0.705,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 39.596326
+      "mark_net_liquidation": 39.018816
     },
     {
       "position_id": "2252245-YES-1788586754",
@@ -147,9 +147,9 @@
       "volume_24h": 106853.44,
       "end_date": "2026-09-13",
       "paper": true,
-      "mark_price": 0.475,
+      "mark_price": 0.465,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 35.201438
+      "mark_net_liquidation": 34.434773
     },
     {
       "position_id": "3411560-YES-1788671370",
@@ -174,8 +174,8 @@
       "end_date": null,
       "paper": true,
       "mark_price": 0.375,
-      "mark_spread": 0.01,
-      "mark_net_liquidation": 35.133186
+      "mark_spread": 0.03,
+      "mark_net_liquidation": 34.165997
     }
   ],
   "closed_positions": [

@@ -8,13 +8,13 @@
   "starting_equity": 1000.0,
   "target_equity": 2000.0,
   "bankrupt_equity": 0.0,
-  "cash": 471.639695,
-  "equity": 670.351523,
+  "cash": 437.891544,
+  "equity": 673.597575,
   "realized_pnl": -326.504531,
-  "unrealized_pnl": -3.143946,
-  "fees_paid": 150.93649,
-  "ticks": 121,
-  "last_tick_at": "2026-09-06T17:46:34+00:00",
+  "unrealized_pnl": 0.102106,
+  "fees_paid": 151.38602,
+  "ticks": 122,
+  "last_tick_at": "2026-09-06T19:20:50+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -147,9 +147,35 @@
       "volume_24h": 106853.44,
       "end_date": "2026-09-13",
       "paper": true,
-      "mark_price": 0.465,
+      "mark_price": 0.53,
+      "mark_spread": 0.02,
+      "mark_net_liquidation": 39.046291
+    },
+    {
+      "position_id": "3701690-YES-1788722452",
+      "market_id": "3701690",
+      "question": "Israel closes its airspace by September 30?",
+      "category": "Other",
+      "outcome": "YES",
+      "token_id": "101040420236481079077393026772174192261262803877417817462744147440746788606483",
+      "opened_at": "2026-09-06T19:20:50+00:00",
+      "entry_mid": 0.725,
+      "entry_spread": 0.01,
+      "entry_price": 0.73,
+      "shares": 45.61454886,
+      "gross_trade": 33.298621,
+      "entry_fee": 0.44953,
+      "cash_outlay": 33.748151,
+      "fee_rate": 0.05,
+      "momentum_24h": 0.03,
+      "momentum_6h": 0.04,
+      "liquidity": 120243.82,
+      "volume_24h": 180997.17,
+      "end_date": "2026-10-01",
+      "paper": true,
+      "mark_price": 0.725,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 34.434773
+      "mark_net_liquidation": 32.382685
     }
   ],
   "closed_positions": [
@@ -3662,6 +3688,17 @@
       "exit_price": 0.12,
       "pnl": -24.182779,
       "reason": "stop_loss"
+    },
+    {
+      "ts": "2026-09-06T19:20:50+00:00",
+      "event": "PAPER_OPEN",
+      "market_id": "3701690",
+      "question": "Israel closes its airspace by September 30?",
+      "outcome": "YES",
+      "entry_price": 0.73,
+      "cash_outlay": 33.748151,
+      "momentum_24h": 0.03,
+      "momentum_6h": 0.04
     }
   ]
 }

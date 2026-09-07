@@ -8,13 +8,13 @@
   "starting_equity": 1000.0,
   "target_equity": 2000.0,
   "bankrupt_equity": 0.0,
-  "cash": 473.14325,
-  "equity": 650.459282,
-  "realized_pnl": -346.130655,
-  "unrealized_pnl": -3.410063,
-  "fees_paid": 163.65458,
-  "ticks": 136,
-  "last_tick_at": "2026-09-07T20:42:12+00:00",
+  "cash": 476.2378,
+  "equity": 623.513109,
+  "realized_pnl": -375.695897,
+  "unrealized_pnl": -0.790994,
+  "fees_paid": 163.81061,
+  "ticks": 137,
+  "last_tick_at": "2026-09-07T22:17:52+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -69,9 +69,9 @@
       "volume_24h": 176205.34,
       "end_date": "2026-09-13",
       "paper": true,
-      "mark_price": 0.565,
+      "mark_price": 0.575,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 30.868229
+      "mark_net_liquidation": 31.435517
     },
     {
       "position_id": "3866000-NO-1788810738",
@@ -95,9 +95,9 @@
       "volume_24h": 122166.66,
       "end_date": "2027-01-01",
       "paper": true,
-      "mark_price": 0.465,
+      "mark_price": 0.455,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 30.78923
+      "mark_net_liquidation": 30.104426
     },
     {
       "position_id": "2252244-NO-1788810738",
@@ -124,32 +124,6 @@
       "mark_price": 0.525,
       "mark_spread": 0.01,
       "mark_net_liquidation": 31.050916
-    },
-    {
-      "position_id": "3701690-NO-1788813733",
-      "market_id": "3701690",
-      "question": "Israel closes its airspace by September 30?",
-      "category": "Other",
-      "outcome": "NO",
-      "token_id": "113115102429687063022899186163791494032794866907263639710901400810753815113311",
-      "opened_at": "2026-09-07T20:42:12+00:00",
-      "entry_mid": 0.385,
-      "entry_spread": 0.01,
-      "entry_price": 0.39,
-      "shares": 81.26449284,
-      "gross_trade": 31.693152,
-      "entry_fee": 0.96664,
-      "cash_outlay": 32.659792,
-      "fee_rate": 0.05,
-      "momentum_24h": -0.12,
-      "momentum_6h": -0.15,
-      "liquidity": 84440.78,
-      "volume_24h": 300671.12,
-      "end_date": "2026-10-01",
-      "paper": true,
-      "mark_price": 0.385,
-      "mark_spread": 0.01,
-      "mark_net_liquidation": 29.923207
     }
   ],
   "closed_positions": [
@@ -2528,6 +2502,39 @@
       "pnl": -6.465866,
       "return_pct": -19.1592,
       "close_reason": "stop_loss"
+    },
+    {
+      "position_id": "3701690-NO-1788813733",
+      "market_id": "3701690",
+      "question": "Israel closes its airspace by September 30?",
+      "category": "Other",
+      "outcome": "NO",
+      "token_id": "113115102429687063022899186163791494032794866907263639710901400810753815113311",
+      "opened_at": "2026-09-07T20:42:12+00:00",
+      "entry_mid": 0.385,
+      "entry_spread": 0.01,
+      "entry_price": 0.39,
+      "shares": 81.26449284,
+      "gross_trade": 31.693152,
+      "entry_fee": 0.96664,
+      "cash_outlay": 32.659792,
+      "fee_rate": 0.05,
+      "momentum_24h": -0.12,
+      "momentum_6h": -0.15,
+      "liquidity": 84440.78,
+      "volume_24h": 300671.12,
+      "end_date": "2026-10-01",
+      "paper": true,
+      "mark_price": 0.385,
+      "mark_spread": 0.01,
+      "mark_net_liquidation": 29.923207,
+      "closed_at": "2026-09-07T22:17:52+00:00",
+      "exit_price": 0.04,
+      "exit_fee": 0.15603,
+      "net_proceeds": 3.09455,
+      "pnl": -29.565242,
+      "return_pct": -90.5249,
+      "close_reason": "stop_loss"
     }
   ],
   "audit": [
@@ -4033,6 +4040,15 @@
       "cash_outlay": 32.659792,
       "momentum_24h": -0.12,
       "momentum_6h": -0.15
+    },
+    {
+      "ts": "2026-09-07T22:17:52+00:00",
+      "event": "PAPER_CLOSE",
+      "market_id": "3701690",
+      "outcome": "NO",
+      "exit_price": 0.04,
+      "pnl": -29.565242,
+      "reason": "stop_loss"
     }
   ]
 }

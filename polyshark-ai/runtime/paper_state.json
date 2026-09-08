@@ -9,12 +9,12 @@
   "target_equity": 2000.0,
   "bankrupt_equity": 0.0,
   "cash": 340.201412,
-  "equity": 607.007547,
+  "equity": 607.308415,
   "realized_pnl": -391.765045,
-  "unrealized_pnl": -1.227408,
+  "unrealized_pnl": -0.92654,
   "fees_paid": 172.59277,
-  "ticks": 147,
-  "last_tick_at": "2026-09-08T18:50:17+00:00",
+  "ticks": 148,
+  "last_tick_at": "2026-09-08T20:11:58+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -69,9 +69,9 @@
       "volume_24h": 176205.34,
       "end_date": "2026-09-13",
       "paper": true,
-      "mark_price": 0.565,
+      "mark_price": 0.575,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 30.868229
+      "mark_net_liquidation": 31.435517
     },
     {
       "position_id": "2252244-NO-1788810738",
@@ -121,9 +121,9 @@
       "volume_24h": 75670.26,
       "end_date": "2026-12-31",
       "paper": true,
-      "mark_price": 0.665,
+      "mark_price": 0.655,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 30.581961
+      "mark_net_liquidation": 30.103275
     },
     {
       "position_id": "601819-NO-1788842926",
@@ -173,9 +173,9 @@
       "volume_24h": 199021.87,
       "end_date": "2026-09-30",
       "paper": true,
-      "mark_price": 0.745,
+      "mark_price": 0.735,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 29.590245
+      "mark_net_liquidation": 29.17559
     },
     {
       "position_id": "601826-YES-1788875335",
@@ -199,9 +199,9 @@
       "volume_24h": 107922.62,
       "end_date": "2026-10-04",
       "paper": true,
-      "mark_price": 0.4475,
+      "mark_price": 0.4485,
       "mark_spread": 0.001,
-      "mark_net_liquidation": 29.31309
+      "mark_net_liquidation": 29.380172
     },
     {
       "position_id": "2252245-YES-1788878962",
@@ -225,9 +225,9 @@
       "volume_24h": 306089.17,
       "end_date": "2026-09-16",
       "paper": true,
-      "mark_price": 0.535,
+      "mark_price": 0.545,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 28.873251
+      "mark_net_liquidation": 29.43309
     }
   ],
   "closed_positions": [

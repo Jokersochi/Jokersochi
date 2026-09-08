@@ -8,13 +8,13 @@
   "starting_equity": 1000.0,
   "target_equity": 2000.0,
   "bankrupt_equity": 0.0,
-  "cash": 476.2378,
-  "equity": 623.513109,
+  "cash": 445.062145,
+  "equity": 621.484776,
   "realized_pnl": -375.695897,
-  "unrealized_pnl": -0.790994,
-  "fees_paid": 163.81061,
-  "ticks": 138,
-  "last_tick_at": "2026-09-07T23:39:29+00:00",
+  "unrealized_pnl": -2.819327,
+  "fees_paid": 164.3468,
+  "ticks": 139,
+  "last_tick_at": "2026-09-08T00:29:59+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -124,6 +124,32 @@
       "mark_price": 0.525,
       "mark_spread": 0.01,
       "mark_net_liquidation": 31.050916
+    },
+    {
+      "position_id": "3399468-YES-1788827400",
+      "market_id": "3399468",
+      "question": "Israel x Iran ceasefire continues through December 31?",
+      "category": "Other",
+      "outcome": "YES",
+      "token_id": "34732988886981510167874389845708832808627284379840131351229635795767825787404",
+      "opened_at": "2026-09-08T00:29:59+00:00",
+      "entry_mid": 0.64,
+      "entry_spread": 0.02,
+      "entry_price": 0.65,
+      "shares": 47.13763818,
+      "gross_trade": 30.639465,
+      "entry_fee": 0.53619,
+      "cash_outlay": 31.175655,
+      "fee_rate": 0.05,
+      "momentum_24h": 0.045,
+      "momentum_6h": 0.015,
+      "liquidity": 109774.68,
+      "volume_24h": 75670.26,
+      "end_date": "2026-12-31",
+      "paper": true,
+      "mark_price": 0.64,
+      "mark_spread": 0.02,
+      "mark_net_liquidation": 29.147322
     }
   ],
   "closed_positions": [
@@ -4049,6 +4075,17 @@
       "exit_price": 0.04,
       "pnl": -29.565242,
       "reason": "stop_loss"
+    },
+    {
+      "ts": "2026-09-08T00:29:59+00:00",
+      "event": "PAPER_OPEN",
+      "market_id": "3399468",
+      "question": "Israel x Iran ceasefire continues through December 31?",
+      "outcome": "YES",
+      "entry_price": 0.65,
+      "cash_outlay": 31.175655,
+      "momentum_24h": 0.045,
+      "momentum_6h": 0.015
     }
   ]
 }

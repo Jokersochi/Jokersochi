@@ -8,13 +8,13 @@
   "starting_equity": 1000.0,
   "target_equity": 2000.0,
   "bankrupt_equity": 0.0,
-  "cash": 370.464363,
-  "equity": 604.473225,
+  "cash": 340.201412,
+  "equity": 603.310047,
   "realized_pnl": -391.765045,
-  "unrealized_pnl": -3.76173,
-  "fees_paid": 171.89792,
-  "ticks": 144,
-  "last_tick_at": "2026-09-08T13:48:54+00:00",
+  "unrealized_pnl": -4.924908,
+  "fees_paid": 172.59277,
+  "ticks": 145,
+  "last_tick_at": "2026-09-08T14:49:21+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -121,9 +121,9 @@
       "volume_24h": 75670.26,
       "end_date": "2026-12-31",
       "paper": true,
-      "mark_price": 0.645,
+      "mark_price": 0.665,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 29.625058
+      "mark_net_liquidation": 30.581961
     },
     {
       "position_id": "601819-NO-1788842926",
@@ -147,9 +147,9 @@
       "volume_24h": 94537.12,
       "end_date": "2026-10-04",
       "paper": true,
-      "mark_price": 0.465,
+      "mark_price": 0.455,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 29.348693
+      "mark_net_liquidation": 28.695924
     },
     {
       "position_id": "1130012-YES-1788875335",
@@ -173,9 +173,9 @@
       "volume_24h": 199021.87,
       "end_date": "2026-09-30",
       "paper": true,
-      "mark_price": 0.735,
+      "mark_price": 0.745,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 29.17559
+      "mark_net_liquidation": 29.590245
     },
     {
       "position_id": "601826-YES-1788875335",
@@ -199,9 +199,35 @@
       "volume_24h": 107922.62,
       "end_date": "2026-10-04",
       "paper": true,
-      "mark_price": 0.4375,
+      "mark_price": 0.4385,
       "mark_spread": 0.001,
-      "mark_net_liquidation": 28.642578
+      "mark_net_liquidation": 28.709601
+    },
+    {
+      "position_id": "2252245-YES-1788878962",
+      "market_id": "2252245",
+      "question": "Will the Fed increase interest rates by 25 bps after the September 2026 meeting?",
+      "category": "Other",
+      "outcome": "YES",
+      "token_id": "63842529068710005716169325380315470359047749786610778647370693404952498013178",
+      "opened_at": "2026-09-08T14:49:21+00:00",
+      "entry_mid": 0.525,
+      "entry_spread": 0.01,
+      "entry_price": 0.53,
+      "shares": 55.78887051,
+      "gross_trade": 29.568101,
+      "entry_fee": 0.69485,
+      "cash_outlay": 30.262951,
+      "fee_rate": 0.05,
+      "momentum_24h": 0.03,
+      "momentum_6h": 0.01,
+      "liquidity": 453926.71,
+      "volume_24h": 306089.17,
+      "end_date": "2026-09-16",
+      "paper": true,
+      "mark_price": 0.525,
+      "mark_spread": 0.01,
+      "mark_net_liquidation": 28.313963
     }
   ],
   "closed_positions": [
@@ -4319,6 +4345,17 @@
       "cash_outlay": 30.369721,
       "momentum_24h": 0.029,
       "momentum_6h": 0.017
+    },
+    {
+      "ts": "2026-09-08T14:49:21+00:00",
+      "event": "PAPER_OPEN",
+      "market_id": "2252245",
+      "question": "Will the Fed increase interest rates by 25 bps after the September 2026 meeting?",
+      "outcome": "YES",
+      "entry_price": 0.53,
+      "cash_outlay": 30.262951,
+      "momentum_24h": 0.03,
+      "momentum_6h": 0.01
     }
   ]
 }

@@ -8,13 +8,13 @@
   "starting_equity": 1000.0,
   "target_equity": 2000.0,
   "bankrupt_equity": 0.0,
-  "cash": 408.006415,
-  "equity": 608.992265,
-  "realized_pnl": -384.307002,
-  "unrealized_pnl": -6.700733,
-  "fees_paid": 169.63581,
-  "ticks": 141,
-  "last_tick_at": "2026-09-08T05:08:20+00:00",
+  "cash": 431.203809,
+  "equity": 605.476266,
+  "realized_pnl": -391.765045,
+  "unrealized_pnl": -2.758689,
+  "fees_paid": 170.67812,
+  "ticks": 142,
+  "last_tick_at": "2026-09-08T09:35:05+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -121,9 +121,9 @@
       "volume_24h": 75670.26,
       "end_date": "2026-12-31",
       "paper": true,
-      "mark_price": 0.635,
-      "mark_spread": 0.01,
-      "mark_net_liquidation": 29.147322
+      "mark_price": 0.65,
+      "mark_spread": 0.02,
+      "mark_net_liquidation": 29.625058
     },
     {
       "position_id": "601819-NO-1788842926",
@@ -147,35 +147,9 @@
       "volume_24h": 94537.12,
       "end_date": "2026-10-04",
       "paper": true,
-      "mark_price": 0.455,
+      "mark_price": 0.445,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 28.695924
-    },
-    {
-      "position_id": "665513-YES-1788844102",
-      "market_id": "665513",
-      "question": "Friedrich Merz out as Chancellor of Germany before 2027?",
-      "category": "Other",
-      "outcome": "YES",
-      "token_id": "27554074579538085152312757613342843137057353684724415806149658005255326639761",
-      "opened_at": "2026-09-08T05:08:20+00:00",
-      "entry_mid": 0.165,
-      "entry_spread": 0.01,
-      "entry_price": 0.17,
-      "shares": 173.14074525,
-      "gross_trade": 29.433927,
-      "entry_fee": 1.22151,
-      "cash_outlay": 30.655437,
-      "fee_rate": 0.05,
-      "momentum_24h": 0.03,
-      "momentum_6h": 0.03,
-      "liquidity": 62589.26,
-      "volume_24h": 96875.27,
-      "end_date": "2027-01-01",
-      "paper": true,
-      "mark_price": 0.165,
-      "mark_spread": 0.01,
-      "mark_net_liquidation": 26.539009
+      "mark_net_liquidation": 28.043804
     }
   ],
   "closed_positions": [
@@ -2653,6 +2627,39 @@
       "pnl": -4.159667,
       "return_pct": -13.428,
       "close_reason": "stop_loss"
+    },
+    {
+      "position_id": "665513-YES-1788844102",
+      "market_id": "665513",
+      "question": "Friedrich Merz out as Chancellor of Germany before 2027?",
+      "category": "Other",
+      "outcome": "YES",
+      "token_id": "27554074579538085152312757613342843137057353684724415806149658005255326639761",
+      "opened_at": "2026-09-08T05:08:20+00:00",
+      "entry_mid": 0.165,
+      "entry_spread": 0.01,
+      "entry_price": 0.17,
+      "shares": 173.14074525,
+      "gross_trade": 29.433927,
+      "entry_fee": 1.22151,
+      "cash_outlay": 30.655437,
+      "fee_rate": 0.05,
+      "momentum_24h": 0.03,
+      "momentum_6h": 0.03,
+      "liquidity": 62589.26,
+      "volume_24h": 96875.27,
+      "end_date": "2027-01-01",
+      "paper": true,
+      "mark_price": 0.165,
+      "mark_spread": 0.01,
+      "mark_net_liquidation": 26.539009,
+      "closed_at": "2026-09-08T09:35:05+00:00",
+      "exit_price": 0.14,
+      "exit_fee": 1.04231,
+      "net_proceeds": 23.197394,
+      "pnl": -7.458043,
+      "return_pct": -24.3286,
+      "close_reason": "stop_loss"
     }
   ],
   "audit": [
@@ -4229,6 +4236,15 @@
       "cash_outlay": 30.655437,
       "momentum_24h": 0.03,
       "momentum_6h": 0.03
+    },
+    {
+      "ts": "2026-09-08T09:35:05+00:00",
+      "event": "PAPER_CLOSE",
+      "market_id": "665513",
+      "outcome": "YES",
+      "exit_price": 0.14,
+      "pnl": -7.458043,
+      "reason": "stop_loss"
     }
   ]
 }

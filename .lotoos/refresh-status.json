@@ -1,9 +1,9 @@
 {
   "ok": true,
   "source": "official",
-  "count": 15068,
+  "count": 15072,
   "first": 1,
-  "last": 15068,
+  "last": 15072,
   "continuous": true,
   "passes": 1,
   "recoveredTransientGap": false

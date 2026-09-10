@@ -8,13 +8,13 @@
   "starting_equity": 1000.0,
   "target_equity": 2000.0,
   "bankrupt_equity": 0.0,
-  "cash": 338.578668,
-  "equity": 604.360409,
-  "realized_pnl": -397.165124,
-  "unrealized_pnl": 1.525533,
-  "fees_paid": 174.73255,
-  "ticks": 169,
-  "last_tick_at": "2026-09-10T09:54:40+00:00",
+  "cash": 346.016817,
+  "equity": 618.822789,
+  "realized_pnl": -391.901971,
+  "unrealized_pnl": 10.72476,
+  "fees_paid": 175.75962,
+  "ticks": 170,
+  "last_tick_at": "2026-09-10T13:47:03+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -48,32 +48,6 @@
       "mark_net_liquidation": 54.68445
     },
     {
-      "position_id": "2252244-NO-1788810738",
-      "market_id": "2252244",
-      "question": "Will there be no change in Fed interest rates after the September 2026 meeting?",
-      "category": "Other",
-      "outcome": "NO",
-      "token_id": "97050921740416192996389806693742575608111328819185493163189880975611314813724",
-      "opened_at": "2026-09-07T19:52:17+00:00",
-      "entry_mid": 0.525,
-      "entry_spread": 0.01,
-      "entry_price": 0.53,
-      "shares": 61.18166475,
-      "gross_trade": 32.426282,
-      "entry_fee": 0.76202,
-      "cash_outlay": 33.188302,
-      "fee_rate": 0.05,
-      "momentum_24h": -0.03,
-      "momentum_6h": -0.02,
-      "liquidity": 462402.54,
-      "volume_24h": 691131.47,
-      "end_date": "2026-09-16",
-      "paper": true,
-      "mark_price": 0.545,
-      "mark_spread": 0.01,
-      "mark_net_liquidation": 32.278219
-    },
-    {
       "position_id": "3399468-YES-1788827400",
       "market_id": "3399468",
       "question": "Israel x Iran ceasefire continues through December 31?",
@@ -95,9 +69,9 @@
       "volume_24h": 75670.26,
       "end_date": "2026-12-31",
       "paper": true,
-      "mark_price": 0.645,
+      "mark_price": 0.635,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 29.625058
+      "mark_net_liquidation": 29.147322
     },
     {
       "position_id": "601819-NO-1788842926",
@@ -121,9 +95,9 @@
       "volume_24h": 94537.12,
       "end_date": "2026-10-04",
       "paper": true,
-      "mark_price": 0.485,
+      "mark_price": 0.525,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 30.656192
+      "mark_net_liquidation": 33.279069
     },
     {
       "position_id": "1130012-YES-1788875335",
@@ -173,9 +147,9 @@
       "volume_24h": 107922.62,
       "end_date": "2026-10-04",
       "paper": true,
-      "mark_price": 0.4645,
-      "mark_spread": 0.001,
-      "mark_net_liquidation": 30.454496
+      "mark_price": 0.484,
+      "mark_spread": 0.004,
+      "mark_net_liquidation": 31.665185
     },
     {
       "position_id": "2252245-YES-1788878962",
@@ -199,9 +173,9 @@
       "volume_24h": 306089.17,
       "end_date": "2026-09-16",
       "paper": true,
-      "mark_price": 0.535,
+      "mark_price": 0.635,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 28.873251
+      "mark_net_liquidation": 34.496768
     },
     {
       "position_id": "2176270-NO-1788931406",
@@ -225,9 +199,35 @@
       "volume_24h": 286654.57,
       "end_date": "2026-12-31",
       "paper": true,
-      "mark_price": 0.83,
+      "mark_price": 0.845,
+      "mark_spread": 0.01,
+      "mark_net_liquidation": 30.372884
+    },
+    {
+      "position_id": "4339037-YES-1789048025",
+      "market_id": "4339037",
+      "question": "LAPTOP FDV above $500M one day after launch?",
+      "category": "Other",
+      "outcome": "YES",
+      "token_id": "72691498590329627056417089679857830107121966560913973056058862206568394608746",
+      "opened_at": "2026-09-10T13:47:03+00:00",
+      "entry_mid": 0.78,
+      "entry_spread": 0.02,
+      "entry_price": 0.79,
+      "shares": 38.84942578,
+      "gross_trade": 30.691046,
+      "entry_fee": 0.32226,
+      "cash_outlay": 31.013306,
+      "fee_rate": 0.05,
+      "momentum_24h": 0.44,
+      "momentum_6h": 0.115,
+      "liquidity": 36830.31,
+      "volume_24h": 545421.17,
+      "end_date": "2026-12-31",
+      "paper": true,
+      "mark_price": 0.78,
       "mark_spread": 0.02,
-      "mark_net_liquidation": 29.619828
+      "mark_net_liquidation": 29.570048
     }
   ],
   "closed_positions": [
@@ -2804,6 +2804,39 @@
       "pnl": 4.990219,
       "return_pct": 16.6679,
       "close_reason": "take_profit"
+    },
+    {
+      "position_id": "2252244-NO-1788810738",
+      "market_id": "2252244",
+      "question": "Will there be no change in Fed interest rates after the September 2026 meeting?",
+      "category": "Other",
+      "outcome": "NO",
+      "token_id": "97050921740416192996389806693742575608111328819185493163189880975611314813724",
+      "opened_at": "2026-09-07T19:52:17+00:00",
+      "entry_mid": 0.525,
+      "entry_spread": 0.01,
+      "entry_price": 0.53,
+      "shares": 61.18166475,
+      "gross_trade": 32.426282,
+      "entry_fee": 0.76202,
+      "cash_outlay": 33.188302,
+      "fee_rate": 0.05,
+      "momentum_24h": -0.03,
+      "momentum_6h": -0.02,
+      "liquidity": 462402.54,
+      "volume_24h": 691131.47,
+      "end_date": "2026-09-16",
+      "paper": true,
+      "mark_price": 0.545,
+      "mark_spread": 0.01,
+      "mark_net_liquidation": 32.278219,
+      "closed_at": "2026-09-10T13:47:03+00:00",
+      "exit_price": 0.64,
+      "exit_fee": 0.70481,
+      "net_proceeds": 38.451455,
+      "pnl": 5.263153,
+      "return_pct": 15.8585,
+      "close_reason": "take_profit"
     }
   ],
   "audit": [
@@ -4462,6 +4495,26 @@
       "cash_outlay": 30.157828,
       "momentum_24h": -0.06,
       "momentum_6h": -0.04
+    },
+    {
+      "ts": "2026-09-10T13:47:03+00:00",
+      "event": "PAPER_CLOSE",
+      "market_id": "2252244",
+      "outcome": "NO",
+      "exit_price": 0.64,
+      "pnl": 5.263153,
+      "reason": "take_profit"
+    },
+    {
+      "ts": "2026-09-10T13:47:03+00:00",
+      "event": "PAPER_OPEN",
+      "market_id": "4339037",
+      "question": "LAPTOP FDV above $500M one day after launch?",
+      "outcome": "YES",
+      "entry_price": 0.79,
+      "cash_outlay": 31.013306,
+      "momentum_24h": 0.44,
+      "momentum_6h": 0.115
     }
   ]
 }

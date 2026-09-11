@@ -8,13 +8,13 @@
   "starting_equity": 1000.0,
   "target_equity": 2000.0,
   "bankrupt_equity": 0.0,
-  "cash": 339.373624,
-  "equity": 557.903243,
-  "realized_pnl": -439.441954,
-  "unrealized_pnl": -2.654803,
-  "fees_paid": 205.04523,
-  "ticks": 184,
-  "last_tick_at": "2026-09-11T14:36:24+00:00",
+  "cash": 336.467382,
+  "equity": 556.96238,
+  "realized_pnl": -442.395493,
+  "unrealized_pnl": -0.642127,
+  "fees_paid": 206.99505,
+  "ticks": 185,
+  "last_tick_at": "2026-09-11T17:09:29+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -69,9 +69,9 @@
       "volume_24h": 286654.57,
       "end_date": "2026-12-31",
       "paper": true,
-      "mark_price": 0.805,
+      "mark_price": 0.815,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 28.868233
+      "mark_net_liquidation": 29.24385
     },
     {
       "position_id": "601826-YES-1789065491",
@@ -95,9 +95,9 @@
       "volume_24h": 195189.53,
       "end_date": "2026-10-04",
       "paper": true,
-      "mark_price": 0.5265,
-      "mark_spread": 0.003,
-      "mark_net_liquidation": 28.309764
+      "mark_price": 0.5345,
+      "mark_spread": 0.009,
+      "mark_net_liquidation": 28.586699
     },
     {
       "position_id": "601819-NO-1789117511",
@@ -121,9 +121,9 @@
       "volume_24h": 360756.66,
       "end_date": "2026-10-04",
       "paper": true,
-      "mark_price": 0.555,
+      "mark_price": 0.575,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 26.728222
+      "mark_net_liquidation": 27.7285
     },
     {
       "position_id": "2252245-YES-1789133363",
@@ -173,35 +173,35 @@
       "volume_24h": 3545785.42,
       "end_date": "2026-09-16",
       "paper": true,
-      "mark_price": 0.815,
+      "mark_price": 0.825,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 27.602092
+      "mark_net_liquidation": 27.956957
     },
     {
-      "position_id": "1193094-NO-1789137385",
+      "position_id": "1193094-NO-1789146570",
       "market_id": "1193094",
       "question": "Will Magdalena Andersson be the next Prime Minister of Sweden?",
       "category": "Other",
       "outcome": "NO",
       "token_id": "49952287244614575734723913757649087902024339238007187585607375183859292977482",
-      "opened_at": "2026-09-11T14:36:24+00:00",
+      "opened_at": "2026-09-11T17:09:29+00:00",
       "entry_mid": 0.265,
       "entry_spread": 0.01,
       "entry_price": 0.27,
-      "shares": 100.2048886,
-      "gross_trade": 27.05532,
-      "entry_fee": 0.98752,
-      "cash_outlay": 28.04284,
+      "shares": 100.03590056,
+      "gross_trade": 27.009693,
+      "entry_fee": 0.98585,
+      "cash_outlay": 27.995543,
       "fee_rate": 0.05,
       "momentum_24h": -0.09,
       "momentum_6h": -0.09,
-      "liquidity": 80217.36,
-      "volume_24h": 166672.69,
+      "liquidity": 79841.1,
+      "volume_24h": 205890.67,
       "end_date": "2026-09-13",
       "paper": true,
       "mark_price": 0.265,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 25.089301
+      "mark_net_liquidation": 25.046984
     }
   ],
   "closed_positions": [
@@ -3405,6 +3405,39 @@
       "pnl": 0.466915,
       "return_pct": 1.5374,
       "close_reason": "max_hold"
+    },
+    {
+      "position_id": "1193094-NO-1789137385",
+      "market_id": "1193094",
+      "question": "Will Magdalena Andersson be the next Prime Minister of Sweden?",
+      "category": "Other",
+      "outcome": "NO",
+      "token_id": "49952287244614575734723913757649087902024339238007187585607375183859292977482",
+      "opened_at": "2026-09-11T14:36:24+00:00",
+      "entry_mid": 0.265,
+      "entry_spread": 0.01,
+      "entry_price": 0.27,
+      "shares": 100.2048886,
+      "gross_trade": 27.05532,
+      "entry_fee": 0.98752,
+      "cash_outlay": 28.04284,
+      "fee_rate": 0.05,
+      "momentum_24h": -0.09,
+      "momentum_6h": -0.09,
+      "liquidity": 80217.36,
+      "volume_24h": 166672.69,
+      "end_date": "2026-09-13",
+      "paper": true,
+      "mark_price": 0.265,
+      "mark_spread": 0.01,
+      "mark_net_liquidation": 25.089301,
+      "closed_at": "2026-09-11T17:09:29+00:00",
+      "exit_price": 0.26,
+      "exit_fee": 0.96397,
+      "net_proceeds": 25.089301,
+      "pnl": -2.953539,
+      "return_pct": -10.5322,
+      "close_reason": "stop_loss"
     }
   ],
   "audit": [
@@ -5430,6 +5463,26 @@
       "outcome": "NO",
       "entry_price": 0.27,
       "cash_outlay": 28.04284,
+      "momentum_24h": -0.09,
+      "momentum_6h": -0.09
+    },
+    {
+      "ts": "2026-09-11T17:09:29+00:00",
+      "event": "PAPER_CLOSE",
+      "market_id": "1193094",
+      "outcome": "NO",
+      "exit_price": 0.26,
+      "pnl": -2.953539,
+      "reason": "stop_loss"
+    },
+    {
+      "ts": "2026-09-11T17:09:29+00:00",
+      "event": "PAPER_OPEN",
+      "market_id": "1193094",
+      "question": "Will Magdalena Andersson be the next Prime Minister of Sweden?",
+      "outcome": "NO",
+      "entry_price": 0.27,
+      "cash_outlay": 27.995543,
       "momentum_24h": -0.09,
       "momentum_6h": -0.09
     }

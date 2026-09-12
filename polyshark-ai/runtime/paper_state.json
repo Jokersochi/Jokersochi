@@ -8,13 +8,13 @@
   "starting_equity": 1000.0,
   "target_equity": 2000.0,
   "bankrupt_equity": 0.0,
-  "cash": 374.771333,
-  "equity": 533.98708,
+  "cash": 348.071978,
+  "equity": 530.847937,
   "realized_pnl": -467.125591,
-  "unrealized_pnl": 1.112671,
-  "fees_paid": 219.45556,
-  "ticks": 203,
-  "last_tick_at": "2026-09-12T19:11:59+00:00",
+  "unrealized_pnl": -2.026472,
+  "fees_paid": 220.45775,
+  "ticks": 204,
+  "last_tick_at": "2026-09-12T19:33:34+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -150,6 +150,32 @@
       "mark_price": 0.485,
       "mark_spread": 0.01,
       "mark_net_liquidation": 25.064879
+    },
+    {
+      "position_id": "1163699-YES-1789241616",
+      "market_id": "1163699",
+      "question": "Clarity Act (H.R.3633) signed into law in 2026?",
+      "category": "Other",
+      "outcome": "YES",
+      "token_id": "35198549486569600595408965368290795524428922595732253580266052028158040373233",
+      "opened_at": "2026-09-12T19:33:34+00:00",
+      "entry_mid": 0.215,
+      "entry_spread": 0.01,
+      "entry_price": 0.22,
+      "shares": 116.80529355,
+      "gross_trade": 25.697165,
+      "entry_fee": 1.00219,
+      "cash_outlay": 26.699355,
+      "fee_rate": 0.05,
+      "momentum_24h": 0.04,
+      "momentum_6h": 0.02,
+      "liquidity": 611916.98,
+      "volume_24h": 111234.69,
+      "end_date": "2027-01-01",
+      "paper": true,
+      "mark_price": 0.215,
+      "mark_spread": 0.01,
+      "mark_net_liquidation": 23.560212
     }
   ],
   "closed_positions": [
@@ -5888,6 +5914,17 @@
       "exit_price": 0.27,
       "pnl": -2.780088,
       "reason": "stop_loss"
+    },
+    {
+      "ts": "2026-09-12T19:33:34+00:00",
+      "event": "PAPER_OPEN",
+      "market_id": "1163699",
+      "question": "Clarity Act (H.R.3633) signed into law in 2026?",
+      "outcome": "YES",
+      "entry_price": 0.22,
+      "cash_outlay": 26.699355,
+      "momentum_24h": 0.04,
+      "momentum_6h": 0.02
     }
   ]
 }

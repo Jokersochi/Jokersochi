@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { STRATEGIES, DISCLAIMER, generateTicket, generateTickets, maxUsefulTickets } from "../public/loto-analytics-4x20/lib/strategy.mjs";
+import { countMatches, walkForwardBacktest } from "../public/loto-analytics-4x20/lib/backtest.mjs";
 import { normalizeDraw, validateArchive } from "./loto-source.mjs";
 import { normalizeLiveRows, validateLiveStatus } from "../public/loto-analytics-4x20/lib/live-data.mjs";
 
@@ -91,11 +92,13 @@ test("live backend status is fail-closed", () => {
     invalid_count: 0,
     duplicate_count: 0,
     verified_through: 2000,
+    draw_count: 2000,
   } });
   assert.equal(good.verified_through, 2000);
   assert.throws(() => validateLiveStatus({ payload: { ...good, production_ready: false, block_reason: "stale" } }), /stale/);
   assert.throws(() => validateLiveStatus({ payload: { ...good, gap_count: 1 } }), /пропуски/);
   assert.throws(() => validateLiveStatus({ payload: { ...good, official_source_verified: false } }), /Официальный источник/);
+  assert.throws(() => validateLiveStatus({ payload: { ...good, draw_count: 18 } }), /несогласован/);
 });
 
 test("live draw window must contain 1000 continuous verified draws", () => {
@@ -110,4 +113,24 @@ test("live draw window must contain 1000 continuous verified draws", () => {
   withGap.push({ ...withGap.at(-1), draw_number: 999 });
   assert.throws(() => normalizeLiveRows(withGap, 2000), /разрыв|отстаёт/);
   assert.throws(() => normalizeLiveRows(rows.slice(0, 999), 2000), /минимум 1000/);
+});
+
+test("walk-forward backtest scores only future targets against a paired random baseline", () => {
+  const draws = history(1300);
+  const report = walkForwardBacktest("hot1000", draws, { evaluationDraws: 100 });
+  assert.equal(report.evaluationDraws, 100);
+  assert.equal(report.firstEvaluatedDraw, 1201);
+  assert.equal(report.lastEvaluatedDraw, 1300);
+  assert.equal(report.ticketCount, 1);
+  assert.ok(Number.isFinite(report.meanDelta));
+  assert.ok(Number.isFinite(report.ci95Low));
+  assert.ok(Number.isFinite(report.ci95High));
+  assert.equal(report.financialRoiAvailable, false);
+  assert.match(report.methodology, /walk-forward/i);
+});
+
+test("match counter treats fields independently", () => {
+  const draw = { fieldA:[1,2,3,4], fieldB:[10,11,12,13] };
+  const ticket = { fieldA:[1,2,8,9], fieldB:[10,12,19,20] };
+  assert.deepEqual(countMatches(ticket, draw), { fieldA:2, fieldB:2 });
 });

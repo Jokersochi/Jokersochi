@@ -1,6 +1,6 @@
 import { STRATEGIES, generateTickets, maxUsefulTickets } from "./lib/strategy-v2.mjs";
 import { walkForwardBacktest } from "./lib/backtest.mjs";
-import { loadLiveArchive } from "./lib/live-data.mjs";
+import { loadLiveArchive, loadOfficialPayouts } from "./lib/live-data.mjs";
 
 const $ = (s) => document.querySelector(s);
 const strategyGrid = $("#strategyGrid");
@@ -17,12 +17,15 @@ const backtestStatus = $("#backtestStatus");
 const backtestGrid = $("#backtestGrid");
 const backtestNote = $("#backtestNote");
 let archive = null;
+let payoutRows = null;
+let payoutPromise = null;
 let backtestRun = 0;
 
 const escapeHtml = (value) => String(value).replace(/[&<>'"]/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"})[c]);
 const balls = (numbers, cls) => `<div class="balls ${cls}">${numbers.map((n) => `<span class="ball">${n}</span>`).join("")}</div>`;
-const pct = (value) => `${(value * 100).toFixed(1)}%`;
+const pct = (value) => value == null ? "—" : `${(value * 100).toFixed(1)}%`;
 const signed = (value) => `${value >= 0 ? "+" : ""}${value.toFixed(3)}`;
+const rub = (value) => new Intl.NumberFormat("ru-RU", { style:"currency", currency:"RUB", maximumFractionDigits:0 }).format(Number(value) || 0);
 
 function renderStrategies() {
   strategyGrid.innerHTML = STRATEGIES.map((s) => `<article class="card"><div class="strategy-name"><h2>${escapeHtml(s.name)}</h2><span class="chip">${s.lookback ? `${s.lookback} тиражей` : "без истории"}</span></div><p><strong>${escapeHtml(s.shortDescription)}</strong></p><p class="muted">${escapeHtml(s.plainDescription)}</p></article>`).join("");
@@ -50,10 +53,25 @@ function renderDataQuality(data) {
   qualityGrid.innerHTML = cards.map(([label, value]) => `<div class="quality-item"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div>`).join("");
   const draw = data.draws.at(-1);
   const date = new Date(draw.date).toLocaleString("ru-RU", {dateStyle:"medium", timeStyle:"short"});
-  latestDraw.innerHTML = `<div class="latest-head"><div><span class="eyebrow">Последний подтверждённый тираж</span><h2>№${draw.number}</h2></div><span class="chip">${escapeHtml(date)}</span></div><div class="fields"><div class="lotto-field field-a"><strong>Поле 1</strong>${balls(draw.fieldA,"field-a")}</div><div class="lotto-field field-b"><strong>Поле 2</strong>${balls(draw.fieldB,"field-b")}</div></div>`;
+  const economics = draw.ticketPriceRub ? `<span class="chip">билет ${escapeHtml(rub(draw.ticketPriceRub))}</span>` : "";
+  latestDraw.innerHTML = `<div class="latest-head"><div><span class="eyebrow">Последний подтверждённый тираж</span><h2>№${draw.number}</h2></div><div class="latest-chips"><span class="chip">${escapeHtml(date)}</span>${economics}</div></div><div class="fields"><div class="lotto-field field-a"><strong>Поле 1</strong>${balls(draw.fieldA,"field-a")}</div><div class="lotto-field field-b"><strong>Поле 2</strong>${balls(draw.fieldB,"field-b")}</div></div>`;
 }
 
-function renderBacktestReport(report) {
+async function ensurePayouts() {
+  if (payoutRows) return payoutRows;
+  if (!archive) throw new Error("Live-архив ещё не загружен");
+  if (!payoutPromise) {
+    const first = archive.draws.at(-300)?.number;
+    const last = archive.draws.at(-1)?.number;
+    payoutPromise = loadOfficialPayouts(first, last).then((rows) => {
+      payoutRows = rows;
+      return rows;
+    }).finally(() => { payoutPromise = null; });
+  }
+  return payoutPromise;
+}
+
+function renderBacktestReport(report, payoutError = null) {
   const cards = [
     ["Evidence Grade", report.evidenceGrade],
     ["Walk-forward", `${report.evaluationDraws} тиражей`],
@@ -62,8 +80,22 @@ function renderBacktestReport(report) {
     ["Proxy 2+2", `${pct(report.balanced22Rate)} vs ${pct(report.baselineBalanced22Rate)}`],
     ["Max просадка score", report.maxProxyDrawdown.toFixed(1)],
   ];
+
+  if (report.financialDataAvailable) {
+    cards.push(
+      [report.financialRoiAvailable ? "Архивный ROI" : "ROI · нижняя граница", `${report.financialRoiAvailable ? "" : "≥ "}${pct(report.financialRoiAvailable ? report.strategyRoi : report.strategyRoiLowerBound)} vs random ${report.financialRoiAvailable ? "" : "≥ "}${pct(report.financialRoiAvailable ? report.baselineRoi : report.baselineRoiLowerBound)}`],
+      ["Payout coverage", `${pct(report.financialCoverage)} vs ${pct(report.baselineFinancialCoverage)}`],
+      ["Расход → выплаты", `${rub(report.strategyStakeRub)} → ${rub(report.strategyReturnRub)}`],
+    );
+  } else {
+    cards.push(["Архивный ROI", "данные выплат недоступны"]);
+  }
+
   backtestGrid.innerHTML = cards.map(([label, value]) => `<div class="quality-item evidence-item"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div>`).join("");
-  backtestNote.textContent = `Проверка №${report.firstEvaluatedDraw}–${report.lastEvaluatedDraw}. ${report.methodology}. Финансовый ROI пока не показывается: таблица официальных выплат ещё не заполнена полностью.`;
+  const moneyNote = report.financialDataAvailable
+    ? `${report.financialMethodology}. Неопределённых виртуальных исходов: ${report.unresolvedStrategyTickets}; у random: ${report.unresolvedBaselineTickets}.`
+    : `Денежный блок недоступен${payoutError ? `: ${payoutError}` : "."}`;
+  backtestNote.textContent = `Проверка №${report.firstEvaluatedDraw}–${report.lastEvaluatedDraw}. ${report.methodology}. ${moneyNote}`;
   backtestStatus.className = report.evidenceGrade === "Слабый положительный сигнал" ? "status warn" : "status ok";
   backtestStatus.textContent = report.evidenceGrade;
 }
@@ -72,14 +104,21 @@ async function renderBacktest() {
   if (!archive) return;
   const run = ++backtestRun;
   backtestStatus.className = "status warn";
-  backtestStatus.textContent = "Считаю walk-forward…";
+  backtestStatus.textContent = "Считаю walk-forward + ROI…";
   backtestGrid.innerHTML = "";
   backtestNote.textContent = "";
   await new Promise((resolve) => requestAnimationFrame(resolve));
+  let payouts = null;
+  let payoutError = null;
   try {
-    const report = walkForwardBacktest(strategySelect.value, archive.draws, { evaluationDraws: 300 });
+    payouts = await ensurePayouts();
+  } catch (error) {
+    payoutError = error instanceof Error ? error.message : String(error);
+  }
+  try {
+    const report = walkForwardBacktest(strategySelect.value, archive.draws, { evaluationDraws: 300, payoutRows: payouts });
     if (run !== backtestRun) return;
-    renderBacktestReport(report);
+    renderBacktestReport(report, payoutError);
   } catch (error) {
     if (run !== backtestRun) return;
     backtestStatus.className = "status danger";
@@ -93,6 +132,8 @@ async function loadArchive() {
   status.textContent = "Данные: проверяю live-backend…";
   try {
     archive = await loadLiveArchive();
+    payoutRows = null;
+    payoutPromise = null;
     status.className = "status ok";
     status.textContent = `LIVE · официальный архив · до №${archive.last} · без пропусков`;
     renderDataQuality(archive);

@@ -8,13 +8,13 @@
   "starting_equity": 1000.0,
   "target_equity": 2000.0,
   "bankrupt_equity": 0.0,
-  "cash": 350.611449,
-  "equity": 534.144212,
-  "realized_pnl": -464.345503,
-  "unrealized_pnl": -1.510285,
-  "fees_paid": 218.54032,
-  "ticks": 196,
-  "last_tick_at": "2026-09-12T06:25:52+00:00",
+  "cash": 374.771333,
+  "equity": 535.833625,
+  "realized_pnl": -467.125591,
+  "unrealized_pnl": 2.959216,
+  "fees_paid": 219.45556,
+  "ticks": 197,
+  "last_tick_at": "2026-09-12T10:56:42+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -69,9 +69,9 @@
       "volume_24h": 3116070.87,
       "end_date": "2026-09-16",
       "paper": true,
-      "mark_price": 0.795,
+      "mark_price": 0.785,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 26.893372
+      "mark_net_liquidation": 26.539537
     },
     {
       "position_id": "2252244-NO-1789133363",
@@ -95,9 +95,9 @@
       "volume_24h": 3545785.42,
       "end_date": "2026-09-16",
       "paper": true,
-      "mark_price": 0.795,
+      "mark_price": 0.805,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 26.893372
+      "mark_net_liquidation": 27.247557
     },
     {
       "position_id": "601826-NO-1789192498",
@@ -121,35 +121,9 @@
       "volume_24h": 150201.02,
       "end_date": "2026-10-04",
       "paper": true,
-      "mark_price": 0.5065,
-      "mark_spread": 0.001,
-      "mark_net_liquidation": 25.836806
-    },
-    {
-      "position_id": "1193094-NO-1789194354",
-      "market_id": "1193094",
-      "question": "Will Magdalena Andersson be the next Prime Minister of Sweden?",
-      "category": "Other",
-      "outcome": "NO",
-      "token_id": "49952287244614575734723913757649087902024339238007187585607375183859292977482",
-      "opened_at": "2026-09-12T06:25:52+00:00",
-      "entry_mid": 0.275,
-      "entry_spread": 0.01,
-      "entry_price": 0.28,
-      "shares": 92.87082788,
-      "gross_trade": 26.003832,
-      "entry_fee": 0.93614,
-      "cash_outlay": 26.939972,
-      "fee_rate": 0.05,
-      "momentum_24h": -0.12,
-      "momentum_6h": -0.01,
-      "liquidity": 108097.0,
-      "volume_24h": 170853.29,
-      "end_date": "2026-09-13",
-      "paper": true,
-      "mark_price": 0.275,
-      "mark_spread": 0.01,
-      "mark_net_liquidation": 24.159884
+      "mark_price": 0.529,
+      "mark_spread": 0.002,
+      "mark_net_liquidation": 26.990555
     },
     {
       "position_id": "601819-YES-1789194354",
@@ -173,9 +147,9 @@
       "volume_24h": 180893.84,
       "end_date": "2026-10-04",
       "paper": true,
-      "mark_price": 0.485,
+      "mark_price": 0.495,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 25.064879
+      "mark_net_liquidation": 25.600193
     }
   ],
   "closed_positions": [
@@ -3676,6 +3650,39 @@
       "pnl": -2.801293,
       "return_pct": -10.3196,
       "close_reason": "stop_loss"
+    },
+    {
+      "position_id": "1193094-NO-1789194354",
+      "market_id": "1193094",
+      "question": "Will Magdalena Andersson be the next Prime Minister of Sweden?",
+      "category": "Other",
+      "outcome": "NO",
+      "token_id": "49952287244614575734723913757649087902024339238007187585607375183859292977482",
+      "opened_at": "2026-09-12T06:25:52+00:00",
+      "entry_mid": 0.275,
+      "entry_spread": 0.01,
+      "entry_price": 0.28,
+      "shares": 92.87082788,
+      "gross_trade": 26.003832,
+      "entry_fee": 0.93614,
+      "cash_outlay": 26.939972,
+      "fee_rate": 0.05,
+      "momentum_24h": -0.12,
+      "momentum_6h": -0.01,
+      "liquidity": 108097.0,
+      "volume_24h": 170853.29,
+      "end_date": "2026-09-13",
+      "paper": true,
+      "mark_price": 0.275,
+      "mark_spread": 0.01,
+      "mark_net_liquidation": 24.159884,
+      "closed_at": "2026-09-12T10:56:42+00:00",
+      "exit_price": 0.27,
+      "exit_fee": 0.91524,
+      "net_proceeds": 24.159884,
+      "pnl": -2.780088,
+      "return_pct": -10.3196,
+      "close_reason": "stop_loss"
     }
   ],
   "audit": [
@@ -5872,6 +5879,15 @@
       "cash_outlay": 26.939973,
       "momentum_24h": 0.06,
       "momentum_6h": 0.03
+    },
+    {
+      "ts": "2026-09-12T10:56:42+00:00",
+      "event": "PAPER_CLOSE",
+      "market_id": "1193094",
+      "outcome": "NO",
+      "exit_price": 0.27,
+      "pnl": -2.780088,
+      "reason": "stop_loss"
     }
   ]
 }

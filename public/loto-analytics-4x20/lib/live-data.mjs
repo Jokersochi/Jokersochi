@@ -1,6 +1,7 @@
 const SUPABASE_URL = "https://oryuanpvbjxmnihmwbin.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_oBRPgAo7-YKHzDjhnSKjVA_ozNiJoOs";
 const REQUIRED_HISTORY = 1000;
+const LIVE_WINDOW = 1600;
 
 const API_HEADERS = Object.freeze({
   accept: "application/json",
@@ -24,6 +25,9 @@ export function validateLiveStatus(state) {
   if (Number(payload.duplicate_count) !== 0) throw new Error(`В архиве есть дубликаты: ${payload.duplicate_count}`);
   if (!Number.isInteger(Number(payload.verified_through)) || Number(payload.verified_through) < REQUIRED_HISTORY) {
     throw new Error("Недостаточно подтверждённой истории");
+  }
+  if (Number(payload.draw_count) < Number(payload.verified_through)) {
+    throw new Error(`archive_status несогласован: draw_count=${payload.draw_count}, verified_through=${payload.verified_through}`);
   }
   return payload;
 }
@@ -64,7 +68,7 @@ export async function loadLiveArchive() {
   const state = Array.isArray(states) ? states[0] : null;
   const payload = validateLiveStatus(state);
 
-  const rows = await fetchJson(`/rest/v1/draws?select=draw_number,draw_date,field1,field2&order=draw_number.desc&limit=${REQUIRED_HISTORY}`);
+  const rows = await fetchJson(`/rest/v1/draws?select=draw_number,draw_date,field1,field2&order=draw_number.desc&limit=${LIVE_WINDOW}`);
   const draws = normalizeLiveRows(rows, payload.verified_through);
 
   return {

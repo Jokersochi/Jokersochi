@@ -1,24 +1,26 @@
 # GitHub Repository Audit — 2026-09-13
 
-This document records evidence-backed repository cleanup decisions for the `Jokersochi` account. The goal is one canonical repository per real product, with third-party forks/imports removed from the active portfolio only after first-party code has been extracted or explicitly rejected.
+Evidence-backed cleanup decisions for the `Jokersochi` account. Goal: one canonical repository per real product; third-party forks/imports leave the active portfolio only after first-party value is migrated or explicitly rejected.
 
 ## Canonical first-party products
 
-| Product | Canonical repository | Current decision |
+| Product | Canonical repository | Decision |
 |---|---|---|
-| AI Realtor | `Jokersochi/ai-realtor` | Canonical production repository. |
-| Sentinel Markets AI | `Jokersochi/sentinel-markets-ai` | Canonical market-intelligence SaaS repository. |
-| Monopoly Luxe | `Jokersochi/monopoly-luxe` | Canonical game repository; consolidation in progress. |
-| Virtual Try-On | `Jokersochi/primerochnaya` | Canonical virtual try-on / future AR direction. |
-| Product Visualizer | `Jokersochi/Product-Visualizer-AI` | Active first-party product; later normalize naming if safe. |
-| Sochi House Project | `Jokersochi/SochiHouseApp` | Independent parametric house/concept-design product. Do not merge into Realtor. |
-| RoomGenius | `Jokersochi/-` | Real product hidden behind invalid repository name; preserve until rename capability is available. |
-| Virtual Food Photographer | `Jokersochi/---` | Real first-party AI food-photography app; preserve, fix secret boundary, then rename. |
+| AI Realtor | `Jokersochi/ai-realtor` | Canonical production Realtor/PropTech product. |
+| Sentinel Markets AI | `Jokersochi/sentinel-markets-ai` | Canonical market-intelligence product and data source of truth. |
+| Monopoly Luxe | `Jokersochi/monopoly-luxe` | Canonical game; legacy-source consolidation still in progress. |
+| Virtual Try-On | `Jokersochi/primerochnaya` | Canonical clothing try-on / future AR product. |
+| Product Visualizer | `Jokersochi/Product-Visualizer-AI` | Active first-party product. |
+| Sochi House Project | `Jokersochi/SochiHouseApp` | Independent parametric house/concept-design product; not part of Realtor. |
+| RoomGenius | `Jokersochi/-` | Real AI interior-design product; preserve and later rename. |
+| Virtual Food Photographer | `Jokersochi/---` | Real Gemini/Imagen product; preserve, fix secret boundary, then rename. |
 
-## P0 security status
+Canonical product catalog: `projects/01-business-products/README.md`.
+
+## P0 security
 
 ### `monopoly-luxe`
-A committed `.env` was found on the default branch during cleanup.
+A committed `.env` was found on `main`.
 
 Completed containment:
 - removed `.env` from current `main`;
@@ -26,159 +28,190 @@ Completed containment:
 - added placeholder-only `.env.example`;
 - opened a P0 credential-rotation issue.
 
-Important: deleting the file from the current branch does not remove values from Git history. Any credential that ever appeared there must be treated as exposed until rotated/revoked.
+Deleting the file does not remove historical exposure; any real credential that appeared there must be rotated/revoked.
 
-### `---` / Virtual Food Photographer
-`services/geminiService.ts` performs Gemini menu parsing and Imagen generation, while `vite.config.ts` serializes `GEMINI_API_KEY` into client-side constants via Vite `define`.
+### Virtual Food Photographer (`---`)
+`services/geminiService.ts` performs Gemini parsing/Imagen generation while `vite.config.ts` injects `GEMINI_API_KEY` into client-side constants.
 
-Decision: preserve the product, but move AI calls behind a server-side API before production use. P0 issue #2 tracks removal of the browser-bundle secret boundary and credential rotation if a real key has ever been bundled/deployed.
+Decision: preserve the product, but move AI calls behind a server-side API. P0 issue #2 tracks the secret-boundary repair and rotation if a real key was ever bundled/deployed.
 
-A basic current-branch check did not find committed root `.env` files in `ai-realtor`, `sentinel-markets-ai`, `Product-Visualizer-AI`, `primerochnaya`, or `sochi-realtor-ai`. This is not a substitute for full-history secret scanning.
+A current-branch spot check found no root committed `.env` in `ai-realtor`, `sentinel-markets-ai`, `Product-Visualizer-AI`, `primerochnaya`, or `sochi-realtor-ai`. This is not a substitute for a full-history secret scan.
 
-## Product consolidation status
+## Realtor consolidation
 
-### Realtor cluster
 Canonical: `ai-realtor`.
 
-- `sochi-realtor-ai` is classified as a legacy UI/AI-Studio prototype, not a second production backend. Its Express server is mock-oriented and its dashboard contains hard-coded presentation data. Keep only worthwhile UI/UX concepts.
-- `andrej-karpathy-skills` was a polluted upstream fork containing `realtyai-mobile.html`. Cross-fork comparison showed `ahead_by=4`, `behind_by=3`; the only product-specific file was the 400-line RealtyAI mobile HTML prototype, plus two generic `.claude` files.
-- The worthwhile mobile UX patterns have now been captured in canonical `ai-realtor/docs/mobile-ux-extraction.md` (safe-area/dvh handling, bottom navigation, touch-first property actions, bottom-sheet interaction, information hierarchy and restrained motion). Hard-coded KPIs, fake LIVE logs, sample data, client-side token fields and one-file prototype architecture were explicitly rejected.
-- Therefore `andrej-karpathy-skills` has passed the extraction gate and is deletion/archive-ready after final dependency/deployment check.
-- `SochiHouseApp` is explicitly **not** part of this cluster. It is an independent product for parametric house/site concept design, 2D/3D preview, PDF/DXF/GLTF/IFC export, GeoJSON import, share/feedback workflows, AI renders and production launch/backup operations.
+### `andrej-karpathy-skills`
+Cross-fork comparison against `multica-ai/andrej-karpathy-skills` showed `ahead_by=4`, `behind_by=3`. Product-specific delta was the 400-line `realtyai-mobile.html`; the remaining unique files were generic `.claude` tooling.
 
-### Monopoly cluster
+Completed extraction:
+- captured worthwhile mobile UX in `ai-realtor/docs/mobile-ux-extraction.md`;
+- retained safe-area/dvh handling, bottom navigation, touch-first property actions, bottom-sheet interaction, hierarchy and restrained motion;
+- rejected hard-coded KPI data, fake LIVE activity, local token fields, sample data and one-file prototype architecture.
+
+Decision: extraction complete; deletion/archive-ready after final dependency/deployment check.
+
+### `sochi-realtor-ai`
+Classified as a legacy UI/AI-Studio prototype, not a second production backend. Its Express layer is mock-oriented and its dashboard uses hard-coded presentation data.
+
+Completed extraction:
+- created `ai-realtor/docs/legacy-ui-extraction-sochi-realtor-ai.md`;
+- preserved command-center information architecture, Sochi-specific analytics presentation ideas, real agent-activity UX requirements and accessible navigation principles;
+- rejected fake KPIs/market data, simulated agents, mock publish/market endpoints, duplicate backend/auth/data planes and placeholder integrations.
+
+Decision: extraction complete; deletion/archive-ready after final dependency/domain check.
+
+### `SochiHouseApp`
+Explicitly removed from Realtor cleanup scope. It is an independent first-party product with parametric site/building geometry, 2D/3D preview, PDF/DXF/GLTF/IFC exports, GeoJSON import, share/feedback, server-side AI renders, production preflight and backup operations.
+
+## Monopoly consolidation
+
 Canonical: `monopoly-luxe`.
 
-Confirmed valuable sources:
-- `russian-monopoly-local`: Russia-specific 40-cell board/economy, cards, micro-events, localization, trading, mortgage, bankruptcy and other client-side game rules.
-- `monopolylux`: server-authoritative Express/Socket.IO rooms, reconnect, quick play, bots and deterministic server game-state transitions.
-- `codex`: upstream OpenAI fork polluted by one unique Russian Monopoly MVP commit under `apps/russian-monopoly-mvp/`; extract board/card/contracts/localization/token assets before removing the fork.
+### Valuable migration sources — keep for now
+- `russian-monopoly-local`: richer Russian 40-cell board/economy, cards, micro-events, localization, trading, mortgage, bankruptcy and other rules.
+- `monopolylux`: server-authoritative Express/Socket.IO rooms, reconnect, quick play, bots and deterministic game-state transitions.
 
-Explicitly rejected legacy sources:
-- `12345`: inspected `src/game.js`; it is an 8-cell, one-player browser prototype with only basic movement, direct purchase, fixed rent and two Chance cards. All meaningful mechanics are superseded by `russian-monopoly-local` + `monopolylux`; no migration required.
-- `Monopolize-`: entire history is one initial commit containing only the stock 11-line AI Studio README. No source code exists to migrate.
+A draft consolidation PR exists on `cleanup/server-consolidation`; migrated modules remain isolated from production runtime until canonical tests/reconciliation are complete.
 
-A draft consolidation PR exists in `monopoly-luxe` on branch `cleanup/server-consolidation`; migrated modules remain isolated from production runtime until tests and reconciliation are complete.
+### `codex`
+Real `openai/codex` fork with one first-party commit adding `apps/russian-monopoly-mvp/`.
 
-### Sentinel cluster
+Reviewed and explicitly rejected for migration because:
+- its README lists auctions, houses/hotels, dynamic rent and extended contract economy as unimplemented;
+- its simple contracts/micro-events are superseded by richer preserved sources;
+- its three tests cover only tax, property purchase and move-to-card behavior;
+- SVG tokens are explicitly placeholder artwork;
+- canonical migration sources already provide a stronger client rule set plus server-authoritative architecture.
+
+Decision: extraction gate complete; deletion/archive-ready after final dependency check.
+
+### `12345`
+Early 8-cell, one-player browser prototype with basic movement, direct purchase, fixed rent and two Chance cards. Fully superseded; no migration required.
+
+Decision: deletion/archive-ready.
+
+### `Monopolize-`
+Exactly one commit containing only the stock 11-line AI Studio README. No code exists.
+
+Decision: deletion/archive-ready.
+
+## Sentinel consolidation
+
 Canonical: `sentinel-markets-ai`.
 
-`Sentinel-Markets-AI-` is a real Android/Jetpack Compose AI Studio prototype with Room, Retrofit/Firebase AI patterns and local Terminal/Brief/Watchlist/Ledger/Premium UI. It is **not** an authoritative production data source: the app pre-seeds hard-coded historical win/loss examples, can append simulated signals, derives demo accuracy metrics locally and contains fallback simulated market narratives.
+### `Sentinel-Markets-AI-`
+Legacy Android/Jetpack Compose AI Studio prototype. Useful client ideas included mobile tabs, Room cache patterns, ViewModel/StateFlow, Retrofit boundary and Compose/Robolectric/Roborazzi testing. It also contained non-production behavior: hard-coded win/loss history, simulated signals, synthetic accuracy values and simulated fallback market narratives.
 
-Issue #52 in the canonical repository records the decision:
-- keep all authoritative signals, performance, risk and provenance on canonical server APIs;
-- reuse Android Compose UI/testing patterns only if a native client remains on the roadmap;
-- never migrate demo performance/history as real statistics;
-- archive/remove the legacy Android repository after the native-client decision and any useful UI extraction.
+Completed extraction:
+- created `sentinel-markets-ai/docs/android-client-reference.md`;
+- preserved future-client UI/cache/testing patterns;
+- explicitly rejected demo performance history, fake signals, local signal/risk authority, client-side privileged credentials and local entitlement truth;
+- closed canonical issue #52 as completed.
 
-### Virtual try-on / makeup cluster
-`DeepSeek-R1` is a real fork of `deepseek-ai/DeepSeek-R1`, but it contains custom `makeup-app/` code. The custom app is a legacy CRA prototype with photo upload, `face-api.js` face/landmark detection and static makeup-template UI; it does not perform real generative makeup rendering.
+Decision: future Android client must be rebuilt against canonical APIs. Legacy repository is deletion/archive-ready after final deployment/distribution check.
 
-Decision: do not preserve it as a separate active product. Evaluate only reusable face/landmark concepts inside `primerochnaya`, then remove the polluted upstream fork after accept/reject is documented in the existing consolidation issue.
+## Virtual try-on / DeepSeek cleanup
 
-## Verified clean forks — no unique commits
+### `DeepSeek-R1`
+Real upstream fork with five local commits and custom `makeup-app/`. The custom code is an old CRA makeup prototype using `face-api.js` for a single face, 68 landmarks and face descriptor; it does not perform real generative makeup rendering.
 
-The following repositories were compared directly with their GitHub upstream parent/default branch and have no unique reachable commits at the audited branch tip:
+Compared against `primerochnaya` product direction and explicitly rejected migration:
+- clothing try-on/future AR requires body pose, garment/body segmentation and occlusion handling, not a face descriptor;
+- importing old face models would add client weight, maintenance and biometric/privacy surface without solving the product problem.
 
-| Repository | Upstream status | Cleanup decision |
+Canonical `primerochnaya` issue #2 records the decision and is closed as completed.
+
+Decision: deletion/archive-ready after final dependency check.
+
+## Verified clean forks — no unique product code
+
+| Repository | Evidence | Decision |
 |---|---|---|
-| `anthropic-quickstarts` | `ahead_by=0` | safe removal/archive candidate |
-| `openai-agents-python` | `ahead_by=0` | safe removal/archive candidate |
-| `chrome-devtools-mcp` | `ahead_by=0` | safe removal/archive candidate |
-| `ComfyUI-Manager` | `ahead_by=0` | safe removal/archive candidate |
-| `ComfyUI-VideoCompressor` | `ahead_by=0`, one upstream commit behind | safe removal/archive candidate |
-| `flux` | identical to upstream | safe removal/archive candidate |
-| `omi` | `ahead_by=0` | safe removal/archive candidate |
-| `opensre` | `ahead_by=0` | safe removal/archive candidate |
-| `lobehub` | `ahead_by=0` | safe removal/archive candidate |
-| `shellcheck.net` | identical to upstream | safe removal/archive candidate |
+| `anthropic-quickstarts` | `ahead_by=0` | cleanup-ready |
+| `openai-agents-python` | `ahead_by=0` | cleanup-ready |
+| `chrome-devtools-mcp` | `ahead_by=0` | cleanup-ready |
+| `ComfyUI-Manager` | `ahead_by=0` | cleanup-ready |
+| `ComfyUI-VideoCompressor` | `ahead_by=0`, one upstream commit behind | cleanup-ready |
+| `flux` | identical to upstream | cleanup-ready |
+| `omi` | `ahead_by=0` | cleanup-ready |
+| `opensre` | `ahead_by=0` | cleanup-ready |
+| `lobehub` | `ahead_by=0` | cleanup-ready |
+| `shellcheck.net` | identical to upstream | cleanup-ready |
 
-These should not be presented as first-party portfolio projects.
-
-## Verified clean imported copy — not a formal GitHub fork
+## Verified imported copy
 
 ### `https-github.com-hiddify-hiddify-app`
-GitHub reports `fork=false`, so normal cross-fork comparison is unavailable. However the repository's current `main` HEAD is commit `769f6a6...`, authored by Hiddify, and the exact same SHA/tree exists in the official `hiddify/hiddify-app` history. The HEAD parent is also the upstream parent commit.
+Not formally marked as a GitHub fork, but its audited `main` HEAD is an official Hiddify commit/tree also present in `hiddify/hiddify-app`, with no identified first-party HEAD delta.
 
-Decision: manually imported historical upstream snapshot, not a first-party product. No first-party HEAD delta needs migration; eligible for removal after dependency/deployment check.
+Decision: historical upstream snapshot; cleanup-ready after dependency check.
 
-## Modified forks — extraction/review still required
+## Modified upstream forks — reviewed decisions
 
-| Repository | Verified delta | Decision |
-|---|---|---|
-| `DeepSeek-R1` | 5 commits ahead; custom `makeup-app/` present | extract/reject reusable face-detection concepts first |
-| `codex` | 1 commit ahead; Russian Monopoly MVP | migrate/reject all unique game assets/code first |
-| `Wan2.2` | 14 commits ahead | preserve while reviewing security/performance/UX patch set |
-| `compose-for-agents` | 4 commits ahead | preserve while extracting/documenting agent guidance and `run-all.sh` utility |
-
-`Wan2.2` custom delta currently includes security hardening around `torch.load(..., weights_only=True)`, explicit external-API error handling, network timeouts, progress descriptions and performance-oriented tensor reshaping. This is a patch set to an upstream project, not a first-party standalone product.
-
-## Modified forks — extraction explicitly rejected/completed
+Detailed rationale is recorded in `docs/upstream-fork-delta-decisions.md`.
 
 ### `cursor-plugin`
-Cross-fork comparison against `supabase-community/cursor-plugin` showed `ahead_by=2`, `behind_by=5`. The only real delta is `.snapshots/config.json`, `.snapshots/readme.md`, `.snapshots/sponsors.md` plus a merge commit. This is generic snapshot-tooling configuration/documentation, not first-party product code or infrastructure required by the canonical portfolio.
+`ahead_by=2`, `behind_by=5`; actual delta is generic `.snapshots/` configuration/docs plus merge.
 
-Decision: no migration required. Extraction is explicitly rejected; repository is deletion/archive-ready after dependency/deployment check.
+Decision: no product migration required; cleanup-ready.
 
-### `andrej-karpathy-skills`
-Product-specific mobile UX has been captured in canonical `ai-realtor/docs/mobile-ux-extraction.md`. Remaining delta is generic `.claude` configuration/upstream material.
+### `compose-for-agents`
+Four local commits primarily add an upstream-demo-specific `AGENTS.md` and `run-all.sh` launcher for all top-level Compose demos.
 
-Decision: extraction complete; deletion/archive-ready after dependency/deployment check.
+Decision: no migration into first-party products. Repo-specific agent guidance and broad demo orchestration are not canonical infrastructure; cleanup-ready after dependency check.
+
+### `Wan2.2`
+Fourteen local commits are upstream maintenance patches, not a first-party product:
+- `torch.load(..., weights_only=True)` hardening;
+- explicit exceptions for external API validation;
+- remote-image request timeout;
+- `einsum`/`math.prod` → `permute`/explicit reshape optimization;
+- descriptive `tqdm` progress labels;
+- agent/Jules tooling notes.
+
+Decision: patch ideas are recorded, but no CORE migration is required. Contribute/re-apply upstream only if still relevant. Cleanup-ready after confirming no deployed video workflow depends on this exact fork.
 
 ## Template-derived / disposable repositories
 
 ### `codesandbox-template-nuxt`
-Created from the official CodeSandbox Nuxt template rather than as a GitHub fork. Later commits update old Nuxt 2 dependencies/docs and add generic project tooling. One audit-related commit also added `.project` SQLite/index artifacts and `.snapshots` configuration/docs.
+Created from the official CodeSandbox Nuxt template. Later commits are generic Nuxt 2 maintenance/tooling; no product code identified.
 
-Decision: obsolete development template, not a product. No business/product code migration is required. Eligible for removal after confirming no external deployment depends on it.
+Decision: cleanup-ready after dependency check.
 
 ### `ai-core`
-Repository metadata reports `size=0`. It contains no current implementation.
+Repository metadata reports `size=0`.
 
-Decision: remove unless intentionally reserved as a namespace. Current cleanup default is removal because shared code should live in a real package/repository only when it exists.
+Decision: cleanup-ready.
 
 ### Organization demo repositories
 - `Jokersochi12343322/demo-repository`
 - `Jokersochi12343322/expert-chainsaw-demo-repository`
 
-Both are tiny private repositories with the stock GitHub organization demo README and no identified product role.
+Both contain the stock GitHub organization demo README and no product role.
 
-Decision: removal candidates; no migration required.
+Decision: cleanup-ready.
 
 ## Naming cleanup
 
-- `-` → real RoomGenius project; preserve and rename to `room-genius` when repository-settings mutation is available.
-- `---` → real Virtual Food Photographer; preserve and rename to `virtual-food-photographer` after security/deployment checks.
-- `Product-Visualizer-AI` → active product; eventually normalize to lowercase kebab-case if redirects/deployments permit.
-- `Sentinel-Markets-AI-` → legacy Android client prototype; rename is not worthwhile if it is ultimately archived/removed.
-
-## Pending classification / extraction
-
-Still require evidence-backed unique-value or deployment decisions before destructive cleanup:
-
-- `sochi-realtor-ai` — legacy Realtor UI prototype; finish explicit UI accept/reject list before removal.
-- `Sentinel-Markets-AI-` — native Android roadmap decision / client UX extraction.
-- `DeepSeek-R1` — face/landmark extraction decision in `primerochnaya`.
-- `codex` — Russian Monopoly MVP assets/rules extraction.
-- `Wan2.2` — custom patch-set disposition.
-- `compose-for-agents` — custom agent/tooling disposition.
-- `russian-monopoly-local` and `monopolylux` — remain valuable Monopoly migration sources until canonical tests/porting are complete.
-- any remaining repository not explicitly classified above.
+- `-` → RoomGenius; target name `room-genius` when repository rename controls are available and deployments are checked.
+- `---` → Virtual Food Photographer; target `virtual-food-photographer` after security/deployment checks.
+- `Product-Visualizer-AI` → eventually normalize to lowercase kebab-case if redirects/deployments permit.
+- `Sentinel-Markets-AI-` → do not spend effort renaming if it will be archived/removed.
 
 ## Cleanup policy
 
 A repository is eligible for destructive removal only when:
 
-1. GitHub parent/upstream relationship is verified where applicable.
-2. `ahead_by = 0`, or every unique commit/file has been migrated or explicitly rejected.
-3. No active production deployment depends on it.
-4. No required issue/PR/history would be lost.
-5. Secrets have been rotated if exposure occurred.
-6. The canonical destination or explicit no-migration decision is documented.
+1. upstream relationship/import status is verified where applicable;
+2. unique code has been migrated or explicitly rejected;
+3. no active deployment/domain/automation depends on it;
+4. no required issue/PR/history would be lost;
+5. exposed credentials have been rotated where applicable;
+6. canonical destination or explicit no-migration decision is documented.
 
 ## Current deletion-ready queue
 
-Subject only to final deployment/dependency checks, the code-value gate is already passed for **19 repositories**:
+Subject to final deployment/dependency/history checks, the code-value gate is passed for **25 repositories**:
 
 1. `anthropic-quickstarts`
 2. `openai-agents-python`
@@ -199,23 +232,29 @@ Subject only to final deployment/dependency checks, the code-value gate is alrea
 17. `12345`
 18. `cursor-plugin`
 19. `andrej-karpathy-skills`
+20. `sochi-realtor-ai`
+21. `DeepSeek-R1`
+22. `codex`
+23. `Wan2.2`
+24. `compose-for-agents`
+25. `Sentinel-Markets-AI-`
 
-The connected GitHub integration currently exposes file/branch/PR/issue mutations but not repository-level delete/archive/rename. Therefore these repositories are documented as deletion-ready rather than falsely marked deleted.
+The connected GitHub integration currently exposes file/branch/PR/issue mutations but not repository-level delete/archive/rename, so these are documented as deletion-ready rather than falsely marked deleted.
+
+## Repositories intentionally NOT deletion-ready
+
+- `russian-monopoly-local` — still contains unique game rules/content required for canonical migration.
+- `monopolylux` — still contains unique server-authoritative multiplayer/state-machine code required for canonical migration.
+- all canonical first-party products listed at the top of this document.
 
 ## Next execution queue
 
 ### P0
-1. Continue `monopoly-luxe` consolidation and tests without wiring unverified migration modules into production.
-2. Finish Realtor cleanup by explicitly accepting/rejecting remaining `sochi-realtor-ai` UI concepts.
-3. Rotate credentials associated with the removed `monopoly-luxe/.env` and perform full-history secret scanning.
-4. Fix Virtual Food Photographer's Gemini/Imagen secret boundary before production deployment.
+1. Continue `monopoly-luxe` port/tests from `russian-monopoly-local` + `monopolylux`.
+2. Rotate any credential exposed through historical `monopoly-luxe/.env` and run full-history secret scanning.
+3. Fix Virtual Food Photographer server-side Gemini/Imagen secret boundary.
 
 ### P1
-5. Extract/reject `DeepSeek-R1/makeup-app` value into `primerochnaya`.
-6. Extract Russian Monopoly code/assets from polluted `codex` fork.
-7. Review `Wan2.2` and `compose-for-agents` custom deltas.
-8. Decide whether Sentinel needs a native Android client; migrate only UI/client patterns if yes.
-
-### P2
-9. Delete/archive the 19 deletion-ready repositories once repository-level controls are available and dependency checks pass.
-10. Normalize ambiguous repository names after deployment/dependency checks.
+4. Run final deployment/domain/dependency checks for the 25 deletion-ready repositories.
+5. Delete/archive those repositories when repository-level controls are available.
+6. Normalize `-`, `---`, and `Product-Visualizer-AI` names only after deployment checks.

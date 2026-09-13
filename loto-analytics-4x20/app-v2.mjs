@@ -1,5 +1,5 @@
 import { STRATEGIES, generateTickets, maxUsefulTickets } from "./lib/strategy-v2.mjs";
-import { walkForwardBacktest } from "./lib/backtest.mjs";
+import { strategyTournament, walkForwardBacktest } from "./lib/backtest.mjs";
 import { loadLiveArchive } from "./lib/live-data.mjs";
 import { loadLedger, recordVirtualPortfolio, settleLedger, summarizeLedger } from "./lib/ledger.mjs";
 
@@ -18,10 +18,15 @@ const latestDraw = $("#latestDraw");
 const backtestStatus = $("#backtestStatus");
 const backtestGrid = $("#backtestGrid");
 const backtestNote = $("#backtestNote");
+const tournamentStatus = $("#tournamentStatus");
+const tournamentBody = $("#tournamentBody");
+const tournamentNote = $("#tournamentNote");
 let archive = null;
 let backtestRun = 0;
+let tournamentRun = 0;
 
 const FIVE_TICKET_KEYS = new Set(["adaptive20", "balanced20", "ensemble", "portfolio5"]);
+const TOURNAMENT_KEYS = ["adaptive20", "balanced20", "portfolio5", "hybrid", "hot1000", "overdue", "cold200", "random"];
 const escapeHtml = (value) => String(value).replace(/[&<>'"]/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"})[c]);
 const balls = (numbers, cls) => `<div class="balls ${cls}">${numbers.map((n) => `<span class="ball">${n}</span>`).join("")}</div>`;
 const pct = (value) => `${(value * 100).toFixed(1)}%`;
@@ -62,7 +67,7 @@ function renderLedgerStatus(entries) {
   const summary = summarizeLedger(entries);
   ledgerStatus.textContent = summary.portfolios === 0
     ? "Virtual Ledger: пока нет зафиксированных портфелей. Следующая генерация будет сохранена до результата тиража."
-    : `Virtual Ledger: ${summary.portfolios} портф., ${summary.tickets} билетов · ожидают ${summary.pending} · проверено ${summary.checked}. Финансовый ROI показывается только при наличии подтверждённых payout-данных.`;
+    : `Virtual Ledger: ${summary.portfolios} портф., ${summary.tickets} билетов · тиражей ${summary.targetDraws} · ожидают ${summary.pending} · проверено ${summary.checked}. Повторная генерация той же стратегии на тот же тираж заблокирована.`;
 }
 
 function renderDataQuality(data) {
@@ -112,6 +117,36 @@ async function renderBacktest() {
   }
 }
 
+async function renderTournament() {
+  if (!archive || !tournamentStatus || !tournamentBody) return;
+  const run = ++tournamentRun;
+  tournamentStatus.className = "status warn";
+  tournamentStatus.textContent = "Считаю рейтинг…";
+  tournamentBody.innerHTML = "";
+  await new Promise((resolve) => requestAnimationFrame(resolve));
+  try {
+    const reports = strategyTournament(archive.draws, { evaluationDraws: 80, strategyKeys: TOURNAMENT_KEYS });
+    if (run !== tournamentRun) return;
+    const random = reports.find((report) => report.strategyKey === "random");
+    const ranked = reports.filter((report) => report.strategyKey !== "random");
+    tournamentBody.innerHTML = ranked.map((report, index) => {
+      const lift = report.hitLift == null ? "н/д" : `${report.hitLift >= 0 ? "+" : ""}${(report.hitLift * 100).toFixed(1)}%`;
+      const gradeClass = report.evidenceGrade === "Слабый положительный сигнал" ? "grade-warn" : report.evidenceGrade === "Отрицательный сигнал" ? "grade-bad" : "grade-neutral";
+      return `<tr><td>${index + 1}</td><td><strong>${escapeHtml(report.strategyName)}</strong></td><td>${report.ticketCount}</td><td>${signed(report.excessProxyScore)}</td><td>${escapeHtml(lift)}</td><td><span class="grade ${gradeClass}">${escapeHtml(report.evidenceGrade)}</span></td></tr>`;
+    }).join("");
+    tournamentStatus.className = "status ok";
+    tournamentStatus.textContent = `${ranked.length} стратегий · 80 walk-forward тиражей`;
+    if (tournamentNote) {
+      tournamentNote.textContent = `Рейтинг сортируется по excess proxy-score против Random того же размера. Random-контроль: ${random ? `${random.ticketCount} бил./тираж` : "н/д"}. Это исследовательский рейтинг совпадений, не финансовый ROI. Walk-Forward Ensemble оценивается отдельно в Evidence Lab, чтобы не делать вложенный самореферентный турнир слишком тяжёлым для браузера.`;
+    }
+  } catch (error) {
+    if (run !== tournamentRun) return;
+    tournamentStatus.className = "status danger";
+    tournamentStatus.textContent = "Tournament недоступен";
+    if (tournamentNote) tournamentNote.textContent = error instanceof Error ? error.message : String(error);
+  }
+}
+
 async function loadArchive() {
   status.className = "status warn";
   status.textContent = "Данные: проверяю live-backend…";
@@ -123,6 +158,7 @@ async function loadArchive() {
     renderLedgerStatus(settleLedger(archive.draws));
     generateButton.disabled = false;
     renderBacktest();
+    renderTournament();
   } catch (error) {
     archive = null;
     generateButton.disabled = true;
@@ -130,6 +166,10 @@ async function loadArchive() {
     status.textContent = "BLOCKED · live-архив не прошёл проверку";
     backtestStatus.className = "status danger";
     backtestStatus.textContent = "Backtest заблокирован";
+    if (tournamentStatus) {
+      tournamentStatus.className = "status danger";
+      tournamentStatus.textContent = "Tournament заблокирован";
+    }
     throw error;
   }
 }
@@ -146,22 +186,24 @@ async function generate() {
   try {
     if (!archive) await loadArchive();
     const key = strategySelect.value;
-    const tickets = generateTickets(key, archive.draws, Math.max(1, Number(countInput.value) || 1), Date.now());
-    results.innerHTML = tickets.map(renderTicket).join("");
+    const targetDraw = Number(archive.last) + 1;
     const meta = STRATEGIES.find((strategy) => strategy.key === key);
-    try {
-      const entry = recordVirtualPortfolio({
-        strategyKey: key,
-        strategyName: meta?.name ?? key,
-        tickets,
-        targetDraw: Number(archive.last) + 1,
-        sourceLast: Number(archive.last),
-      });
-      renderLedgerStatus(loadLedger());
-      if (ledgerStatus) ledgerStatus.textContent += ` Последняя фиксация: ${entry.strategyName} → тираж №${entry.targetDraw}, fingerprint ${entry.fingerprint}.`;
-    } catch (ledgerError) {
-      if (ledgerStatus) ledgerStatus.textContent = `Virtual Ledger недоступен: ${ledgerError instanceof Error ? ledgerError.message : String(ledgerError)}.`;
+    const alreadyLocked = loadLedger().find((entry) => Number(entry.targetDraw) === targetDraw && entry.strategyKey === key);
+    if (alreadyLocked) {
+      throw new Error(`${meta?.name ?? key} для тиража №${targetDraw} уже зафиксирована в Virtual Ledger (${alreadyLocked.fingerprint}). Новую комбинацию для той же стратегии можно создать только после завершения этого тиража.`);
     }
+
+    const tickets = generateTickets(key, archive.draws, Math.max(1, Number(countInput.value) || 1), Date.now());
+    const entry = recordVirtualPortfolio({
+      strategyKey: key,
+      strategyName: meta?.name ?? key,
+      tickets,
+      targetDraw,
+      sourceLast: Number(archive.last),
+    });
+    results.innerHTML = tickets.map(renderTicket).join("");
+    renderLedgerStatus(loadLedger());
+    if (ledgerStatus) ledgerStatus.textContent += ` Последняя фиксация: ${entry.strategyName} → тираж №${entry.targetDraw}, fingerprint ${entry.fingerprint}.`;
     results.scrollIntoView({behavior:"smooth", block:"start"});
   } catch (error) {
     errorBox.textContent = `Не удалось безопасно сгенерировать билет: ${error instanceof Error ? error.message : String(error)}.`;

@@ -64,6 +64,13 @@ export function recordVirtualPortfolio({
   if (!Number.isInteger(Number(targetDraw)) || Number(targetDraw) <= Number(sourceLast)) {
     throw new Error("Виртуальный портфель должен быть зафиксирован для будущего тиража");
   }
+
+  const entries = loadLedger(storage);
+  const locked = entries.find((entry) => Number(entry.targetDraw) === Number(targetDraw) && entry.strategyKey === strategyKey);
+  if (locked) {
+    throw new Error(`Портфель ${strategyName || strategyKey} для тиража №${targetDraw} уже зафиксирован (${locked.fingerprint}). Повторная генерация заблокирована, чтобы исключить выбор задним числом.`);
+  }
+
   const safeTickets = tickets.map(sanitizeTicket);
   const core = {
     strategyKey,
@@ -78,6 +85,7 @@ export function recordVirtualPortfolio({
     id: `${core.targetDraw}:${strategyKey}:${fingerprint}`,
     ...core,
     fingerprint,
+    locked: true,
     status: "pending",
     checkedAt: null,
     result: null,
@@ -86,7 +94,6 @@ export function recordVirtualPortfolio({
       reason: "Официальные payout-данные для этого тиража в текущем архиве отсутствуют; ROI не рассчитывается задним числом по предположениям.",
     },
   };
-  const entries = loadLedger(storage);
   entries.push(entry);
   saveLedger(entries, storage);
   return entry;
@@ -126,7 +133,8 @@ export function summarizeLedger(entries) {
   const portfolios = entries.length;
   const tickets = entries.reduce((sum, entry) => sum + (entry.tickets?.length || 0), 0);
   const checkedWithBalanced22 = entries.filter((entry) => entry.result?.balanced22Count > 0).length;
-  return { portfolios, tickets, pending, checked, checkedWithBalanced22 };
+  const targetDraws = new Set(entries.map((entry) => Number(entry.targetDraw))).size;
+  return { portfolios, tickets, pending, checked, checkedWithBalanced22, targetDraws };
 }
 
 export const LEDGER_STORAGE_KEY = STORAGE_KEY;

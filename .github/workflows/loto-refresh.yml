@@ -14,6 +14,7 @@ on:
       - "scripts/loto-strategy.test.mjs"
       - "scripts/loto-forward-ledger.mjs"
       - "scripts/loto-forward-ledger.test.mjs"
+      - "scripts/loto-tournament-report.mjs"
       - "public/loto-analytics-4x20/index.html"
       - "public/loto-analytics-4x20/app.mjs"
       - "public/loto-analytics-4x20/app-v2.mjs"
@@ -70,7 +71,11 @@ jobs:
         if: steps.status.outputs.ok == 'true'
         run: node scripts/loto-forward-ledger.mjs
 
-      - name: Persist diagnostics, verified snapshot and forward ledger
+      - name: Generate walk-forward strategy evidence
+        if: steps.status.outputs.ok == 'true'
+        run: node scripts/loto-tournament-report.mjs
+
+      - name: Persist diagnostics, verified snapshot, forward ledger and evidence
         id: persist
         shell: bash
         run: |
@@ -82,12 +87,12 @@ jobs:
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add .lotoos/refresh-status.json public/loto-analytics-4x20/data/draws.json public/loto-analytics-4x20/data/forward-ledger.json
+          git add .lotoos/refresh-status.json public/loto-analytics-4x20/data/draws.json public/loto-analytics-4x20/data/forward-ledger.json public/loto-analytics-4x20/data/strategy-report.json
 
           if git diff --cached --quiet; then
             echo "No persisted changes"
           else
-            git commit -m "data(lotoos): persist verified draw and forward picks"
+            git commit -m "data(lotoos): persist verified draw, forward picks and evidence"
             git pull --rebase origin main
             git push origin HEAD:main
           fi
@@ -170,4 +175,4 @@ jobs:
           git pull --rebase origin main
           git push origin HEAD:main
 
-# safe-trigger: pipeline-v4
+# safe-trigger: pipeline-v5

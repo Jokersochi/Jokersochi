@@ -4,6 +4,7 @@ on:
   workflow_dispatch:
   schedule:
     - cron: "17 * * * *"
+    - cron: "43 3 * * *"
   push:
     branches: [main]
     paths:
@@ -11,6 +12,8 @@ on:
       - "scripts/loto-refresh.mjs"
       - "scripts/loto-source.mjs"
       - "scripts/loto-strategy.test.mjs"
+      - "scripts/loto-forward-ledger.mjs"
+      - "scripts/loto-forward-ledger.test.mjs"
       - "public/loto-analytics-4x20/index.html"
       - "public/loto-analytics-4x20/app.mjs"
       - "public/loto-analytics-4x20/app-v2.mjs"
@@ -40,12 +43,14 @@ jobs:
           node-version: 22
           cache: npm
 
-      - name: Strategy and source tests
-        run: node --test scripts/loto-strategy.test.mjs
+      - name: Strategy, source and forward-ledger tests
+        run: node --test scripts/loto-strategy.test.mjs scripts/loto-forward-ledger.test.mjs
 
       - name: Refresh verified official archive
         id: refresh
         continue-on-error: true
+        env:
+          LOTO_FULL_AUDIT: ${{ github.event.schedule == '43 3 * * *' && '1' || '0' }}
         run: node scripts/loto-refresh.mjs
 
       - name: Read safe refresh status
@@ -61,7 +66,11 @@ jobs:
           NODE
           cat .lotoos/refresh-status.json
 
-      - name: Persist diagnostics and last verified snapshot
+      - name: Advance immutable forward virtual ledger
+        if: steps.status.outputs.ok == 'true'
+        run: node scripts/loto-forward-ledger.mjs
+
+      - name: Persist diagnostics, verified snapshot and forward ledger
         id: persist
         shell: bash
         run: |
@@ -73,13 +82,14 @@ jobs:
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add .lotoos/refresh-status.json public/loto-analytics-4x20/data/draws.json
+          git add .lotoos/refresh-status.json public/loto-analytics-4x20/data/draws.json public/loto-analytics-4x20/data/forward-ledger.json
 
           if git diff --cached --quiet; then
             echo "No persisted changes"
           else
-            git commit -m "data(lotoos): persist refresh result"
-            git push origin main
+            git commit -m "data(lotoos): persist verified draw and forward picks"
+            git pull --rebase origin main
+            git push origin HEAD:main
           fi
 
       - name: Install dependencies for verified publish
@@ -160,4 +170,4 @@ jobs:
           git pull --rebase origin main
           git push origin HEAD:main
 
-# safe-trigger: pipeline-v3
+# safe-trigger: pipeline-v4

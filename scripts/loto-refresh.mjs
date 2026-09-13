@@ -6,6 +6,7 @@ const OUT = path.resolve("public/loto-analytics-4x20/data/draws.json");
 const STATUS = path.resolve(".lotoos/refresh-status.json");
 const PAGE_SIZE = 50;
 const MAX_PAGES = 400;
+const MAX_INCREMENTAL_PAGES = 10;
 
 async function writeAtomic(file, content) {
   await fs.mkdir(path.dirname(file), { recursive: true });
@@ -50,7 +51,6 @@ async function fetchPage(page, attempt = 1) {
 async function fetchArchivePass() {
   const normalized = [];
   let sawEnd = false;
-
   for (let page = 1; page <= MAX_PAGES; page++) {
     const raw = await fetchPage(page);
     if (!raw.length) {
@@ -66,9 +66,21 @@ async function fetchArchivePass() {
       break;
     }
   }
-
   if (!sawEnd) throw new Error(`Архив не завершился за ${MAX_PAGES} страниц — публикация остановлена`);
   return normalized;
+}
+
+async function fetchIncrementalRows(previousLast) {
+  const normalized = [];
+  for (let page = 1; page <= MAX_INCREMENTAL_PAGES; page++) {
+    const raw = await fetchPage(page);
+    if (!raw.length) break;
+    const rows = raw.map(normalizeDraw).filter(Boolean);
+    normalized.push(...rows);
+    if (rows.some((row) => row.number <= previousLast)) return normalized;
+    if (raw.length < PAGE_SIZE) break;
+  }
+  throw new Error(`Incremental refresh не нашёл перекрытие с подтверждённым тиражом №${previousLast}`);
 }
 
 async function fetchHeadRows() {
@@ -76,43 +88,72 @@ async function fetchHeadRows() {
   return raw.map(normalizeDraw).filter(Boolean);
 }
 
-async function refresh() {
+async function loadExistingSnapshot() {
+  try {
+    const parsed = JSON.parse(await fs.readFile(OUT, "utf8"));
+    if (parsed?.source !== "official" || !Array.isArray(parsed.draws)) return null;
+    return validateArchive(parsed.draws, 1000);
+  } catch {
+    return null;
+  }
+}
+
+async function buildFullSnapshot() {
   let passes = 1;
-  let retryReason = null;
   let normalized = await fetchArchivePass();
-
-  // Re-read the head after the long scan so draws completed during pagination
-  // are included without creating a stale-but-contiguous snapshot.
   normalized.push(...(await fetchHeadRows()));
-
   try {
     validateArchive(normalized, 1000);
   } catch (error) {
     if (!isGapError(error)) throw error;
-    retryReason = safeError(error);
     passes = 2;
-    console.warn(`Transient pagination gap detected; repeating official archive pass: ${retryReason}`);
-
-    // Page-number pagination can shift while a new draw is inserted at the head.
-    // Unioning two independent official passes recovers a boundary omission;
-    // validateArchive still rejects conflicting duplicates or any remaining gap.
+    console.warn(`Transient pagination gap detected; repeating official archive pass: ${safeError(error)}`);
     normalized.push(...(await fetchArchivePass()));
     normalized.push(...(await fetchHeadRows()));
   }
+  return { snapshot: validateArchive(normalized, 1000), passes };
+}
 
-  const snapshot = validateArchive(normalized, 1000);
+async function refresh() {
+  const existing = await loadExistingSnapshot();
+  const forceFull = process.env.LOTO_FULL_AUDIT === "1";
+  let mode = forceFull ? "full-audit" : "incremental";
+  let passes = 1;
+  let snapshot = null;
+
+  if (existing && !forceFull) {
+    try {
+      const incremental = await fetchIncrementalRows(existing.last);
+      const merged = [...existing.draws, ...incremental, ...(await fetchHeadRows())];
+      snapshot = validateArchive(merged, 1000);
+      if (snapshot.last < existing.last) throw new Error("Incremental snapshot regressed behind previous verified archive");
+    } catch (error) {
+      console.warn(`Incremental refresh rejected; falling back to full official audit: ${safeError(error)}`);
+      mode = "full-fallback";
+    }
+  }
+
+  if (!snapshot) {
+    const full = await buildFullSnapshot();
+    snapshot = full.snapshot;
+    passes = full.passes;
+    if (!existing && !forceFull) mode = "full-bootstrap";
+  }
+
   await writeAtomic(OUT, `${JSON.stringify(snapshot, null, 2)}\n`);
   await writeStatus({
     ok: true,
     source: "official",
+    mode,
     count: snapshot.count,
     first: snapshot.first,
     last: snapshot.last,
+    previousLast: existing?.last ?? null,
     continuous: snapshot.quality.continuous,
     passes,
     recoveredTransientGap: passes > 1,
   });
-  console.log(`LotoOS snapshot verified: ${snapshot.count} draws, #${snapshot.first}–#${snapshot.last}, passes=${passes}`);
+  console.log(`LotoOS snapshot verified: ${snapshot.count} draws, #${snapshot.first}–#${snapshot.last}, mode=${mode}, passes=${passes}`);
 }
 
 try {

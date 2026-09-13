@@ -17,9 +17,11 @@ function scoreDraw(tickets, draw) {
     const matches = countMatches(ticket, draw);
     return { ...matches, total: matches.fieldA + matches.fieldB };
   });
+  const bestTotal = Math.max(...scored.map((row) => row.total));
   return {
-    bestTotal: Math.max(...scored.map((row) => row.total)),
+    bestTotal,
     balanced22: scored.some((row) => row.fieldA >= 2 && row.fieldB >= 2),
+    proxyHit: bestTotal >= 3,
   };
 }
 
@@ -43,8 +45,12 @@ function evidenceGrade(strategyKey, ci) {
 }
 
 function ticketCountFor(strategyKey) {
-  if (strategyKey === "portfolio5" || strategyKey === "random") return 5;
+  if (["adaptive20", "balanced20", "ensemble", "portfolio5", "random"].includes(strategyKey)) return 5;
   return 1;
+}
+
+function seedFor(targetNumber, salt = 0) {
+  return (Math.imul(Number(targetNumber) >>> 0, 2654435761) ^ salt) >>> 0;
 }
 
 export function countMatches(ticket, draw) {
@@ -54,6 +60,15 @@ export function countMatches(ticket, draw) {
     fieldA: ticket.fieldA.filter((value) => a.has(value)).length,
     fieldB: ticket.fieldB.filter((value) => b.has(value)).length,
   };
+}
+
+export function buildTargetTickets(strategyKey, draws, targetIndex, count = ticketCountFor(strategyKey), salt = 0) {
+  if (!Array.isArray(draws) || targetIndex <= 0 || targetIndex >= draws.length) {
+    throw new Error("Некорректная цель walk-forward");
+  }
+  const history = draws.slice(0, targetIndex);
+  const target = draws[targetIndex];
+  return generateTickets(strategyKey, history, count, seedFor(target.number, salt));
 }
 
 export function walkForwardBacktest(strategyKey, draws, options = {}) {
@@ -73,13 +88,13 @@ export function walkForwardBacktest(strategyKey, draws, options = {}) {
   const deltas = [];
   let strategyBalanced22 = 0;
   let baselineBalanced22 = 0;
+  let strategyProxyHits = 0;
+  let baselineProxyHits = 0;
 
   for (let i = start; i < draws.length; i++) {
     const target = draws[i];
-    const history = draws.slice(0, i);
-    const seed = (Math.imul(Number(target.number) >>> 0, 2654435761) ^ 0x85ebca6b) >>> 0;
-    const strategyTickets = generateTickets(strategyKey, history, ticketCount, seed);
-    const baselineTickets = generateTickets("random", history, ticketCount, seed ^ 0x9e3779b9);
+    const strategyTickets = buildTargetTickets(strategyKey, draws, i, ticketCount, 0x85ebca6b);
+    const baselineTickets = buildTargetTickets("random", draws, i, ticketCount, 0x9e3779b9);
     const strategyScore = scoreDraw(strategyTickets, target);
     const baselineScore = scoreDraw(baselineTickets, target);
     strategyScores.push(strategyScore.bestTotal);
@@ -87,9 +102,14 @@ export function walkForwardBacktest(strategyKey, draws, options = {}) {
     deltas.push(strategyScore.bestTotal - baselineScore.bestTotal);
     if (strategyScore.balanced22) strategyBalanced22++;
     if (baselineScore.balanced22) baselineBalanced22++;
+    if (strategyScore.proxyHit) strategyProxyHits++;
+    if (baselineScore.proxyHit) baselineProxyHits++;
   }
 
   const ci = pairedCi95(deltas);
+  const proxyHitRate = strategyProxyHits / evalCount;
+  const baselineProxyHitRate = baselineProxyHits / evalCount;
+  const hitLift = baselineProxyHitRate > 0 ? (proxyHitRate / baselineProxyHitRate) - 1 : null;
   return {
     strategyKey,
     strategyName: meta.name,
@@ -100,13 +120,28 @@ export function walkForwardBacktest(strategyKey, draws, options = {}) {
     meanBestMatches: mean(strategyScores),
     baselineMeanBestMatches: mean(baselineScores),
     meanDelta: ci.mean,
+    excessProxyScore: ci.mean,
     ci95Low: ci.low,
     ci95High: ci.high,
     balanced22Rate: strategyBalanced22 / evalCount,
     baselineBalanced22Rate: baselineBalanced22 / evalCount,
+    proxyHitRate,
+    baselineProxyHitRate,
+    hitLift,
     maxProxyDrawdown: maxDrawdown(deltas),
     evidenceGrade: evidenceGrade(strategyKey, ci),
     financialRoiAvailable: false,
+    financialStatus: "Недостаточно официальных payout-данных для честного ROI/EV; финансовые метрики намеренно заблокированы.",
     methodology: "walk-forward: каждый проверяемый тираж исключён из обучающей истории; сравнение парное со случайным портфелем того же размера",
   };
+}
+
+export function strategyTournament(draws, options = {}) {
+  const keys = options.strategyKeys ?? ["adaptive20", "balanced20", "ensemble", "portfolio5", "hybrid", "hot1000", "overdue", "random"];
+  const reports = keys.map((key) => walkForwardBacktest(key, draws, options));
+  return reports.sort((a, b) => {
+    if (a.strategyKey === "random") return 1;
+    if (b.strategyKey === "random") return -1;
+    return b.meanDelta - a.meanDelta || b.proxyHitRate - a.proxyHitRate;
+  });
 }

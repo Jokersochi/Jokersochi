@@ -13,6 +13,7 @@ on:
       - "scripts/loto-strategy.test.mjs"
       - "public/loto-analytics-4x20/index.html"
       - "public/loto-analytics-4x20/app.mjs"
+      - "public/loto-analytics-4x20/app-v2.mjs"
       - "public/loto-analytics-4x20/styles.css"
       - "public/loto-analytics-4x20/lib/**"
 
@@ -159,4 +160,4 @@ jobs:
           git pull --rebase origin main
           git push origin HEAD:main
 
-# safe-trigger: pipeline-v2
+# safe-trigger: pipeline-v3

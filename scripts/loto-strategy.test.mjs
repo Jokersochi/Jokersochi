@@ -94,7 +94,7 @@ test("Walk-Forward Ensemble produces five tickets and does not read target or fu
   assert.deepEqual(after, before);
 });
 
-test("Virtual Ledger fixes portfolios before the draw and settles matches without inventing payout ROI", () => {
+test("Virtual Ledger locks the first portfolio per strategy/draw and settles without inventing payout ROI", () => {
   const storage = memoryStorage();
   const h = history(120);
   const tickets = generateV2Tickets("balanced20", h, 5, 7);
@@ -108,17 +108,31 @@ test("Virtual Ledger fixes portfolios before the draw and settles matches withou
     storage,
   });
   assert.equal(entry.status, "pending");
+  assert.equal(entry.locked, true);
   assert.equal(entry.financials.available, false);
   assert.equal(loadLedger(storage).length, 1);
+  assert.throws(() => recordVirtualPortfolio({
+    strategyKey: "balanced20",
+    strategyName: "Balanced Coverage 20",
+    tickets,
+    targetDraw: 121,
+    sourceLast: 120,
+    createdAt: "2026-09-13T05:01:00.000Z",
+    storage,
+  }), /уже зафиксирован/);
 
   const target = { number: 121, fieldA: [1,2,3,4], fieldB: [5,6,7,8] };
   const settled = settleLedger([...h, target], storage, "2026-09-13T06:00:00.000Z");
   assert.equal(settled[0].status, "checked");
   assert.equal(settled[0].result.drawNumber, 121);
   assert.equal(settled[0].result.tickets.length, 5);
-  const summary = summarizeLedger(settled);
+  const snapshot = JSON.stringify(settled[0]);
+  const settledAgain = settleLedger([...h, { ...target, fieldA:[17,18,19,20], fieldB:[1,2,3,4] }], storage, "2026-09-13T07:00:00.000Z");
+  assert.equal(JSON.stringify(settledAgain[0]), snapshot);
+  const summary = summarizeLedger(settledAgain);
   assert.equal(summary.pending, 0);
   assert.equal(summary.checked, 1);
+  assert.equal(summary.targetDraws, 1);
 });
 
 test("source normalization rejects unfinished and invalid draws", () => {

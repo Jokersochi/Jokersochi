@@ -8,13 +8,13 @@
   "starting_equity": 1000.0,
   "target_equity": 2000.0,
   "bankrupt_equity": 0.0,
-  "cash": 298.553041,
-  "equity": 504.565859,
-  "realized_pnl": -492.766904,
-  "unrealized_pnl": -2.667237,
-  "fees_paid": 237.3268,
-  "ticks": 221,
-  "last_tick_at": "2026-09-13T16:20:38+00:00",
+  "cash": 320.251929,
+  "equity": 501.961511,
+  "realized_pnl": -496.518056,
+  "unrealized_pnl": -1.520433,
+  "fees_paid": 238.19566,
+  "ticks": 222,
+  "last_tick_at": "2026-09-13T18:05:42+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -69,9 +69,9 @@
       "volume_24h": 3116070.87,
       "end_date": "2026-09-16",
       "paper": true,
-      "mark_price": 0.785,
+      "mark_price": 0.775,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 26.539537
+      "mark_net_liquidation": 26.186043
     },
     {
       "position_id": "2252244-NO-1789133363",
@@ -95,9 +95,9 @@
       "volume_24h": 3545785.42,
       "end_date": "2026-09-16",
       "paper": true,
-      "mark_price": 0.795,
+      "mark_price": 0.785,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 26.893372
+      "mark_net_liquidation": 26.539537
     },
     {
       "position_id": "601826-NO-1789192498",
@@ -121,9 +121,9 @@
       "volume_24h": 150201.02,
       "end_date": "2026-10-04",
       "paper": true,
-      "mark_price": 0.504,
+      "mark_price": 0.486,
       "mark_spread": 0.002,
-      "mark_net_liquidation": 25.679674
+      "mark_net_liquidation": 24.737862
     },
     {
       "position_id": "1130012-YES-1789252203",
@@ -176,32 +176,6 @@
       "mark_price": 0.525,
       "mark_spread": 0.01,
       "mark_net_liquidation": 23.811014
-    },
-    {
-      "position_id": "1163699-YES-1789316440",
-      "market_id": "1163699",
-      "question": "Clarity Act (H.R.3633) signed into law in 2026?",
-      "category": "Other",
-      "outcome": "YES",
-      "token_id": "35198549486569600595408965368290795524428922595732253580266052028158040373233",
-      "opened_at": "2026-09-13T16:20:38+00:00",
-      "entry_mid": 0.245,
-      "entry_spread": 0.01,
-      "entry_price": 0.25,
-      "shares": 98.12064193,
-      "gross_trade": 24.53016,
-      "entry_fee": 0.91988,
-      "cash_outlay": 25.45004,
-      "fee_rate": 0.05,
-      "momentum_24h": 0.05,
-      "momentum_6h": 0.02,
-      "liquidity": 352759.01,
-      "volume_24h": 539420.14,
-      "end_date": "2027-01-01",
-      "paper": true,
-      "mark_price": 0.245,
-      "mark_spread": 0.01,
-      "mark_net_liquidation": 22.654094
     }
   ],
   "closed_positions": [
@@ -4065,6 +4039,39 @@
       "pnl": -4.491726,
       "return_pct": -17.5002,
       "close_reason": "stop_loss"
+    },
+    {
+      "position_id": "1163699-YES-1789316440",
+      "market_id": "1163699",
+      "question": "Clarity Act (H.R.3633) signed into law in 2026?",
+      "category": "Other",
+      "outcome": "YES",
+      "token_id": "35198549486569600595408965368290795524428922595732253580266052028158040373233",
+      "opened_at": "2026-09-13T16:20:38+00:00",
+      "entry_mid": 0.245,
+      "entry_spread": 0.01,
+      "entry_price": 0.25,
+      "shares": 98.12064193,
+      "gross_trade": 24.53016,
+      "entry_fee": 0.91988,
+      "cash_outlay": 25.45004,
+      "fee_rate": 0.05,
+      "momentum_24h": 0.05,
+      "momentum_6h": 0.02,
+      "liquidity": 352759.01,
+      "volume_24h": 539420.14,
+      "end_date": "2027-01-01",
+      "paper": true,
+      "mark_price": 0.245,
+      "mark_spread": 0.01,
+      "mark_net_liquidation": 22.654094,
+      "closed_at": "2026-09-13T18:05:42+00:00",
+      "exit_price": 0.23,
+      "exit_fee": 0.86886,
+      "net_proceeds": 21.698888,
+      "pnl": -3.751152,
+      "return_pct": -14.7393,
+      "close_reason": "stop_loss"
     }
   ],
   "audit": [
@@ -6492,6 +6499,15 @@
       "cash_outlay": 25.45004,
       "momentum_24h": 0.05,
       "momentum_6h": 0.02
+    },
+    {
+      "ts": "2026-09-13T18:05:42+00:00",
+      "event": "PAPER_CLOSE",
+      "market_id": "1163699",
+      "outcome": "YES",
+      "exit_price": 0.23,
+      "pnl": -3.751152,
+      "reason": "stop_loss"
     }
   ]
 }

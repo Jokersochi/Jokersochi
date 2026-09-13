@@ -1,10 +1,418 @@
 {
   "version": 1,
-  "startedAtDraw": null,
-  "entries": [],
+  "startedAtDraw": 15129,
+  "entries": [
+    {
+      "targetDraw": 15130,
+      "sourceLast": 15129,
+      "strategies": [
+        {
+          "strategyKey": "adaptive20",
+          "targetDraw": 15130,
+          "sourceLast": 15129,
+          "tickets": [
+            {
+              "fieldA": [
+                3,
+                6,
+                18,
+                19
+              ],
+              "fieldB": [
+                5,
+                16,
+                17,
+                18
+              ]
+            },
+            {
+              "fieldA": [
+                9,
+                13,
+                14,
+                17
+              ],
+              "fieldB": [
+                1,
+                9,
+                10,
+                13
+              ]
+            },
+            {
+              "fieldA": [
+                1,
+                2,
+                8,
+                15
+              ],
+              "fieldB": [
+                3,
+                4,
+                11,
+                12
+              ]
+            },
+            {
+              "fieldA": [
+                7,
+                11,
+                12,
+                16
+              ],
+              "fieldB": [
+                2,
+                14,
+                15,
+                19
+              ]
+            },
+            {
+              "fieldA": [
+                4,
+                5,
+                10,
+                20
+              ],
+              "fieldB": [
+                6,
+                7,
+                8,
+                20
+              ]
+            }
+          ],
+          "fingerprint": "c283adffb161a822"
+        },
+        {
+          "strategyKey": "balanced20",
+          "targetDraw": 15130,
+          "sourceLast": 15129,
+          "tickets": [
+            {
+              "fieldA": [
+                1,
+                2,
+                8,
+                15
+              ],
+              "fieldB": [
+                2,
+                4,
+                11,
+                13
+              ]
+            },
+            {
+              "fieldA": [
+                3,
+                9,
+                10,
+                16
+              ],
+              "fieldB": [
+                7,
+                9,
+                18,
+                20
+              ]
+            },
+            {
+              "fieldA": [
+                4,
+                11,
+                17,
+                18
+              ],
+              "fieldB": [
+                3,
+                5,
+                14,
+                16
+              ]
+            },
+            {
+              "fieldA": [
+                5,
+                6,
+                12,
+                19
+              ],
+              "fieldB": [
+                1,
+                10,
+                12,
+                19
+              ]
+            },
+            {
+              "fieldA": [
+                7,
+                13,
+                14,
+                20
+              ],
+              "fieldB": [
+                6,
+                8,
+                15,
+                17
+              ]
+            }
+          ],
+          "fingerprint": "89ed95e78260e4c2"
+        },
+        {
+          "strategyKey": "ensemble",
+          "targetDraw": 15130,
+          "sourceLast": 15129,
+          "tickets": [
+            {
+              "fieldA": [
+                3,
+                6,
+                18,
+                19
+              ],
+              "fieldB": [
+                5,
+                16,
+                17,
+                18
+              ]
+            },
+            {
+              "fieldA": [
+                9,
+                13,
+                14,
+                17
+              ],
+              "fieldB": [
+                1,
+                9,
+                10,
+                13
+              ]
+            },
+            {
+              "fieldA": [
+                1,
+                2,
+                8,
+                15
+              ],
+              "fieldB": [
+                3,
+                4,
+                11,
+                12
+              ]
+            },
+            {
+              "fieldA": [
+                7,
+                11,
+                12,
+                16
+              ],
+              "fieldB": [
+                2,
+                14,
+                15,
+                19
+              ]
+            },
+            {
+              "fieldA": [
+                4,
+                5,
+                10,
+                20
+              ],
+              "fieldB": [
+                6,
+                7,
+                8,
+                20
+              ]
+            }
+          ],
+          "fingerprint": "79e369b4f0d08214"
+        },
+        {
+          "strategyKey": "portfolio5",
+          "targetDraw": 15130,
+          "sourceLast": 15129,
+          "tickets": [
+            {
+              "fieldA": [
+                2,
+                6,
+                7,
+                13
+              ],
+              "fieldB": [
+                5,
+                9,
+                12,
+                16
+              ]
+            },
+            {
+              "fieldA": [
+                5,
+                11,
+                15,
+                20
+              ],
+              "fieldB": [
+                7,
+                9,
+                14,
+                16
+              ]
+            },
+            {
+              "fieldA": [
+                2,
+                6,
+                11,
+                20
+              ],
+              "fieldB": [
+                6,
+                7,
+                14,
+                15
+              ]
+            },
+            {
+              "fieldA": [
+                5,
+                7,
+                13,
+                15
+              ],
+              "fieldB": [
+                5,
+                6,
+                12,
+                15
+              ]
+            },
+            {
+              "fieldA": [
+                6,
+                7,
+                11,
+                15
+              ],
+              "fieldB": [
+                5,
+                14,
+                15,
+                16
+              ]
+            }
+          ],
+          "fingerprint": "bc0b373d66fb2997"
+        },
+        {
+          "strategyKey": "random",
+          "targetDraw": 15130,
+          "sourceLast": 15129,
+          "tickets": [
+            {
+              "fieldA": [
+                1,
+                4,
+                7,
+                16
+              ],
+              "fieldB": [
+                1,
+                7,
+                9,
+                12
+              ]
+            },
+            {
+              "fieldA": [
+                4,
+                9,
+                12,
+                13
+              ],
+              "fieldB": [
+                1,
+                11,
+                13,
+                14
+              ]
+            },
+            {
+              "fieldA": [
+                3,
+                4,
+                10,
+                14
+              ],
+              "fieldB": [
+                1,
+                3,
+                9,
+                13
+              ]
+            },
+            {
+              "fieldA": [
+                6,
+                7,
+                8,
+                13
+              ],
+              "fieldB": [
+                1,
+                12,
+                13,
+                18
+              ]
+            },
+            {
+              "fieldA": [
+                3,
+                5,
+                9,
+                19
+              ],
+              "fieldB": [
+                9,
+                13,
+                18,
+                19
+              ]
+            }
+          ],
+          "fingerprint": "1a7e5aa938464049"
+        }
+      ],
+      "id": "15130:3eab799fa313bd6b",
+      "fingerprint": "3eab799fa313bd6b",
+      "lockedAt": "2026-09-13T08:00:43.550Z",
+      "locked": true,
+      "status": "pending",
+      "checkedAt": null,
+      "result": null,
+      "financials": {
+        "available": false,
+        "reason": "Ожидается официальный результат тиража."
+      }
+    }
+  ],
   "missedDraws": [],
-  "updatedAt": null,
-  "verifiedArchiveLast": null,
-  "pending": 0,
+  "updatedAt": "2026-09-13T08:00:43.550Z",
+  "verifiedArchiveLast": 15129,
+  "pending": 1,
   "checked": 0
 }

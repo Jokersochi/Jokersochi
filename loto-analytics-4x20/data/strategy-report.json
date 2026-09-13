@@ -1,10 +1,11 @@
 {
-  "version": 1,
-  "generatedAt": "2026-09-13T08:03:44.445Z",
+  "version": 2,
+  "generatedAt": "2026-09-13T08:06:38.170Z",
   "source": "official",
   "archiveLast": 15129,
   "archiveCount": 15129,
-  "methodology": "Strict walk-forward: target draw is excluded from training history. Every strategy is paired against Random with the same ticket count. Five-ticket and one-ticket strategies are ranked separately.",
+  "methodology": "Strict walk-forward: target draw is excluded from training history. Every strategy is paired against Random with the same ticket count. Five-ticket and one-ticket strategies are ranked separately. Portfolio stability is rechecked on 100/200/300/400-draw windows.",
+  "caution": "Положительный proxy-сигнал не доказывает возможность прогнозировать независимый тираж; это исследовательская метрика совпадений, без коррекции за все возможные гипотезы и без финансового ROI.",
   "financialRoiAvailable": false,
   "financialStatus": "Публичный архив комбинаций не содержит полной официальной payout-таблицы по каждому тиражу; финансовый ROI намеренно не моделируется по предположениям.",
   "portfolio5": {
@@ -28,7 +29,7 @@
       "maxProxyDrawdown": 10,
       "evidenceGrade": "Слабый положительный сигнал"
     },
-    "statisticallyPositiveLeader": {
+    "positiveSignalAtPrimaryWindow": {
       "strategyKey": "adaptive20",
       "strategyName": "Adaptive Coverage 20",
       "ticketCount": 5,
@@ -48,25 +49,15 @@
       "maxProxyDrawdown": 10,
       "evidenceGrade": "Слабый положительный сигнал"
     },
-    "randomControl": {
-      "strategyKey": "random",
-      "strategyName": "Случайная",
+    "pairedRandomBaseline": {
       "ticketCount": 5,
       "evaluationDraws": 300,
       "firstEvaluatedDraw": 14830,
       "lastEvaluatedDraw": 15129,
-      "meanBestMatches": 2.783333333333333,
-      "baselineMeanBestMatches": 2.9033333333333333,
-      "excessProxyScore": -0.12,
-      "ci95Low": -0.2550210474529636,
-      "ci95High": 0.015021047452963648,
-      "proxyHitRate": 0.6166666666666667,
-      "baselineProxyHitRate": 0.6866666666666666,
-      "hitLift": -0.10194174757281549,
-      "balanced22Rate": 0.11,
-      "baselineBalanced22Rate": 0.14666666666666667,
-      "maxProxyDrawdown": 52,
-      "evidenceGrade": "Контроль"
+      "meanBestMatches": 2.9033333333333333,
+      "proxyHitRate": 0.6866666666666666,
+      "balanced22Rate": 0.14666666666666667,
+      "note": "Random baseline использует то же число билетов и те же целевые тиражи, что и сравниваемая стратегия."
     },
     "ranking": [
       {
@@ -152,26 +143,16 @@
       "maxProxyDrawdown": 25,
       "evidenceGrade": "Преимущество не обнаружено"
     },
-    "statisticallyPositiveLeader": null,
-    "randomControl": {
-      "strategyKey": "random",
-      "strategyName": "Случайная",
-      "ticketCount": 5,
+    "positiveSignalAtPrimaryWindow": null,
+    "pairedRandomBaseline": {
+      "ticketCount": 1,
       "evaluationDraws": 300,
       "firstEvaluatedDraw": 14830,
       "lastEvaluatedDraw": 15129,
-      "meanBestMatches": 2.783333333333333,
-      "baselineMeanBestMatches": 2.9033333333333333,
-      "excessProxyScore": -0.12,
-      "ci95Low": -0.2550210474529636,
-      "ci95High": 0.015021047452963648,
-      "proxyHitRate": 0.6166666666666667,
-      "baselineProxyHitRate": 0.6866666666666666,
-      "hitLift": -0.10194174757281549,
-      "balanced22Rate": 0.11,
-      "baselineBalanced22Rate": 0.14666666666666667,
-      "maxProxyDrawdown": 52,
-      "evidenceGrade": "Контроль"
+      "meanBestMatches": 1.64,
+      "proxyHitRate": 0.20333333333333334,
+      "balanced22Rate": 0.04666666666666667,
+      "note": "Random baseline использует то же число билетов и те же целевые тиражи, что и сравниваемая стратегия."
     },
     "ranking": [
       {
@@ -296,10 +277,144 @@
     "maxProxyDrawdown": 4,
     "evidenceGrade": "Преимущество не обнаружено"
   },
+  "stability": {
+    "windows": [
+      100,
+      200,
+      300,
+      400
+    ],
+    "portfolio5": [
+      {
+        "strategyKey": "adaptive20",
+        "positiveWindows": 4,
+        "ciPositiveWindows": 2,
+        "averageExcess": 0.15083333333333332,
+        "robustPositiveSignal": true,
+        "windows": [
+          {
+            "evaluationDraws": 100,
+            "excessProxyScore": 0.15,
+            "ci95Low": -0.0682474732865413,
+            "ci95High": 0.3682474732865413,
+            "hitLift": 0.14084507042253525,
+            "evidenceGrade": "Преимущество не обнаружено"
+          },
+          {
+            "evaluationDraws": 200,
+            "excessProxyScore": 0.1,
+            "ci95Low": -0.06439687241030909,
+            "ci95High": 0.26439687241030907,
+            "hitLift": 0.11678832116788307,
+            "evidenceGrade": "Преимущество не обнаружено"
+          },
+          {
+            "evaluationDraws": 300,
+            "excessProxyScore": 0.14333333333333334,
+            "ci95Low": 0.012966911281819038,
+            "ci95High": 0.27369975538484764,
+            "hitLift": 0.14077669902912615,
+            "evidenceGrade": "Слабый положительный сигнал"
+          },
+          {
+            "evaluationDraws": 400,
+            "excessProxyScore": 0.21,
+            "ci95Low": 0.09851513201571412,
+            "ci95High": 0.3214848679842859,
+            "hitLift": 0.19402985074626855,
+            "evidenceGrade": "Слабый положительный сигнал"
+          }
+        ]
+      },
+      {
+        "strategyKey": "balanced20",
+        "positiveWindows": 4,
+        "ciPositiveWindows": 1,
+        "averageExcess": 0.101875,
+        "robustPositiveSignal": false,
+        "windows": [
+          {
+            "evaluationDraws": 100,
+            "excessProxyScore": 0.07,
+            "ci95Low": -0.14262781444286055,
+            "ci95High": 0.28262781444286056,
+            "hitLift": 0.15492957746478875,
+            "evidenceGrade": "Преимущество не обнаружено"
+          },
+          {
+            "evaluationDraws": 200,
+            "excessProxyScore": 0.06,
+            "ci95Low": -0.09133699358762465,
+            "ci95High": 0.21133699358762464,
+            "hitLift": 0.16788321167883202,
+            "evidenceGrade": "Преимущество не обнаружено"
+          },
+          {
+            "evaluationDraws": 300,
+            "excessProxyScore": 0.12,
+            "ci95Low": -0.0037676594834137184,
+            "ci95High": 0.24376765948341372,
+            "hitLift": 0.16990291262135937,
+            "evidenceGrade": "Преимущество не обнаружено"
+          },
+          {
+            "evaluationDraws": 400,
+            "excessProxyScore": 0.1575,
+            "ci95Low": 0.05033965694900484,
+            "ci95High": 0.2646603430509952,
+            "hitLift": 0.18656716417910446,
+            "evidenceGrade": "Слабый положительный сигнал"
+          }
+        ]
+      },
+      {
+        "strategyKey": "portfolio5",
+        "positiveWindows": 0,
+        "ciPositiveWindows": 0,
+        "averageExcess": -0.39375000000000004,
+        "robustPositiveSignal": false,
+        "windows": [
+          {
+            "evaluationDraws": 100,
+            "excessProxyScore": -0.45,
+            "ci95Low": -0.7058941542548758,
+            "ci95High": -0.19410584574512418,
+            "hitLift": -0.352112676056338,
+            "evidenceGrade": "Отрицательный сигнал"
+          },
+          {
+            "evaluationDraws": 200,
+            "excessProxyScore": -0.455,
+            "ci95Low": -0.6333630305115562,
+            "ci95High": -0.27663696948844385,
+            "hitLift": -0.34306569343065696,
+            "evidenceGrade": "Отрицательный сигнал"
+          },
+          {
+            "evaluationDraws": 300,
+            "excessProxyScore": -0.36,
+            "ci95Low": -0.507952152318568,
+            "ci95High": -0.21204784768143192,
+            "hitLift": -0.30097087378640774,
+            "evidenceGrade": "Отрицательный сигнал"
+          },
+          {
+            "evaluationDraws": 400,
+            "excessProxyScore": -0.31,
+            "ci95Low": -0.44160522572677874,
+            "ci95High": -0.17839477427322128,
+            "hitLift": -0.28358208955223885,
+            "evidenceGrade": "Отрицательный сигнал"
+          }
+        ]
+      }
+    ]
+  },
   "decision": {
     "defaultStrategy": "adaptive20",
     "defaultReason": "Adaptive Coverage 20 сохраняет полное покрытие 1–20 и используется как диверсифицированный default, а не как заявка на доказанное предсказательное преимущество.",
-    "provenPortfolioEdge": true,
-    "evidenceWinner": "adaptive20"
+    "robustPositiveSignal": true,
+    "robustSignalLeader": "adaptive20",
+    "primaryWindowLeader": "adaptive20"
   }
 }

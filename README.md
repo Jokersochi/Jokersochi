@@ -11,18 +11,20 @@
 - High-performance Web Apps
 - Product Design & Rapid MVP Launches
 
-## Public Projects
+## Public Products
 
 | Project | Description | Stack |
 |---|---|---|
 | [Primerochnaya](https://github.com/Jokersochi/primerochnaya) | AI-виртуальная примерка одежды и fashion visualization. | React, TypeScript, AI APIs |
-| [Product-Visualizer-AI](https://github.com/Jokersochi/Product-Visualizer-AI) | Генерация и визуализация продуктов для e-commerce. | React, TypeScript, AI |
-| [russian-monopoly-local](https://github.com/Jokersochi/russian-monopoly-local) | Браузерный игровой прототип с российской тематикой. | JavaScript, HTML, CSS |
+| [Product-Visualizer-AI](https://github.com/Jokersochi/Product-Visualizer-AI) | AI-визуализация продуктов для e-commerce. | React, TypeScript, AI |
+
+Only first-party active products are shown here. Upstream forks, legacy prototypes, extraction sources, and archive candidates are intentionally excluded from the portfolio list.
 
 ## Private Products in Active Development
 
-- Sentinel Markets AI — market intelligence and multi-agent analytics platform
-- AI Realtor — PropTech / real-estate automation platform
+- **AI Realtor** — PropTech / real-estate automation platform; canonical repository: `ai-realtor`.
+- **Sentinel Markets AI** — market intelligence and multi-agent analytics platform; canonical repository: `sentinel-markets-ai`.
+- **Monopoly Luxe** — server-authoritative multiplayer economic board game; canonical repository: `monopoly-luxe`.
 
 Private repositories are intentionally not linked from this public profile.
 
@@ -63,14 +65,25 @@ Private repositories are intentionally not linked from this public profile.
 
 ## Repository Governance
 
-The account is being cleaned into four practical groups:
+The account is being normalized into four practical groups:
 
 - **CORE** — original active products
-- **INFRA** — reusable infrastructure and automation
-- **LABS** — experiments and research
-- **ARCHIVE / FORKS** — inactive projects and upstream copies without unique work
+- **INFRA** — reusable first-party infrastructure and automation
+- **LABS** — experiments and research with unique work
+- **ARCHIVE / FORKS** — inactive projects and upstream copies
 
-See [REPO-ARCHITECTURE.md](./REPO-ARCHITECTURE.md) for the cleanup registry and rules.
+Rules:
+
+1. One real product has one canonical active repository.
+2. Upstream forks are not portfolio projects.
+3. A fork with unique work is cleaned only after that work is extracted or explicitly rejected.
+4. Secrets and `.env` files are never committed.
+5. Ambiguous repository names are normalized only after deployment/dependency checks.
+
+See:
+- [Current repository audit](./docs/repository-audit-2026-09-13.md)
+- [Naming and cleanup standard](./docs/naming-and-cleanup-standard.md)
+- [Repository architecture](./REPO-ARCHITECTURE.md)
 
 ## Contact
 

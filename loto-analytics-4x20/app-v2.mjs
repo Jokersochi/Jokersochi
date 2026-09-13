@@ -1,6 +1,7 @@
 import { STRATEGIES, generateTickets, maxUsefulTickets } from "./lib/strategy-v2.mjs";
 import { walkForwardBacktest } from "./lib/backtest.mjs";
 import { loadLiveArchive } from "./lib/live-data.mjs";
+import { loadLedger, recordVirtualPortfolio, settleLedger, summarizeLedger } from "./lib/ledger.mjs";
 
 const $ = (s) => document.querySelector(s);
 const strategyGrid = $("#strategyGrid");
@@ -11,6 +12,7 @@ const results = $("#results");
 const errorBox = $("#error");
 const status = $("#dataStatus");
 const countNote = $("#countNote");
+const ledgerStatus = $("#ledgerStatus");
 const qualityGrid = $("#qualityGrid");
 const latestDraw = $("#latestDraw");
 const backtestStatus = $("#backtestStatus");
@@ -19,6 +21,7 @@ const backtestNote = $("#backtestNote");
 let archive = null;
 let backtestRun = 0;
 
+const FIVE_TICKET_KEYS = new Set(["adaptive20", "balanced20", "ensemble", "portfolio5"]);
 const escapeHtml = (value) => String(value).replace(/[&<>'"]/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"})[c]);
 const balls = (numbers, cls) => `<div class="balls ${cls}">${numbers.map((n) => `<span class="ball">${n}</span>`).join("")}</div>`;
 const pct = (value) => `${(value * 100).toFixed(1)}%`;
@@ -27,9 +30,10 @@ const signed = (value) => `${value >= 0 ? "+" : ""}${value.toFixed(3)}`;
 function renderStrategies() {
   strategyGrid.innerHTML = STRATEGIES.map((s) => `<article class="card"><div class="strategy-name"><h2>${escapeHtml(s.name)}</h2><span class="chip">${s.lookback ? `${s.lookback} тиражей` : "без истории"}</span></div><p><strong>${escapeHtml(s.shortDescription)}</strong></p><p class="muted">${escapeHtml(s.plainDescription)}</p></article>`).join("");
   strategySelect.innerHTML = STRATEGIES.map((s) => `<option value="${s.key}">${escapeHtml(s.name)}</option>`).join("");
-  strategySelect.value = "portfolio5";
+  strategySelect.value = "adaptive20";
   countInput.value = "5";
   updateCountLimit();
+  renderLedgerStatus(loadLedger());
 }
 
 function updateCountLimit() {
@@ -38,11 +42,27 @@ function updateCountLimit() {
   countInput.max = String(max);
   if (Number(countInput.value) > max) countInput.value = String(max);
   countInput.disabled = max === 1;
-  countNote.textContent = key === "portfolio5"
-    ? "Рекомендуемый режим: 5 разных билетов. Портфель распределяет лидирующие сигналы между комбинациями и уменьшает лишнее дублирование."
-    : max === 1
-      ? "Эта стратегия даёт одну определённую комбинацию; искусственные варианты не создаются."
-      : "Можно создать до 10 независимых случайных билетов.";
+  if (key === "adaptive20") {
+    countNote.textContent = "Default: 5 билетов, полное покрытие 1–20 в каждом поле. Исторические метрики влияют на распределение между билетами, но не исключают числа.";
+  } else if (key === "balanced20") {
+    countNote.textContent = "Контрольный портфель: 5 билетов покрывают все 20 чисел каждого поля ровно по одному разу, история не используется.";
+  } else if (key === "ensemble") {
+    countNote.textContent = "Ensemble выбирает 5-билетный подход только по предыдущим out-of-sample результатам, без доступа к будущему тиражу.";
+  } else if (key === "portfolio5") {
+    countNote.textContent = "Challenger: прежний Hybrid Coverage остаётся в турнире, но больше не является стратегией по умолчанию.";
+  } else if (max === 1) {
+    countNote.textContent = "Эта стратегия даёт одну определённую комбинацию; искусственные варианты не создаются.";
+  } else {
+    countNote.textContent = "Можно создать до 10 независимых случайных билетов.";
+  }
+}
+
+function renderLedgerStatus(entries) {
+  if (!ledgerStatus) return;
+  const summary = summarizeLedger(entries);
+  ledgerStatus.textContent = summary.portfolios === 0
+    ? "Virtual Ledger: пока нет зафиксированных портфелей. Следующая генерация будет сохранена до результата тиража."
+    : `Virtual Ledger: ${summary.portfolios} портф., ${summary.tickets} билетов · ожидают ${summary.pending} · проверено ${summary.checked}. Финансовый ROI показывается только при наличии подтверждённых payout-данных.`;
 }
 
 function renderDataQuality(data) {
@@ -54,16 +74,19 @@ function renderDataQuality(data) {
 }
 
 function renderBacktestReport(report) {
+  const hitLift = report.hitLift == null ? "н/д" : `${report.hitLift >= 0 ? "+" : ""}${(report.hitLift * 100).toFixed(1)}%`;
   const cards = [
     ["Evidence Grade", report.evidenceGrade],
     ["Walk-forward", `${report.evaluationDraws} тиражей`],
     ["Средний лучший score", `${report.meanBestMatches.toFixed(3)} vs ${report.baselineMeanBestMatches.toFixed(3)}`],
-    ["Δ vs random · 95% CI", `${signed(report.meanDelta)} [${signed(report.ci95Low)}; ${signed(report.ci95High)}]`],
+    ["Excess score vs Random · 95% CI", `${signed(report.excessProxyScore)} [${signed(report.ci95Low)}; ${signed(report.ci95High)}]`],
+    ["Proxy hit-rate", `${pct(report.proxyHitRate)} vs ${pct(report.baselineProxyHitRate)}`],
+    ["Hit Lift vs Random", hitLift],
     ["Proxy 2+2", `${pct(report.balanced22Rate)} vs ${pct(report.baselineBalanced22Rate)}`],
     ["Max просадка score", report.maxProxyDrawdown.toFixed(1)],
   ];
   backtestGrid.innerHTML = cards.map(([label, value]) => `<div class="quality-item evidence-item"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div>`).join("");
-  backtestNote.textContent = `Проверка №${report.firstEvaluatedDraw}–${report.lastEvaluatedDraw}. ${report.methodology}. Финансовый ROI пока не показывается: таблица официальных выплат ещё не заполнена полностью.`;
+  backtestNote.textContent = `Проверка №${report.firstEvaluatedDraw}–${report.lastEvaluatedDraw}. ${report.methodology}. ${report.financialStatus}`;
   backtestStatus.className = report.evidenceGrade === "Слабый положительный сигнал" ? "status warn" : "status ok";
   backtestStatus.textContent = report.evidenceGrade;
 }
@@ -77,7 +100,8 @@ async function renderBacktest() {
   backtestNote.textContent = "";
   await new Promise((resolve) => requestAnimationFrame(resolve));
   try {
-    const report = walkForwardBacktest(strategySelect.value, archive.draws, { evaluationDraws: 300 });
+    const evaluationDraws = strategySelect.value === "ensemble" ? 120 : 300;
+    const report = walkForwardBacktest(strategySelect.value, archive.draws, { evaluationDraws });
     if (run !== backtestRun) return;
     renderBacktestReport(report);
   } catch (error) {
@@ -96,6 +120,7 @@ async function loadArchive() {
     status.className = "status ok";
     status.textContent = `LIVE · официальный архив · до №${archive.last} · без пропусков`;
     renderDataQuality(archive);
+    renderLedgerStatus(settleLedger(archive.draws));
     generateButton.disabled = false;
     renderBacktest();
   } catch (error) {
@@ -120,8 +145,23 @@ async function generate() {
   generateButton.textContent = "Считаю…";
   try {
     if (!archive) await loadArchive();
-    const tickets = generateTickets(strategySelect.value, archive.draws, Math.max(1, Number(countInput.value) || 1), Date.now());
+    const key = strategySelect.value;
+    const tickets = generateTickets(key, archive.draws, Math.max(1, Number(countInput.value) || 1), Date.now());
     results.innerHTML = tickets.map(renderTicket).join("");
+    const meta = STRATEGIES.find((strategy) => strategy.key === key);
+    try {
+      const entry = recordVirtualPortfolio({
+        strategyKey: key,
+        strategyName: meta?.name ?? key,
+        tickets,
+        targetDraw: Number(archive.last) + 1,
+        sourceLast: Number(archive.last),
+      });
+      renderLedgerStatus(loadLedger());
+      if (ledgerStatus) ledgerStatus.textContent += ` Последняя фиксация: ${entry.strategyName} → тираж №${entry.targetDraw}, fingerprint ${entry.fingerprint}.`;
+    } catch (ledgerError) {
+      if (ledgerStatus) ledgerStatus.textContent = `Virtual Ledger недоступен: ${ledgerError instanceof Error ? ledgerError.message : String(ledgerError)}.`;
+    }
     results.scrollIntoView({behavior:"smooth", block:"start"});
   } catch (error) {
     errorBox.textContent = `Не удалось безопасно сгенерировать билет: ${error instanceof Error ? error.message : String(error)}.`;
@@ -133,7 +173,7 @@ async function generate() {
 }
 
 strategySelect.addEventListener("change", () => {
-  if (strategySelect.value === "portfolio5") countInput.value = "5";
+  if (FIVE_TICKET_KEYS.has(strategySelect.value)) countInput.value = "5";
   updateCountLimit();
   renderBacktest();
 });

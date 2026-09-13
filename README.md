@@ -11,19 +11,22 @@
 - High-performance Web Apps
 - Product Design & Rapid MVP Launches
 
-## Selected Projects
+## Public Projects
 
 | Project | Description | Stack |
 |---|---|---|
-| [Sentinel Markets AI](https://github.com/Jokersochi/sentinel-markets-ai) | AI-платформа для market intelligence и аналитики. | AI Agents, Python, TypeScript |
 | [Primerochnaya](https://github.com/Jokersochi/primerochnaya) | AI-виртуальная примерка одежды и fashion visualization. | React, TypeScript, AI APIs |
-| [Product-Visualizer-AI](https://github.com/Jokersochi/Product-Visualizer-AI) | Генерация и визуализация продуктов для e-commerce. | React, AI, Image Generation |
-| [russian-monopoly-local](https://github.com/Jokersochi/russian-monopoly-local) | Онлайн-игра в стиле Monopoly с multiplayer-механиками. | JavaScript, HTML, CSS |
-| [openai-agents-python](https://github.com/Jokersochi/openai-agents-python) | Эксперименты с AI agents и orchestration systems. | Python, LLMs |
+| [Product-Visualizer-AI](https://github.com/Jokersochi/Product-Visualizer-AI) | Генерация и визуализация продуктов для e-commerce. | React, TypeScript, AI |
+| [russian-monopoly-local](https://github.com/Jokersochi/russian-monopoly-local) | Браузерный игровой прототип с российской тематикой. | JavaScript, HTML, CSS |
+
+## Private Products in Active Development
+
+- Sentinel Markets AI — market intelligence and multi-agent analytics platform
+- AI Realtor — PropTech / real-estate automation platform
+
+Private repositories are intentionally not linked from this public profile.
 
 ## Current Direction
-
-Сейчас основной фокус:
 
 - AI-инфраструктура и agent ecosystems
 - AI для продаж, недвижимости и e-commerce
@@ -56,19 +59,22 @@
 - Gemini
 - Claude
 - ComfyUI
-- LangChain
 - MCP tools
 
-## Repository Structure Strategy
+## Repository Governance
 
-- `production-*` → production-ready systems
-- `lab-*` → experiments and R&D
-- `ai-*` → AI-first products
-- `archive-*` → frozen or deprecated repositories
+The account is being cleaned into four practical groups:
+
+- **CORE** — original active products
+- **INFRA** — reusable infrastructure and automation
+- **LABS** — experiments and research
+- **ARCHIVE / FORKS** — inactive projects and upstream copies without unique work
+
+See [REPO-ARCHITECTURE.md](./REPO-ARCHITECTURE.md) for the cleanup registry and rules.
 
 ## Contact
 
-- GitHub: https://github.com/Jokersochi
+GitHub: https://github.com/Jokersochi
 
 ---
 

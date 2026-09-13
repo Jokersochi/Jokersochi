@@ -8,13 +8,13 @@
   "starting_equity": 1000.0,
   "target_equity": 2000.0,
   "bankrupt_equity": 0.0,
-  "cash": 356.912323,
-  "equity": 516.604432,
+  "cash": 331.076866,
+  "equity": 513.741663,
   "realized_pnl": -485.3077,
-  "unrealized_pnl": 1.912132,
-  "fees_paid": 232.19645,
-  "ticks": 212,
-  "last_tick_at": "2026-09-13T06:02:16+00:00",
+  "unrealized_pnl": -0.950637,
+  "fees_paid": 233.15424,
+  "ticks": 213,
+  "last_tick_at": "2026-09-13T06:28:00+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -121,9 +121,9 @@
       "volume_24h": 150201.02,
       "end_date": "2026-10-04",
       "paper": true,
-      "mark_price": 0.4995,
+      "mark_price": 0.5015,
       "mark_spread": 0.001,
-      "mark_net_liquidation": 25.470238
+      "mark_net_liquidation": 25.574946
     },
     {
       "position_id": "1130012-YES-1789252203",
@@ -150,6 +150,32 @@
       "mark_price": 0.795,
       "mark_spread": 0.01,
       "mark_net_liquidation": 25.750677
+    },
+    {
+      "position_id": "1163699-YES-1789280881",
+      "market_id": "1163699",
+      "question": "Clarity Act (H.R.3633) signed into law in 2026?",
+      "category": "Other",
+      "outcome": "YES",
+      "token_id": "35198549486569600595408965368290795524428922595732253580266052028158040373233",
+      "opened_at": "2026-09-13T06:28:00+00:00",
+      "entry_mid": 0.225,
+      "entry_spread": 0.01,
+      "entry_price": 0.23,
+      "shares": 108.16376881,
+      "gross_trade": 24.877667,
+      "entry_fee": 0.95779,
+      "cash_outlay": 25.835457,
+      "fee_rate": 0.05,
+      "momentum_24h": 0.05,
+      "momentum_6h": 0.01,
+      "liquidity": 523398.59,
+      "volume_24h": 121126.48,
+      "end_date": "2027-01-01",
+      "paper": true,
+      "mark_price": 0.225,
+      "mark_spread": 0.01,
+      "mark_net_liquidation": 22.867979
     }
   ],
   "closed_positions": [
@@ -6312,6 +6338,17 @@
       "exit_price": 0.27,
       "pnl": -2.684641,
       "reason": "stop_loss"
+    },
+    {
+      "ts": "2026-09-13T06:28:00+00:00",
+      "event": "PAPER_OPEN",
+      "market_id": "1163699",
+      "question": "Clarity Act (H.R.3633) signed into law in 2026?",
+      "outcome": "YES",
+      "entry_price": 0.23,
+      "cash_outlay": 25.835457,
+      "momentum_24h": 0.05,
+      "momentum_6h": 0.01
     }
   ]
 }

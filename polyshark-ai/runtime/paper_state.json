@@ -19,6 +19,8 @@
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
   "paper_only": true,
+  "real_money": false,
+  "live_trading": false,
   "strategy": "liquid-market dual-horizon momentum v2",
   "open_positions": [
     {

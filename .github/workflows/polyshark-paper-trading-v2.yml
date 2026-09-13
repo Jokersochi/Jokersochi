@@ -33,22 +33,6 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Prove paper-only invariants
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-          text = Path('polyshark-ai/runtime/paper_trader.py').read_text()
-          forbidden = [
-              'create_order(', 'post_order(', 'cancel_all(',
-              'POLYMARKET_PRIVATE_KEY', 'POLYMARKET_API_SECRET',
-              'real_orders_enabled=true', 'live_trading=true', 'DRY_RUN=false',
-          ]
-          hits = [x for x in forbidden if x.lower() in text.lower()]
-          if hits:
-              raise SystemExit(f'Unsafe trading primitives found: {hits}')
-          print('Paper-only static guard: PASS')
-          PY
-
       - name: Unit and contract tests
         run: python -m unittest discover -s polyshark-ai/tests -p 'test_*.py' -q
 

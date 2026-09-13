@@ -199,7 +199,7 @@ test("walk-forward backtest scores only future targets against a paired random b
 });
 
 test("strategy tournament keeps Random as explicit control", () => {
-  const draws = history(360);
+  const draws = history(700);
   const reports = strategyTournament(draws, { evaluationDraws: 50, strategyKeys: ["balanced20", "adaptive20", "random"] });
   assert.equal(reports.length, 3);
   assert.equal(reports.at(-1).strategyKey, "random");

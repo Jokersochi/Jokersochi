@@ -8,13 +8,13 @@
   "starting_equity": 1000.0,
   "target_equity": 2000.0,
   "bankrupt_equity": 0.0,
-  "cash": 320.251929,
-  "equity": 501.334845,
+  "cash": 295.185188,
+  "equity": 500.603111,
   "realized_pnl": -496.518056,
-  "unrealized_pnl": -2.147099,
-  "fees_paid": 238.19566,
-  "ticks": 223,
-  "last_tick_at": "2026-09-13T19:29:15+00:00",
+  "unrealized_pnl": -2.878833,
+  "fees_paid": 238.40693,
+  "ticks": 224,
+  "last_tick_at": "2026-09-13T20:42:34+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -121,8 +121,8 @@
       "volume_24h": 150201.02,
       "end_date": "2026-10-04",
       "paper": true,
-      "mark_price": 0.486,
-      "mark_spread": 0.008,
+      "mark_price": 0.485,
+      "mark_spread": 0.006,
       "mark_net_liquidation": 24.58106
     },
     {
@@ -176,6 +176,32 @@
       "mark_price": 0.515,
       "mark_spread": 0.01,
       "mark_net_liquidation": 23.341149
+    },
+    {
+      "position_id": "2176270-NO-1789332155",
+      "market_id": "2176270",
+      "question": "Strait of Hormuz traffic returns to normal by December 31?",
+      "category": "Other",
+      "outcome": "NO",
+      "token_id": "48727431314333088243693016929623363710488980152833544156961659445129455301311",
+      "opened_at": "2026-09-13T20:42:34+00:00",
+      "entry_mid": 0.825,
+      "entry_spread": 0.01,
+      "entry_price": 0.83,
+      "shares": 29.9463503,
+      "gross_trade": 24.855471,
+      "entry_fee": 0.21127,
+      "cash_outlay": 25.066741,
+      "fee_rate": 0.05,
+      "momentum_24h": -0.03,
+      "momentum_6h": -0.03,
+      "liquidity": 457467.49,
+      "volume_24h": 149993.62,
+      "end_date": "2026-12-31",
+      "paper": true,
+      "mark_price": 0.825,
+      "mark_spread": 0.01,
+      "mark_net_liquidation": 24.335007
     }
   ],
   "closed_positions": [
@@ -6508,6 +6534,17 @@
       "exit_price": 0.23,
       "pnl": -3.751152,
       "reason": "stop_loss"
+    },
+    {
+      "ts": "2026-09-13T20:42:34+00:00",
+      "event": "PAPER_OPEN",
+      "market_id": "2176270",
+      "question": "Strait of Hormuz traffic returns to normal by December 31?",
+      "outcome": "NO",
+      "entry_price": 0.83,
+      "cash_outlay": 25.066741,
+      "momentum_24h": -0.03,
+      "momentum_6h": -0.03
     }
   ]
 }

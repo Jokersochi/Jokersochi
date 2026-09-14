@@ -26,6 +26,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable
 
+from research_contracts import assert_equity_reconciled, require_paper_only
+
 GAMMA_MARKETS = "https://gamma-api.polymarket.com/markets"
 CLOB_BASE = "https://clob.polymarket.com"
 USER_AGENT = "PolyShark-Paper/2.0 (+https://github.com/Jokersochi/Jokersochi)"
@@ -326,6 +328,8 @@ def fresh_state() -> dict[str, Any]:
         "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
         "real_orders_enabled": False,
         "paper_only": True,
+        "real_money": False,
+        "live_trading": False,
         "strategy": "liquid-market dual-horizon momentum v2",
         "open_positions": [],
         "closed_positions": [],
@@ -337,10 +341,7 @@ def load_state(path: Path) -> dict[str, Any]:
     if not path.exists():
         return fresh_state()
     state = json.loads(path.read_text(encoding="utf-8"))
-    if state.get("real_orders_enabled") not in (False, None) or state.get("paper_only") is False:
-        raise RuntimeError("Refusing to run: state does not prove paper-only mode")
-    state["real_orders_enabled"] = False
-    state["paper_only"] = True
+    require_paper_only(state)
     return state
 
 
@@ -481,12 +482,11 @@ def stop_session(state: dict[str, Any], reason: str, now: str, mids: dict[str, f
 
 def tick(state: dict[str, Any]) -> dict[str, Any]:
     now = utc_now()
+    require_paper_only(state)
     if state.get("status") not in ("running", None):
         state["last_tick_at"] = now
         state["last_error"] = None
         return state
-    if state.get("real_orders_enabled") is not False or state.get("paper_only") is not True:
-        raise RuntimeError("Paper-only invariant failed")
     markets = fetch_markets()
     candidates, mids, spreads = build_candidates(markets)
     open_tokens = [str(p.get("token_id")) for p in state.get("open_positions", [])]
@@ -525,18 +525,30 @@ def tick(state: dict[str, Any]) -> dict[str, Any]:
 
 
 def validate_state(state: dict[str, Any]) -> None:
-    assert state.get("real_orders_enabled") is False
-    assert state.get("paper_only") is True
-    assert _as_float(state.get("starting_equity")) == STARTING_EQUITY
-    assert _as_float(state.get("target_equity")) == TARGET_EQUITY
-    assert _as_float(state.get("bankrupt_equity")) == BANKRUPT_EQUITY
-    assert _as_float(state.get("cash")) >= -1e-6
-    assert _as_float(state.get("equity")) >= -1e-6
+    require_paper_only(state)
+    if _as_float(state.get("starting_equity")) != STARTING_EQUITY:
+        raise ValueError("starting equity changed")
+    if _as_float(state.get("target_equity")) != TARGET_EQUITY:
+        raise ValueError("target equity changed")
+    if _as_float(state.get("bankrupt_equity")) != BANKRUPT_EQUITY:
+        raise ValueError("bankrupt equity changed")
+    if _as_float(state.get("cash")) < -1e-6 or _as_float(state.get("equity")) < -1e-6:
+        raise ValueError("cash and equity must be non-negative")
+    open_position_value = sum(_as_float(p.get("mark_net_liquidation")) for p in state.get("open_positions", []))
+    assert_equity_reconciled(
+        recorded_equity=_as_float(state.get("equity")),
+        cash=_as_float(state.get("cash")),
+        open_position_value=open_position_value,
+        starting_equity=_as_float(state.get("starting_equity")),
+        realized_net_pnl=_as_float(state.get("realized_pnl")),
+        unrealized_net_pnl=_as_float(state.get("unrealized_pnl")),
+    )
     if state.get("status") == "stopped_target":
-        assert not state.get("open_positions")
-        assert _as_float(state.get("equity")) >= TARGET_EQUITY - 2.0
+        if state.get("open_positions") or _as_float(state.get("equity")) < TARGET_EQUITY - 2.0:
+            raise ValueError("invalid stopped_target state")
     if state.get("status") == "stopped_broke":
-        assert not state.get("open_positions")
+        if state.get("open_positions"):
+            raise ValueError("invalid stopped_broke state")
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -548,7 +560,7 @@ def main(argv: list[str] | None = None) -> int:
     state = fresh_state() if args.reset else load_state(path)
     try:
         state = tick(state)
-    except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, json.JSONDecodeError, RuntimeError) as exc:
+    except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, json.JSONDecodeError) as exc:
         state["last_tick_at"] = utc_now()
         state["last_error"] = f"{type(exc).__name__}: {exc}"
         state.setdefault("audit", []).append({"ts": state["last_tick_at"], "event": "TICK_ERROR", "error": state["last_error"]})

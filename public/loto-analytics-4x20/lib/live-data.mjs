@@ -2,6 +2,8 @@ const SUPABASE_URL = "https://oryuanpvbjxmnihmwbin.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_oBRPgAo7-YKHzDjhnSKjVA_ozNiJoOs";
 const REQUIRED_HISTORY = 1000;
 const LIVE_WINDOW = 1600;
+const LIVE_PAGE_SIZE = 1000;
+const PAYOUT_PAGE_SIZE = 1000;
 
 const API_HEADERS = Object.freeze({
   accept: "application/json",
@@ -40,7 +42,19 @@ export function normalizeLiveRows(rows, verifiedThrough) {
     const fieldB = Array.isArray(row?.field2) ? row.field2.map(Number) : null;
     if (!Number.isInteger(number) || !validField(fieldA) || !validField(fieldB)) throw new Error(`Некорректный live-тираж №${row?.draw_number ?? "?"}`);
     if (!row?.draw_date || Number.isNaN(Date.parse(row.draw_date))) throw new Error(`Некорректная дата тиража №${number}`);
-    return { number, date: new Date(row.draw_date).toISOString(), fieldA, fieldB };
+    const price = row?.ticket_price_rub == null ? null : Number(row.ticket_price_rub);
+    const superPrize = row?.super_prize_rub == null ? null : Number(row.super_prize_rub);
+    const sumPaid = row?.sum_paid_rub == null ? null : Number(row.sum_paid_rub);
+    return {
+      number,
+      date: new Date(row.draw_date).toISOString(),
+      fieldA,
+      fieldB,
+      ticketPriceRub: Number.isFinite(price) && price > 0 ? price : null,
+      superPrizeRub: Number.isFinite(superPrize) && superPrize >= 0 ? superPrize : null,
+      superPrizeWon: typeof row?.super_prize_won === "boolean" ? row.super_prize_won : null,
+      sumPaidRub: Number.isFinite(sumPaid) && sumPaid >= 0 ? sumPaid : null,
+    };
   }).sort((a, b) => a.number - b.number);
 
   for (let i = 1; i < normalized.length; i++) {
@@ -50,6 +64,38 @@ export function normalizeLiveRows(rows, verifiedThrough) {
   }
   const last = normalized.at(-1)?.number;
   if (last !== Number(verifiedThrough)) throw new Error(`Live-окно отстаёт от archive_status: №${last} вместо №${verifiedThrough}`);
+  return normalized;
+}
+
+export function normalizePayoutRows(rows, firstDraw, lastDraw) {
+  if (!Array.isArray(rows)) throw new Error("Некорректный ответ таблицы выплат");
+  const normalized = rows.map((row) => {
+    const drawNumber = Number(row?.draw_number);
+    const category = Number(row?.category);
+    const winnersCount = Number(row?.winners_count);
+    const payoutPerWinnerRub = Number(row?.payout_per_winner_rub);
+    const totalPayoutRub = Number(row?.total_payout_rub);
+    if (!Number.isInteger(drawNumber) || drawNumber < firstDraw || drawNumber > lastDraw) throw new Error(`Некорректный payout draw №${row?.draw_number ?? "?"}`);
+    if (!Number.isInteger(category) || category < 1 || category > 12) throw new Error(`Некорректная payout-категория ${row?.category ?? "?"}`);
+    if (![winnersCount, payoutPerWinnerRub, totalPayoutRub].every(Number.isFinite) || winnersCount < 0 || payoutPerWinnerRub < 0 || totalPayoutRub < 0) {
+      throw new Error(`Некорректная выплата №${drawNumber}, категория ${category}`);
+    }
+    return { drawNumber, category, winnersCount, payoutPerWinnerRub, totalPayoutRub };
+  });
+
+  const expectedDraws = lastDraw - firstDraw + 1;
+  if (normalized.length !== expectedDraws * 12) {
+    throw new Error(`Неполная таблица выплат: ${normalized.length} строк вместо ${expectedDraws * 12}`);
+  }
+  const grouped = new Map();
+  for (const row of normalized) {
+    if (!grouped.has(row.drawNumber)) grouped.set(row.drawNumber, new Set());
+    grouped.get(row.drawNumber).add(row.category);
+  }
+  for (let draw = firstDraw; draw <= lastDraw; draw++) {
+    const categories = grouped.get(draw);
+    if (!categories || categories.size !== 12) throw new Error(`Выплаты тиража №${draw} неполные`);
+  }
   return normalized;
 }
 
@@ -63,12 +109,39 @@ async function fetchJson(path) {
   return data;
 }
 
+async function loadLiveDrawRows(verifiedThrough) {
+  const rows = [];
+  for (let offset = 0; offset < LIVE_WINDOW; offset += LIVE_PAGE_SIZE) {
+    const limit = Math.min(LIVE_PAGE_SIZE, LIVE_WINDOW - offset);
+    const page = await fetchJson(`/rest/v1/draws?select=draw_number,draw_date,field1,field2,ticket_price_rub,super_prize_rub,super_prize_won,sum_paid_rub&draw_number=lte.${verifiedThrough}&order=draw_number.desc&limit=${limit}&offset=${offset}`);
+    if (!Array.isArray(page)) throw new Error("Некорректный live draw response");
+    rows.push(...page);
+    if (page.length < limit) break;
+  }
+  if (rows.length !== LIVE_WINDOW) throw new Error(`Live-окно неполное: ${rows.length} строк вместо ${LIVE_WINDOW}`);
+  return rows;
+}
+
+export async function loadOfficialPayouts(firstDraw, lastDraw) {
+  if (!Number.isInteger(firstDraw) || !Number.isInteger(lastDraw) || firstDraw > lastDraw) throw new Error("Некорректный диапазон выплат");
+  const expectedRows = (lastDraw - firstDraw + 1) * 12;
+  const rows = [];
+  for (let offset = 0; offset < expectedRows; offset += PAYOUT_PAGE_SIZE) {
+    const limit = Math.min(PAYOUT_PAGE_SIZE, expectedRows - offset);
+    const page = await fetchJson(`/rest/v1/draw_payouts?select=draw_number,category,winners_count,payout_per_winner_rub,total_payout_rub&draw_number=gte.${firstDraw}&draw_number=lte.${lastDraw}&order=draw_number.asc,category.asc&limit=${limit}&offset=${offset}`);
+    if (!Array.isArray(page)) throw new Error("Некорректный payout response");
+    rows.push(...page);
+    if (page.length < limit) break;
+  }
+  return normalizePayoutRows(rows, firstDraw, lastDraw);
+}
+
 export async function loadLiveArchive() {
   const states = await fetchJson("/rest/v1/system_state?key=eq.archive_status&select=payload,updated_at&limit=1");
   const state = Array.isArray(states) ? states[0] : null;
   const payload = validateLiveStatus(state);
 
-  const rows = await fetchJson(`/rest/v1/draws?select=draw_number,draw_date,field1,field2&order=draw_number.desc&limit=${LIVE_WINDOW}`);
+  const rows = await loadLiveDrawRows(Number(payload.verified_through));
   const draws = normalizeLiveRows(rows, payload.verified_through);
 
   return {

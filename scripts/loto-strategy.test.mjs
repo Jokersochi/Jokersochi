@@ -2,10 +2,10 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { STRATEGIES, DISCLAIMER, generateTicket, generateTickets, maxUsefulTickets } from "../public/loto-analytics-4x20/lib/strategy.mjs";
 import { STRATEGIES as V2_STRATEGIES, generateTickets as generateV2Tickets, maxUsefulTickets as maxV2UsefulTickets } from "../public/loto-analytics-4x20/lib/strategy-v2.mjs";
-import { buildTargetTickets, countMatches, strategyTournament, walkForwardBacktest } from "../public/loto-analytics-4x20/lib/backtest.mjs";
+import { buildTargetTickets, categoryForMatches, countMatches, strategyTournament, walkForwardBacktest } from "../public/loto-analytics-4x20/lib/backtest.mjs";
 import { loadLedger, recordVirtualPortfolio, settleLedger, summarizeLedger } from "../public/loto-analytics-4x20/lib/ledger.mjs";
 import { normalizeDraw, validateArchive } from "./loto-source.mjs";
-import { normalizeLiveRows, validateLiveStatus } from "../public/loto-analytics-4x20/lib/live-data.mjs";
+import { normalizeLiveRows, normalizePayoutRows, validateLiveStatus } from "../public/loto-analytics-4x20/lib/live-data.mjs";
 
 function history(n = 1000) {
   return Array.from({ length: n }, (_, i) => ({
@@ -13,6 +13,36 @@ function history(n = 1000) {
     fieldA: [1 + (i % 17), 2 + (i % 17), 3 + (i % 17), 4 + (i % 17)].map((x) => ((x - 1) % 20) + 1),
     fieldB: [5 + (i % 17), 6 + (i % 17), 7 + (i % 17), 8 + (i % 17)].map((x) => ((x - 1) % 20) + 1),
   }));
+}
+
+function pricedHistory(n = 1000) {
+  return history(n).map((draw) => ({ ...draw, ticketPriceRub: 300 }));
+}
+
+function identicalPricedHistory(n = 300) {
+  return Array.from({ length: n }, (_, i) => ({
+    number: i + 1,
+    fieldA: [1, 2, 3, 4],
+    fieldB: [5, 6, 7, 8],
+    ticketPriceRub: 300,
+  }));
+}
+
+function payoutRows(firstDraw, lastDraw, overrides = {}) {
+  const rows = [];
+  for (let drawNumber = firstDraw; drawNumber <= lastDraw; drawNumber++) {
+    for (let category = 1; category <= 12; category++) {
+      const override = overrides[category] ?? {};
+      rows.push({
+        drawNumber,
+        category,
+        winnersCount: override.winnersCount ?? 1,
+        payoutPerWinnerRub: override.payoutPerWinnerRub ?? 600,
+        totalPayoutRub: override.totalPayoutRub ?? 600,
+      });
+    }
+  }
+  return rows;
 }
 
 function liveRows(first = 1001, count = 1000) {
@@ -196,6 +226,36 @@ test("live draw window must contain 1000 continuous verified draws", () => {
   assert.throws(() => normalizeLiveRows(rows.slice(0, 999), 2000), /минимум 1000/);
 });
 
+test("payout table requires exactly 12 categories per draw", () => {
+  const rows = Array.from({ length: 12 }, (_, i) => ({
+    draw_number: 1300,
+    category: String(i + 1),
+    winners_count: 1,
+    payout_per_winner_rub: 600,
+    total_payout_rub: 600,
+  }));
+  const normalized = normalizePayoutRows(rows, 1300, 1300);
+  assert.equal(normalized.length, 12);
+  assert.deepEqual(normalized.map((row) => row.category).sort((a, b) => a - b), Array.from({ length: 12 }, (_, i) => i + 1));
+  assert.throws(() => normalizePayoutRows(rows.slice(0, 11), 1300, 1300), /Неполная таблица выплат/);
+});
+
+test("official 4x20 match pairs map to 12 prize categories", () => {
+  assert.equal(categoryForMatches(4, 4), 1);
+  assert.equal(categoryForMatches(4, 3), 2);
+  assert.equal(categoryForMatches(4, 2), 3);
+  assert.equal(categoryForMatches(4, 1), 4);
+  assert.equal(categoryForMatches(4, 0), 5);
+  assert.equal(categoryForMatches(3, 3), 6);
+  assert.equal(categoryForMatches(3, 2), 7);
+  assert.equal(categoryForMatches(3, 1), 8);
+  assert.equal(categoryForMatches(3, 0), 9);
+  assert.equal(categoryForMatches(2, 2), 10);
+  assert.equal(categoryForMatches(2, 1), 11);
+  assert.equal(categoryForMatches(2, 0), 12);
+  assert.equal(categoryForMatches(1, 1), null);
+});
+
 test("walk-forward backtest scores only future targets against a paired random baseline", () => {
   const draws = history(1300);
   const report = walkForwardBacktest("hot1000", draws, { evaluationDraws: 100 });
@@ -212,12 +272,47 @@ test("walk-forward backtest scores only future targets against a paired random b
   assert.match(report.methodology, /walk-forward/i);
 });
 
+test("financial walk-forward uses per-draw ticket cost and official payout rows", () => {
+  const draws = pricedHistory(400);
+  const payouts = payoutRows(351, 400);
+  const report = walkForwardBacktest("hot200", draws, { evaluationDraws: 50, payoutRows: payouts });
+  assert.equal(report.evaluationDraws, 50);
+  assert.equal(report.strategyStakeRub, 50 * 300);
+  assert.equal(report.baselineStakeRub, 50 * 300);
+  assert.equal(report.financialCoverage, 1);
+  assert.equal(report.baselineFinancialCoverage, 1);
+  assert.equal(report.financialRoiAvailable, true);
+  assert.ok(Number.isFinite(report.strategyRoi));
+  assert.ok(Number.isFinite(report.baselineRoi));
+});
+
+test("zero-winner payout category is unresolved instead of being treated as zero prize", () => {
+  const draws = identicalPricedHistory(260);
+  const payouts = payoutRows(211, 260, { 1: { winnersCount: 0, payoutPerWinnerRub: 0, totalPayoutRub: 0 } });
+  const report = walkForwardBacktest("hot200", draws, { evaluationDraws: 50, payoutRows: payouts });
+  assert.equal(report.strategyStakeRub, 50 * 300);
+  assert.equal(report.unresolvedStrategyTickets, 50);
+  assert.equal(report.financialCoverage, 0);
+  assert.equal(report.financialRoiAvailable, false);
+  assert.equal(report.strategyRoi, null);
+  assert.ok(Number.isFinite(report.strategyRoiLowerBound));
+});
+
 test("strategy tournament keeps Random as explicit control", () => {
   const draws = history(700);
   const reports = strategyTournament(draws, { evaluationDraws: 50, strategyKeys: ["balanced20", "adaptive20", "random"] });
   assert.equal(reports.length, 3);
   assert.equal(reports.at(-1).strategyKey, "random");
   assert.ok(reports.every((report) => report.evaluationDraws === 50));
+});
+
+test("strategy tournament propagates payout rows without changing evidence ranking semantics", () => {
+  const draws = pricedHistory(700);
+  const payouts = payoutRows(651, 700);
+  const reports = strategyTournament(draws, { evaluationDraws: 50, strategyKeys: ["balanced20", "adaptive20", "random"], payoutRows: payouts });
+  assert.equal(reports.at(-1).strategyKey, "random");
+  assert.ok(reports.every((report) => report.financialDataAvailable === true));
+  assert.ok(reports.every((report) => report.financialCoverage === 1));
 });
 
 test("match counter treats fields independently", () => {

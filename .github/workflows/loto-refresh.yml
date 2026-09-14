@@ -12,6 +12,7 @@ on:
       - "scripts/loto-refresh.mjs"
       - "scripts/loto-source.mjs"
       - "scripts/loto-strategy.test.mjs"
+      - "scripts/loto-financial.test.mjs"
       - "scripts/loto-forward-ledger.mjs"
       - "scripts/loto-forward-ledger.test.mjs"
       - "scripts/loto-tournament-report.mjs"
@@ -44,8 +45,8 @@ jobs:
           node-version: 22
           cache: npm
 
-      - name: Strategy, source and forward-ledger tests
-        run: node --test scripts/loto-strategy.test.mjs scripts/loto-forward-ledger.test.mjs
+      - name: Strategy, financial and forward-ledger tests
+        run: node --test scripts/loto-strategy.test.mjs scripts/loto-forward-ledger.test.mjs scripts/loto-financial.test.mjs
 
       - name: Refresh verified official archive
         id: refresh

@@ -2,13 +2,16 @@ const SUPABASE_URL = "https://oryuanpvbjxmnihmwbin.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_oBRPgAo7-YKHzDjhnSKjVA_ozNiJoOs";
 const REQUIRED_HISTORY = 1000;
 const LIVE_WINDOW = 1600;
-const LIVE_PAGE_SIZE = 1000;
-const PAYOUT_PAGE_SIZE = 1000;
+const LIVE_PAGE_SIZE = 500;
+const PAYOUT_PAGE_SIZE = 750;
+const RETRYABLE_STATUS = new Set([408, 425, 429, 500, 502, 503, 504]);
 
 const API_HEADERS = Object.freeze({
   accept: "application/json",
   apikey: SUPABASE_PUBLISHABLE_KEY,
 });
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 function validField(field) {
   return Array.isArray(field)
@@ -99,14 +102,30 @@ export function normalizePayoutRows(rows, firstDraw, lastDraw) {
   return normalized;
 }
 
-async function fetchJson(path) {
-  const response = await fetch(`${SUPABASE_URL}${path}`, {
-    headers: API_HEADERS,
-    cache: "no-store",
-  });
-  const data = await response.json().catch(() => null);
-  if (!response.ok) throw new Error(data?.message || data?.error || `Backend HTTP ${response.status}`);
-  return data;
+async function fetchJson(path, attempts = 3) {
+  let lastError = null;
+  for (let attempt = 1; attempt <= attempts; attempt++) {
+    try {
+      const response = await fetch(`${SUPABASE_URL}${path}`, {
+        headers: API_HEADERS,
+        cache: "no-store",
+        signal: AbortSignal.timeout(12000),
+      });
+      const data = await response.json().catch(() => null);
+      if (response.ok) return data;
+      const error = new Error(data?.message || data?.error || `Backend HTTP ${response.status}`);
+      if (!RETRYABLE_STATUS.has(response.status)) throw error;
+      lastError = error;
+    } catch (error) {
+      lastError = error;
+      const name = error instanceof Error ? error.name : "";
+      const message = error instanceof Error ? error.message : String(error);
+      const transient = name === "TimeoutError" || name === "AbortError" || /timeout|network|fetch failed/i.test(message);
+      if (!transient && attempt === 1) throw error;
+    }
+    if (attempt < attempts) await sleep(300 * attempt);
+  }
+  throw lastError instanceof Error ? lastError : new Error("Live backend временно недоступен");
 }
 
 async function loadLiveDrawRows(verifiedThrough) {

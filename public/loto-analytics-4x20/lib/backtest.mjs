@@ -1,4 +1,6 @@
 import { STRATEGIES, generateTickets } from "./strategy-v2.mjs";
+import { buildPayoutIndex, estimatePortfolioFinancials } from "./payout.mjs";
+export { categoryForMatches } from "./payout.mjs";
 
 function mean(values) {
   return values.reduce((sum, value) => sum + value, 0) / Math.max(1, values.length);
@@ -62,50 +64,6 @@ export function countMatches(ticket, draw) {
   };
 }
 
-export function categoryForMatches(fieldA, fieldB) {
-  const hi = Math.max(Number(fieldA), Number(fieldB));
-  const lo = Math.min(Number(fieldA), Number(fieldB));
-  if (hi < 2) return null;
-  if (hi === 4) return { 4: 1, 3: 2, 2: 3, 1: 4, 0: 5 }[lo] ?? null;
-  if (hi === 3) return { 3: 6, 2: 7, 1: 8, 0: 9 }[lo] ?? null;
-  if (hi === 2) return { 2: 10, 1: 11, 0: 12 }[lo] ?? null;
-  return null;
-}
-
-function payoutIndex(rows) {
-  const map = new Map();
-  for (const row of Array.isArray(rows) ? rows : []) {
-    const draw = Number(row?.drawNumber ?? row?.draw_number);
-    const category = Number(row?.category);
-    const winners = Number(row?.winnersCount ?? row?.winners_count);
-    const amount = Number(row?.payoutPerWinnerRub ?? row?.payout_per_winner_rub);
-    if (!Number.isInteger(draw) || !Number.isInteger(category) || category < 1 || category > 12 || !Number.isFinite(winners) || !Number.isFinite(amount)) continue;
-    map.set(`${draw}:${category}`, { winnersCount: winners, payoutPerWinnerRub: amount });
-  }
-  return map;
-}
-
-function monetaryOutcome(tickets, draw, payouts) {
-  const ticketPrice = Number(draw.ticketPriceRub);
-  if (!Number.isFinite(ticketPrice) || ticketPrice <= 0) {
-    return { stake: 0, payout: 0, unresolved: tickets.length, pricedTickets: 0 };
-  }
-  let payout = 0;
-  let unresolved = 0;
-  for (const ticket of tickets) {
-    const matches = countMatches(ticket, draw);
-    const category = categoryForMatches(matches.fieldA, matches.fieldB);
-    if (category == null) continue;
-    const row = payouts.get(`${draw.number}:${category}`);
-    if (!row || row.winnersCount <= 0 || row.payoutPerWinnerRub <= 0) {
-      unresolved++;
-      continue;
-    }
-    payout += row.payoutPerWinnerRub;
-  }
-  return { stake: ticketPrice * tickets.length, payout, unresolved, pricedTickets: tickets.length };
-}
-
 export function buildTargetTickets(strategyKey, draws, targetIndex, count = ticketCountFor(strategyKey), salt = 0) {
   if (!Array.isArray(draws) || targetIndex <= 0 || targetIndex >= draws.length) {
     throw new Error("Некорректная цель walk-forward");
@@ -135,7 +93,7 @@ export function walkForwardBacktest(strategyKey, draws, options = {}) {
   let strategyProxyHits = 0;
   let baselineProxyHits = 0;
 
-  const payouts = payoutIndex(options.payoutRows);
+  const payoutIndex = buildPayoutIndex(options.payoutRows);
   let strategyStake = 0;
   let strategyReturn = 0;
   let baselineStake = 0;
@@ -159,17 +117,27 @@ export function walkForwardBacktest(strategyKey, draws, options = {}) {
     if (strategyScore.proxyHit) strategyProxyHits++;
     if (baselineScore.proxyHit) baselineProxyHits++;
 
-    if (payouts.size) {
-      const strategyMoney = monetaryOutcome(strategyTickets, target, payouts);
-      const baselineMoney = monetaryOutcome(baselineTickets, target, payouts);
-      strategyStake += strategyMoney.stake;
-      strategyReturn += strategyMoney.payout;
-      strategyUnresolved += strategyMoney.unresolved;
-      strategyPricedTickets += strategyMoney.pricedTickets;
-      baselineStake += baselineMoney.stake;
-      baselineReturn += baselineMoney.payout;
-      baselineUnresolved += baselineMoney.unresolved;
-      baselinePricedTickets += baselineMoney.pricedTickets;
+    if (payoutIndex.size) {
+      const strategyMoney = estimatePortfolioFinancials({
+        drawNumber: target.number,
+        ticketPriceRub: target.ticketPriceRub,
+        ticketMatches: strategyTickets.map((ticket) => countMatches(ticket, target)),
+        payoutRows: payoutIndex,
+      });
+      const baselineMoney = estimatePortfolioFinancials({
+        drawNumber: target.number,
+        ticketPriceRub: target.ticketPriceRub,
+        ticketMatches: baselineTickets.map((ticket) => countMatches(ticket, target)),
+        payoutRows: payoutIndex,
+      });
+      strategyStake += strategyMoney.stakeRub;
+      strategyReturn += strategyMoney.payoutRub;
+      strategyUnresolved += strategyMoney.unresolvedTickets;
+      if (strategyMoney.stakeRub > 0) strategyPricedTickets += strategyTickets.length;
+      baselineStake += baselineMoney.stakeRub;
+      baselineReturn += baselineMoney.payoutRub;
+      baselineUnresolved += baselineMoney.unresolvedTickets;
+      if (baselineMoney.stakeRub > 0) baselinePricedTickets += baselineTickets.length;
     }
   }
 
@@ -182,12 +150,12 @@ export function walkForwardBacktest(strategyKey, draws, options = {}) {
   const baselineRoiLowerBound = baselineStake > 0 ? (baselineReturn - baselineStake) / baselineStake : null;
   const strategyCoverage = strategyPricedTickets > 0 ? 1 - (strategyUnresolved / strategyPricedTickets) : 0;
   const baselineCoverage = baselinePricedTickets > 0 ? 1 - (baselineUnresolved / baselinePricedTickets) : 0;
-  const fullFinancialCoverage = payouts.size > 0 && strategyCoverage === 1 && baselineCoverage === 1;
-  const financialStatus = payouts.size === 0
-    ? "Недостаточно официальных payout-данных для честного ROI/EV; финансовые метрики намеренно заблокированы."
+  const fullFinancialCoverage = payoutIndex.size > 0 && strategyCoverage === 1 && baselineCoverage === 1;
+  const financialStatus = payoutIndex.size === 0
+    ? "Недостаточно официальных payout-данных; финансовая оценка намеренно заблокирована."
     : fullFinancialCoverage
-      ? "ROI рассчитан по опубликованным выплатам каждого конкретного тиража."
-      : "ROI показан только как нижняя граница: категории без фактических победителей не имеют наблюдаемой контрфактической выплаты.";
+      ? "Контрфактический ROI-ориентир рассчитан по официальным пулам/выплатам с поправкой на добавленные виртуальные выигрышные билеты."
+      : "Показана нижняя граница контрфактического ROI: категории без наблюдаемого призового пула остаются неопределёнными.";
 
   return {
     strategyKey,
@@ -210,7 +178,8 @@ export function walkForwardBacktest(strategyKey, draws, options = {}) {
     maxProxyDrawdown: maxDrawdown(deltas),
     evidenceGrade: evidenceGrade(strategyKey, ci),
     financialRoiAvailable: fullFinancialCoverage,
-    financialDataAvailable: payouts.size > 0,
+    financialDataAvailable: payoutIndex.size > 0,
+    financialIsCounterfactualEstimate: payoutIndex.size > 0,
     strategyStakeRub: strategyStake,
     strategyReturnRub: strategyReturn,
     baselineStakeRub: baselineStake,
@@ -225,7 +194,7 @@ export function walkForwardBacktest(strategyKey, draws, options = {}) {
     unresolvedBaselineTickets: baselineUnresolved,
     financialStatus,
     methodology: "walk-forward: каждый проверяемый тираж исключён из обучающей истории; сравнение парное со случайным портфелем того же размера",
-    financialMethodology: "архивный payout benchmark: стоимость билета и выплата берутся из официальных данных конкретного тиража; категории без фактических победителей считаются неопределёнными, поэтому при неполном покрытии ROI показан только как нижняя граница",
+    financialMethodology: "контрфактическая оценка: стоимость билета берётся из официального тиража; для процентных категорий наблюдаемый пул делится на опубликованных плюс виртуальных победителей, фиксированная категория 2×1/1×2 использует опубликованную фиксированную сумму; покупка виртуального билета слегка изменила бы сам призовой фонд, поэтому это оценка, а не точная историческая выплата",
   };
 }
 

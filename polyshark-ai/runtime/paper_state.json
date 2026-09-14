@@ -8,13 +8,13 @@
   "starting_equity": 1000.0,
   "target_equity": 2000.0,
   "bankrupt_equity": 0.0,
-  "cash": 251.220869,
-  "equity": 473.737011,
-  "realized_pnl": -526.335605,
-  "unrealized_pnl": 0.072616,
-  "fees_paid": 249.59376,
-  "ticks": 235,
-  "last_tick_at": "2026-09-14T16:30:03+00:00",
+  "cash": 275.592933,
+  "equity": 476.455552,
+  "realized_pnl": -529.109007,
+  "unrealized_pnl": 5.564559,
+  "fees_paid": 250.24692,
+  "ticks": 236,
+  "last_tick_at": "2026-09-14T19:24:38+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -48,32 +48,6 @@
       "mark_net_liquidation": 54.68445
     },
     {
-      "position_id": "601826-NO-1789192498",
-      "market_id": "601826",
-      "question": "Will Flávio Bolsonaro win the 2026 Brazilian presidential election?",
-      "category": "Other",
-      "outcome": "NO",
-      "token_id": "38310927461258927563020508025396887688249787380193911540547071417200646834355",
-      "opened_at": "2026-09-12T05:54:57+00:00",
-      "entry_mid": 0.5055,
-      "entry_spread": 0.001,
-      "entry_price": 0.506,
-      "shares": 52.35402428,
-      "gross_trade": 26.491136,
-      "entry_fee": 0.65433,
-      "cash_outlay": 27.145466,
-      "fee_rate": 0.05,
-      "momentum_24h": -0.028,
-      "momentum_6h": -0.027,
-      "liquidity": 183592.48,
-      "volume_24h": 150201.02,
-      "end_date": "2026-10-04",
-      "paper": true,
-      "mark_price": 0.4865,
-      "mark_spread": 0.007,
-      "mark_net_liquidation": 24.633324
-    },
-    {
       "position_id": "1130012-YES-1789252203",
       "market_id": "1130012",
       "question": "Will United Russia (ER) gain the most seats in the next Russian parliamentary election?",
@@ -95,9 +69,9 @@
       "volume_24h": 161323.03,
       "end_date": "2026-09-30",
       "paper": true,
-      "mark_price": 0.785,
+      "mark_price": 0.775,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 25.41187
+      "mark_net_liquidation": 25.073393
     },
     {
       "position_id": "2176270-NO-1789332155",
@@ -173,9 +147,9 @@
       "volume_24h": 2857440.27,
       "end_date": "2026-09-16",
       "paper": true,
-      "mark_price": 0.855,
+      "mark_price": 0.865,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 23.715499
+      "mark_net_liquidation": 24.006593
     },
     {
       "position_id": "2252245-YES-1789394821",
@@ -199,9 +173,9 @@
       "volume_24h": 1989471.44,
       "end_date": "2026-09-16",
       "paper": true,
-      "mark_price": 0.835,
+      "mark_price": 0.865,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 23.401267
+      "mark_net_liquidation": 24.283787
     },
     {
       "position_id": "4471006-YES-1789403404",
@@ -225,9 +199,9 @@
       "volume_24h": 141174.3,
       "end_date": "2026-10-01",
       "paper": true,
-      "mark_price": 0.775,
-      "mark_spread": 0.03,
-      "mark_net_liquidation": 22.346328
+      "mark_price": 0.84,
+      "mark_spread": 0.02,
+      "mark_net_liquidation": 24.490991
     }
   ],
   "closed_positions": [
@@ -4421,6 +4395,39 @@
       "pnl": -4.632199,
       "return_pct": -19.3623,
       "close_reason": "stop_loss"
+    },
+    {
+      "position_id": "601826-NO-1789192498",
+      "market_id": "601826",
+      "question": "Will Flávio Bolsonaro win the 2026 Brazilian presidential election?",
+      "category": "Other",
+      "outcome": "NO",
+      "token_id": "38310927461258927563020508025396887688249787380193911540547071417200646834355",
+      "opened_at": "2026-09-12T05:54:57+00:00",
+      "entry_mid": 0.5055,
+      "entry_spread": 0.001,
+      "entry_price": 0.506,
+      "shares": 52.35402428,
+      "gross_trade": 26.491136,
+      "entry_fee": 0.65433,
+      "cash_outlay": 27.145466,
+      "fee_rate": 0.05,
+      "momentum_24h": -0.028,
+      "momentum_6h": -0.027,
+      "liquidity": 183592.48,
+      "volume_24h": 150201.02,
+      "end_date": "2026-10-04",
+      "paper": true,
+      "mark_price": 0.4865,
+      "mark_spread": 0.007,
+      "mark_net_liquidation": 24.633324,
+      "closed_at": "2026-09-14T19:24:38+00:00",
+      "exit_price": 0.478,
+      "exit_fee": 0.65316,
+      "net_proceeds": 24.372064,
+      "pnl": -2.773402,
+      "return_pct": -10.2168,
+      "close_reason": "stop_loss"
     }
   ],
   "audit": [
@@ -7059,6 +7066,15 @@
       "cash_outlay": 23.757404,
       "momentum_24h": 0.075,
       "momentum_6h": 0.01
+    },
+    {
+      "ts": "2026-09-14T19:24:38+00:00",
+      "event": "PAPER_CLOSE",
+      "market_id": "601826",
+      "outcome": "NO",
+      "exit_price": 0.478,
+      "pnl": -2.773402,
+      "reason": "stop_loss"
     }
   ]
 }

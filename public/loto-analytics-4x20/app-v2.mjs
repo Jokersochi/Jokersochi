@@ -1,6 +1,6 @@
 import { STRATEGIES, generateTickets, maxUsefulTickets } from "./lib/strategy-v2.mjs";
 import { strategyTournament, walkForwardBacktest } from "./lib/backtest.mjs";
-import { loadLiveArchive } from "./lib/live-data.mjs";
+import { loadLiveArchive, loadOfficialPayouts } from "./lib/live-data.mjs";
 import { loadLedger, recordVirtualPortfolio, settleLedger, summarizeLedger } from "./lib/ledger.mjs";
 
 const $ = (s) => document.querySelector(s);
@@ -22,6 +22,8 @@ const tournamentStatus = $("#tournamentStatus");
 const tournamentBody = $("#tournamentBody");
 const tournamentNote = $("#tournamentNote");
 let archive = null;
+let payoutRows = null;
+let payoutPromise = null;
 let backtestRun = 0;
 let tournamentRun = 0;
 
@@ -29,8 +31,9 @@ const FIVE_TICKET_KEYS = new Set(["adaptive20", "balanced20", "ensemble", "portf
 const TOURNAMENT_KEYS = ["adaptive20", "balanced20", "portfolio5", "hybrid", "hot1000", "overdue", "cold200", "random"];
 const escapeHtml = (value) => String(value).replace(/[&<>'"]/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"})[c]);
 const balls = (numbers, cls) => `<div class="balls ${cls}">${numbers.map((n) => `<span class="ball">${n}</span>`).join("")}</div>`;
-const pct = (value) => `${(value * 100).toFixed(1)}%`;
+const pct = (value) => value == null ? "—" : `${(value * 100).toFixed(1)}%`;
 const signed = (value) => `${value >= 0 ? "+" : ""}${value.toFixed(3)}`;
+const rub = (value) => new Intl.NumberFormat("ru-RU", { style:"currency", currency:"RUB", maximumFractionDigits:0 }).format(Number(value) || 0);
 
 function renderStrategies() {
   strategyGrid.innerHTML = STRATEGIES.map((s) => `<article class="card"><div class="strategy-name"><h2>${escapeHtml(s.name)}</h2><span class="chip">${s.lookback ? `${s.lookback} тиражей` : "без истории"}</span></div><p><strong>${escapeHtml(s.shortDescription)}</strong></p><p class="muted">${escapeHtml(s.plainDescription)}</p></article>`).join("");
@@ -75,10 +78,25 @@ function renderDataQuality(data) {
   qualityGrid.innerHTML = cards.map(([label, value]) => `<div class="quality-item"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div>`).join("");
   const draw = data.draws.at(-1);
   const date = new Date(draw.date).toLocaleString("ru-RU", {dateStyle:"medium", timeStyle:"short"});
-  latestDraw.innerHTML = `<div class="latest-head"><div><span class="eyebrow">Последний подтверждённый тираж</span><h2>№${draw.number}</h2></div><span class="chip">${escapeHtml(date)}</span></div><div class="fields"><div class="lotto-field field-a"><strong>Поле 1</strong>${balls(draw.fieldA,"field-a")}</div><div class="lotto-field field-b"><strong>Поле 2</strong>${balls(draw.fieldB,"field-b")}</div></div>`;
+  const economics = draw.ticketPriceRub ? `<span class="chip">билет ${escapeHtml(rub(draw.ticketPriceRub))}</span>` : "";
+  latestDraw.innerHTML = `<div class="latest-head"><div><span class="eyebrow">Последний подтверждённый тираж</span><h2>№${draw.number}</h2></div><div class="latest-chips"><span class="chip">${escapeHtml(date)}</span>${economics}</div></div><div class="fields"><div class="lotto-field field-a"><strong>Поле 1</strong>${balls(draw.fieldA,"field-a")}</div><div class="lotto-field field-b"><strong>Поле 2</strong>${balls(draw.fieldB,"field-b")}</div></div>`;
 }
 
-function renderBacktestReport(report) {
+async function ensurePayouts() {
+  if (payoutRows) return payoutRows;
+  if (!archive) throw new Error("Live-архив ещё не загружен");
+  if (!payoutPromise) {
+    const first = archive.draws.at(-300)?.number;
+    const last = archive.draws.at(-1)?.number;
+    payoutPromise = loadOfficialPayouts(first, last).then((rows) => {
+      payoutRows = rows;
+      return rows;
+    }).finally(() => { payoutPromise = null; });
+  }
+  return payoutPromise;
+}
+
+function renderBacktestReport(report, payoutError = null) {
   const hitLift = report.hitLift == null ? "н/д" : `${report.hitLift >= 0 ? "+" : ""}${(report.hitLift * 100).toFixed(1)}%`;
   const cards = [
     ["Evidence Grade", report.evidenceGrade],
@@ -90,8 +108,20 @@ function renderBacktestReport(report) {
     ["Proxy 2+2", `${pct(report.balanced22Rate)} vs ${pct(report.baselineBalanced22Rate)}`],
     ["Max просадка score", report.maxProxyDrawdown.toFixed(1)],
   ];
+  if (report.financialDataAvailable) {
+    cards.push(
+      [report.financialRoiAvailable ? "Архивный ROI" : "ROI · нижняя граница", `${report.financialRoiAvailable ? "" : "≥ "}${pct(report.financialRoiAvailable ? report.strategyRoi : report.strategyRoiLowerBound)} vs random ${report.financialRoiAvailable ? "" : "≥ "}${pct(report.financialRoiAvailable ? report.baselineRoi : report.baselineRoiLowerBound)}`],
+      ["Payout coverage", `${pct(report.financialCoverage)} vs ${pct(report.baselineFinancialCoverage)}`],
+      ["Расход → выплаты", `${rub(report.strategyStakeRub)} → ${rub(report.strategyReturnRub)}`],
+    );
+  } else {
+    cards.push(["Архивный ROI", "данные выплат недоступны"]);
+  }
   backtestGrid.innerHTML = cards.map(([label, value]) => `<div class="quality-item evidence-item"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div>`).join("");
-  backtestNote.textContent = `Проверка №${report.firstEvaluatedDraw}–${report.lastEvaluatedDraw}. ${report.methodology}. ${report.financialStatus}`;
+  const moneyNote = report.financialDataAvailable
+    ? `${report.financialMethodology}. Неопределённых виртуальных исходов: ${report.unresolvedStrategyTickets}; у random: ${report.unresolvedBaselineTickets}.`
+    : `Денежный блок недоступен${payoutError ? `: ${payoutError}` : "."}`;
+  backtestNote.textContent = `Проверка №${report.firstEvaluatedDraw}–${report.lastEvaluatedDraw}. ${report.methodology}. ${report.financialStatus} ${moneyNote}`;
   backtestStatus.className = report.evidenceGrade === "Слабый положительный сигнал" ? "status warn" : "status ok";
   backtestStatus.textContent = report.evidenceGrade;
 }
@@ -100,15 +130,22 @@ async function renderBacktest() {
   if (!archive) return;
   const run = ++backtestRun;
   backtestStatus.className = "status warn";
-  backtestStatus.textContent = "Считаю walk-forward…";
+  backtestStatus.textContent = "Считаю walk-forward + ROI…";
   backtestGrid.innerHTML = "";
   backtestNote.textContent = "";
   await new Promise((resolve) => requestAnimationFrame(resolve));
+  let payouts = null;
+  let payoutError = null;
+  try {
+    payouts = await ensurePayouts();
+  } catch (error) {
+    payoutError = error instanceof Error ? error.message : String(error);
+  }
   try {
     const evaluationDraws = strategySelect.value === "ensemble" ? 120 : 300;
-    const report = walkForwardBacktest(strategySelect.value, archive.draws, { evaluationDraws });
+    const report = walkForwardBacktest(strategySelect.value, archive.draws, { evaluationDraws, payoutRows: payouts });
     if (run !== backtestRun) return;
-    renderBacktestReport(report);
+    renderBacktestReport(report, payoutError);
   } catch (error) {
     if (run !== backtestRun) return;
     backtestStatus.className = "status danger";
@@ -121,23 +158,37 @@ async function renderTournament() {
   if (!archive || !tournamentStatus || !tournamentBody) return;
   const run = ++tournamentRun;
   tournamentStatus.className = "status warn";
-  tournamentStatus.textContent = "Считаю рейтинг…";
+  tournamentStatus.textContent = "Считаю рейтинг + ROI…";
   tournamentBody.innerHTML = "";
   await new Promise((resolve) => requestAnimationFrame(resolve));
+  let payouts = null;
+  let payoutError = null;
   try {
-    const reports = strategyTournament(archive.draws, { evaluationDraws: 80, strategyKeys: TOURNAMENT_KEYS });
+    payouts = await ensurePayouts();
+  } catch (error) {
+    payoutError = error instanceof Error ? error.message : String(error);
+  }
+  try {
+    const reports = strategyTournament(archive.draws, { evaluationDraws: 80, strategyKeys: TOURNAMENT_KEYS, payoutRows: payouts });
     if (run !== tournamentRun) return;
     const random = reports.find((report) => report.strategyKey === "random");
     const ranked = reports.filter((report) => report.strategyKey !== "random");
     tournamentBody.innerHTML = ranked.map((report, index) => {
       const lift = report.hitLift == null ? "н/д" : `${report.hitLift >= 0 ? "+" : ""}${(report.hitLift * 100).toFixed(1)}%`;
       const gradeClass = report.evidenceGrade === "Слабый положительный сигнал" ? "grade-warn" : report.evidenceGrade === "Отрицательный сигнал" ? "grade-bad" : "grade-neutral";
-      return `<tr><td>${index + 1}</td><td><strong>${escapeHtml(report.strategyName)}</strong></td><td>${report.ticketCount}</td><td>${signed(report.excessProxyScore)}</td><td>${escapeHtml(lift)}</td><td><span class="grade ${gradeClass}">${escapeHtml(report.evidenceGrade)}</span></td></tr>`;
+      const roiValue = report.financialDataAvailable
+        ? `${report.financialRoiAvailable ? "" : "≥ "}${pct(report.financialRoiAvailable ? report.strategyRoi : report.strategyRoiLowerBound)}`
+        : "н/д";
+      const coverage = report.financialDataAvailable ? pct(report.financialCoverage) : "н/д";
+      return `<tr><td>${index + 1}</td><td><strong>${escapeHtml(report.strategyName)}</strong></td><td>${report.ticketCount}</td><td>${signed(report.excessProxyScore)}</td><td>${escapeHtml(lift)}</td><td>${escapeHtml(roiValue)}</td><td>${escapeHtml(coverage)}</td><td><span class="grade ${gradeClass}">${escapeHtml(report.evidenceGrade)}</span></td></tr>`;
     }).join("");
     tournamentStatus.className = "status ok";
     tournamentStatus.textContent = `${ranked.length} стратегий · 80 walk-forward тиражей`;
     if (tournamentNote) {
-      tournamentNote.textContent = `Рейтинг сортируется по excess proxy-score против Random того же размера. Random-контроль: ${random ? `${random.ticketCount} бил./тираж` : "н/д"}. Это исследовательский рейтинг совпадений, не финансовый ROI. Walk-Forward Ensemble оценивается отдельно в Evidence Lab, чтобы не делать вложенный самореферентный турнир слишком тяжёлым для браузера.`;
+      const payoutText = payouts
+        ? "ROI использует фактическую цену и опубликованные выплаты конкретных тиражей; при неполном coverage показана только нижняя граница."
+        : `ROI недоступен${payoutError ? `: ${payoutError}` : "."}`;
+      tournamentNote.textContent = `Рейтинг сортируется по excess proxy-score против Random того же размера. Random-контроль: ${random ? `${random.ticketCount} бил./тираж` : "н/д"}. ${payoutText} Evidence Grade не зависит от исторического ROI. Walk-Forward Ensemble оценивается отдельно в Evidence Lab, чтобы не делать вложенный самореферентный турнир слишком тяжёлым для браузера.`;
     }
   } catch (error) {
     if (run !== tournamentRun) return;
@@ -152,6 +203,8 @@ async function loadArchive() {
   status.textContent = "Данные: проверяю live-backend…";
   try {
     archive = await loadLiveArchive();
+    payoutRows = null;
+    payoutPromise = null;
     status.className = "status ok";
     status.textContent = `LIVE · официальный архив · до №${archive.last} · без пропусков`;
     renderDataQuality(archive);

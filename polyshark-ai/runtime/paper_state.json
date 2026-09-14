@@ -8,13 +8,13 @@
   "starting_equity": 1000.0,
   "target_equity": 2000.0,
   "bankrupt_equity": 0.0,
-  "cash": 274.978273,
-  "equity": 474.68687,
+  "cash": 251.220869,
+  "equity": 473.737011,
   "realized_pnl": -526.335605,
-  "unrealized_pnl": 1.022475,
-  "fees_paid": 249.3469,
-  "ticks": 234,
-  "last_tick_at": "2026-09-14T14:06:59+00:00",
+  "unrealized_pnl": 0.072616,
+  "fees_paid": 249.59376,
+  "ticks": 235,
+  "last_tick_at": "2026-09-14T16:30:03+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -69,9 +69,9 @@
       "volume_24h": 150201.02,
       "end_date": "2026-10-04",
       "paper": true,
-      "mark_price": 0.4855,
-      "mark_spread": 0.001,
-      "mark_net_liquidation": 24.737862
+      "mark_price": 0.4865,
+      "mark_spread": 0.007,
+      "mark_net_liquidation": 24.633324
     },
     {
       "position_id": "1130012-YES-1789252203",
@@ -121,9 +121,9 @@
       "volume_24h": 149993.62,
       "end_date": "2026-12-31",
       "paper": true,
-      "mark_price": 0.835,
+      "mark_price": 0.825,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 24.644201
+      "mark_net_liquidation": 24.335007
     },
     {
       "position_id": "4111395-YES-1789362578",
@@ -173,9 +173,9 @@
       "volume_24h": 2857440.27,
       "end_date": "2026-09-16",
       "paper": true,
-      "mark_price": 0.835,
+      "mark_price": 0.855,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 23.13415
+      "mark_net_liquidation": 23.715499
     },
     {
       "position_id": "2252245-YES-1789394821",
@@ -199,9 +199,35 @@
       "volume_24h": 1989471.44,
       "end_date": "2026-09-16",
       "paper": true,
-      "mark_price": 0.825,
+      "mark_price": 0.835,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 23.107667
+      "mark_net_liquidation": 23.401267
+    },
+    {
+      "position_id": "4471006-YES-1789403404",
+      "market_id": "4471006",
+      "question": "Will Ethereum reach $2,600 in September?",
+      "category": "Other",
+      "outcome": "YES",
+      "token_id": "43853966738403637461259093397144541816355598332094201152243477203086112394850",
+      "opened_at": "2026-09-14T16:30:03+00:00",
+      "entry_mid": 0.775,
+      "entry_spread": 0.03,
+      "entry_price": 0.79,
+      "shares": 29.76018183,
+      "gross_trade": 23.510544,
+      "entry_fee": 0.24686,
+      "cash_outlay": 23.757404,
+      "fee_rate": 0.05,
+      "momentum_24h": 0.075,
+      "momentum_6h": 0.01,
+      "liquidity": 47529.69,
+      "volume_24h": 141174.3,
+      "end_date": "2026-10-01",
+      "paper": true,
+      "mark_price": 0.775,
+      "mark_spread": 0.03,
+      "mark_net_liquidation": 22.346328
     }
   ],
   "closed_positions": [
@@ -7022,6 +7048,17 @@
       "cash_outlay": 23.802507,
       "momentum_24h": 0.04,
       "momentum_6h": 0.04
+    },
+    {
+      "ts": "2026-09-14T16:30:03+00:00",
+      "event": "PAPER_OPEN",
+      "market_id": "4471006",
+      "question": "Will Ethereum reach $2,600 in September?",
+      "outcome": "YES",
+      "entry_price": 0.79,
+      "cash_outlay": 23.757404,
+      "momentum_24h": 0.075,
+      "momentum_6h": 0.01
     }
   ]
 }

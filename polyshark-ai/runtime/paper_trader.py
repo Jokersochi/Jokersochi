@@ -1,312 +1,76 @@
 #!/usr/bin/env python3
-"""PolyShark autonomous paper trader.
+"""Autonomous, public-data-only Polymarket paper trader.
 
-Hard guarantees:
-- No authenticated trading endpoints are imported or called.
-- No private keys/API trading credentials are read.
-- Quotes/history come from Polymarket public Gamma/CLOB endpoints.
-- Session stops after net liquidation equity reaches TARGET_EQUITY or zero.
-
-The strategy is intentionally simple and auditable: liquid two-outcome markets,
-trend confirmation over real public price history, spread filter, capped sizing,
-and deterministic take-profit / stop-loss / max-hold exits.
+Version 3 replaces price momentum with persistent-elite consensus. The runtime
+cannot import authenticated order clients, read trading secrets, or submit an
+order. Existing v2 positions are liquidated conservatively during migration.
 """
 from __future__ import annotations
 
 import argparse
 import json
-import math
 import os
+import sys
 import time
 import urllib.error
-import urllib.parse
-import urllib.request
-from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any
 
-GAMMA_MARKETS = "https://gamma-api.polymarket.com/markets"
-CLOB_BASE = "https://clob.polymarket.com"
-USER_AGENT = "PolyShark-Paper/2.0 (+https://github.com/Jokersochi/Jokersochi)"
+RUNTIME_DIR = Path(__file__).resolve().parent
+if str(RUNTIME_DIR) not in sys.path:
+    sys.path.insert(0, str(RUNTIME_DIR))
+import leader_consensus as lc  # noqa: E402
+
+STRATEGY_VERSION = 3
+STRATEGY_NAME = "persistent-elite consensus v3"
 
 STARTING_EQUITY = float(os.getenv("PAPER_STARTING_EQUITY", "1000"))
 TARGET_EQUITY = float(os.getenv("PAPER_TARGET_EQUITY", "2000"))
 BANKRUPT_EQUITY = float(os.getenv("PAPER_BANKRUPT_EQUITY", "0"))
-MAX_POSITION_PCT = float(os.getenv("PAPER_MAX_POSITION_PCT", "0.05"))
-MAX_OPEN_POSITIONS = int(os.getenv("PAPER_MAX_OPEN_POSITIONS", "8"))
-MIN_LIQUIDITY = float(os.getenv("PAPER_MIN_LIQUIDITY", "25000"))
-MIN_VOLUME_24H = float(os.getenv("PAPER_MIN_VOLUME_24H", "10000"))
-MIN_PRICE = float(os.getenv("PAPER_MIN_PRICE", "0.15"))
-MAX_PRICE = float(os.getenv("PAPER_MAX_PRICE", "0.85"))
-MAX_SPREAD = float(os.getenv("PAPER_MAX_SPREAD", "0.035"))
-MIN_MOMENTUM_24H = float(os.getenv("PAPER_MIN_MOMENTUM_24H", "0.025"))
-MIN_MOMENTUM_6H = float(os.getenv("PAPER_MIN_MOMENTUM_6H", "0.010"))
-TAKE_PROFIT_RETURN = float(os.getenv("PAPER_TAKE_PROFIT_RETURN", "0.15"))
-STOP_LOSS_RETURN = float(os.getenv("PAPER_STOP_LOSS_RETURN", "-0.10"))
-MAX_HOLD_HOURS = float(os.getenv("PAPER_MAX_HOLD_HOURS", "72"))
-MAX_NEW_POSITIONS_PER_TICK = int(os.getenv("PAPER_MAX_NEW_POSITIONS_PER_TICK", "2"))
-MARKET_SCAN_LIMIT = int(os.getenv("PAPER_MARKET_SCAN_LIMIT", "60"))
-HISTORY_CANDIDATE_LIMIT = int(os.getenv("PAPER_HISTORY_CANDIDATE_LIMIT", "20"))
-REQUEST_TIMEOUT = float(os.getenv("PAPER_REQUEST_TIMEOUT", "15"))
+MAX_POSITION_PCT = float(os.getenv("PAPER_MAX_POSITION_PCT", "0.02"))
+MAX_TOTAL_EXPOSURE_PCT = float(os.getenv("PAPER_MAX_TOTAL_EXPOSURE_PCT", "0.08"))
+MAX_OPEN_POSITIONS = int(os.getenv("PAPER_MAX_OPEN_POSITIONS", "5"))
+MAX_NEW_POSITIONS_PER_TICK = int(os.getenv("PAPER_MAX_NEW_POSITIONS_PER_TICK", "1"))
+MAX_DAILY_REALIZED_LOSS = float(os.getenv("PAPER_MAX_DAILY_REALIZED_LOSS", "20"))
+TAKE_PROFIT_RETURN = float(os.getenv("PAPER_TAKE_PROFIT_RETURN", "0.18"))
+HARD_STOP_RETURN = float(os.getenv("PAPER_HARD_STOP_RETURN", "-0.12"))
+MAX_HOLD_HOURS = float(os.getenv("PAPER_MAX_HOLD_HOURS", "168"))
+SIGNAL_MISS_TICKS = int(os.getenv("PAPER_SIGNAL_MISS_TICKS", "2"))
+MIN_HOLD_CONSENSUS = float(os.getenv("PAPER_MIN_HOLD_CONSENSUS", "0.60"))
 
-FEE_RATE_BY_CATEGORY = {
-    "crypto": 0.07,
-    "sports": 0.03,
-    "finance": 0.04,
-    "politics": 0.04,
-    "economics": 0.05,
-    "culture": 0.05,
-    "weather": 0.05,
-    "mentions": 0.04,
-    "tech": 0.04,
-    "geopolitics": 0.0,
-}
-DEFAULT_FEE_RATE = 0.05
+# Compatibility exports used by the existing unit-test entry point.
+DEFAULT_FEE_RATE = lc.DEFAULT_FEE_RATE
+MAX_SPREAD = lc.MAX_SPREAD
+market_fee_rate = lc.market_fee_rate
+taker_fee = lc.taker_fee
+parse_ts = lc.parse_ts
+_as_float = lc.as_float
 
 
 def utc_now() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
 
-def parse_ts(value: str) -> float:
-    return datetime.fromisoformat(value.replace("Z", "+00:00")).timestamp()
-
-
-def _request_json(url: str, *, method: str = "GET", body: Any | None = None) -> Any:
-    data = None
-    headers = {"User-Agent": USER_AGENT, "Accept": "application/json"}
-    if body is not None:
-        data = json.dumps(body, separators=(",", ":")).encode("utf-8")
-        headers["Content-Type"] = "application/json"
-    req = urllib.request.Request(url, data=data, method=method, headers=headers)
-    with urllib.request.urlopen(req, timeout=REQUEST_TIMEOUT) as resp:
-        return json.load(resp)
-
-
-def _as_float(value: Any, default: float = 0.0) -> float:
-    try:
-        if value is None or value == "":
-            return default
-        return float(value)
-    except (TypeError, ValueError):
-        return default
-
-
-def _as_json_list(value: Any) -> list[Any]:
-    if isinstance(value, list):
-        return value
-    if isinstance(value, str):
-        try:
-            out = json.loads(value)
-            return out if isinstance(out, list) else []
-        except json.JSONDecodeError:
-            return []
-    return []
-
-
-def market_fee_rate(category: str | None) -> float:
-    key = (category or "").strip().lower()
-    if "geopolit" in key or "world" in key:
-        return 0.0
-    for prefix, rate in FEE_RATE_BY_CATEGORY.items():
-        if prefix in key:
-            return rate
-    return DEFAULT_FEE_RATE
-
-
-def taker_fee(shares: float, price: float, fee_rate: float) -> float:
-    """Polymarket V2 fee curve, USDC; rounded to platform precision."""
-    if shares <= 0 or not 0 < price < 1 or fee_rate <= 0:
-        return 0.0
-    fee = shares * fee_rate * price * (1.0 - price)
-    return round(fee, 5)
-
-
-@dataclass(frozen=True)
-class Candidate:
-    market_id: str
-    question: str
-    category: str
-    yes_token: str
-    no_token: str
-    yes_price: float
-    yes_spread: float
-    liquidity: float
-    volume_24h: float
-    momentum_24h: float
-    momentum_6h: float
-    end_date: str | None
-
-    @property
-    def outcome(self) -> str:
-        return "YES" if self.momentum_24h > 0 else "NO"
-
-    @property
-    def token_id(self) -> str:
-        return self.yes_token if self.outcome == "YES" else self.no_token
-
-    @property
-    def token_mid(self) -> float:
-        return self.yes_price if self.outcome == "YES" else 1.0 - self.yes_price
-
-    @property
-    def score(self) -> float:
-        trend = abs(self.momentum_24h) + 0.5 * abs(self.momentum_6h)
-        liquidity_bonus = min(0.05, math.log10(max(self.liquidity, 1.0)) / 100.0)
-        spread_penalty = self.yes_spread * 0.5
-        return trend + liquidity_bonus - spread_penalty
-
-
-def fetch_markets() -> list[dict[str, Any]]:
-    params = urllib.parse.urlencode(
-        {"limit": MARKET_SCAN_LIMIT, "closed": "false", "order": "volume24hr", "ascending": "false"}
-    )
-    data = _request_json(f"{GAMMA_MARKETS}?{params}")
-    return data if isinstance(data, list) else []
-
-
-def eligible_markets(markets: Iterable[dict[str, Any]]) -> list[dict[str, Any]]:
-    out: list[dict[str, Any]] = []
-    now = time.time()
-    for m in markets:
-        if not bool(m.get("active", True)) or bool(m.get("closed", False)):
-            continue
-        if m.get("enableOrderBook") is False:
-            continue
-        outcomes = [str(x).upper() for x in _as_json_list(m.get("outcomes"))]
-        tokens = [str(x) for x in _as_json_list(m.get("clobTokenIds"))]
-        if len(outcomes) != 2 or len(tokens) != 2 or set(outcomes) != {"YES", "NO"}:
-            continue
-        liq = max(_as_float(m.get("liquidityNum")), _as_float(m.get("liquidity")))
-        vol24 = _as_float(m.get("volume24hr"))
-        if liq < MIN_LIQUIDITY or vol24 < MIN_VOLUME_24H:
-            continue
-        end_date = m.get("endDateIso") or m.get("endDate")
-        if end_date:
-            try:
-                seconds_left = parse_ts(str(end_date)) - now
-                if seconds_left <= 0 or seconds_left > 120 * 86400:
-                    continue
-            except Exception:
-                pass
-        idx_yes = outcomes.index("YES")
-        idx_no = outcomes.index("NO")
-        row = dict(m)
-        row["_yes_token"] = tokens[idx_yes]
-        row["_no_token"] = tokens[idx_no]
-        row["_liquidity"] = liq
-        row["_volume24"] = vol24
-        out.append(row)
-    return out
-
-
-def batch_midpoints(token_ids: list[str]) -> dict[str, float]:
-    if not token_ids:
-        return {}
-    data = _request_json(f"{CLOB_BASE}/midpoints", method="POST", body=[{"token_id": tid} for tid in token_ids])
-    return {str(k): _as_float(v, -1.0) for k, v in (data or {}).items()}
-
-
-def batch_spreads(token_ids: list[str]) -> dict[str, float]:
-    if not token_ids:
-        return {}
-    data = _request_json(f"{CLOB_BASE}/spreads", method="POST", body=[{"token_id": tid} for tid in token_ids])
-    return {str(k): _as_float(v, 1.0) for k, v in (data or {}).items()}
-
-
-def batch_history(token_ids: list[str]) -> dict[str, list[dict[str, Any]]]:
-    if not token_ids:
-        return {}
-    out: dict[str, list[dict[str, Any]]] = {}
-    now = int(time.time())
-    for start in range(0, len(token_ids), 20):
-        chunk = token_ids[start : start + 20]
-        body = {"markets": chunk, "start_ts": now - 26 * 3600, "end_ts": now, "interval": "1d", "fidelity": 60}
-        data = _request_json(f"{CLOB_BASE}/batch-prices-history", method="POST", body=body)
-        history = (data or {}).get("history", {}) if isinstance(data, dict) else {}
-        if isinstance(history, dict):
-            for tid, points in history.items():
-                if isinstance(points, list):
-                    out[str(tid)] = points
-    return out
-
-
-def momentum(points: list[dict[str, Any]], current: float) -> tuple[float, float] | None:
-    clean = sorted(
-        ((int(_as_float(p.get("t"))), _as_float(p.get("p"), -1.0)) for p in points), key=lambda x: x[0]
-    )
-    clean = [(t, p) for t, p in clean if t > 0 and 0 < p < 1]
-    if not clean or not 0 < current < 1:
-        return None
-    now = int(time.time())
-
-    def nearest_before(target: int) -> float | None:
-        eligible = [(t, p) for t, p in clean if t <= target]
-        if eligible:
-            return eligible[-1][1]
-        t, p = clean[0]
-        return p if t - target <= 3 * 3600 else None
-
-    p24 = nearest_before(now - 24 * 3600)
-    p6 = nearest_before(now - 6 * 3600)
-    if p24 is None or p6 is None:
-        return None
-    return current - p24, current - p6
-
-
-def build_candidates(markets: list[dict[str, Any]]) -> tuple[list[Candidate], dict[str, float], dict[str, float]]:
-    eligible = eligible_markets(markets)[:HISTORY_CANDIDATE_LIMIT]
-    yes_tokens = [str(m["_yes_token"]) for m in eligible]
-    all_tokens = [str(m["_yes_token"]) for m in eligible] + [str(m["_no_token"]) for m in eligible]
-    mids = batch_midpoints(all_tokens)
-    spreads = batch_spreads(all_tokens)
-    histories = batch_history(yes_tokens)
-    candidates: list[Candidate] = []
-    for m in eligible:
-        yes_token = str(m["_yes_token"])
-        no_token = str(m["_no_token"])
-        yes_mid = mids.get(yes_token, -1.0)
-        no_mid = mids.get(no_token, -1.0)
-        yes_spread = spreads.get(yes_token, 1.0)
-        no_spread = spreads.get(no_token, 1.0)
-        if not (0 < yes_mid < 1 and 0 < no_mid < 1):
-            continue
-        if abs((yes_mid + no_mid) - 1.0) > 0.08:
-            continue
-        mom = momentum(histories.get(yes_token, []), yes_mid)
-        if mom is None:
-            continue
-        mom24, mom6 = mom
-        if abs(mom24) < MIN_MOMENTUM_24H or abs(mom6) < MIN_MOMENTUM_6H or mom24 * mom6 <= 0:
-            continue
-        outcome = "YES" if mom24 > 0 else "NO"
-        token_mid = yes_mid if outcome == "YES" else no_mid
-        token_spread = yes_spread if outcome == "YES" else no_spread
-        if not (MIN_PRICE <= token_mid <= MAX_PRICE) or token_spread <= 0 or token_spread > MAX_SPREAD:
-            continue
-        candidates.append(Candidate(
-            market_id=str(m.get("id") or m.get("conditionId") or yes_token),
-            question=str(m.get("question") or "Unknown market"),
-            category=str(m.get("category") or "Other"),
-            yes_token=yes_token,
-            no_token=no_token,
-            yes_price=yes_mid,
-            yes_spread=yes_spread,
-            liquidity=float(m["_liquidity"]),
-            volume_24h=float(m["_volume24"]),
-            momentum_24h=mom24,
-            momentum_6h=mom6,
-            end_date=str(m.get("endDateIso") or m.get("endDate") or "") or None,
-        ))
-    candidates.sort(key=lambda c: c.score, reverse=True)
-    return candidates, mids, spreads
+def risk_policy_snapshot() -> dict[str, Any]:
+    return {
+        "max_position_pct": MAX_POSITION_PCT,
+        "max_total_exposure_pct": MAX_TOTAL_EXPOSURE_PCT,
+        "max_open_positions": MAX_OPEN_POSITIONS,
+        "max_new_positions_per_tick": MAX_NEW_POSITIONS_PER_TICK,
+        "max_daily_realized_loss": MAX_DAILY_REALIZED_LOSS,
+        "hard_stop_return": HARD_STOP_RETURN,
+        "take_profit_return": TAKE_PROFIT_RETURN,
+        "max_hold_hours": MAX_HOLD_HOURS,
+        "min_signal_supporters": lc.MIN_SIGNAL_SUPPORTERS,
+        "min_signal_consensus": lc.MIN_SIGNAL_CONSENSUS,
+    }
 
 
 def fresh_state() -> dict[str, Any]:
     now = utc_now()
     return {
-        "schema_version": 2,
+        "schema_version": STRATEGY_VERSION,
         "session_id": f"paper-{int(time.time())}",
         "status": "running",
         "started_at": now,
@@ -323,13 +87,27 @@ def fresh_state() -> dict[str, Any]:
         "ticks": 0,
         "last_tick_at": None,
         "last_error": None,
-        "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
+        "quote_source": "Polymarket Gamma + public CLOB midpoint/spread",
+        "leader_source": "Polymarket public Data API leaderboard/positions/trades",
         "real_orders_enabled": False,
         "paper_only": True,
-        "strategy": "liquid-market dual-horizon momentum v2",
+        "strategy": STRATEGY_NAME,
+        "strategy_version": STRATEGY_VERSION,
+        "risk_policy": risk_policy_snapshot(),
+        "research_snapshot": None,
         "open_positions": [],
         "closed_positions": [],
-        "audit": [{"ts": now, "event": "SESSION_RESET", "starting_equity": round(STARTING_EQUITY, 2), "target_equity": round(TARGET_EQUITY, 2), "bankrupt_equity": round(BANKRUPT_EQUITY, 2), "paper_only": True}],
+        "audit": [
+            {
+                "ts": now,
+                "event": "SESSION_RESET",
+                "starting_equity": round(STARTING_EQUITY, 2),
+                "target_equity": round(TARGET_EQUITY, 2),
+                "bankrupt_equity": round(BANKRUPT_EQUITY, 2),
+                "strategy": STRATEGY_NAME,
+                "paper_only": True,
+            }
+        ],
     }
 
 
@@ -346,112 +124,198 @@ def load_state(path: Path) -> dict[str, Any]:
 
 def save_state(path: Path, state: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    tmp = path.with_suffix(path.suffix + ".tmp")
-    tmp.write_text(json.dumps(state, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    tmp.replace(path)
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    temporary.write_text(json.dumps(state, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    temporary.replace(path)
 
 
 def position_liquidation(position: dict[str, Any], mid: float, spread: float) -> tuple[float, float, float]:
     shares = _as_float(position.get("shares"))
     fee_rate = _as_float(position.get("fee_rate"), DEFAULT_FEE_RATE)
-    exit_price = max(0.001, min(0.999, mid - max(0.0, spread) / 2.0))
-    gross = shares * exit_price
+    exit_price = max(0.001, min(0.999, mid - max(0.0, spread) / 2))
     fee = taker_fee(shares, exit_price, fee_rate)
-    return max(0.0, gross - fee), exit_price, fee
+    return max(0.0, shares * exit_price - fee), exit_price, fee
 
 
 def get_quote(token_id: str) -> tuple[float, float] | None:
-    mids = batch_midpoints([token_id])
-    spreads = batch_spreads([token_id])
-    mid = mids.get(token_id, -1.0)
-    spread = spreads.get(token_id, 1.0)
-    if not (0 < mid < 1 and 0 <= spread < 1):
-        return None
-    return mid, spread
+    mid = lc.batch_midpoints([token_id]).get(token_id, -1)
+    spread = lc.batch_spreads([token_id]).get(token_id, 1)
+    return (mid, spread) if 0 < mid < 1 and 0 <= spread < 1 else None
 
 
-def close_position(state: dict[str, Any], position: dict[str, Any], *, mid: float, spread: float, reason: str, now: str) -> None:
+def close_position(
+    state: dict[str, Any], position: dict[str, Any], *, mid: float, spread: float, reason: str, now: str,
+) -> None:
     net, exit_price, exit_fee = position_liquidation(position, mid, spread)
-    cash_outlay = _as_float(position.get("cash_outlay"))
-    pnl = net - cash_outlay
+    basis = _as_float(position.get("cash_outlay"))
+    pnl = net - basis
     state["cash"] = round(_as_float(state.get("cash")) + net, 6)
     state["fees_paid"] = round(_as_float(state.get("fees_paid")) + exit_fee, 6)
     state["realized_pnl"] = round(_as_float(state.get("realized_pnl")) + pnl, 6)
     closed = dict(position)
-    closed.update({"closed_at": now, "exit_price": round(exit_price, 6), "exit_fee": round(exit_fee, 6), "net_proceeds": round(net, 6), "pnl": round(pnl, 6), "return_pct": round((pnl / cash_outlay * 100.0) if cash_outlay > 0 else 0.0, 4), "close_reason": reason})
+    closed.update(
+        {
+            "closed_at": now, "exit_price": round(exit_price, 6), "exit_fee": round(exit_fee, 6),
+            "net_proceeds": round(net, 6), "pnl": round(pnl, 6),
+            "return_pct": round(pnl / basis * 100 if basis > 0 else 0, 4), "close_reason": reason,
+        }
+    )
     state.setdefault("closed_positions", []).append(closed)
-    state.setdefault("audit", []).append({"ts": now, "event": "PAPER_CLOSE", "market_id": position.get("market_id"), "outcome": position.get("outcome"), "exit_price": round(exit_price, 6), "pnl": round(pnl, 6), "reason": reason})
+    state.setdefault("audit", []).append(
+        {
+            "ts": now, "event": "PAPER_CLOSE", "market_id": position.get("market_id"),
+            "outcome": position.get("outcome"), "exit_price": round(exit_price, 6),
+            "pnl": round(pnl, 6), "reason": reason,
+        }
+    )
 
 
-def mark_and_exit_positions(state: dict[str, Any], mids: dict[str, float], spreads: dict[str, float], now: str) -> None:
+def mark_and_exit_positions(
+    state: dict[str, Any], mids: dict[str, float], spreads: dict[str, float], now: str,
+    signals: dict[str, lc.EliteSignal] | None = None, *, research_ready: bool = False,
+) -> None:
+    signals = signals or {}
     remaining: list[dict[str, Any]] = []
     for position in state.get("open_positions", []):
-        token_id = str(position.get("token_id"))
-        mid = mids.get(token_id)
-        spread = spreads.get(token_id)
-        if mid is None or spread is None or not (0 < mid < 1):
-            quote = get_quote(token_id)
+        token = str(position.get("token_id"))
+        mid, spread = mids.get(token), spreads.get(token)
+        if mid is None or spread is None or not 0 < mid < 1:
+            quote = get_quote(token)
             if quote is None:
                 remaining.append(position)
                 continue
             mid, spread = quote
-        cash_outlay = _as_float(position.get("cash_outlay"))
-        net, _, _ = position_liquidation(position, mid, spread)
-        ret = (net - cash_outlay) / cash_outlay if cash_outlay > 0 else 0.0
-        held_hours = (parse_ts(now) - parse_ts(str(position["opened_at"]))) / 3600.0
-        reason = "take_profit" if ret >= TAKE_PROFIT_RETURN else "stop_loss" if ret <= STOP_LOSS_RETURN else "max_hold" if held_hours >= MAX_HOLD_HOURS else None
+        basis = _as_float(position.get("cash_outlay"))
+        net = position_liquidation(position, mid, spread)[0]
+        return_fraction = (net - basis) / basis if basis > 0 else 0
+        held_hours = (parse_ts(now) - parse_ts(str(position["opened_at"]))) / 3600
+        legacy = lc.as_int(position.get("strategy_version"), 2) != STRATEGY_VERSION
+        misses = lc.as_int(position.get("signal_misses"), 0)
+        signal = signals.get(token)
+        if research_ready and not legacy:
+            if signal and signal.consensus >= MIN_HOLD_CONSENSUS:
+                misses = 0
+                position.update(
+                    {
+                        "leader_supporters": list(signal.supporters),
+                        "leader_consensus": round(signal.consensus, 6),
+                        "leader_exposure": round(signal.leader_exposure, 2),
+                    }
+                )
+            else:
+                misses += 1
+            position["signal_misses"] = misses
+        reason = None
+        if legacy:
+            reason = "strategy_migration"
+        elif return_fraction <= HARD_STOP_RETURN:
+            reason = "hard_stop"
+        elif return_fraction >= TAKE_PROFIT_RETURN:
+            reason = "take_profit"
+        elif held_hours >= MAX_HOLD_HOURS:
+            reason = "max_hold"
+        elif research_ready and misses >= SIGNAL_MISS_TICKS and held_hours >= 0.5:
+            reason = "leader_consensus_lost"
         if reason:
             close_position(state, position, mid=mid, spread=spread, reason=reason, now=now)
         else:
-            position["mark_price"] = round(mid, 6)
-            position["mark_spread"] = round(spread, 6)
-            position["mark_net_liquidation"] = round(net, 6)
+            position.update(
+                {"mark_price": round(mid, 6), "mark_spread": round(spread, 6), "mark_net_liquidation": round(net, 6)}
+            )
             remaining.append(position)
     state["open_positions"] = remaining
 
 
-def open_candidate(state: dict[str, Any], c: Candidate, mids: dict[str, float], spreads: dict[str, float], now: str) -> bool:
-    token_id = c.token_id
-    mid = mids.get(token_id, c.token_mid)
-    spread = spreads.get(token_id, c.yes_spread)
-    if not (0 < mid < 1) or not (0 <= spread <= MAX_SPREAD):
+def current_exposure(state: dict[str, Any]) -> float:
+    return sum(_as_float(position.get("cash_outlay")) for position in state.get("open_positions", []))
+
+
+def daily_realized_pnl(state: dict[str, Any], now: str) -> float:
+    return sum(
+        _as_float(position.get("pnl"))
+        for position in state.get("closed_positions", [])
+        if str(position.get("closed_at") or "")[:10] == now[:10]
+    )
+
+
+def open_candidate(
+    state: dict[str, Any], candidate: lc.Candidate, mids: dict[str, float], spreads: dict[str, float], now: str,
+) -> bool:
+    token = candidate.token_id
+    mid, spread = mids.get(token, candidate.token_mid), spreads.get(token, candidate.token_spread)
+    if not 0 < mid < 1 or not 0 <= spread <= lc.MAX_SPREAD:
         return False
-    entry_price = min(0.999, mid + spread / 2.0)
-    current_equity = _as_float(state.get("equity"), _as_float(state.get("cash")))
-    available = _as_float(state.get("cash"))
-    cash_outlay = min(max(0.0, current_equity * MAX_POSITION_PCT), available)
-    if cash_outlay < 5.0:
+    entry_price = min(0.999, mid + spread / 2)
+    if entry_price > candidate.signal.leader_avg_entry + lc.MAX_ENTRY_CHASE:
         return False
-    fee_rate = market_fee_rate(c.category)
-    gross_trade = cash_outlay / (1.0 + fee_rate * (1.0 - entry_price)) if fee_rate > 0 else cash_outlay
-    shares = gross_trade / entry_price
+    equity, available = _as_float(state.get("equity")), _as_float(state.get("cash"))
+    portfolio_room = max(0.0, equity * MAX_TOTAL_EXPOSURE_PCT - current_exposure(state))
+    signal = candidate.signal
+    confidence_pct = (
+        0.010 + 0.003 * max(0, signal.supporter_count - lc.MIN_SIGNAL_SUPPORTERS)
+        + 0.010 * max(0.0, signal.consensus - lc.MIN_SIGNAL_CONSENSUS)
+    )
+    cash_budget = min(equity * min(MAX_POSITION_PCT, max(0.010, confidence_pct)), available, portfolio_room)
+    if cash_budget < 5:
+        return False
+    fee_rate = candidate.fee_rate
+    gross = cash_budget / (1 + fee_rate * (1 - entry_price)) if fee_rate > 0 else cash_budget
+    shares = gross / entry_price
     entry_fee = taker_fee(shares, entry_price, fee_rate)
-    actual_outlay = gross_trade + entry_fee
-    if actual_outlay > available + 1e-9:
+    outlay = gross + entry_fee
+    if outlay > available + 1e-9:
         return False
-    state["cash"] = round(available - actual_outlay, 6)
+    market = signal.market
+    state["cash"] = round(available - outlay, 6)
     state["fees_paid"] = round(_as_float(state.get("fees_paid")) + entry_fee, 6)
-    position = {"position_id": f"{c.market_id}-{c.outcome}-{int(time.time())}", "market_id": c.market_id, "question": c.question, "category": c.category, "outcome": c.outcome, "token_id": token_id, "opened_at": now, "entry_mid": round(mid, 6), "entry_spread": round(spread, 6), "entry_price": round(entry_price, 6), "shares": round(shares, 8), "gross_trade": round(gross_trade, 6), "entry_fee": round(entry_fee, 6), "cash_outlay": round(actual_outlay, 6), "fee_rate": fee_rate, "momentum_24h": round(c.momentum_24h, 6), "momentum_6h": round(c.momentum_6h, 6), "liquidity": round(c.liquidity, 2), "volume_24h": round(c.volume_24h, 2), "end_date": c.end_date, "paper": True}
+    position = {
+        "position_id": f"{market.condition_id}-{signal.outcome}-{int(time.time())}",
+        "strategy": STRATEGY_NAME, "strategy_version": STRATEGY_VERSION,
+        "market_id": market.condition_id, "gamma_market_id": market.market_id, "event_key": market.event_key,
+        "question": market.question, "slug": market.slug, "category": market.category,
+        "outcome": signal.outcome, "token_id": token, "opened_at": now,
+        "entry_mid": round(mid, 6), "entry_spread": round(spread, 6), "entry_price": round(entry_price, 6),
+        "shares": round(shares, 8), "gross_trade": round(gross, 6), "entry_fee": round(entry_fee, 6),
+        "cash_outlay": round(outlay, 6), "fee_rate": fee_rate,
+        "leader_supporters": list(signal.supporters),
+        "leader_supporter_wallets": [f"{wallet[:8]}…{wallet[-4:]}" for wallet in signal.supporter_wallets],
+        "leader_supporter_count": signal.supporter_count, "leader_opposition_count": signal.opposition_count,
+        "leader_consensus": round(signal.consensus, 6), "leader_exposure": round(signal.leader_exposure, 2),
+        "leader_avg_entry": round(signal.leader_avg_entry, 6), "recent_buyers": signal.recent_buyers,
+        "latest_leader_trade_ts": signal.latest_trade_ts, "liquidity": round(market.liquidity, 2),
+        "volume_24h": round(market.volume_24h, 2), "close_at": market.close_at,
+        "signal_misses": 0, "paper": True,
+    }
     state.setdefault("open_positions", []).append(position)
-    state.setdefault("audit", []).append({"ts": now, "event": "PAPER_OPEN", "market_id": c.market_id, "question": c.question, "outcome": c.outcome, "entry_price": round(entry_price, 6), "cash_outlay": round(actual_outlay, 6), "momentum_24h": round(c.momentum_24h, 6), "momentum_6h": round(c.momentum_6h, 6)})
+    state.setdefault("audit", []).append(
+        {
+            "ts": now, "event": "PAPER_OPEN", "market_id": market.condition_id, "question": market.question,
+            "outcome": signal.outcome, "entry_price": round(entry_price, 6), "cash_outlay": round(outlay, 6),
+            "supporters": list(signal.supporters), "consensus": round(signal.consensus, 6),
+            "leader_avg_entry": round(signal.leader_avg_entry, 6),
+        }
+    )
     return True
 
 
 def recalc_equity(state: dict[str, Any], mids: dict[str, float], spreads: dict[str, float]) -> float:
-    cash = _as_float(state.get("cash"))
     liquidation = 0.0
     basis = 0.0
-    for p in state.get("open_positions", []):
-        token_id = str(p.get("token_id"))
-        mid = mids.get(token_id, _as_float(p.get("mark_price"), -1.0))
-        spread = spreads.get(token_id, _as_float(p.get("mark_spread"), 0.0))
-        net = position_liquidation(p, mid, spread)[0] if 0 < mid < 1 else 0.0
-        p["mark_price"] = round(mid, 6) if 0 < mid < 1 else None
-        p["mark_spread"] = round(spread, 6) if spread >= 0 else None
-        p["mark_net_liquidation"] = round(net, 6)
+    for position in state.get("open_positions", []):
+        token = str(position.get("token_id"))
+        mid = mids.get(token, _as_float(position.get("mark_price"), -1))
+        spread = spreads.get(token, _as_float(position.get("mark_spread"), 0))
+        net = position_liquidation(position, mid, spread)[0] if 0 < mid < 1 else 0
+        position.update(
+            {
+                "mark_price": round(mid, 6) if 0 < mid < 1 else None,
+                "mark_spread": round(spread, 6) if spread >= 0 else None,
+                "mark_net_liquidation": round(net, 6),
+            }
+        )
         liquidation += net
-        basis += _as_float(p.get("cash_outlay"))
-    equity = max(0.0, cash + liquidation)
+        basis += _as_float(position.get("cash_outlay"))
+    equity = max(0.0, _as_float(state.get("cash")) + liquidation)
     state["equity"] = round(equity, 6)
     state["unrealized_pnl"] = round(liquidation - basis, 6)
     return equity
@@ -460,67 +324,108 @@ def recalc_equity(state: dict[str, Any], mids: dict[str, float], spreads: dict[s
 def stop_session(state: dict[str, Any], reason: str, now: str, mids: dict[str, float], spreads: dict[str, float]) -> None:
     remaining = list(state.get("open_positions", []))
     state["open_positions"] = []
-    for p in remaining:
-        tid = str(p.get("token_id"))
-        mid = mids.get(tid, _as_float(p.get("mark_price"), 0.0))
-        spread = spreads.get(tid, _as_float(p.get("mark_spread"), 0.0))
+    for position in remaining:
+        token = str(position.get("token_id"))
+        mid = mids.get(token, _as_float(position.get("mark_price"), 0))
+        spread = spreads.get(token, _as_float(position.get("mark_spread"), 0))
         if not 0 < mid < 1:
-            state["open_positions"].append(p)
-            continue
-        close_position(state, p, mid=mid, spread=spread, reason=reason, now=now)
+            state["open_positions"].append(position)
+        else:
+            close_position(state, position, mid=mid, spread=spread, reason=reason, now=now)
     if state.get("open_positions"):
         return
-    final_equity = max(0.0, _as_float(state.get("cash")))
-    state["equity"] = round(final_equity, 6)
+    state["equity"] = round(max(0.0, _as_float(state.get("cash"))), 6)
     state["unrealized_pnl"] = 0.0
     state["status"] = "stopped_target" if reason == "target_reached" else "stopped_broke"
-    state["stopped_at"] = now
-    state["stop_reason"] = reason
-    state.setdefault("audit", []).append({"ts": now, "event": "SESSION_STOP", "reason": reason, "final_equity": round(final_equity, 6), "net_pnl": round(final_equity - _as_float(state.get("starting_equity")), 6)})
+    state["stopped_at"], state["stop_reason"] = now, reason
+    state.setdefault("audit", []).append(
+        {
+            "ts": now, "event": "SESSION_STOP", "reason": reason, "final_equity": state["equity"],
+            "net_pnl": round(state["equity"] - _as_float(state.get("starting_equity")), 6),
+        }
+    )
 
 
 def tick(state: dict[str, Any]) -> dict[str, Any]:
     now = utc_now()
+    now_epoch = int(parse_ts(now))
     if state.get("status") not in ("running", None):
-        state["last_tick_at"] = now
-        state["last_error"] = None
+        state["last_tick_at"], state["last_error"] = now, None
         return state
     if state.get("real_orders_enabled") is not False or state.get("paper_only") is not True:
         raise RuntimeError("Paper-only invariant failed")
-    markets = fetch_markets()
-    candidates, mids, spreads = build_candidates(markets)
-    open_tokens = [str(p.get("token_id")) for p in state.get("open_positions", [])]
-    missing = [tid for tid in open_tokens if tid and tid not in mids]
-    if missing:
-        mids.update(batch_midpoints(missing))
-        spreads.update(batch_spreads(missing))
-    mark_and_exit_positions(state, mids, spreads, now)
+
+    market_map = lc.eligible_markets(lc.fetch_markets(), now_epoch=now_epoch)
+    leaders: list[lc.Leader] = []
+    signals: dict[str, lc.EliteSignal] = {}
+    metadata: list[dict[str, Any]] = []
+    evidence_errors: list[str] = []
+    research_error = None
+    try:
+        leaders = lc.select_persistent_leaders(lc.fetch_leaderboards())
+        evidence, evidence_errors = lc.fetch_leader_evidence(leaders)
+        signals, metadata = lc.aggregate_leader_signals(leaders, evidence, market_map, now_epoch=now_epoch)
+    except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, json.JSONDecodeError) as exc:
+        research_error = f"{type(exc).__name__}: {exc}"
+    usable_evidence = sum(bool(row.get("usable")) for row in metadata)
+    research_ready = usable_evidence >= lc.MIN_SIGNAL_SUPPORTERS and research_error is None
+
+    tokens = {str(position.get("token_id")) for position in state.get("open_positions", []) if position.get("token_id")}
+    for signal in signals.values():
+        tokens.update(signal.market.tokens)
+    mids, spreads = lc.batch_midpoints(sorted(tokens)), lc.batch_spreads(sorted(tokens))
+    mark_and_exit_positions(state, mids, spreads, now, signals, research_ready=research_ready)
     equity = recalc_equity(state, mids, spreads)
+    candidates = lc.build_entry_candidates(signals, mids, spreads, now_epoch=now_epoch) if research_ready else []
+
+    state.update(
+        {
+            "schema_version": STRATEGY_VERSION, "strategy": STRATEGY_NAME,
+            "strategy_version": STRATEGY_VERSION, "risk_policy": risk_policy_snapshot(),
+        }
+    )
     if equity >= _as_float(state.get("target_equity"), TARGET_EQUITY):
         stop_session(state, "target_reached", now, mids, spreads)
     elif equity <= _as_float(state.get("bankrupt_equity"), BANKRUPT_EQUITY) + 1e-9:
         stop_session(state, "bankrupt", now, mids, spreads)
     else:
-        existing_markets = {str(p.get("market_id")) for p in state.get("open_positions", [])}
+        today_pnl = daily_realized_pnl(state, now)
+        daily_guard = today_pnl <= -MAX_DAILY_REALIZED_LOSS
+        existing_markets = {str(position.get("market_id")) for position in state.get("open_positions", [])}
+        existing_events = {str(position.get("event_key")) for position in state.get("open_positions", []) if position.get("event_key")}
         capacity = max(0, MAX_OPEN_POSITIONS - len(state.get("open_positions", [])))
         opened = 0
-        for c in candidates:
-            if capacity <= 0 or opened >= MAX_NEW_POSITIONS_PER_TICK:
-                break
-            if c.market_id in existing_markets:
-                continue
-            if open_candidate(state, c, mids, spreads, now):
-                existing_markets.add(c.market_id)
-                capacity -= 1
-                opened += 1
+        if not daily_guard:
+            for candidate in candidates:
+                if capacity <= 0 or opened >= MAX_NEW_POSITIONS_PER_TICK:
+                    break
+                if candidate.market_id in existing_markets or candidate.event_key in existing_events:
+                    continue
+                if open_candidate(state, candidate, mids, spreads, now):
+                    existing_markets.add(candidate.market_id)
+                    existing_events.add(candidate.event_key)
+                    capacity -= 1
+                    opened += 1
         recalc_equity(state, mids, spreads)
+        state["daily_risk"] = {
+            "date": now[:10], "realized_pnl": round(today_pnl, 6),
+            "new_entries_blocked": daily_guard, "limit": MAX_DAILY_REALIZED_LOSS,
+        }
+
+    state["research_snapshot"] = {
+        "generated_at": now, "ready": research_ready, "error": research_error,
+        "evidence_errors": evidence_errors, "leaderboard_periods": list(lc.LEADERBOARD_PERIODS),
+        "leaders_selected": len(leaders), "leaders_with_evidence": len(metadata),
+        "leaders_with_usable_evidence": usable_evidence,
+        "eligible_markets": len(market_map), "active_consensus_signals": len(signals),
+        "entry_candidates": len(candidates), "leaders": metadata,
+        "method": "multi-window persistence + current holding consensus + recent net-buy confirmation + anti-chase",
+        "survivorship_warning": "Leaderboard rank is not proof of future edge; all execution remains paper-only.",
+    }
     state["ticks"] = int(state.get("ticks", 0)) + 1
-    state["last_tick_at"] = now
-    state["last_error"] = None
-    if len(state.get("closed_positions", [])) > 500:
-        state["closed_positions"] = state["closed_positions"][-500:]
-    if len(state.get("audit", [])) > 2000:
-        state["audit"] = state["audit"][-2000:]
+    state["last_tick_at"], state["last_error"] = now, None
+    state["closed_positions"] = state.get("closed_positions", [])[-500:]
+    state["audit"] = state.get("audit", [])[-2000:]
     return state
 
 
@@ -532,9 +437,13 @@ def validate_state(state: dict[str, Any]) -> None:
     assert _as_float(state.get("bankrupt_equity")) == BANKRUPT_EQUITY
     assert _as_float(state.get("cash")) >= -1e-6
     assert _as_float(state.get("equity")) >= -1e-6
+    if lc.as_int(state.get("strategy_version")) == STRATEGY_VERSION:
+        assert state.get("strategy") == STRATEGY_NAME
+        assert len(state.get("open_positions", [])) <= MAX_OPEN_POSITIONS
+        assert all(position.get("paper") is True for position in state.get("open_positions", []))
     if state.get("status") == "stopped_target":
         assert not state.get("open_positions")
-        assert _as_float(state.get("equity")) >= TARGET_EQUITY - 2.0
+        assert _as_float(state.get("equity")) >= TARGET_EQUITY - 2
     if state.get("status") == "stopped_broke":
         assert not state.get("open_positions")
 
@@ -551,10 +460,25 @@ def main(argv: list[str] | None = None) -> int:
     except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, json.JSONDecodeError, RuntimeError) as exc:
         state["last_tick_at"] = utc_now()
         state["last_error"] = f"{type(exc).__name__}: {exc}"
-        state.setdefault("audit", []).append({"ts": state["last_tick_at"], "event": "TICK_ERROR", "error": state["last_error"]})
+        state.setdefault("audit", []).append(
+            {"ts": state["last_tick_at"], "event": "TICK_ERROR", "error": state["last_error"]}
+        )
     validate_state(state)
     save_state(path, state)
-    print(json.dumps({"status": state.get("status"), "equity": state.get("equity"), "cash": state.get("cash"), "open_positions": len(state.get("open_positions", [])), "closed_positions": len(state.get("closed_positions", [])), "ticks": state.get("ticks"), "last_error": state.get("last_error"), "paper_only": state.get("paper_only")}, ensure_ascii=False))
+    snapshot = state.get("research_snapshot") or {}
+    print(
+        json.dumps(
+            {
+                "status": state.get("status"), "strategy": state.get("strategy"),
+                "equity": state.get("equity"), "cash": state.get("cash"),
+                "open_positions": len(state.get("open_positions", [])),
+                "closed_positions": len(state.get("closed_positions", [])), "ticks": state.get("ticks"),
+                "research_ready": snapshot.get("ready"), "entry_candidates": snapshot.get("entry_candidates"),
+                "last_error": state.get("last_error"), "paper_only": state.get("paper_only"),
+            },
+            ensure_ascii=False,
+        )
+    )
     return 0
 
 

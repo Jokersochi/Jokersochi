@@ -3,6 +3,8 @@ import path from "node:path";
 import crypto from "node:crypto";
 import { pathToFileURL } from "node:url";
 import { generateTickets } from "../public/loto-analytics-4x20/lib/strategy-v2.mjs";
+import { estimatePortfolioFinancials } from "../public/loto-analytics-4x20/lib/payout.mjs";
+import { loadLiveArchive, loadOfficialPayouts } from "../public/loto-analytics-4x20/lib/live-data.mjs";
 
 export const FORWARD_STRATEGIES = ["adaptive20", "balanced20", "ensemble", "portfolio5", "random"];
 const DEFAULT_ARCHIVE = path.resolve("public/loto-analytics-4x20/data/draws.json");
@@ -75,7 +77,52 @@ function settleEntry(entry, draw, checkedAt) {
     strategies,
     financials: {
       available: false,
-      reason: "В архиве комбинаций нет полной официальной таблицы выплат по каждому билету; финансовый ROI не подставляется по предположениям.",
+      complete: false,
+      reason: "Результат зафиксирован; ожидается подтверждённый официальный payout-контекст для денежной оценки.",
+    },
+  };
+}
+
+function applyFinancials(entry, financial) {
+  if (entry.status !== "checked" || !financial || !Number.isFinite(Number(financial.ticketPriceRub))) return entry;
+  const strategies = entry.strategies.map((portfolio) => {
+    const estimate = estimatePortfolioFinancials({
+      drawNumber: Number(entry.targetDraw),
+      ticketPriceRub: Number(financial.ticketPriceRub),
+      ticketMatches: portfolio.result?.tickets ?? [],
+      payoutRows: financial.payoutRows ?? [],
+    });
+    return {
+      ...portfolio,
+      financials: {
+        available: estimate.dataAvailable,
+        complete: estimate.complete,
+        stakeRub: estimate.stakeRub,
+        payoutRub: estimate.payoutRub,
+        roi: estimate.roi,
+        roiLowerBound: estimate.roiLowerBound,
+        coverage: estimate.coverage,
+        unresolvedTickets: estimate.unresolvedTickets,
+        method: estimate.method,
+      },
+      result: portfolio.result ? { ...portfolio.result, tickets: estimate.tickets } : portfolio.result,
+    };
+  });
+
+  const available = strategies.every((portfolio) => portfolio.financials?.available === true);
+  const complete = available && strategies.every((portfolio) => portfolio.financials?.complete === true);
+  return {
+    ...entry,
+    strategies,
+    financials: {
+      available,
+      complete,
+      ticketPriceRub: Number(financial.ticketPriceRub),
+      byStrategy: strategies.map((portfolio) => ({ strategyKey: portfolio.strategyKey, ...portfolio.financials })),
+      reason: complete
+        ? "Контрфактическая денежная оценка рассчитана по официальным пулам и выплатам тиража."
+        : "Часть категорий не имеет наблюдаемого призового пула; денежный результат показан как нижняя граница.",
+      methodology: "Для процентных категорий наблюдаемый пул делится на опубликованных плюс виртуальных победителей. Для фиксированной категории 2×1/1×2 используется опубликованная фиксированная сумма. Покупка билета слегка изменила бы призовой фонд, поэтому это оценка, а не точная историческая выплата.",
     },
   };
 }
@@ -88,7 +135,7 @@ function validateSnapshot(snapshot) {
   if (Number(last) !== Number(snapshot.last)) throw new Error("Forward Ledger: last не согласован с draws[]");
 }
 
-export function advanceForwardLedger(snapshot, priorState = null, now = new Date().toISOString()) {
+export function advanceForwardLedger(snapshot, priorState = null, now = new Date().toISOString(), financialContext = new Map()) {
   validateSnapshot(snapshot);
   const draws = snapshot.draws;
   const byNumber = new Map(draws.map((draw) => [Number(draw.number), draw]));
@@ -102,9 +149,14 @@ export function advanceForwardLedger(snapshot, priorState = null, now = new Date
   if (state.startedAtDraw == null || !Number.isInteger(Number(state.startedAtDraw)) || Number(state.startedAtDraw) < 1) state.startedAtDraw = last;
 
   state.entries = state.entries.map((entry) => {
-    if (entry.status !== "pending") return entry;
-    const draw = byNumber.get(Number(entry.targetDraw));
-    return draw ? settleEntry(entry, draw, now) : entry;
+    let next = entry;
+    if (next.status === "pending") {
+      const draw = byNumber.get(Number(next.targetDraw));
+      if (draw) next = settleEntry(next, draw, now);
+    }
+    const financial = financialContext instanceof Map ? financialContext.get(Number(next.targetDraw)) : null;
+    if (next.status === "checked" && financial) next = applyFinancials(next, financial);
+    return next;
   });
 
   const represented = new Set(state.entries.map((entry) => Number(entry.targetDraw)));
@@ -127,7 +179,7 @@ export function advanceForwardLedger(snapshot, priorState = null, now = new Date
       status: "pending",
       checkedAt: null,
       result: null,
-      financials: { available: false, reason: "Ожидается официальный результат тиража." },
+      financials: { available: false, complete: false, reason: "Ожидается официальный результат и payout-контекст тиража." },
     });
   }
 
@@ -136,6 +188,7 @@ export function advanceForwardLedger(snapshot, priorState = null, now = new Date
   state.verifiedArchiveLast = last;
   state.pending = state.entries.filter((entry) => entry.status === "pending").length;
   state.checked = state.entries.filter((entry) => entry.status === "checked").length;
+  state.financiallyEvaluated = state.entries.filter((entry) => entry.financials?.available === true).length;
   return state;
 }
 
@@ -150,13 +203,40 @@ async function readJson(file, fallback = null) {
   try { return JSON.parse(await fs.readFile(file, "utf8")); } catch { return fallback; }
 }
 
+async function loadFinancialContext(snapshot, prior) {
+  const eligible = (prior?.entries ?? [])
+    .filter((entry) => Number(entry.targetDraw) <= Number(snapshot.last) && entry.financials?.complete !== true)
+    .map((entry) => Number(entry.targetDraw));
+  if (!eligible.length) return new Map();
+
+  const first = Math.min(...eligible);
+  const last = Math.max(...eligible);
+  const live = await loadLiveArchive();
+  if (Number(live.last) < last) throw new Error(`Live backend отстаёт: №${live.last}, нужен №${last}`);
+  const liveByNumber = new Map(live.draws.map((draw) => [Number(draw.number), draw]));
+  const payouts = await loadOfficialPayouts(first, last);
+  const context = new Map();
+  for (const drawNumber of eligible) {
+    const draw = liveByNumber.get(drawNumber);
+    if (!draw || !Number.isFinite(Number(draw.ticketPriceRub))) continue;
+    context.set(drawNumber, { ticketPriceRub: Number(draw.ticketPriceRub), payoutRows: payouts });
+  }
+  return context;
+}
+
 export async function advanceFiles({ archivePath = DEFAULT_ARCHIVE, ledgerPath = DEFAULT_LEDGER, now = new Date().toISOString() } = {}) {
   const snapshot = await readJson(archivePath);
   const prior = await readJson(ledgerPath);
-  const next = advanceForwardLedger(snapshot, prior, now);
+  let financialContext = new Map();
+  try {
+    financialContext = await loadFinancialContext(snapshot, prior);
+  } catch (error) {
+    console.warn(`Forward Ledger financial context unavailable: ${error instanceof Error ? error.message : String(error)}`);
+  }
+  const next = advanceForwardLedger(snapshot, prior, now, financialContext);
   await writeAtomic(ledgerPath, `${JSON.stringify(next, null, 2)}\n`);
   const latest = next.entries.at(-1);
-  console.log(`Forward Ledger: archive #${next.verifiedArchiveLast}, checked=${next.checked}, pending=${next.pending}, missed=${next.missedDraws.length}, next=#${latest?.targetDraw ?? "n/a"}`);
+  console.log(`Forward Ledger: archive #${next.verifiedArchiveLast}, checked=${next.checked}, pending=${next.pending}, financial=${next.financiallyEvaluated}, missed=${next.missedDraws.length}, next=#${latest?.targetDraw ?? "n/a"}`);
   return next;
 }
 

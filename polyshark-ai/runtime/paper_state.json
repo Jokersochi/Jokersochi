@@ -8,13 +8,13 @@
   "starting_equity": 1000.0,
   "target_equity": 2000.0,
   "bankrupt_equity": 0.0,
-  "cash": 240.914519,
-  "equity": 462.686691,
-  "realized_pnl": -540.185641,
-  "unrealized_pnl": 2.872332,
-  "fees_paid": 259.5563,
-  "ticks": 245,
-  "last_tick_at": "2026-09-15T12:03:21+00:00",
+  "cash": 237.732613,
+  "equity": 457.712296,
+  "realized_pnl": -543.614306,
+  "unrealized_pnl": 1.326602,
+  "fees_paid": 261.0533,
+  "ticks": 246,
+  "last_tick_at": "2026-09-15T13:36:21+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -69,9 +69,9 @@
       "volume_24h": 161323.03,
       "end_date": "2026-09-30",
       "paper": true,
-      "mark_price": 0.775,
+      "mark_price": 0.765,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 25.073393
+      "mark_net_liquidation": 24.735246
     },
     {
       "position_id": "2176270-NO-1789332155",
@@ -147,9 +147,9 @@
       "volume_24h": 2857440.27,
       "end_date": "2026-09-16",
       "paper": true,
-      "mark_price": 0.895,
+      "mark_price": 0.875,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 24.881556
+      "mark_net_liquidation": 24.297967
     },
     {
       "position_id": "2252245-YES-1789394821",
@@ -173,9 +173,9 @@
       "volume_24h": 1989471.44,
       "end_date": "2026-09-16",
       "paper": true,
-      "mark_price": 0.875,
+      "mark_price": 0.865,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 24.578518
+      "mark_net_liquidation": 24.283787
     },
     {
       "position_id": "1163699-NO-1789427400",
@@ -199,35 +199,35 @@
       "volume_24h": 1369320.71,
       "end_date": "2027-01-01",
       "paper": true,
-      "mark_price": 0.815,
+      "mark_price": 0.805,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 22.575621
+      "mark_net_liquidation": 22.285657
     },
     {
-      "position_id": "665513-YES-1789473802",
-      "market_id": "665513",
-      "question": "Friedrich Merz out as Chancellor of Germany before 2027?",
+      "position_id": "2467207-NO-1789479383",
+      "market_id": "2467207",
+      "question": "Will Bitcoin reach $85,000 by December 31, 2026?",
       "category": "Other",
-      "outcome": "YES",
-      "token_id": "27554074579538085152312757613342843137057353684724415806149658005255326639761",
-      "opened_at": "2026-09-15T12:03:21+00:00",
-      "entry_mid": 0.245,
-      "entry_spread": 0.01,
-      "entry_price": 0.25,
-      "shares": 89.68525745,
-      "gross_trade": 22.421314,
-      "entry_fee": 0.8408,
-      "cash_outlay": 23.262114,
+      "outcome": "NO",
+      "token_id": "36452998529349325427775896197542954466076820131251505400349046929712654983843",
+      "opened_at": "2026-09-15T13:36:21+00:00",
+      "entry_mid": 0.36,
+      "entry_spread": 0.02,
+      "entry_price": 0.37,
+      "shares": 60.30409375,
+      "gross_trade": 22.312515,
+      "entry_fee": 0.70284,
+      "cash_outlay": 23.015355,
       "fee_rate": 0.05,
-      "momentum_24h": 0.07,
-      "momentum_6h": 0.01,
-      "liquidity": 92193.49,
-      "volume_24h": 124836.39,
+      "momentum_24h": -0.025,
+      "momentum_6h": -0.015,
+      "liquidity": 79847.62,
+      "volume_24h": 96297.8,
       "end_date": "2027-01-01",
       "paper": true,
-      "mark_price": 0.245,
-      "mark_spread": 0.01,
-      "mark_net_liquidation": 20.706532
+      "mark_price": 0.36,
+      "mark_spread": 0.02,
+      "mark_net_liquidation": 20.420473
     }
   ],
   "closed_positions": [
@@ -4652,6 +4652,39 @@
       "pnl": -4.103871,
       "return_pct": -17.5001,
       "close_reason": "stop_loss"
+    },
+    {
+      "position_id": "665513-YES-1789473802",
+      "market_id": "665513",
+      "question": "Friedrich Merz out as Chancellor of Germany before 2027?",
+      "category": "Other",
+      "outcome": "YES",
+      "token_id": "27554074579538085152312757613342843137057353684724415806149658005255326639761",
+      "opened_at": "2026-09-15T12:03:21+00:00",
+      "entry_mid": 0.245,
+      "entry_spread": 0.01,
+      "entry_price": 0.25,
+      "shares": 89.68525745,
+      "gross_trade": 22.421314,
+      "entry_fee": 0.8408,
+      "cash_outlay": 23.262114,
+      "fee_rate": 0.05,
+      "momentum_24h": 0.07,
+      "momentum_6h": 0.01,
+      "liquidity": 92193.49,
+      "volume_24h": 124836.39,
+      "end_date": "2027-01-01",
+      "paper": true,
+      "mark_price": 0.245,
+      "mark_spread": 0.01,
+      "mark_net_liquidation": 20.706532,
+      "closed_at": "2026-09-15T13:36:21+00:00",
+      "exit_price": 0.23,
+      "exit_fee": 0.79416,
+      "net_proceeds": 19.833449,
+      "pnl": -3.428665,
+      "return_pct": -14.7393,
+      "close_reason": "stop_loss"
     }
   ],
   "audit": [
@@ -7430,6 +7463,26 @@
       "cash_outlay": 23.262114,
       "momentum_24h": 0.07,
       "momentum_6h": 0.01
+    },
+    {
+      "ts": "2026-09-15T13:36:21+00:00",
+      "event": "PAPER_CLOSE",
+      "market_id": "665513",
+      "outcome": "YES",
+      "exit_price": 0.23,
+      "pnl": -3.428665,
+      "reason": "stop_loss"
+    },
+    {
+      "ts": "2026-09-15T13:36:21+00:00",
+      "event": "PAPER_OPEN",
+      "market_id": "2467207",
+      "question": "Will Bitcoin reach $85,000 by December 31, 2026?",
+      "outcome": "NO",
+      "entry_price": 0.37,
+      "cash_outlay": 23.015355,
+      "momentum_24h": -0.025,
+      "momentum_6h": -0.015
     }
   ]
 }

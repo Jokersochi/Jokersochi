@@ -8,13 +8,13 @@
   "starting_equity": 1000.0,
   "target_equity": 2000.0,
   "bankrupt_equity": 0.0,
-  "cash": 237.732613,
-  "equity": 467.403181,
-  "realized_pnl": -543.614306,
-  "unrealized_pnl": 11.017487,
-  "fees_paid": 261.0533,
-  "ticks": 249,
-  "last_tick_at": "2026-09-15T19:51:47+00:00",
+  "cash": 244.420453,
+  "equity": 471.499657,
+  "realized_pnl": -537.778778,
+  "unrealized_pnl": 9.278435,
+  "fees_paid": 261.56766,
+  "ticks": 250,
+  "last_tick_at": "2026-09-15T21:26:11+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -100,32 +100,6 @@
       "mark_net_liquidation": 24.335007
     },
     {
-      "position_id": "4111395-YES-1789362578",
-      "market_id": "4111395",
-      "question": "Will Real Madrid CF win on 2026-09-15?",
-      "category": "Other",
-      "outcome": "YES",
-      "token_id": "76021158154800283506736373387406796400944223245340439968328287263438060046566",
-      "opened_at": "2026-09-14T05:09:37+00:00",
-      "entry_mid": 0.785,
-      "entry_spread": 0.01,
-      "entry_price": 0.79,
-      "shares": 30.68727488,
-      "gross_trade": 24.242947,
-      "entry_fee": 0.25455,
-      "cash_outlay": 24.497497,
-      "fee_rate": 0.05,
-      "momentum_24h": 0.03,
-      "momentum_6h": 0.01,
-      "liquidity": 252265.43,
-      "volume_24h": 148749.07,
-      "end_date": "2026-09-15",
-      "paper": true,
-      "mark_price": 0.805,
-      "mark_spread": 0.01,
-      "mark_net_liquidation": 24.30432
-    },
-    {
       "position_id": "2252244-NO-1789394821",
       "market_id": "2252244",
       "question": "Will there be no change in Fed interest rates after the September 2026 meeting?",
@@ -147,9 +121,9 @@
       "volume_24h": 2857440.27,
       "end_date": "2026-09-16",
       "paper": true,
-      "mark_price": 0.905,
+      "mark_price": 0.885,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 25.17378
+      "mark_net_liquidation": 24.589621
     },
     {
       "position_id": "2252245-YES-1789394821",
@@ -173,9 +147,9 @@
       "volume_24h": 1989471.44,
       "end_date": "2026-09-16",
       "paper": true,
-      "mark_price": 0.895,
+      "mark_price": 0.875,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 25.168858
+      "mark_net_liquidation": 24.578518
     },
     {
       "position_id": "1163699-NO-1789427400",
@@ -199,9 +173,9 @@
       "volume_24h": 1369320.71,
       "end_date": "2027-01-01",
       "paper": true,
-      "mark_price": 0.935,
-      "mark_spread": 0.01,
-      "mark_net_liquidation": 26.077177
+      "mark_price": 0.9525,
+      "mark_spread": 0.001,
+      "mark_net_liquidation": 26.723523
     },
     {
       "position_id": "2467207-NO-1789479383",
@@ -225,9 +199,35 @@
       "volume_24h": 96297.8,
       "end_date": "2027-01-01",
       "paper": true,
-      "mark_price": 0.435,
-      "mark_spread": 0.01,
+      "mark_price": 0.44,
+      "mark_spread": 0.02,
       "mark_net_liquidation": 25.19173
+    },
+    {
+      "position_id": "562828-YES-1789507572",
+      "market_id": "562828",
+      "question": "2026 Balance of Power: D Senate, D House",
+      "category": "Other",
+      "outcome": "YES",
+      "token_id": "34722410608062854697106861099776685947172185964394483545370684749662285977831",
+      "opened_at": "2026-09-15T21:26:11+00:00",
+      "entry_mid": 0.565,
+      "entry_spread": 0.01,
+      "entry_price": 0.57,
+      "shares": 40.60967557,
+      "gross_trade": 23.147515,
+      "entry_fee": 0.49767,
+      "cash_outlay": 23.645185,
+      "fee_rate": 0.05,
+      "momentum_24h": 0.04,
+      "momentum_6h": 0.02,
+      "liquidity": 294395.73,
+      "volume_24h": 99236.01,
+      "end_date": "2026-11-03",
+      "paper": true,
+      "mark_price": 0.565,
+      "mark_spread": 0.01,
+      "mark_net_liquidation": 22.241108
     }
   ],
   "closed_positions": [
@@ -4685,6 +4685,39 @@
       "pnl": -3.428665,
       "return_pct": -14.7393,
       "close_reason": "stop_loss"
+    },
+    {
+      "position_id": "4111395-YES-1789362578",
+      "market_id": "4111395",
+      "question": "Will Real Madrid CF win on 2026-09-15?",
+      "category": "Other",
+      "outcome": "YES",
+      "token_id": "76021158154800283506736373387406796400944223245340439968328287263438060046566",
+      "opened_at": "2026-09-14T05:09:37+00:00",
+      "entry_mid": 0.785,
+      "entry_spread": 0.01,
+      "entry_price": 0.79,
+      "shares": 30.68727488,
+      "gross_trade": 24.242947,
+      "entry_fee": 0.25455,
+      "cash_outlay": 24.497497,
+      "fee_rate": 0.05,
+      "momentum_24h": 0.03,
+      "momentum_6h": 0.01,
+      "liquidity": 252265.43,
+      "volume_24h": 148749.07,
+      "end_date": "2026-09-15",
+      "paper": true,
+      "mark_price": 0.805,
+      "mark_spread": 0.01,
+      "mark_net_liquidation": 24.30432,
+      "closed_at": "2026-09-15T21:26:11+00:00",
+      "exit_price": 0.989,
+      "exit_fee": 0.01669,
+      "net_proceeds": 30.333025,
+      "pnl": 5.835528,
+      "return_pct": 23.8209,
+      "close_reason": "take_profit"
     }
   ],
   "audit": [
@@ -7483,6 +7516,26 @@
       "cash_outlay": 23.015355,
       "momentum_24h": -0.025,
       "momentum_6h": -0.015
+    },
+    {
+      "ts": "2026-09-15T21:26:11+00:00",
+      "event": "PAPER_CLOSE",
+      "market_id": "4111395",
+      "outcome": "YES",
+      "exit_price": 0.989,
+      "pnl": 5.835528,
+      "reason": "take_profit"
+    },
+    {
+      "ts": "2026-09-15T21:26:11+00:00",
+      "event": "PAPER_OPEN",
+      "market_id": "562828",
+      "question": "2026 Balance of Power: D Senate, D House",
+      "outcome": "YES",
+      "entry_price": 0.57,
+      "cash_outlay": 23.645185,
+      "momentum_24h": 0.04,
+      "momentum_6h": 0.02
     }
   ]
 }

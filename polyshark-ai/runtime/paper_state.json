@@ -8,13 +8,13 @@
   "starting_equity": 1000.0,
   "target_equity": 2000.0,
   "bankrupt_equity": 0.0,
-  "cash": 244.420453,
-  "equity": 472.128186,
-  "realized_pnl": -537.778778,
-  "unrealized_pnl": 9.906964,
-  "fees_paid": 261.56766,
-  "ticks": 251,
-  "last_tick_at": "2026-09-15T22:27:10+00:00",
+  "cash": 268.817883,
+  "equity": 471.453774,
+  "realized_pnl": -539.998222,
+  "unrealized_pnl": 11.451996,
+  "fees_paid": 261.87649,
+  "ticks": 252,
+  "last_tick_at": "2026-09-16T00:24:17+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -46,32 +46,6 @@
       "mark_price": 0.9775,
       "mark_spread": 0.013,
       "mark_net_liquidation": 54.68445
-    },
-    {
-      "position_id": "1130012-YES-1789252203",
-      "market_id": "1130012",
-      "question": "Will United Russia (ER) gain the most seats in the next Russian parliamentary election?",
-      "category": "Other",
-      "outcome": "YES",
-      "token_id": "20915769520649892253891152116814645067070024223185517956799957803974344024878",
-      "opened_at": "2026-09-12T22:30:01+00:00",
-      "entry_mid": 0.795,
-      "entry_spread": 0.01,
-      "entry_price": 0.8,
-      "shares": 32.94167946,
-      "gross_trade": 26.353344,
-      "entry_fee": 0.26353,
-      "cash_outlay": 26.616874,
-      "fee_rate": 0.05,
-      "momentum_24h": 0.025,
-      "momentum_6h": 0.01,
-      "liquidity": 421322.61,
-      "volume_24h": 161323.03,
-      "end_date": "2026-09-30",
-      "paper": true,
-      "mark_price": 0.765,
-      "mark_spread": 0.01,
-      "mark_net_liquidation": 24.735246
     },
     {
       "position_id": "2176270-NO-1789332155",
@@ -121,9 +95,9 @@
       "volume_24h": 2857440.27,
       "end_date": "2026-09-16",
       "paper": true,
-      "mark_price": 0.885,
+      "mark_price": 0.895,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 24.589621
+      "mark_net_liquidation": 24.881556
     },
     {
       "position_id": "2252245-YES-1789394821",
@@ -173,9 +147,9 @@
       "volume_24h": 1369320.71,
       "end_date": "2027-01-01",
       "paper": true,
-      "mark_price": 0.9535,
+      "mark_price": 0.9525,
       "mark_spread": 0.001,
-      "mark_net_liquidation": 26.752931
+      "mark_net_liquidation": 26.723523
     },
     {
       "position_id": "2467207-NO-1789479383",
@@ -199,9 +173,9 @@
       "volume_24h": 96297.8,
       "end_date": "2027-01-01",
       "paper": true,
-      "mark_price": 0.445,
-      "mark_spread": 0.01,
-      "mark_net_liquidation": 25.790851
+      "mark_price": 0.44,
+      "mark_spread": 0.02,
+      "mark_net_liquidation": 25.19173
     },
     {
       "position_id": "562828-YES-1789507572",
@@ -4718,6 +4692,39 @@
       "pnl": 5.835528,
       "return_pct": 23.8209,
       "close_reason": "take_profit"
+    },
+    {
+      "position_id": "1130012-YES-1789252203",
+      "market_id": "1130012",
+      "question": "Will United Russia (ER) gain the most seats in the next Russian parliamentary election?",
+      "category": "Other",
+      "outcome": "YES",
+      "token_id": "20915769520649892253891152116814645067070024223185517956799957803974344024878",
+      "opened_at": "2026-09-12T22:30:01+00:00",
+      "entry_mid": 0.795,
+      "entry_spread": 0.01,
+      "entry_price": 0.8,
+      "shares": 32.94167946,
+      "gross_trade": 26.353344,
+      "entry_fee": 0.26353,
+      "cash_outlay": 26.616874,
+      "fee_rate": 0.05,
+      "momentum_24h": 0.025,
+      "momentum_6h": 0.01,
+      "liquidity": 421322.61,
+      "volume_24h": 161323.03,
+      "end_date": "2026-09-30",
+      "paper": true,
+      "mark_price": 0.765,
+      "mark_spread": 0.01,
+      "mark_net_liquidation": 24.735246,
+      "closed_at": "2026-09-16T00:24:17+00:00",
+      "exit_price": 0.75,
+      "exit_fee": 0.30883,
+      "net_proceeds": 24.39743,
+      "pnl": -2.219444,
+      "return_pct": -8.3385,
+      "close_reason": "max_hold"
     }
   ],
   "audit": [
@@ -7536,6 +7543,15 @@
       "cash_outlay": 23.645185,
       "momentum_24h": 0.04,
       "momentum_6h": 0.02
+    },
+    {
+      "ts": "2026-09-16T00:24:17+00:00",
+      "event": "PAPER_CLOSE",
+      "market_id": "1130012",
+      "outcome": "YES",
+      "exit_price": 0.75,
+      "pnl": -2.219444,
+      "reason": "max_hold"
     }
   ]
 }

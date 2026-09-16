@@ -8,13 +8,13 @@
   "starting_equity": 1000.0,
   "target_equity": 2000.0,
   "bankrupt_equity": 0.0,
-  "cash": 241.108053,
-  "equity": 458.922201,
-  "realized_pnl": -545.701152,
-  "unrealized_pnl": 4.623353,
-  "fees_paid": 266.88836,
-  "ticks": 262,
-  "last_tick_at": "2026-09-16T20:10:39+00:00",
+  "cash": 265.44306,
+  "equity": 459.821501,
+  "realized_pnl": -546.432886,
+  "unrealized_pnl": 6.254387,
+  "fees_paid": 267.10936,
+  "ticks": 263,
+  "last_tick_at": "2026-09-16T21:39:10+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -46,32 +46,6 @@
       "mark_price": 0.9775,
       "mark_spread": 0.013,
       "mark_net_liquidation": 54.68445
-    },
-    {
-      "position_id": "2176270-NO-1789332155",
-      "market_id": "2176270",
-      "question": "Strait of Hormuz traffic returns to normal by December 31?",
-      "category": "Other",
-      "outcome": "NO",
-      "token_id": "48727431314333088243693016929623363710488980152833544156961659445129455301311",
-      "opened_at": "2026-09-13T20:42:34+00:00",
-      "entry_mid": 0.825,
-      "entry_spread": 0.01,
-      "entry_price": 0.83,
-      "shares": 29.9463503,
-      "gross_trade": 24.855471,
-      "entry_fee": 0.21127,
-      "cash_outlay": 25.066741,
-      "fee_rate": 0.05,
-      "momentum_24h": -0.03,
-      "momentum_6h": -0.03,
-      "liquidity": 457467.49,
-      "volume_24h": 149993.62,
-      "end_date": "2026-12-31",
-      "paper": true,
-      "mark_price": 0.825,
-      "mark_spread": 0.01,
-      "mark_net_liquidation": 24.335007
     },
     {
       "position_id": "1163699-NO-1789427400",
@@ -121,9 +95,9 @@
       "volume_24h": 96297.8,
       "end_date": "2027-01-01",
       "paper": true,
-      "mark_price": 0.43,
-      "mark_spread": 0.02,
-      "mark_net_liquidation": 24.593219
+      "mark_price": 0.435,
+      "mark_spread": 0.01,
+      "mark_net_liquidation": 25.19173
     },
     {
       "position_id": "562828-YES-1789507572",
@@ -147,9 +121,9 @@
       "volume_24h": 99236.01,
       "end_date": "2026-11-03",
       "paper": true,
-      "mark_price": 0.585,
+      "mark_price": 0.605,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 23.058982
+      "mark_net_liquidation": 23.878485
     },
     {
       "position_id": "601826-YES-1789538698",
@@ -173,9 +147,9 @@
       "volume_24h": 112132.69,
       "end_date": "2026-10-04",
       "paper": true,
-      "mark_price": 0.5425,
-      "mark_spread": 0.001,
-      "mark_net_liquidation": 22.064149
+      "mark_price": 0.542,
+      "mark_spread": 0.002,
+      "mark_net_liquidation": 22.022316
     },
     {
       "position_id": "2589813-YES-1789589440",
@@ -199,9 +173,9 @@
       "volume_24h": 573381.0,
       "end_date": "2026-10-28",
       "paper": true,
-      "mark_price": 0.465,
+      "mark_price": 0.455,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 21.440958
+      "mark_net_liquidation": 20.964076
     },
     {
       "position_id": "2589812-NO-1789589440",
@@ -4916,6 +4890,39 @@
       "pnl": -5.51088,
       "return_pct": -23.2629,
       "close_reason": "stop_loss"
+    },
+    {
+      "position_id": "2176270-NO-1789332155",
+      "market_id": "2176270",
+      "question": "Strait of Hormuz traffic returns to normal by December 31?",
+      "category": "Other",
+      "outcome": "NO",
+      "token_id": "48727431314333088243693016929623363710488980152833544156961659445129455301311",
+      "opened_at": "2026-09-13T20:42:34+00:00",
+      "entry_mid": 0.825,
+      "entry_spread": 0.01,
+      "entry_price": 0.83,
+      "shares": 29.9463503,
+      "gross_trade": 24.855471,
+      "entry_fee": 0.21127,
+      "cash_outlay": 25.066741,
+      "fee_rate": 0.05,
+      "momentum_24h": -0.03,
+      "momentum_6h": -0.03,
+      "liquidity": 457467.49,
+      "volume_24h": 149993.62,
+      "end_date": "2026-12-31",
+      "paper": true,
+      "mark_price": 0.825,
+      "mark_spread": 0.01,
+      "mark_net_liquidation": 24.335007,
+      "closed_at": "2026-09-16T21:39:10+00:00",
+      "exit_price": 0.82,
+      "exit_fee": 0.221,
+      "net_proceeds": 24.335007,
+      "pnl": -0.731734,
+      "return_pct": -2.9191,
+      "close_reason": "max_hold"
     }
   ],
   "audit": [
@@ -7854,6 +7861,15 @@
       "cash_outlay": 23.111612,
       "momentum_24h": -0.09,
       "momentum_6h": -0.11
+    },
+    {
+      "ts": "2026-09-16T21:39:10+00:00",
+      "event": "PAPER_CLOSE",
+      "market_id": "2176270",
+      "outcome": "NO",
+      "exit_price": 0.82,
+      "pnl": -0.731734,
+      "reason": "max_hold"
     }
   ]
 }

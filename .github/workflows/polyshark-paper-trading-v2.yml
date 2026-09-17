@@ -1,15 +1,18 @@
-name: PolyShark Paper Trading
+name: PolyShark Paper Trading 24x7
 
 on:
   workflow_dispatch:
   schedule:
-    # Explicit off-peak quarter-hour slots; renamed workflow resets a stuck schedule registration.
-    - cron: "11,26,41,56 * * * *"
+    # GitHub Actions: минимальный поддерживаемый интервал расписания — 5 минут.
+    # Постоянный серверный режим реализован runtime/paper_daemon.py.
+    - cron: "*/5 * * * *"
   push:
     branches: [main]
     paths:
       - "polyshark-ai/runtime/paper_trader.py"
+      - "polyshark-ai/runtime/paper_daemon.py"
       - "polyshark-ai/tests/test_paper_trader_runtime.py"
+      - "polyshark-ai/tests/test_paper_daemon.py"
       - ".github/workflows/polyshark-paper-trading-v2.yml"
 
 permissions:
@@ -22,7 +25,7 @@ concurrency:
 jobs:
   paper-tick:
     runs-on: ubuntu-latest
-    timeout-minutes: 4
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
         with:
@@ -32,39 +35,85 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Prove paper-only invariants
+      - name: Проверить инварианты paper-only
         run: |
           python - <<'PY'
           from pathlib import Path
-          text = Path('polyshark-ai/runtime/paper_trader.py').read_text()
+          files = [
+              Path('polyshark-ai/runtime/paper_trader.py'),
+              Path('polyshark-ai/runtime/paper_daemon.py'),
+          ]
           forbidden = ['create_order(', 'post_order(', 'cancel_all(', 'POLYMARKET_PRIVATE_KEY']
-          hits = [x for x in forbidden if x in text]
+          hits = []
+          for path in files:
+              text = path.read_text(encoding='utf-8')
+              hits.extend(f'{path}:{item}' for item in forbidden if item in text)
           if hits:
-              raise SystemExit(f'Unsafe trading primitives found: {hits}')
-          print('Paper-only static guard: PASS')
+              raise SystemExit(f'Обнаружены запрещённые примитивы реальной торговли: {hits}')
+          print('Статическая защита paper-only: ПРОЙДЕНА')
           PY
 
-      - name: Unit tests
-        run: python polyshark-ai/tests/test_paper_trader_runtime.py -q
+      - name: Запустить тесты
+        run: |
+          python polyshark-ai/tests/test_paper_trader_runtime.py -q
+          python polyshark-ai/tests/test_paper_daemon.py -q
+          python -m py_compile polyshark-ai/runtime/paper_trader.py polyshark-ai/runtime/paper_daemon.py
 
-      - name: Run one live-quote paper tick
+      - name: Выполнить paper-tick с автоматическими повторами
         env:
           PAPER_STARTING_EQUITY: "1000"
-          PAPER_TARGET_EQUITY: "2000"
-          PAPER_BANKRUPT_EQUITY: "0"
+          PAPER_CONTINUOUS_TARGET_EQUITY: "1000000000"
           PAPER_MAX_POSITION_PCT: "0.05"
           PAPER_MAX_OPEN_POSITIONS: "8"
-        run: python polyshark-ai/runtime/paper_trader.py --state polyshark-ai/runtime/paper_state.json
+          PAPER_TICK_INTERVAL_SECONDS: "300"
+          PAPER_RETRY_MIN_SECONDS: "15"
+          PAPER_RETRY_MAX_SECONDS: "60"
+        run: |
+          set -u
+          success=0
+          for attempt in 1 2 3; do
+            echo "Попытка ${attempt}/3"
+            if python polyshark-ai/runtime/paper_daemon.py \
+              --once \
+              --state polyshark-ai/runtime/paper_state.json \
+              --heartbeat /tmp/polyshark-paper-heartbeat.json; then
+              success=1
+              break
+            fi
+            sleep $((attempt * 15))
+          done
+          if [ "$success" -ne 1 ]; then
+            echo "Paper-tick не восстановился после трёх попыток"
+            exit 1
+          fi
 
-      - name: Persist paper session state
+      - name: Проверить итоговое состояние
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          state = json.loads(Path('polyshark-ai/runtime/paper_state.json').read_text(encoding='utf-8'))
+          assert state.get('paper_only') is True
+          assert state.get('real_orders_enabled') is False
+          assert not state.get('last_error'), state.get('last_error')
+          print({
+              'status': state.get('status'),
+              'equity': state.get('equity'),
+              'open_positions': len(state.get('open_positions', [])),
+              'ticks': state.get('ticks'),
+              'paper_only': state.get('paper_only'),
+          })
+          PY
+
+      - name: Сохранить состояние paper-сессии
         run: |
           if git diff --quiet -- polyshark-ai/runtime/paper_state.json; then
-            echo "No state change"
+            echo "Изменений состояния нет"
             exit 0
           fi
           git config user.name "polyshark-paper-bot"
           git config user.email "polyshark-paper-bot@users.noreply.github.com"
           git add polyshark-ai/runtime/paper_state.json
-          git commit -m "chore(polyshark): persist paper-trading tick [skip ci]"
+          git commit -m "chore(polyshark): persist 24x7 paper tick [skip ci]"
           git pull --rebase origin main
           git push origin HEAD:main

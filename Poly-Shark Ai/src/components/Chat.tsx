@@ -10,23 +10,23 @@ import { motion } from "framer-motion";
 const SUGGESTIONS: Record<string, string[]> = {
   chat: [
     "Объясни квантовую запутанность простыми словами",
-    "Помоги спланировать неделю продуктивно",
-    "Дай 5 идей для подкаста про ИИ",
+    "Помоги продуктивно спланировать неделю",
+    "Дай 5 идей для подкаста про искусственный интеллект",
   ],
   code: [
     "Напиши хук useDebounce на TypeScript",
     "Объясни разницу между Promise.all и Promise.allSettled",
-    "Покажи паттерн Repository на Python",
+    "Покажи шаблон «Репозиторий» на Python",
   ],
   research: [
-    "Сравни Rust и Go для backend",
-    "Какие тренды в AI на 2026?",
-    "Анализ рынка электромобилей",
+    "Сравни Rust и Go для серверной разработки",
+    "Какие тренды в ИИ актуальны в 2026 году?",
+    "Проведи анализ рынка электромобилей",
   ],
   creative: [
-    "Слоган для бренда умных часов",
-    "Сюжет короткого рассказа в стиле киберпанк",
-    "10 необычных названий для кофейни",
+    "Придумай слоган для бренда умных часов",
+    "Создай сюжет короткого рассказа в стиле киберпанк",
+    "Предложи 10 необычных названий для кофейни",
   ],
 };
 
@@ -76,7 +76,7 @@ export function Chat() {
 
     try {
       const conv = useStore.getState().conversations.find((c) => c.id === convId);
-      if (!conv) throw new Error("Conversation not found");
+      if (!conv) throw new Error("Диалог не найден");
       const msgs = conv.messages
         .filter((m) => !(m.role === "assistant" && !m.content))
         .map((m) => ({ role: m.role as "user" | "assistant", content: m.content }));
@@ -88,7 +88,7 @@ export function Chat() {
       });
 
       if (!res.ok) {
-        let errText = `HTTP ${res.status}`;
+        let errText = `Ошибка HTTP ${res.status}`;
         try {
           const data = await res.json();
           if (data?.error) errText = data.error;
@@ -96,7 +96,7 @@ export function Chat() {
           try {
             errText = (await res.text()) || errText;
           } catch {
-            /* ignore */
+            /* игнорируем вторичную ошибку чтения */
           }
         }
         throw new Error(errText);
@@ -145,7 +145,7 @@ export function Chat() {
         </div>
         <div className="flex items-center gap-2 text-xs text-abyss-400">
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-          Online
+          В сети
         </div>
       </header>
 
@@ -163,8 +163,7 @@ export function Chat() {
               Poly-Shark AI
             </h1>
             <p className="text-abyss-300 mb-8 max-w-md">
-              Хищный интеллект для творчества, кода и исследований. Выберите режим и
-              задайте вопрос.
+              Интеллектуальный терминал для творчества, программирования и исследований. Выберите режим и задайте вопрос.
             </p>
             <div className="grid sm:grid-cols-2 gap-3 w-full">
               {SUGGESTIONS[displayMode].map((s) => (

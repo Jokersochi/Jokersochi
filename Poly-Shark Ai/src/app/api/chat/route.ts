@@ -34,14 +34,13 @@ function rateLimit(ip: string): { ok: boolean; retryAfter: number } {
 function getClientIp(req: NextRequest): string {
   const fwd = req.headers.get("x-forwarded-for");
   if (fwd) return fwd.split(",")[0].trim();
-  return req.headers.get("x-real-ip") ?? "unknown";
+  return req.headers.get("x-real-ip") ?? "неизвестно";
 }
 
 export async function POST(req: NextRequest) {
   // Авторизация:
-  //   • same-origin (есть Origin, совпадает с Host) → веб-UI, пропускаем
-  //   • cross-origin или без Origin (curl/серверные клиенты) → требуем
-  //     Bearer APP_ACCESS_TOKEN если он задан, иначе 403
+  //   • запрос из того же источника → веб-интерфейс, пропускаем;
+  //   • внешний запрос или запрос без Origin → требуем Bearer APP_ACCESS_TOKEN.
   const origin = req.headers.get("origin");
   const host = req.headers.get("host");
   let isSameOrigin = false;
@@ -49,13 +48,13 @@ export async function POST(req: NextRequest) {
     try {
       isSameOrigin = !!host && new URL(origin).host === host;
     } catch {
-      return new Response(JSON.stringify({ error: "Invalid Origin header" }), {
+      return new Response(JSON.stringify({ error: "Некорректный заголовок Origin" }), {
         status: 400,
         headers: { "content-type": "application/json" },
       });
     }
     if (!isSameOrigin) {
-      return new Response(JSON.stringify({ error: "Cross-origin requests forbidden" }), {
+      return new Response(JSON.stringify({ error: "Межсайтовые запросы запрещены" }), {
         status: 403,
         headers: { "content-type": "application/json" },
       });
@@ -66,12 +65,12 @@ export async function POST(req: NextRequest) {
     const accessToken = process.env.APP_ACCESS_TOKEN;
     if (!accessToken) {
       return new Response(
-        JSON.stringify({ error: "Forbidden: configure APP_ACCESS_TOKEN for non-browser clients" }),
+        JSON.stringify({ error: "Доступ запрещён: задайте APP_ACCESS_TOKEN для внешних клиентов" }),
         { status: 403, headers: { "content-type": "application/json" } }
       );
     }
     if (req.headers.get("authorization") !== `Bearer ${accessToken}`) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      return new Response(JSON.stringify({ error: "Не авторизовано" }), {
         status: 401,
         headers: { "content-type": "application/json" },
       });
@@ -81,7 +80,7 @@ export async function POST(req: NextRequest) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
     return new Response(
-      JSON.stringify({ error: "ANTHROPIC_API_KEY не задан. Добавьте в .env.local" }),
+      JSON.stringify({ error: "ANTHROPIC_API_KEY не задан. Добавьте его в .env.local" }),
       { status: 500, headers: { "content-type": "application/json" } }
     );
   }
@@ -90,7 +89,7 @@ export async function POST(req: NextRequest) {
   const rl = rateLimit(ip);
   if (!rl.ok) {
     return new Response(
-      JSON.stringify({ error: `Слишком много запросов. Повторите через ${rl.retryAfter}с.` }),
+      JSON.stringify({ error: `Слишком много запросов. Повторите через ${rl.retryAfter} с.` }),
       {
         status: 429,
         headers: {
@@ -113,7 +112,7 @@ export async function POST(req: NextRequest) {
 
   const { messages, mode } = body;
   if (!Array.isArray(messages) || messages.length === 0) {
-    return new Response(JSON.stringify({ error: "messages обязательны" }), {
+    return new Response(JSON.stringify({ error: "Поле messages обязательно" }), {
       status: 400,
       headers: { "content-type": "application/json" },
     });
@@ -131,7 +130,7 @@ export async function POST(req: NextRequest) {
       m.content.length > MAX_CONTENT_LEN
     ) {
       return new Response(
-        JSON.stringify({ error: "Невалидное сообщение в payload" }),
+        JSON.stringify({ error: "Обнаружено некорректное сообщение в запросе" }),
         { status: 400, headers: { "content-type": "application/json" } }
       );
     }

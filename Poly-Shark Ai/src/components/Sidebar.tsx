@@ -20,7 +20,7 @@ export function Sidebar() {
               Poly-Shark AI
             </h1>
             <p className="text-[10px] text-abyss-300 uppercase tracking-widest">
-              Apex Intelligence
+              Интеллектуальный терминал
             </p>
           </div>
         </div>
@@ -119,7 +119,7 @@ export function Sidebar() {
       </div>
 
       <div className="p-3 border-t border-abyss-800/50 text-[10px] text-abyss-400 text-center">
-        v1.0 · powered by Claude
+        v1.1 · интерфейс и ответы на русском
       </div>
     </aside>
   );

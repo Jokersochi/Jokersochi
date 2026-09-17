@@ -38,12 +38,12 @@ services:
       redis:
         condition: service_healthy
     volumes:
-      - ./models:/app/models        # сохранённые ML-модели
-      - ./logs:/app/logs            # логи
-      - ./data:/app/data            # исторические данные
+      - ./models:/app/models
+      - ./logs:/app/logs
+      - ./data:/app/data
     ports:
-      - "8000:8000"                 # FastAPI дашборд API
-    command: python -m uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload
+      - "8000:8000"
+    command: python -m uvicorn api.main:app --host 0.0.0.0 --port 8000
 
   # ---- Агент (отдельный процесс) ----
   agent:
@@ -65,7 +65,35 @@ services:
       - ./data:/app/data
     command: python -m agents.orchestrator
 
-  # ---- Jupyter (для backtesting и исследований) ----
+  # ---- Непрерывный paper-only торговый процесс ----
+  paper-bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: polyshark_paper_bot
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - PAPER_STARTING_EQUITY=1000
+      - PAPER_CONTINUOUS_TARGET_EQUITY=1000000000
+      - PAPER_TICK_INTERVAL_SECONDS=300
+      - PAPER_RETRY_MIN_SECONDS=15
+      - PAPER_RETRY_MAX_SECONDS=300
+      - PAPER_MAX_POSITION_PCT=0.05
+      - PAPER_MAX_OPEN_POSITIONS=8
+    volumes:
+      - ./runtime:/app/runtime
+      - ./logs:/app/logs
+    command: python runtime/paper_daemon.py --state runtime/paper_state.json --heartbeat runtime/paper_heartbeat.json --interval 300
+    healthcheck:
+      test: ["CMD", "python", "runtime/paper_daemon.py", "--heartbeat", "runtime/paper_heartbeat.json", "--healthcheck", "--health-max-age", "1000"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 90s
+
+  # ---- Jupyter (для бэктестинга и исследований) ----
   jupyter:
     build:
       context: .
@@ -84,7 +112,7 @@ services:
       - ./models:/app/models
     command: jupyter notebook --ip=0.0.0.0 --no-browser --allow-root --NotebookApp.token=polyshark
     profiles:
-      - research  # запускается только с: docker-compose --profile research up jupyter
+      - research
 
 volumes:
   redis_data:

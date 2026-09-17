@@ -2,12 +2,12 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Poly-Shark AI · Apex Intelligence",
+  title: "Poly-Shark AI · Интеллектуальный терминал",
   description:
-    "Хищный мульти-режимный AI-ассистент: чат, код, ресёрч, креатив. На базе Claude.",
+    "Русскоязычный интеллектуальный терминал Poly-Shark AI: чат, программирование, исследования и креативные задачи.",
   applicationName: "Poly-Shark AI",
   authors: [{ name: "Poly-Shark Labs" }],
-  keywords: ["AI", "Claude", "chat", "code", "research", "Poly-Shark"],
+  keywords: ["ИИ", "чат", "программирование", "исследования", "Poly-Shark"],
 };
 
 export const viewport: Viewport = {

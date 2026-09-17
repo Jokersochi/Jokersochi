@@ -4,6 +4,7 @@ import unittest
 from pathlib import Path
 
 MODULE = Path(__file__).resolve().parents[1] / "runtime" / "paper_trader.py"
+sys.path.insert(0, str(MODULE.parent))
 spec = importlib.util.spec_from_file_location("paper_trader", MODULE)
 pt = importlib.util.module_from_spec(spec)
 assert spec.loader is not None
@@ -16,6 +17,8 @@ class PaperTraderRuntimeTests(unittest.TestCase):
         s = pt.fresh_state()
         self.assertIs(s["paper_only"], True)
         self.assertIs(s["real_orders_enabled"], False)
+        self.assertIs(s["real_money"], False)
+        self.assertIs(s["live_trading"], False)
         self.assertEqual(s["starting_equity"], 1000.0)
         self.assertEqual(s["target_equity"], 2000.0)
         self.assertEqual(s["bankrupt_equity"], 0.0)

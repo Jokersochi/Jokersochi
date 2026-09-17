@@ -30,11 +30,16 @@ docker-compose up app         # API + агент
 ```
 
 ### 4. Paper trading (обязательно сначала!)
+```bash
+python runtime/paper_trader.py --state runtime/paper_state.json
 ```
-DRY_RUN=true в .env
-Мониторь логи: docker-compose logs -f agent
-Жди 100+ сигналов перед включением реальных ордеров
-```
+
+Автономный runtime работает только с публичными API и жёстко сохраняет
+`paper_only: true` / `real_orders_enabled: false`. Стратегия v3 не копирует
+одного лидера: она требует устойчивого рейтинга в нескольких периодах,
+минимум два независимых текущих голоса, свежий net-buy и цену не хуже чем на
+3 цента выше средней цены лидеров. Методика и выборка описаны в
+[`research/top-trader-analysis-2026-08-29.md`](research/top-trader-analysis-2026-08-29.md).
 
 ## Ключевые метрики перехода в прод
 
@@ -55,6 +60,8 @@ DRY_RUN=true в .env
 | `modules/validation.py` | Walk-Forward + Purging/Embargo |
 | `services/polymarket_client.py` | CLOB API (EIP-712) |
 | `services/ws_handler.py` | WebSocket стриминг |
+| `runtime/leader_consensus.py` | Публичный рейтинг, позиции, flow и consensus v3 |
+| `runtime/paper_trader.py` | Только виртуальное исполнение и риск-контроль |
 | `agents/orchestrator.py` | Главный агент |
 | `database/schema.sql` | Supabase DDL |
 
@@ -76,4 +83,4 @@ polyshark-ai/
 
 ⚠️ **НИКОГДА** не запускай с реальными деньгами без минимум 2 недель paper trading  
 ⚠️ **НИКОГДА** не храни приватный ключ в git (добавь `.env` в `.gitignore`)  
-⚠️ Максимальная позиция: 5% банкролла (настраивается в `MAX_POSITION_PCT`)
+⚠️ Максимальная paper-позиция: 2% equity; весь открытый book — не более 8%

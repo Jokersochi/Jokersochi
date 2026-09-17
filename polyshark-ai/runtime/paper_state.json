@@ -8,13 +8,13 @@
   "starting_equity": 1000.0,
   "target_equity": 1000000000.0,
   "bankrupt_equity": 0.0,
-  "cash": 260.788392,
-  "equity": 452.738849,
+  "cash": 237.967644,
+  "equity": 455.595388,
   "realized_pnl": -551.631134,
-  "unrealized_pnl": 4.369983,
-  "fees_paid": 269.47041,
-  "ticks": 270,
-  "last_tick_at": "2026-09-17T16:41:33+00:00",
+  "unrealized_pnl": 7.226522,
+  "fees_paid": 269.72986,
+  "ticks": 271,
+  "last_tick_at": "2026-09-17T19:51:23+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -69,9 +69,9 @@
       "volume_24h": 1369320.71,
       "end_date": "2027-01-01",
       "paper": true,
-      "mark_price": 0.9145,
+      "mark_price": 0.9185,
       "mark_spread": 0.003,
-      "mark_net_liquidation": 25.578663
+      "mark_net_liquidation": 25.695887
     },
     {
       "position_id": "2467207-NO-1789479383",
@@ -95,8 +95,8 @@
       "volume_24h": 96297.8,
       "end_date": "2027-01-01",
       "paper": true,
-      "mark_price": 0.4,
-      "mark_spread": 0.02,
+      "mark_price": 0.395,
+      "mark_spread": 0.01,
       "mark_net_liquidation": 22.801277
     },
     {
@@ -147,9 +147,9 @@
       "volume_24h": 112132.69,
       "end_date": "2026-10-04",
       "paper": true,
-      "mark_price": 0.5455,
-      "mark_spread": 0.005,
-      "mark_net_liquidation": 22.105992
+      "mark_price": 0.5495,
+      "mark_spread": 0.003,
+      "mark_net_liquidation": 22.315246
     },
     {
       "position_id": "2589812-NO-1789608498",
@@ -173,9 +173,9 @@
       "volume_24h": 855775.35,
       "end_date": "2026-10-28",
       "paper": true,
-      "mark_price": 0.475,
+      "mark_price": 0.515,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 22.169427
+      "mark_net_liquidation": 24.105607
     },
     {
       "position_id": "2589813-YES-1789646407",
@@ -199,9 +199,35 @@
       "volume_24h": 795328.65,
       "end_date": "2026-10-28",
       "paper": true,
-      "mark_price": 0.465,
+      "mark_price": 0.495,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 21.14211
+      "mark_net_liquidation": 22.555665
+    },
+    {
+      "position_id": "1130012-YES-1789674685",
+      "market_id": "1130012",
+      "question": "Will United Russia (ER) gain the most seats in the next Russian parliamentary election?",
+      "category": "Other",
+      "outcome": "YES",
+      "token_id": "20915769520649892253891152116814645067070024223185517956799957803974344024878",
+      "opened_at": "2026-09-17T19:51:23+00:00",
+      "entry_mid": 0.765,
+      "entry_spread": 0.01,
+      "entry_price": 0.77,
+      "shares": 29.30038724,
+      "gross_trade": 22.561298,
+      "entry_fee": 0.25945,
+      "cash_outlay": 22.820748,
+      "fee_rate": 0.05,
+      "momentum_24h": 0.03,
+      "momentum_6h": 0.02,
+      "liquidity": 720576.63,
+      "volume_24h": 436597.28,
+      "end_date": "2026-09-30",
+      "paper": true,
+      "mark_price": 0.765,
+      "mark_spread": 0.01,
+      "mark_net_liquidation": 22.001074
     }
   ],
   "closed_positions": [
@@ -7975,6 +8001,17 @@
       "entry_price": 0.47,
       "cash_outlay": 22.789485,
       "momentum_24h": 0.1,
+      "momentum_6h": 0.02
+    },
+    {
+      "ts": "2026-09-17T19:51:23+00:00",
+      "event": "PAPER_OPEN",
+      "market_id": "1130012",
+      "question": "Will United Russia (ER) gain the most seats in the next Russian parliamentary election?",
+      "outcome": "YES",
+      "entry_price": 0.77,
+      "cash_outlay": 22.820748,
+      "momentum_24h": 0.03,
       "momentum_6h": 0.02
     }
   ]

@@ -8,13 +8,13 @@
   "starting_equity": 1000.0,
   "target_equity": 1000000000.0,
   "bankrupt_equity": 0.0,
-  "cash": 260.711999,
-  "equity": 452.16153,
-  "realized_pnl": -554.516804,
-  "unrealized_pnl": 6.678334,
-  "fees_paid": 276.05074,
-  "ticks": 279,
-  "last_tick_at": "2026-09-18T21:52:22+00:00",
+  "cash": 280.73653,
+  "equity": 450.471093,
+  "realized_pnl": -557.137639,
+  "unrealized_pnl": 7.608732,
+  "fees_paid": 276.63818,
+  "ticks": 280,
+  "last_tick_at": "2026-09-18T23:40:52+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -69,9 +69,9 @@
       "volume_24h": 112132.69,
       "end_date": "2026-10-04",
       "paper": true,
-      "mark_price": 0.565,
-      "mark_spread": 0.002,
-      "mark_net_liquidation": 22.985592
+      "mark_price": 0.5655,
+      "mark_spread": 0.001,
+      "mark_net_liquidation": 23.027524
     },
     {
       "position_id": "2589813-YES-1789646407",
@@ -121,9 +121,9 @@
       "volume_24h": 436597.28,
       "end_date": "2026-09-30",
       "paper": true,
-      "mark_price": 0.825,
+      "mark_price": 0.815,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 23.810078
+      "mark_net_liquidation": 23.507844
     },
     {
       "position_id": "2589812-NO-1789751883",
@@ -152,32 +152,6 @@
       "mark_net_liquidation": 21.3924
     },
     {
-      "position_id": "4052419-YES-1789760535",
-      "market_id": "4052419",
-      "question": "Will Bitcoin reach $85,000 in September?",
-      "category": "Other",
-      "outcome": "YES",
-      "token_id": "81780779224259491605896114548635727637676605965813881291062071590530581918897",
-      "opened_at": "2026-09-18T19:42:13+00:00",
-      "entry_mid": 0.455,
-      "entry_spread": 0.01,
-      "entry_price": 0.46,
-      "shares": 47.93481743,
-      "gross_trade": 22.050016,
-      "entry_fee": 0.59535,
-      "cash_outlay": 22.645366,
-      "fee_rate": 0.05,
-      "momentum_24h": 0.35,
-      "momentum_6h": 0.27,
-      "liquidity": 57519.01,
-      "volume_24h": 143035.91,
-      "end_date": "2026-10-01",
-      "paper": true,
-      "mark_price": 0.465,
-      "mark_spread": 0.01,
-      "mark_net_liquidation": 21.454666
-    },
-    {
       "position_id": "1130016-NO-1789768343",
       "market_id": "1130016",
       "question": "Will New People (NL) gain the most seats in the next Russian parliamentary election?",
@@ -199,8 +173,8 @@
       "volume_24h": 336140.53,
       "end_date": "2026-09-30",
       "paper": true,
-      "mark_price": 0.833,
-      "mark_spread": 0.002,
+      "mark_price": 0.8325,
+      "mark_spread": 0.001,
       "mark_net_liquidation": 22.201316
     }
   ],
@@ -5220,6 +5194,39 @@
       "pnl": -0.176646,
       "return_pct": -0.7471,
       "close_reason": "max_hold"
+    },
+    {
+      "position_id": "4052419-YES-1789760535",
+      "market_id": "4052419",
+      "question": "Will Bitcoin reach $85,000 in September?",
+      "category": "Other",
+      "outcome": "YES",
+      "token_id": "81780779224259491605896114548635727637676605965813881291062071590530581918897",
+      "opened_at": "2026-09-18T19:42:13+00:00",
+      "entry_mid": 0.455,
+      "entry_spread": 0.01,
+      "entry_price": 0.46,
+      "shares": 47.93481743,
+      "gross_trade": 22.050016,
+      "entry_fee": 0.59535,
+      "cash_outlay": 22.645366,
+      "fee_rate": 0.05,
+      "momentum_24h": 0.35,
+      "momentum_6h": 0.27,
+      "liquidity": 57519.01,
+      "volume_24h": 143035.91,
+      "end_date": "2026-10-01",
+      "paper": true,
+      "mark_price": 0.465,
+      "mark_spread": 0.01,
+      "mark_net_liquidation": 21.454666,
+      "closed_at": "2026-09-18T23:40:52+00:00",
+      "exit_price": 0.43,
+      "exit_fee": 0.58744,
+      "net_proceeds": 20.024531,
+      "pnl": -2.620835,
+      "return_pct": -11.5734,
+      "close_reason": "stop_loss"
     }
   ],
   "audit": [
@@ -8347,6 +8354,25 @@
       "cash_outlay": 22.629486,
       "momentum_24h": -0.032,
       "momentum_6h": -0.0265
+    },
+    {
+      "ts": "2026-09-18T23:40:07+00:00",
+      "event": "TICK_ERROR",
+      "error": "URLError: <urlopen error [Errno 104] Connection reset by peer>"
+    },
+    {
+      "ts": "2026-09-18T23:40:22+00:00",
+      "event": "TICK_ERROR",
+      "error": "URLError: <urlopen error [Errno 104] Connection reset by peer>"
+    },
+    {
+      "ts": "2026-09-18T23:40:52+00:00",
+      "event": "PAPER_CLOSE",
+      "market_id": "4052419",
+      "outcome": "YES",
+      "exit_price": 0.43,
+      "pnl": -2.620835,
+      "reason": "stop_loss"
     }
   ]
 }

@@ -8,13 +8,13 @@
   "starting_equity": 1000.0,
   "target_equity": 1000000000.0,
   "bankrupt_equity": 0.0,
-  "cash": 259.872946,
-  "equity": 451.239441,
-  "realized_pnl": -554.340158,
-  "unrealized_pnl": 5.579599,
-  "fees_paid": 275.37329,
-  "ticks": 278,
-  "last_tick_at": "2026-09-18T19:42:13+00:00",
+  "cash": 260.711999,
+  "equity": 452.16153,
+  "realized_pnl": -554.516804,
+  "unrealized_pnl": 6.678334,
+  "fees_paid": 276.05074,
+  "ticks": 279,
+  "last_tick_at": "2026-09-18T21:52:22+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -48,32 +48,6 @@
       "mark_net_liquidation": 54.68445
     },
     {
-      "position_id": "562828-YES-1789507572",
-      "market_id": "562828",
-      "question": "2026 Balance of Power: D Senate, D House",
-      "category": "Other",
-      "outcome": "YES",
-      "token_id": "34722410608062854697106861099776685947172185964394483545370684749662285977831",
-      "opened_at": "2026-09-15T21:26:11+00:00",
-      "entry_mid": 0.565,
-      "entry_spread": 0.01,
-      "entry_price": 0.57,
-      "shares": 40.60967557,
-      "gross_trade": 23.147515,
-      "entry_fee": 0.49767,
-      "cash_outlay": 23.645185,
-      "fee_rate": 0.05,
-      "momentum_24h": 0.04,
-      "momentum_6h": 0.02,
-      "liquidity": 294395.73,
-      "volume_24h": 99236.01,
-      "end_date": "2026-11-03",
-      "paper": true,
-      "mark_price": 0.605,
-      "mark_spread": 0.01,
-      "mark_net_liquidation": 23.878485
-    },
-    {
       "position_id": "601826-YES-1789538698",
       "market_id": "601826",
       "question": "Will Flávio Bolsonaro win the 2026 Brazilian presidential election?",
@@ -95,9 +69,9 @@
       "volume_24h": 112132.69,
       "end_date": "2026-10-04",
       "paper": true,
-      "mark_price": 0.5555,
-      "mark_spread": 0.001,
-      "mark_net_liquidation": 22.608396
+      "mark_price": 0.565,
+      "mark_spread": 0.002,
+      "mark_net_liquidation": 22.985592
     },
     {
       "position_id": "2589813-YES-1789646407",
@@ -147,9 +121,9 @@
       "volume_24h": 436597.28,
       "end_date": "2026-09-30",
       "paper": true,
-      "mark_price": 0.795,
+      "mark_price": 0.825,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 22.904256
+      "mark_net_liquidation": 23.810078
     },
     {
       "position_id": "2589812-NO-1789751883",
@@ -199,9 +173,35 @@
       "volume_24h": 143035.91,
       "end_date": "2026-10-01",
       "paper": true,
-      "mark_price": 0.455,
+      "mark_price": 0.465,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 20.977478
+      "mark_net_liquidation": 21.454666
+    },
+    {
+      "position_id": "1130016-NO-1789768343",
+      "market_id": "1130016",
+      "question": "Will New People (NL) gain the most seats in the next Russian parliamentary election?",
+      "category": "Other",
+      "outcome": "NO",
+      "token_id": "94909497204791422218953326989433848804063787259853889845128791095089809741999",
+      "opened_at": "2026-09-18T21:52:22+00:00",
+      "entry_mid": 0.833,
+      "entry_spread": 0.002,
+      "entry_price": 0.834,
+      "shares": 26.91031941,
+      "gross_trade": 22.443206,
+      "entry_fee": 0.18628,
+      "cash_outlay": 22.629486,
+      "fee_rate": 0.05,
+      "momentum_24h": -0.032,
+      "momentum_6h": -0.0265,
+      "liquidity": 374644.6,
+      "volume_24h": 336140.53,
+      "end_date": "2026-09-30",
+      "paper": true,
+      "mark_price": 0.833,
+      "mark_spread": 0.002,
+      "mark_net_liquidation": 22.201316
     }
   ],
   "closed_positions": [
@@ -5187,6 +5187,39 @@
       "pnl": 3.64657,
       "return_pct": 15.9307,
       "close_reason": "take_profit"
+    },
+    {
+      "position_id": "562828-YES-1789507572",
+      "market_id": "562828",
+      "question": "2026 Balance of Power: D Senate, D House",
+      "category": "Other",
+      "outcome": "YES",
+      "token_id": "34722410608062854697106861099776685947172185964394483545370684749662285977831",
+      "opened_at": "2026-09-15T21:26:11+00:00",
+      "entry_mid": 0.565,
+      "entry_spread": 0.01,
+      "entry_price": 0.57,
+      "shares": 40.60967557,
+      "gross_trade": 23.147515,
+      "entry_fee": 0.49767,
+      "cash_outlay": 23.645185,
+      "fee_rate": 0.05,
+      "momentum_24h": 0.04,
+      "momentum_6h": 0.02,
+      "liquidity": 294395.73,
+      "volume_24h": 99236.01,
+      "end_date": "2026-11-03",
+      "paper": true,
+      "mark_price": 0.605,
+      "mark_spread": 0.01,
+      "mark_net_liquidation": 23.878485,
+      "closed_at": "2026-09-18T21:52:22+00:00",
+      "exit_price": 0.59,
+      "exit_fee": 0.49117,
+      "net_proceeds": 23.468539,
+      "pnl": -0.176646,
+      "return_pct": -0.7471,
+      "close_reason": "max_hold"
     }
   ],
   "audit": [
@@ -8294,6 +8327,26 @@
       "cash_outlay": 22.645366,
       "momentum_24h": 0.35,
       "momentum_6h": 0.27
+    },
+    {
+      "ts": "2026-09-18T21:52:22+00:00",
+      "event": "PAPER_CLOSE",
+      "market_id": "562828",
+      "outcome": "YES",
+      "exit_price": 0.59,
+      "pnl": -0.176646,
+      "reason": "max_hold"
+    },
+    {
+      "ts": "2026-09-18T21:52:22+00:00",
+      "event": "PAPER_OPEN",
+      "market_id": "1130016",
+      "question": "Will New People (NL) gain the most seats in the next Russian parliamentary election?",
+      "outcome": "NO",
+      "entry_price": 0.834,
+      "cash_outlay": 22.629486,
+      "momentum_24h": -0.032,
+      "momentum_6h": -0.0265
     }
   ]
 }

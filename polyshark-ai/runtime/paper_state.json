@@ -8,13 +8,13 @@
   "starting_equity": 1000.0,
   "target_equity": 1000000000.0,
   "bankrupt_equity": 0.0,
-  "cash": 237.967644,
-  "equity": 454.947467,
-  "realized_pnl": -551.631134,
-  "unrealized_pnl": 6.578601,
-  "fees_paid": 269.72986,
-  "ticks": 272,
-  "last_tick_at": "2026-09-17T22:27:43+00:00",
+  "cash": 240.952505,
+  "equity": 453.036086,
+  "realized_pnl": -550.003009,
+  "unrealized_pnl": 3.039095,
+  "fees_paid": 270.46591,
+  "ticks": 273,
+  "last_tick_at": "2026-09-18T00:37:53+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -48,32 +48,6 @@
       "mark_net_liquidation": 54.68445
     },
     {
-      "position_id": "1163699-NO-1789427400",
-      "market_id": "1163699",
-      "question": "Clarity Act (H.R.3633) signed into law in 2026?",
-      "category": "Other",
-      "outcome": "NO",
-      "token_id": "29633826701713552120011280893309822625942861174174976276686142480636225243753",
-      "opened_at": "2026-09-14T23:09:58+00:00",
-      "entry_mid": 0.845,
-      "entry_spread": 0.01,
-      "entry_price": 0.85,
-      "shares": 28.13845862,
-      "gross_trade": 23.91769,
-      "entry_fee": 0.17938,
-      "cash_outlay": 24.09707,
-      "fee_rate": 0.05,
-      "momentum_24h": -0.08,
-      "momentum_6h": -0.12,
-      "liquidity": 461648.81,
-      "volume_24h": 1369320.71,
-      "end_date": "2027-01-01",
-      "paper": true,
-      "mark_price": 0.9205,
-      "mark_spread": 0.001,
-      "mark_net_liquidation": 25.783832
-    },
-    {
       "position_id": "2467207-NO-1789479383",
       "market_id": "2467207",
       "question": "Will Bitcoin reach $85,000 by December 31, 2026?",
@@ -95,9 +69,9 @@
       "volume_24h": 96297.8,
       "end_date": "2027-01-01",
       "paper": true,
-      "mark_price": 0.395,
-      "mark_spread": 0.01,
-      "mark_net_liquidation": 22.801277
+      "mark_price": 0.39,
+      "mark_spread": 0.02,
+      "mark_net_liquidation": 22.205176
     },
     {
       "position_id": "562828-YES-1789507572",
@@ -148,8 +122,8 @@
       "end_date": "2026-10-04",
       "paper": true,
       "mark_price": 0.5435,
-      "mark_spread": 0.003,
-      "mark_net_liquidation": 22.064149
+      "mark_spread": 0.001,
+      "mark_net_liquidation": 22.105992
     },
     {
       "position_id": "2589812-NO-1789608498",
@@ -199,9 +173,9 @@
       "volume_24h": 795328.65,
       "end_date": "2026-10-28",
       "paper": true,
-      "mark_price": 0.495,
+      "mark_price": 0.505,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 22.555665
+      "mark_net_liquidation": 23.02779
     },
     {
       "position_id": "1130012-YES-1789674685",
@@ -228,6 +202,32 @@
       "mark_price": 0.765,
       "mark_spread": 0.01,
       "mark_net_liquidation": 22.001074
+    },
+    {
+      "position_id": "1364105-YES-1789691875",
+      "market_id": "1364105",
+      "question": "Will SPD win the most seats in the 2026 Mecklenburg-Vorpommern parliamentary elections?",
+      "category": "Other",
+      "outcome": "YES",
+      "token_id": "25008791305942260763315945325578111861295232893525817968684747264190717299294",
+      "opened_at": "2026-09-18T00:37:53+00:00",
+      "entry_mid": 0.425,
+      "entry_spread": 0.01,
+      "entry_price": 0.43,
+      "shares": 51.41905654,
+      "gross_trade": 22.110194,
+      "entry_fee": 0.63014,
+      "cash_outlay": 22.740334,
+      "fee_rate": 0.05,
+      "momentum_24h": 0.2,
+      "momentum_6h": 0.2,
+      "liquidity": 104964.41,
+      "volume_24h": 162710.36,
+      "end_date": "2026-09-20",
+      "paper": true,
+      "mark_price": 0.425,
+      "mark_spread": 0.01,
+      "mark_net_liquidation": 20.969724
     }
   ],
   "closed_positions": [
@@ -5015,6 +5015,39 @@
       "pnl": -2.623956,
       "return_pct": -11.3534,
       "close_reason": "stop_loss"
+    },
+    {
+      "position_id": "1163699-NO-1789427400",
+      "market_id": "1163699",
+      "question": "Clarity Act (H.R.3633) signed into law in 2026?",
+      "category": "Other",
+      "outcome": "NO",
+      "token_id": "29633826701713552120011280893309822625942861174174976276686142480636225243753",
+      "opened_at": "2026-09-14T23:09:58+00:00",
+      "entry_mid": 0.845,
+      "entry_spread": 0.01,
+      "entry_price": 0.85,
+      "shares": 28.13845862,
+      "gross_trade": 23.91769,
+      "entry_fee": 0.17938,
+      "cash_outlay": 24.09707,
+      "fee_rate": 0.05,
+      "momentum_24h": -0.08,
+      "momentum_6h": -0.12,
+      "liquidity": 461648.81,
+      "volume_24h": 1369320.71,
+      "end_date": "2027-01-01",
+      "paper": true,
+      "mark_price": 0.9205,
+      "mark_spread": 0.001,
+      "mark_net_liquidation": 25.783832,
+      "closed_at": "2026-09-18T00:37:53+00:00",
+      "exit_price": 0.918,
+      "exit_fee": 0.10591,
+      "net_proceeds": 25.725195,
+      "pnl": 1.628125,
+      "return_pct": 6.7565,
+      "close_reason": "max_hold"
     }
   ],
   "audit": [
@@ -8013,6 +8046,26 @@
       "cash_outlay": 22.820748,
       "momentum_24h": 0.03,
       "momentum_6h": 0.02
+    },
+    {
+      "ts": "2026-09-18T00:37:53+00:00",
+      "event": "PAPER_CLOSE",
+      "market_id": "1163699",
+      "outcome": "NO",
+      "exit_price": 0.918,
+      "pnl": 1.628125,
+      "reason": "max_hold"
+    },
+    {
+      "ts": "2026-09-18T00:37:53+00:00",
+      "event": "PAPER_OPEN",
+      "market_id": "1364105",
+      "question": "Will SPD win the most seats in the 2026 Mecklenburg-Vorpommern parliamentary elections?",
+      "outcome": "YES",
+      "entry_price": 0.43,
+      "cash_outlay": 22.740334,
+      "momentum_24h": 0.2,
+      "momentum_6h": 0.2
     }
   ]
 }

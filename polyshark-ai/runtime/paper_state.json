@@ -8,13 +8,13 @@
   "starting_equity": 1000.0,
   "target_equity": 1000000000.0,
   "bankrupt_equity": 0.0,
-  "cash": 280.73653,
-  "equity": 447.425819,
-  "realized_pnl": -557.137639,
-  "unrealized_pnl": 4.563458,
-  "fees_paid": 276.63818,
-  "ticks": 281,
-  "last_tick_at": "2026-09-19T01:35:11+00:00",
+  "cash": 303.84793,
+  "equity": 447.606043,
+  "realized_pnl": -557.414918,
+  "unrealized_pnl": 5.020961,
+  "fees_paid": 277.14961,
+  "ticks": 282,
+  "last_tick_at": "2026-09-19T06:33:12+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -46,32 +46,6 @@
       "mark_price": 0.9775,
       "mark_spread": 0.013,
       "mark_net_liquidation": 54.68445
-    },
-    {
-      "position_id": "601826-YES-1789538698",
-      "market_id": "601826",
-      "question": "Will Flávio Bolsonaro win the 2026 Brazilian presidential election?",
-      "category": "Other",
-      "outcome": "YES",
-      "token_id": "109876868437950584369987384406356259939519193117253465815665152916226511121427",
-      "opened_at": "2026-09-16T06:04:57+00:00",
-      "entry_mid": 0.5455,
-      "entry_spread": 0.007,
-      "entry_price": 0.549,
-      "shares": 41.66283976,
-      "gross_trade": 22.872899,
-      "entry_fee": 0.51578,
-      "cash_outlay": 23.388679,
-      "fee_rate": 0.05,
-      "momentum_24h": 0.0265,
-      "momentum_6h": 0.015,
-      "liquidity": 317945.42,
-      "volume_24h": 112132.69,
-      "end_date": "2026-10-04",
-      "paper": true,
-      "mark_price": 0.5665,
-      "mark_spread": 0.001,
-      "mark_net_liquidation": 23.069457
     },
     {
       "position_id": "2589813-YES-1789646407",
@@ -173,9 +147,9 @@
       "volume_24h": 336140.53,
       "end_date": "2026-09-30",
       "paper": true,
-      "mark_price": 0.7755,
-      "mark_spread": 0.001,
-      "mark_net_liquidation": 20.620878
+      "mark_price": 0.7835,
+      "mark_spread": 0.007,
+      "mark_net_liquidation": 20.759159
     }
   ],
   "closed_positions": [
@@ -5227,6 +5201,39 @@
       "pnl": -2.620835,
       "return_pct": -11.5734,
       "close_reason": "stop_loss"
+    },
+    {
+      "position_id": "601826-YES-1789538698",
+      "market_id": "601826",
+      "question": "Will Flávio Bolsonaro win the 2026 Brazilian presidential election?",
+      "category": "Other",
+      "outcome": "YES",
+      "token_id": "109876868437950584369987384406356259939519193117253465815665152916226511121427",
+      "opened_at": "2026-09-16T06:04:57+00:00",
+      "entry_mid": 0.5455,
+      "entry_spread": 0.007,
+      "entry_price": 0.549,
+      "shares": 41.66283976,
+      "gross_trade": 22.872899,
+      "entry_fee": 0.51578,
+      "cash_outlay": 23.388679,
+      "fee_rate": 0.05,
+      "momentum_24h": 0.0265,
+      "momentum_6h": 0.015,
+      "liquidity": 317945.42,
+      "volume_24h": 112132.69,
+      "end_date": "2026-10-04",
+      "paper": true,
+      "mark_price": 0.5665,
+      "mark_spread": 0.001,
+      "mark_net_liquidation": 23.069457,
+      "closed_at": "2026-09-19T06:33:12+00:00",
+      "exit_price": 0.567,
+      "exit_fee": 0.51143,
+      "net_proceeds": 23.1114,
+      "pnl": -0.277279,
+      "return_pct": -1.1855,
+      "close_reason": "max_hold"
     }
   ],
   "audit": [
@@ -8373,6 +8380,15 @@
       "exit_price": 0.43,
       "pnl": -2.620835,
       "reason": "stop_loss"
+    },
+    {
+      "ts": "2026-09-19T06:33:12+00:00",
+      "event": "PAPER_CLOSE",
+      "market_id": "601826",
+      "outcome": "YES",
+      "exit_price": 0.567,
+      "pnl": -0.277279,
+      "reason": "max_hold"
     }
   ]
 }

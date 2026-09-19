@@ -8,13 +8,13 @@
   "starting_equity": 1000.0,
   "target_equity": 1000000000.0,
   "bankrupt_equity": 0.0,
-  "cash": 279.117825,
-  "equity": 447.906369,
-  "realized_pnl": -560.031183,
-  "unrealized_pnl": 7.937552,
-  "fees_paid": 278.79937,
-  "ticks": 285,
-  "last_tick_at": "2026-09-19T17:25:14+00:00",
+  "cash": 292.264124,
+  "equity": 440.197346,
+  "realized_pnl": -569.218651,
+  "unrealized_pnl": 9.415997,
+  "fees_paid": 279.37751,
+  "ticks": 286,
+  "last_tick_at": "2026-09-19T19:26:07+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -95,9 +95,9 @@
       "volume_24h": 436597.28,
       "end_date": "2026-09-30",
       "paper": true,
-      "mark_price": 0.735,
+      "mark_price": 0.825,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 21.100523
+      "mark_net_liquidation": 23.810078
     },
     {
       "position_id": "2589812-NO-1789751883",
@@ -147,35 +147,9 @@
       "volume_24h": 152591.32,
       "end_date": "2026-10-01",
       "paper": true,
-      "mark_price": 0.555,
+      "mark_price": 0.495,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 25.5026
-    },
-    {
-      "position_id": "1130016-YES-1789828601",
-      "market_id": "1130016",
-      "question": "Will New People (NL) gain the most seats in the next Russian parliamentary election?",
-      "category": "Other",
-      "outcome": "YES",
-      "token_id": "11579523374077486340625849389871632811698420338620172235121664865203221472748",
-      "opened_at": "2026-09-19T14:36:40+00:00",
-      "entry_mid": 0.2425,
-      "entry_spread": 0.009,
-      "entry_price": 0.247,
-      "shares": 87.13929833,
-      "gross_trade": 21.523407,
-      "entry_fee": 0.81036,
-      "cash_outlay": 22.333767,
-      "fee_rate": 0.05,
-      "momentum_24h": 0.05,
-      "momentum_6h": 0.0265,
-      "liquidity": 273616.5,
-      "volume_24h": 574853.12,
-      "end_date": "2026-09-30",
-      "paper": true,
-      "mark_price": 0.248,
-      "mark_spread": 0.002,
-      "mark_net_liquidation": 20.713047
+      "mark_net_liquidation": 22.65077
     }
   ],
   "closed_positions": [
@@ -5293,6 +5267,39 @@
       "pnl": -2.616265,
       "return_pct": -11.5613,
       "close_reason": "stop_loss"
+    },
+    {
+      "position_id": "1130016-YES-1789828601",
+      "market_id": "1130016",
+      "question": "Will New People (NL) gain the most seats in the next Russian parliamentary election?",
+      "category": "Other",
+      "outcome": "YES",
+      "token_id": "11579523374077486340625849389871632811698420338620172235121664865203221472748",
+      "opened_at": "2026-09-19T14:36:40+00:00",
+      "entry_mid": 0.2425,
+      "entry_spread": 0.009,
+      "entry_price": 0.247,
+      "shares": 87.13929833,
+      "gross_trade": 21.523407,
+      "entry_fee": 0.81036,
+      "cash_outlay": 22.333767,
+      "fee_rate": 0.05,
+      "momentum_24h": 0.05,
+      "momentum_6h": 0.0265,
+      "liquidity": 273616.5,
+      "volume_24h": 574853.12,
+      "end_date": "2026-09-30",
+      "paper": true,
+      "mark_price": 0.248,
+      "mark_spread": 0.002,
+      "mark_net_liquidation": 20.713047,
+      "closed_at": "2026-09-19T19:26:07+00:00",
+      "exit_price": 0.1575,
+      "exit_fee": 0.57814,
+      "net_proceeds": 13.146299,
+      "pnl": -9.187468,
+      "return_pct": -41.1371,
+      "close_reason": "stop_loss"
     }
   ],
   "audit": [
@@ -8479,6 +8486,15 @@
       "cash_outlay": 22.333767,
       "momentum_24h": 0.05,
       "momentum_6h": 0.0265
+    },
+    {
+      "ts": "2026-09-19T19:26:07+00:00",
+      "event": "PAPER_CLOSE",
+      "market_id": "1130016",
+      "outcome": "YES",
+      "exit_price": 0.1575,
+      "pnl": -9.187468,
+      "reason": "stop_loss"
     }
   ]
 }

@@ -8,13 +8,13 @@
   "starting_equity": 1000.0,
   "target_equity": 1000000000.0,
   "bankrupt_equity": 0.0,
-  "cash": 344.505021,
-  "equity": 420.58187,
+  "cash": 323.475925,
+  "equity": 419.359037,
   "realized_pnl": -584.997546,
-  "unrealized_pnl": 5.579416,
-  "fees_paid": 284.01758,
-  "ticks": 295,
-  "last_tick_at": "2026-09-20T21:54:56+00:00",
+  "unrealized_pnl": 4.356583,
+  "fees_paid": 284.45011,
+  "ticks": 296,
+  "last_tick_at": "2026-09-20T23:44:16+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -72,6 +72,32 @@
       "mark_price": 0.565,
       "mark_spread": 0.01,
       "mark_net_liquidation": 21.3924
+    },
+    {
+      "position_id": "4339505-YES-1789947857",
+      "market_id": "4339505",
+      "question": "Will CF Pachuca win on 2026-09-20?",
+      "category": "Other",
+      "outcome": "YES",
+      "token_id": "87164451906770413099080527592556403332060374424163395278719866621531240572769",
+      "opened_at": "2026-09-20T23:44:16+00:00",
+      "entry_mid": 0.575,
+      "entry_spread": 0.01,
+      "entry_price": 0.58,
+      "shares": 35.51132004,
+      "gross_trade": 20.596566,
+      "entry_fee": 0.43253,
+      "cash_outlay": 21.029096,
+      "fee_rate": 0.05,
+      "momentum_24h": 0.04,
+      "momentum_6h": 0.01,
+      "liquidity": 127948.26,
+      "volume_24h": 170034.17,
+      "end_date": "2026-09-21",
+      "paper": true,
+      "mark_price": 0.575,
+      "mark_spread": 0.01,
+      "mark_net_liquidation": 19.806262
     }
   ],
   "closed_positions": [
@@ -8702,6 +8728,17 @@
       "exit_price": 0.451,
       "pnl": -5.840576,
       "reason": "stop_loss"
+    },
+    {
+      "ts": "2026-09-20T23:44:16+00:00",
+      "event": "PAPER_OPEN",
+      "market_id": "4339505",
+      "question": "Will CF Pachuca win on 2026-09-20?",
+      "outcome": "YES",
+      "entry_price": 0.58,
+      "cash_outlay": 21.029096,
+      "momentum_24h": 0.04,
+      "momentum_6h": 0.01
     }
   ]
 }

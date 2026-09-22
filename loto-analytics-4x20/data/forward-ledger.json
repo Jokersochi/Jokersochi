@@ -27215,7 +27215,49 @@
               ]
             }
           ],
-          "fingerprint": "fea54155ade992e3"
+          "fingerprint": "fea54155ade992e3",
+          "result": {
+            "tickets": [
+              {
+                "fieldA": 2,
+                "fieldB": 3,
+                "total": 5,
+                "minimumWinPattern": true,
+                "balanced22": true
+              },
+              {
+                "fieldA": 1,
+                "fieldB": 1,
+                "total": 2,
+                "minimumWinPattern": false,
+                "balanced22": false
+              },
+              {
+                "fieldA": 0,
+                "fieldB": 0,
+                "total": 0,
+                "minimumWinPattern": false,
+                "balanced22": false
+              },
+              {
+                "fieldA": 0,
+                "fieldB": 0,
+                "total": 0,
+                "minimumWinPattern": false,
+                "balanced22": false
+              },
+              {
+                "fieldA": 1,
+                "fieldB": 0,
+                "total": 1,
+                "minimumWinPattern": false,
+                "balanced22": false
+              }
+            ],
+            "bestTotal": 5,
+            "minimumWinPatternTickets": 1,
+            "balanced22Tickets": 1
+          }
         },
         {
           "strategyKey": "balanced20",
@@ -27293,7 +27335,49 @@
               ]
             }
           ],
-          "fingerprint": "c4005c6330b69011"
+          "fingerprint": "c4005c6330b69011",
+          "result": {
+            "tickets": [
+              {
+                "fieldA": 1,
+                "fieldB": 1,
+                "total": 2,
+                "minimumWinPattern": false,
+                "balanced22": false
+              },
+              {
+                "fieldA": 0,
+                "fieldB": 0,
+                "total": 0,
+                "minimumWinPattern": false,
+                "balanced22": false
+              },
+              {
+                "fieldA": 1,
+                "fieldB": 2,
+                "total": 3,
+                "minimumWinPattern": true,
+                "balanced22": false
+              },
+              {
+                "fieldA": 1,
+                "fieldB": 1,
+                "total": 2,
+                "minimumWinPattern": false,
+                "balanced22": false
+              },
+              {
+                "fieldA": 1,
+                "fieldB": 0,
+                "total": 1,
+                "minimumWinPattern": false,
+                "balanced22": false
+              }
+            ],
+            "bestTotal": 3,
+            "minimumWinPatternTickets": 1,
+            "balanced22Tickets": 0
+          }
         },
         {
           "strategyKey": "ensemble",
@@ -27371,7 +27455,49 @@
               ]
             }
           ],
-          "fingerprint": "2483fac1b4323218"
+          "fingerprint": "2483fac1b4323218",
+          "result": {
+            "tickets": [
+              {
+                "fieldA": 1,
+                "fieldB": 1,
+                "total": 2,
+                "minimumWinPattern": false,
+                "balanced22": false
+              },
+              {
+                "fieldA": 0,
+                "fieldB": 0,
+                "total": 0,
+                "minimumWinPattern": false,
+                "balanced22": false
+              },
+              {
+                "fieldA": 1,
+                "fieldB": 2,
+                "total": 3,
+                "minimumWinPattern": true,
+                "balanced22": false
+              },
+              {
+                "fieldA": 1,
+                "fieldB": 1,
+                "total": 2,
+                "minimumWinPattern": false,
+                "balanced22": false
+              },
+              {
+                "fieldA": 1,
+                "fieldB": 0,
+                "total": 1,
+                "minimumWinPattern": false,
+                "balanced22": false
+              }
+            ],
+            "bestTotal": 3,
+            "minimumWinPatternTickets": 1,
+            "balanced22Tickets": 0
+          }
         },
         {
           "strategyKey": "portfolio5",
@@ -27449,7 +27575,49 @@
               ]
             }
           ],
-          "fingerprint": "07cf81458ff5f8e7"
+          "fingerprint": "07cf81458ff5f8e7",
+          "result": {
+            "tickets": [
+              {
+                "fieldA": 2,
+                "fieldB": 1,
+                "total": 3,
+                "minimumWinPattern": true,
+                "balanced22": false
+              },
+              {
+                "fieldA": 0,
+                "fieldB": 1,
+                "total": 1,
+                "minimumWinPattern": false,
+                "balanced22": false
+              },
+              {
+                "fieldA": 1,
+                "fieldB": 0,
+                "total": 1,
+                "minimumWinPattern": false,
+                "balanced22": false
+              },
+              {
+                "fieldA": 1,
+                "fieldB": 0,
+                "total": 1,
+                "minimumWinPattern": false,
+                "balanced22": false
+              },
+              {
+                "fieldA": 1,
+                "fieldB": 1,
+                "total": 2,
+                "minimumWinPattern": false,
+                "balanced22": false
+              }
+            ],
+            "bestTotal": 3,
+            "minimumWinPatternTickets": 1,
+            "balanced22Tickets": 0
+          }
         },
         {
           "strategyKey": "random",
@@ -27527,12 +27695,475 @@
               ]
             }
           ],
-          "fingerprint": "b4ff184fc99d8664"
+          "fingerprint": "b4ff184fc99d8664",
+          "result": {
+            "tickets": [
+              {
+                "fieldA": 1,
+                "fieldB": 1,
+                "total": 2,
+                "minimumWinPattern": false,
+                "balanced22": false
+              },
+              {
+                "fieldA": 0,
+                "fieldB": 2,
+                "total": 2,
+                "minimumWinPattern": false,
+                "balanced22": false
+              },
+              {
+                "fieldA": 2,
+                "fieldB": 2,
+                "total": 4,
+                "minimumWinPattern": true,
+                "balanced22": true
+              },
+              {
+                "fieldA": 1,
+                "fieldB": 0,
+                "total": 1,
+                "minimumWinPattern": false,
+                "balanced22": false
+              },
+              {
+                "fieldA": 2,
+                "fieldB": 1,
+                "total": 3,
+                "minimumWinPattern": true,
+                "balanced22": false
+              }
+            ],
+            "bestTotal": 4,
+            "minimumWinPatternTickets": 2,
+            "balanced22Tickets": 1
+          }
         }
       ],
       "id": "15321:9add786e0bed380e",
       "fingerprint": "9add786e0bed380e",
       "lockedAt": "2026-09-22T14:56:47.917Z",
+      "locked": true,
+      "status": "checked",
+      "checkedAt": "2026-09-22T18:56:34.006Z",
+      "result": {
+        "drawNumber": 15321,
+        "fieldA": [
+          4,
+          19,
+          8,
+          20
+        ],
+        "fieldB": [
+          4,
+          3,
+          19,
+          14
+        ]
+      },
+      "financials": {
+        "available": false,
+        "reason": "В архиве комбинаций нет полной официальной таблицы выплат по каждому билету; финансовый ROI не подставляется по предположениям."
+      }
+    },
+    {
+      "targetDraw": 15327,
+      "sourceLast": 15326,
+      "strategies": [
+        {
+          "strategyKey": "adaptive20",
+          "targetDraw": 15327,
+          "sourceLast": 15326,
+          "tickets": [
+            {
+              "fieldA": [
+                10,
+                11,
+                12,
+                14
+              ],
+              "fieldB": [
+                4,
+                5,
+                14,
+                20
+              ]
+            },
+            {
+              "fieldA": [
+                1,
+                3,
+                16,
+                18
+              ],
+              "fieldB": [
+                9,
+                11,
+                13,
+                16
+              ]
+            },
+            {
+              "fieldA": [
+                4,
+                5,
+                7,
+                17
+              ],
+              "fieldB": [
+                1,
+                10,
+                17,
+                19
+              ]
+            },
+            {
+              "fieldA": [
+                2,
+                8,
+                15,
+                19
+              ],
+              "fieldB": [
+                2,
+                7,
+                8,
+                12
+              ]
+            },
+            {
+              "fieldA": [
+                6,
+                9,
+                13,
+                20
+              ],
+              "fieldB": [
+                3,
+                6,
+                15,
+                18
+              ]
+            }
+          ],
+          "fingerprint": "d182c61329ef6e8d"
+        },
+        {
+          "strategyKey": "balanced20",
+          "targetDraw": 15327,
+          "sourceLast": 15326,
+          "tickets": [
+            {
+              "fieldA": [
+                1,
+                2,
+                8,
+                15
+              ],
+              "fieldB": [
+                2,
+                4,
+                11,
+                13
+              ]
+            },
+            {
+              "fieldA": [
+                3,
+                9,
+                10,
+                16
+              ],
+              "fieldB": [
+                7,
+                9,
+                18,
+                20
+              ]
+            },
+            {
+              "fieldA": [
+                4,
+                11,
+                17,
+                18
+              ],
+              "fieldB": [
+                3,
+                5,
+                14,
+                16
+              ]
+            },
+            {
+              "fieldA": [
+                5,
+                6,
+                12,
+                19
+              ],
+              "fieldB": [
+                1,
+                10,
+                12,
+                19
+              ]
+            },
+            {
+              "fieldA": [
+                7,
+                13,
+                14,
+                20
+              ],
+              "fieldB": [
+                6,
+                8,
+                15,
+                17
+              ]
+            }
+          ],
+          "fingerprint": "ef54015dcd39b578"
+        },
+        {
+          "strategyKey": "ensemble",
+          "targetDraw": 15327,
+          "sourceLast": 15326,
+          "tickets": [
+            {
+              "fieldA": [
+                10,
+                11,
+                12,
+                14
+              ],
+              "fieldB": [
+                4,
+                5,
+                14,
+                20
+              ]
+            },
+            {
+              "fieldA": [
+                1,
+                3,
+                16,
+                18
+              ],
+              "fieldB": [
+                9,
+                11,
+                13,
+                16
+              ]
+            },
+            {
+              "fieldA": [
+                4,
+                5,
+                7,
+                17
+              ],
+              "fieldB": [
+                1,
+                10,
+                17,
+                19
+              ]
+            },
+            {
+              "fieldA": [
+                2,
+                8,
+                15,
+                19
+              ],
+              "fieldB": [
+                2,
+                7,
+                8,
+                12
+              ]
+            },
+            {
+              "fieldA": [
+                6,
+                9,
+                13,
+                20
+              ],
+              "fieldB": [
+                3,
+                6,
+                15,
+                18
+              ]
+            }
+          ],
+          "fingerprint": "09a072f58f242077"
+        },
+        {
+          "strategyKey": "portfolio5",
+          "targetDraw": 15327,
+          "sourceLast": 15326,
+          "tickets": [
+            {
+              "fieldA": [
+                10,
+                16,
+                17,
+                19
+              ],
+              "fieldB": [
+                5,
+                9,
+                10,
+                20
+              ]
+            },
+            {
+              "fieldA": [
+                4,
+                13,
+                15,
+                20
+              ],
+              "fieldB": [
+                5,
+                6,
+                8,
+                9
+              ]
+            },
+            {
+              "fieldA": [
+                10,
+                13,
+                15,
+                17
+              ],
+              "fieldB": [
+                6,
+                7,
+                8,
+                18
+              ]
+            },
+            {
+              "fieldA": [
+                4,
+                16,
+                19,
+                20
+              ],
+              "fieldB": [
+                7,
+                10,
+                18,
+                20
+              ]
+            },
+            {
+              "fieldA": [
+                4,
+                10,
+                15,
+                19
+              ],
+              "fieldB": [
+                5,
+                7,
+                8,
+                20
+              ]
+            }
+          ],
+          "fingerprint": "b14487c2d62944b9"
+        },
+        {
+          "strategyKey": "random",
+          "targetDraw": 15327,
+          "sourceLast": 15326,
+          "tickets": [
+            {
+              "fieldA": [
+                1,
+                12,
+                15,
+                20
+              ],
+              "fieldB": [
+                3,
+                13,
+                15,
+                16
+              ]
+            },
+            {
+              "fieldA": [
+                3,
+                7,
+                14,
+                18
+              ],
+              "fieldB": [
+                2,
+                7,
+                15,
+                19
+              ]
+            },
+            {
+              "fieldA": [
+                2,
+                3,
+                8,
+                10
+              ],
+              "fieldB": [
+                9,
+                14,
+                15,
+                18
+              ]
+            },
+            {
+              "fieldA": [
+                8,
+                9,
+                16,
+                19
+              ],
+              "fieldB": [
+                9,
+                10,
+                16,
+                18
+              ]
+            },
+            {
+              "fieldA": [
+                6,
+                11,
+                13,
+                16
+              ],
+              "fieldB": [
+                5,
+                7,
+                13,
+                16
+              ]
+            }
+          ],
+          "fingerprint": "5451d3c0783c3e0f"
+        }
+      ],
+      "id": "15327:d639528f6d5512a5",
+      "fingerprint": "d639528f6d5512a5",
+      "lockedAt": "2026-09-22T18:56:34.006Z",
       "locked": true,
       "status": "pending",
       "checkedAt": null,
@@ -27691,10 +28322,15 @@
     15317,
     15318,
     15319,
-    15320
+    15320,
+    15322,
+    15323,
+    15324,
+    15325,
+    15326
   ],
-  "updatedAt": "2026-09-22T14:56:47.917Z",
-  "verifiedArchiveLast": 15320,
+  "updatedAt": "2026-09-22T18:56:34.006Z",
+  "verifiedArchiveLast": 15326,
   "pending": 1,
-  "checked": 43
+  "checked": 44
 }

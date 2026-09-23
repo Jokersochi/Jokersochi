@@ -8,13 +8,13 @@
   "starting_equity": 1000.0,
   "target_equity": 1000000000.0,
   "bankrupt_equity": 0.0,
-  "cash": 184.851079,
-  "equity": 371.621601,
-  "realized_pnl": -633.851676,
-  "unrealized_pnl": 5.473277,
-  "fees_paid": 298.7455,
-  "ticks": 311,
-  "last_tick_at": "2026-09-23T14:24:16+00:00",
+  "cash": 188.120196,
+  "equity": 372.728693,
+  "realized_pnl": -630.638587,
+  "unrealized_pnl": 3.36728,
+  "fees_paid": 299.29071,
+  "ticks": 312,
+  "last_tick_at": "2026-09-23T18:28:30+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -95,8 +95,8 @@
       "volume_24h": 116708.47,
       "end_date": "2027-01-01",
       "paper": true,
-      "mark_price": 0.655,
-      "mark_spread": 0.01,
+      "mark_price": 0.665,
+      "mark_spread": 0.03,
       "mark_net_liquidation": 18.104301
     },
     {
@@ -126,32 +126,6 @@
       "mark_net_liquidation": 18.740545
     },
     {
-      "position_id": "2589812-NO-1790104034",
-      "market_id": "2589812",
-      "question": "Will there be no change in Fed interest rates after the October 2026 meeting?",
-      "category": "Other",
-      "outcome": "NO",
-      "token_id": "42038775866198212615491650114881818219665139981763207699110491615333273795415",
-      "opened_at": "2026-09-22T19:07:11+00:00",
-      "entry_mid": 0.545,
-      "entry_spread": 0.01,
-      "entry_price": 0.55,
-      "shares": 33.27207584,
-      "gross_trade": 18.299642,
-      "entry_fee": 0.41174,
-      "cash_outlay": 18.711382,
-      "fee_rate": 0.05,
-      "momentum_24h": -0.03,
-      "momentum_6h": -0.04,
-      "liquidity": 387647.08,
-      "volume_24h": 402211.08,
-      "end_date": "2026-10-29",
-      "paper": true,
-      "mark_price": 0.655,
-      "mark_spread": 0.01,
-      "mark_net_liquidation": 21.248379
-    },
-    {
       "position_id": "3128888-NO-1790139158",
       "market_id": "3128888",
       "question": "US announces end of Iranian blockade by October 31, 2026?",
@@ -173,9 +147,9 @@
       "volume_24h": 242177.78,
       "end_date": "2026-11-01",
       "paper": true,
-      "mark_price": 0.665,
+      "mark_price": 0.675,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 17.802321
+      "mark_net_liquidation": 18.081238
     },
     {
       "position_id": "4052418-NO-1790173458",
@@ -199,9 +173,9 @@
       "volume_24h": 110478.84,
       "end_date": "2026-10-01",
       "paper": true,
-      "mark_price": 0.555,
+      "mark_price": 0.575,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 17.549557
+      "mark_net_liquidation": 18.206322
     },
     {
       "position_id": "629040-YES-1790173458",
@@ -225,9 +199,35 @@
       "volume_24h": 166950.29,
       "end_date": "2026-12-31",
       "paper": true,
-      "mark_price": 0.582,
-      "mark_spread": 0.004,
-      "mark_net_liquidation": 17.794371
+      "mark_price": 0.5785,
+      "mark_spread": 0.005,
+      "mark_net_liquidation": 17.668039
+    },
+    {
+      "position_id": "4052417-NO-1790188111",
+      "market_id": "4052417",
+      "question": "Will Bitcoin reach $90,000 in September?",
+      "category": "Other",
+      "outcome": "NO",
+      "token_id": "21164311782025361639338919864638388434077877389091169845133206760657732867402",
+      "opened_at": "2026-09-23T18:28:30+00:00",
+      "entry_mid": 0.8075,
+      "entry_spread": 0.001,
+      "entry_price": 0.808,
+      "shares": 22.86876695,
+      "gross_trade": 18.477964,
+      "entry_fee": 0.17739,
+      "cash_outlay": 18.655354,
+      "fee_rate": 0.05,
+      "momentum_24h": -0.277,
+      "momentum_6h": -0.14,
+      "liquidity": 61897.23,
+      "volume_24h": 109741.22,
+      "end_date": "2026-10-01",
+      "paper": true,
+      "mark_price": 0.8075,
+      "mark_spread": 0.001,
+      "mark_net_liquidation": 18.277005
     }
   ],
   "closed_positions": [
@@ -6038,6 +6038,39 @@
       "pnl": -3.412489,
       "return_pct": -18.0814,
       "close_reason": "stop_loss"
+    },
+    {
+      "position_id": "2589812-NO-1790104034",
+      "market_id": "2589812",
+      "question": "Will there be no change in Fed interest rates after the October 2026 meeting?",
+      "category": "Other",
+      "outcome": "NO",
+      "token_id": "42038775866198212615491650114881818219665139981763207699110491615333273795415",
+      "opened_at": "2026-09-22T19:07:11+00:00",
+      "entry_mid": 0.545,
+      "entry_spread": 0.01,
+      "entry_price": 0.55,
+      "shares": 33.27207584,
+      "gross_trade": 18.299642,
+      "entry_fee": 0.41174,
+      "cash_outlay": 18.711382,
+      "fee_rate": 0.05,
+      "momentum_24h": -0.03,
+      "momentum_6h": -0.04,
+      "liquidity": 387647.08,
+      "volume_24h": 402211.08,
+      "end_date": "2026-10-29",
+      "paper": true,
+      "mark_price": 0.655,
+      "mark_spread": 0.01,
+      "mark_net_liquidation": 21.248379,
+      "closed_at": "2026-09-23T18:28:30+00:00",
+      "exit_price": 0.67,
+      "exit_fee": 0.36782,
+      "net_proceeds": 21.924471,
+      "pnl": 3.213089,
+      "return_pct": 17.1718,
+      "close_reason": "take_profit"
     }
   ],
   "audit": [
@@ -9666,6 +9699,26 @@
       "cash_outlay": 18.682093,
       "momentum_24h": 0.1615,
       "momentum_6h": 0.1615
+    },
+    {
+      "ts": "2026-09-23T18:28:30+00:00",
+      "event": "PAPER_CLOSE",
+      "market_id": "2589812",
+      "outcome": "NO",
+      "exit_price": 0.67,
+      "pnl": 3.213089,
+      "reason": "take_profit"
+    },
+    {
+      "ts": "2026-09-23T18:28:30+00:00",
+      "event": "PAPER_OPEN",
+      "market_id": "4052417",
+      "question": "Will Bitcoin reach $90,000 in September?",
+      "outcome": "NO",
+      "entry_price": 0.808,
+      "cash_outlay": 18.655354,
+      "momentum_24h": -0.277,
+      "momentum_6h": -0.14
     }
   ]
 }

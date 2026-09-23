@@ -8,13 +8,13 @@
   "starting_equity": 1000.0,
   "target_equity": 1000000000.0,
   "bankrupt_equity": 0.0,
-  "cash": 209.870526,
-  "equity": 378.274275,
+  "cash": 190.997646,
+  "equity": 376.149748,
   "realized_pnl": -627.537024,
-  "unrealized_pnl": 5.811299,
-  "fees_paid": 296.5907,
-  "ticks": 309,
-  "last_tick_at": "2026-09-23T04:52:36+00:00",
+  "unrealized_pnl": 3.686772,
+  "fees_paid": 296.9426,
+  "ticks": 310,
+  "last_tick_at": "2026-09-23T09:35:30+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -69,9 +69,9 @@
       "volume_24h": 116650.22,
       "end_date": "2026-09-30",
       "paper": true,
-      "mark_price": 0.885,
+      "mark_price": 0.895,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 20.602002
+      "mark_net_liquidation": 20.846598
     },
     {
       "position_id": "3866000-NO-1789999683",
@@ -95,9 +95,9 @@
       "volume_24h": 116708.47,
       "end_date": "2027-01-01",
       "paper": true,
-      "mark_price": 0.745,
-      "mark_spread": 0.01,
-      "mark_net_liquidation": 20.70545
+      "mark_price": 0.73,
+      "mark_spread": 0.02,
+      "mark_net_liquidation": 20.125433
     },
     {
       "position_id": "4052450-YES-1790018527",
@@ -147,9 +147,9 @@
       "volume_24h": 261195.17,
       "end_date": "2027-01-01",
       "paper": true,
-      "mark_price": 0.245,
+      "mark_price": 0.235,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 18.036384
+      "mark_net_liquidation": 17.275892
     },
     {
       "position_id": "2589812-NO-1790104034",
@@ -199,9 +199,35 @@
       "volume_24h": 242177.78,
       "end_date": "2026-11-01",
       "paper": true,
-      "mark_price": 0.675,
+      "mark_price": 0.685,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 18.081238
+      "mark_net_liquidation": 18.360444
+    },
+    {
+      "position_id": "4487273-YES-1790156133",
+      "market_id": "4487273",
+      "question": "Saudi Oil Pipeline (East-West) restarts by September 30?",
+      "category": "Other",
+      "outcome": "YES",
+      "token_id": "82451877629171120215863095786536212994223779959523554468642312484613145998263",
+      "opened_at": "2026-09-23T09:35:30+00:00",
+      "entry_mid": 0.61,
+      "entry_spread": 0.02,
+      "entry_price": 0.62,
+      "shares": 29.87254812,
+      "gross_trade": 18.52098,
+      "entry_fee": 0.3519,
+      "cash_outlay": 18.87288,
+      "fee_rate": 0.05,
+      "momentum_24h": 0.32,
+      "momentum_6h": 0.04,
+      "liquidity": 63174.38,
+      "volume_24h": 176142.82,
+      "end_date": "2026-10-01",
+      "paper": true,
+      "mark_price": 0.61,
+      "mark_spread": 0.02,
+      "mark_net_liquidation": 17.565059
     }
   ],
   "closed_positions": [
@@ -9523,6 +9549,17 @@
       "cash_outlay": 18.957524,
       "momentum_24h": -0.06,
       "momentum_6h": -0.03
+    },
+    {
+      "ts": "2026-09-23T09:35:30+00:00",
+      "event": "PAPER_OPEN",
+      "market_id": "4487273",
+      "question": "Saudi Oil Pipeline (East-West) restarts by September 30?",
+      "outcome": "YES",
+      "entry_price": 0.62,
+      "cash_outlay": 18.87288,
+      "momentum_24h": 0.32,
+      "momentum_6h": 0.04
     }
   ]
 }

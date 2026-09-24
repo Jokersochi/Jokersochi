@@ -9,12 +9,12 @@
   "target_equity": 1000000000.0,
   "bankrupt_equity": 0.0,
   "cash": 188.120196,
-  "equity": 372.2598,
+  "equity": 373.883254,
   "realized_pnl": -630.638587,
-  "unrealized_pnl": 2.898387,
+  "unrealized_pnl": 4.521841,
   "fees_paid": 299.29071,
-  "ticks": 314,
-  "last_tick_at": "2026-09-23T23:57:15+00:00",
+  "ticks": 315,
+  "last_tick_at": "2026-09-24T03:11:54+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -69,9 +69,9 @@
       "volume_24h": 116650.22,
       "end_date": "2026-09-30",
       "paper": true,
-      "mark_price": 0.875,
+      "mark_price": 0.885,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 20.357645
+      "mark_net_liquidation": 20.602002
     },
     {
       "position_id": "3866000-NO-1789999683",
@@ -95,8 +95,8 @@
       "volume_24h": 116708.47,
       "end_date": "2027-01-01",
       "paper": true,
-      "mark_price": 0.655,
-      "mark_spread": 0.01,
+      "mark_price": 0.66,
+      "mark_spread": 0.02,
       "mark_net_liquidation": 18.104301
     },
     {
@@ -173,9 +173,9 @@
       "volume_24h": 110478.84,
       "end_date": "2026-10-01",
       "paper": true,
-      "mark_price": 0.575,
+      "mark_price": 0.585,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 18.206322
+      "mark_net_liquidation": 18.535199
     },
     {
       "position_id": "629040-YES-1790173458",
@@ -199,9 +199,9 @@
       "volume_24h": 166950.29,
       "end_date": "2026-12-31",
       "paper": true,
-      "mark_price": 0.579,
-      "mark_spread": 0.006,
-      "mark_net_liquidation": 17.668039
+      "mark_price": 0.5795,
+      "mark_spread": 0.001,
+      "mark_net_liquidation": 17.762783
     },
     {
       "position_id": "4052417-NO-1790188111",
@@ -225,9 +225,9 @@
       "volume_24h": 109741.22,
       "end_date": "2026-10-01",
       "paper": true,
-      "mark_price": 0.799,
-      "mark_spread": 0.006,
-      "mark_net_liquidation": 18.017858
+      "mark_price": 0.8385,
+      "mark_spread": 0.004,
+      "mark_net_liquidation": 18.973334
     }
   ],
   "closed_positions": [

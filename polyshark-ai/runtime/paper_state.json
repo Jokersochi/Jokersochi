@@ -8,13 +8,13 @@
   "starting_equity": 1000.0,
   "target_equity": 1000000000.0,
   "bankrupt_equity": 0.0,
-  "cash": 188.115774,
-  "equity": 372.365201,
-  "realized_pnl": -631.927384,
-  "unrealized_pnl": 4.292585,
-  "fees_paid": 299.74581,
-  "ticks": 316,
-  "last_tick_at": "2026-09-24T08:26:22+00:00",
+  "cash": 185.561261,
+  "equity": 369.791485,
+  "realized_pnl": -634.568252,
+  "unrealized_pnl": 4.359737,
+  "fees_paid": 300.62359,
+  "ticks": 317,
+  "last_tick_at": "2026-09-24T13:41:07+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -69,9 +69,9 @@
       "volume_24h": 116708.47,
       "end_date": "2027-01-01",
       "paper": true,
-      "mark_price": 0.645,
+      "mark_price": 0.655,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 17.816702
+      "mark_net_liquidation": 18.104301
     },
     {
       "position_id": "4052450-YES-1790018527",
@@ -121,9 +121,9 @@
       "volume_24h": 242177.78,
       "end_date": "2026-11-01",
       "paper": true,
-      "mark_price": 0.695,
+      "mark_price": 0.685,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 18.639911
+      "mark_net_liquidation": 18.360444
     },
     {
       "position_id": "4052418-NO-1790173458",
@@ -147,9 +147,9 @@
       "volume_24h": 110478.84,
       "end_date": "2026-10-01",
       "paper": true,
-      "mark_price": 0.625,
+      "mark_price": 0.645,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 19.853969
+      "mark_net_liquidation": 20.515314
     },
     {
       "position_id": "629040-YES-1790173458",
@@ -173,9 +173,9 @@
       "volume_24h": 166950.29,
       "end_date": "2026-12-31",
       "paper": true,
-      "mark_price": 0.5795,
+      "mark_price": 0.5805,
       "mark_spread": 0.001,
-      "mark_net_liquidation": 17.762783
+      "mark_net_liquidation": 17.794371
     },
     {
       "position_id": "4052417-NO-1790188111",
@@ -199,35 +199,35 @@
       "volume_24h": 109741.22,
       "end_date": "2026-10-01",
       "paper": true,
-      "mark_price": 0.8335,
-      "mark_spread": 0.001,
-      "mark_net_liquidation": 18.890623
+      "mark_price": 0.843,
+      "mark_spread": 0.002,
+      "mark_net_liquidation": 19.103382
     },
     {
-      "position_id": "2589812-NO-1790238384",
-      "market_id": "2589812",
-      "question": "Will there be no change in Fed interest rates after the October 2026 meeting?",
+      "position_id": "630772-NO-1790257269",
+      "market_id": "630772",
+      "question": "Will the Democrats win the Maine Senate race in 2026?",
       "category": "Other",
       "outcome": "NO",
-      "token_id": "42038775866198212615491650114881818219665139981763207699110491615333273795415",
-      "opened_at": "2026-09-24T08:26:22+00:00",
-      "entry_mid": 0.705,
+      "token_id": "6136336712352911156426560180855478229745540927722899997193789497766196705020",
+      "opened_at": "2026-09-24T13:41:07+00:00",
+      "entry_mid": 0.355,
       "entry_spread": 0.01,
-      "entry_price": 0.71,
-      "shares": 25.90347746,
-      "gross_trade": 18.391469,
-      "entry_fee": 0.26668,
-      "cash_outlay": 18.658149,
+      "entry_price": 0.36,
+      "shares": 49.98867652,
+      "gross_trade": 17.995924,
+      "entry_fee": 0.57587,
+      "cash_outlay": 18.571794,
       "fee_rate": 0.05,
-      "momentum_24h": -0.16,
-      "momentum_6h": -0.04,
-      "liquidity": 408274.71,
-      "volume_24h": 436749.75,
-      "end_date": "2026-10-29",
+      "momentum_24h": -0.09,
+      "momentum_6h": -0.09,
+      "liquidity": 79762.88,
+      "volume_24h": 129133.97,
+      "end_date": null,
       "paper": true,
-      "mark_price": 0.705,
+      "mark_price": 0.355,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 17.860444
+      "mark_net_liquidation": 16.927417
     }
   ],
   "closed_positions": [
@@ -6104,6 +6104,39 @@
       "pnl": -1.288797,
       "return_pct": -6.4626,
       "close_reason": "max_hold"
+    },
+    {
+      "position_id": "2589812-NO-1790238384",
+      "market_id": "2589812",
+      "question": "Will there be no change in Fed interest rates after the October 2026 meeting?",
+      "category": "Other",
+      "outcome": "NO",
+      "token_id": "42038775866198212615491650114881818219665139981763207699110491615333273795415",
+      "opened_at": "2026-09-24T08:26:22+00:00",
+      "entry_mid": 0.705,
+      "entry_spread": 0.01,
+      "entry_price": 0.71,
+      "shares": 25.90347746,
+      "gross_trade": 18.391469,
+      "entry_fee": 0.26668,
+      "cash_outlay": 18.658149,
+      "fee_rate": 0.05,
+      "momentum_24h": -0.16,
+      "momentum_6h": -0.04,
+      "liquidity": 408274.71,
+      "volume_24h": 436749.75,
+      "end_date": "2026-10-29",
+      "paper": true,
+      "mark_price": 0.705,
+      "mark_spread": 0.01,
+      "mark_net_liquidation": 17.860444,
+      "closed_at": "2026-09-24T13:41:07+00:00",
+      "exit_price": 0.63,
+      "exit_fee": 0.30191,
+      "net_proceeds": 16.017281,
+      "pnl": -2.640868,
+      "return_pct": -14.154,
+      "close_reason": "stop_loss"
     }
   ],
   "audit": [
@@ -9772,6 +9805,26 @@
       "cash_outlay": 18.658149,
       "momentum_24h": -0.16,
       "momentum_6h": -0.04
+    },
+    {
+      "ts": "2026-09-24T13:41:07+00:00",
+      "event": "PAPER_CLOSE",
+      "market_id": "2589812",
+      "outcome": "NO",
+      "exit_price": 0.63,
+      "pnl": -2.640868,
+      "reason": "stop_loss"
+    },
+    {
+      "ts": "2026-09-24T13:41:07+00:00",
+      "event": "PAPER_OPEN",
+      "market_id": "630772",
+      "question": "Will the Democrats win the Maine Senate race in 2026?",
+      "outcome": "NO",
+      "entry_price": 0.36,
+      "cash_outlay": 18.571794,
+      "momentum_24h": -0.09,
+      "momentum_6h": -0.09
     }
   ]
 }

@@ -8,13 +8,13 @@
   "starting_equity": 1000.0,
   "target_equity": 1000000000.0,
   "bankrupt_equity": 0.0,
-  "cash": 188.120196,
-  "equity": 373.883254,
-  "realized_pnl": -630.638587,
-  "unrealized_pnl": 4.521841,
-  "fees_paid": 299.29071,
-  "ticks": 315,
-  "last_tick_at": "2026-09-24T03:11:54+00:00",
+  "cash": 188.115774,
+  "equity": 372.365201,
+  "realized_pnl": -631.927384,
+  "unrealized_pnl": 4.292585,
+  "fees_paid": 299.74581,
+  "ticks": 316,
+  "last_tick_at": "2026-09-24T08:26:22+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -48,32 +48,6 @@
       "mark_net_liquidation": 54.68445
     },
     {
-      "position_id": "4641064-YES-1789974731",
-      "market_id": "4641064",
-      "question": "US x Iran ceasefire continues through September 30?",
-      "category": "Other",
-      "outcome": "YES",
-      "token_id": "18108354744468601294025853601030425188395211927926870885542758981304523217919",
-      "opened_at": "2026-09-21T07:12:10+00:00",
-      "entry_mid": 0.835,
-      "entry_spread": 0.01,
-      "entry_price": 0.84,
-      "shares": 23.55268365,
-      "gross_trade": 19.784254,
-      "entry_fee": 0.15827,
-      "cash_outlay": 19.942524,
-      "fee_rate": 0.05,
-      "momentum_24h": 0.065,
-      "momentum_6h": 0.05,
-      "liquidity": 120697.79,
-      "volume_24h": 116650.22,
-      "end_date": "2026-09-30",
-      "paper": true,
-      "mark_price": 0.885,
-      "mark_spread": 0.01,
-      "mark_net_liquidation": 20.602002
-    },
-    {
       "position_id": "3866000-NO-1789999683",
       "market_id": "3866000",
       "question": "Will Ethereum dip to $2,250 by December 31, 2026?",
@@ -95,9 +69,9 @@
       "volume_24h": 116708.47,
       "end_date": "2027-01-01",
       "paper": true,
-      "mark_price": 0.66,
-      "mark_spread": 0.02,
-      "mark_net_liquidation": 18.104301
+      "mark_price": 0.645,
+      "mark_spread": 0.01,
+      "mark_net_liquidation": 17.816702
     },
     {
       "position_id": "4052450-YES-1790018527",
@@ -147,9 +121,9 @@
       "volume_24h": 242177.78,
       "end_date": "2026-11-01",
       "paper": true,
-      "mark_price": 0.685,
+      "mark_price": 0.695,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 18.360444
+      "mark_net_liquidation": 18.639911
     },
     {
       "position_id": "4052418-NO-1790173458",
@@ -173,9 +147,9 @@
       "volume_24h": 110478.84,
       "end_date": "2026-10-01",
       "paper": true,
-      "mark_price": 0.585,
+      "mark_price": 0.625,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 18.535199
+      "mark_net_liquidation": 19.853969
     },
     {
       "position_id": "629040-YES-1790173458",
@@ -225,9 +199,35 @@
       "volume_24h": 109741.22,
       "end_date": "2026-10-01",
       "paper": true,
-      "mark_price": 0.8385,
-      "mark_spread": 0.004,
-      "mark_net_liquidation": 18.973334
+      "mark_price": 0.8335,
+      "mark_spread": 0.001,
+      "mark_net_liquidation": 18.890623
+    },
+    {
+      "position_id": "2589812-NO-1790238384",
+      "market_id": "2589812",
+      "question": "Will there be no change in Fed interest rates after the October 2026 meeting?",
+      "category": "Other",
+      "outcome": "NO",
+      "token_id": "42038775866198212615491650114881818219665139981763207699110491615333273795415",
+      "opened_at": "2026-09-24T08:26:22+00:00",
+      "entry_mid": 0.705,
+      "entry_spread": 0.01,
+      "entry_price": 0.71,
+      "shares": 25.90347746,
+      "gross_trade": 18.391469,
+      "entry_fee": 0.26668,
+      "cash_outlay": 18.658149,
+      "fee_rate": 0.05,
+      "momentum_24h": -0.16,
+      "momentum_6h": -0.04,
+      "liquidity": 408274.71,
+      "volume_24h": 436749.75,
+      "end_date": "2026-10-29",
+      "paper": true,
+      "mark_price": 0.705,
+      "mark_spread": 0.01,
+      "mark_net_liquidation": 17.860444
     }
   ],
   "closed_positions": [
@@ -6071,6 +6071,39 @@
       "pnl": 3.213089,
       "return_pct": 17.1718,
       "close_reason": "take_profit"
+    },
+    {
+      "position_id": "4641064-YES-1789974731",
+      "market_id": "4641064",
+      "question": "US x Iran ceasefire continues through September 30?",
+      "category": "Other",
+      "outcome": "YES",
+      "token_id": "18108354744468601294025853601030425188395211927926870885542758981304523217919",
+      "opened_at": "2026-09-21T07:12:10+00:00",
+      "entry_mid": 0.835,
+      "entry_spread": 0.01,
+      "entry_price": 0.84,
+      "shares": 23.55268365,
+      "gross_trade": 19.784254,
+      "entry_fee": 0.15827,
+      "cash_outlay": 19.942524,
+      "fee_rate": 0.05,
+      "momentum_24h": 0.065,
+      "momentum_6h": 0.05,
+      "liquidity": 120697.79,
+      "volume_24h": 116650.22,
+      "end_date": "2026-09-30",
+      "paper": true,
+      "mark_price": 0.885,
+      "mark_spread": 0.01,
+      "mark_net_liquidation": 20.602002,
+      "closed_at": "2026-09-24T08:26:22+00:00",
+      "exit_price": 0.8,
+      "exit_fee": 0.18842,
+      "net_proceeds": 18.653727,
+      "pnl": -1.288797,
+      "return_pct": -6.4626,
+      "close_reason": "max_hold"
     }
   ],
   "audit": [
@@ -9719,6 +9752,26 @@
       "cash_outlay": 18.655354,
       "momentum_24h": -0.277,
       "momentum_6h": -0.14
+    },
+    {
+      "ts": "2026-09-24T08:26:22+00:00",
+      "event": "PAPER_CLOSE",
+      "market_id": "4641064",
+      "outcome": "YES",
+      "exit_price": 0.8,
+      "pnl": -1.288797,
+      "reason": "max_hold"
+    },
+    {
+      "ts": "2026-09-24T08:26:22+00:00",
+      "event": "PAPER_OPEN",
+      "market_id": "2589812",
+      "question": "Will there be no change in Fed interest rates after the October 2026 meeting?",
+      "outcome": "NO",
+      "entry_price": 0.71,
+      "cash_outlay": 18.658149,
+      "momentum_24h": -0.16,
+      "momentum_6h": -0.04
     }
   ]
 }

@@ -313,6 +313,14 @@ class PaperTraderRuntimeTests(unittest.TestCase):
         self.assertEqual(s["open_positions"], [])
         self.assertEqual(s["shadow_challenger"]["verdict"], "NO_EVIDENCE")
 
+    def test_shadow_spec_drift_fails_state_validation(self):
+        s = pt.fresh_state()
+        root = pt._shadow_root(s, "2026-09-25T14:00:00+00:00")
+        root["auto_promotion"] = False
+        root["strategy_spec"]["min_entry_price"] = 0.39
+        with self.assertRaises(AssertionError):
+            pt.validate_state(s)
+
     def test_shadow_review_gate_never_auto_promotes(self):
         root = {
             "signals": [],

@@ -9,12 +9,12 @@
   "target_equity": 1000000000.0,
   "bankrupt_equity": 0.0,
   "cash": 179.572877,
-  "equity": 358.406481,
+  "equity": 359.742129,
   "realized_pnl": -643.909513,
-  "unrealized_pnl": 2.315994,
+  "unrealized_pnl": 3.651642,
   "fees_paid": 306.26851,
-  "ticks": 323,
-  "last_tick_at": "2026-09-25T12:47:57+00:00",
+  "ticks": 324,
+  "last_tick_at": "2026-09-25T13:37:33+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -95,9 +95,9 @@
       "volume_24h": 166950.29,
       "end_date": "2026-12-31",
       "paper": true,
-      "mark_price": 0.5755,
+      "mark_price": 0.5745,
       "mark_spread": 0.001,
-      "mark_net_liquidation": 17.636471
+      "mark_net_liquidation": 17.604893
     },
     {
       "position_id": "4052417-NO-1790188111",
@@ -121,9 +121,9 @@
       "volume_24h": 109741.22,
       "end_date": "2026-10-01",
       "paper": true,
-      "mark_price": 0.8655,
-      "mark_spread": 0.018,
-      "mark_net_liquidation": 19.446559
+      "mark_price": 0.89,
+      "mark_spread": 0.012,
+      "mark_net_liquidation": 20.09874
     },
     {
       "position_id": "2589813-YES-1790284144",
@@ -147,9 +147,9 @@
       "volume_24h": 457051.55,
       "end_date": "2026-10-29",
       "paper": true,
-      "mark_price": 0.665,
+      "mark_price": 0.645,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 17.242148
+      "mark_net_liquidation": 16.702653
     },
     {
       "position_id": "4052418-NO-1790293929",
@@ -173,9 +173,9 @@
       "volume_24h": 129770.37,
       "end_date": "2026-10-01",
       "paper": true,
-      "mark_price": 0.645,
+      "mark_price": 0.695,
       "mark_spread": 0.01,
-      "mark_net_liquidation": 17.443583
+      "mark_net_liquidation": 18.854243
     },
     {
       "position_id": "601826-NO-1790301513",
@@ -199,9 +199,9 @@
       "volume_24h": 138026.08,
       "end_date": "2026-10-04",
       "paper": true,
-      "mark_price": 0.4465,
-      "mark_spread": 0.003,
-      "mark_net_liquidation": 16.982468
+      "mark_price": 0.444,
+      "mark_spread": 0.006,
+      "mark_net_liquidation": 16.826349
     },
     {
       "position_id": "2176270-YES-1790301513",
@@ -10143,6 +10143,15 @@
       "cash_outlay": 17.99136,
       "momentum_24h": 0.03,
       "momentum_6h": 0.01
+    },
+    {
+      "ts": "2026-09-25T13:37:33+00:00",
+      "event": "ENTRY_POLICY_CHANGED",
+      "entry_policy": "legacy_momentum_blocked",
+      "reason": "Legacy momentum v2 has not demonstrated after-cost OOS edge"
     }
-  ]
+  ],
+  "legacy_momentum_entries_enabled": false,
+  "entry_policy": "legacy_momentum_blocked",
+  "entry_guard_reason": "Legacy momentum v2 has not demonstrated after-cost OOS edge"
 }

@@ -78,6 +78,9 @@ class PaperTraderRuntimeTests(unittest.TestCase):
         position["token_id"] = "no1"
         position["outcome"] = "NO"
         self.assertEqual(pt.resolved_payout_from_market(position, market), 0.0)
+        ambiguous = dict(market)
+        ambiguous["outcomePrices"] = '["0","0"]'
+        self.assertIsNone(pt.resolved_payout_from_market(position, ambiguous))
 
     def test_settlement_uses_exact_payout_and_no_exit_fee(self):
         s = pt.fresh_state()
@@ -125,6 +128,34 @@ class PaperTraderRuntimeTests(unittest.TestCase):
             pt.fetch_market_by_id = original
         self.assertEqual(status, "closed_pending_resolution")
         self.assertEqual(p["settlement_status"], "closed_pending_resolution")
+        self.assertEqual(s["closed_positions"], [])
+
+    def test_past_end_date_fails_closed_when_settlement_lookup_is_unavailable(self):
+        s = pt.fresh_state()
+        s["cash"] = 900.0
+        p = {
+            "market_id": "m1",
+            "outcome": "YES",
+            "token_id": "t1",
+            "opened_at": "2026-01-01T00:00:00+00:00",
+            "end_date": "2026-01-02T00:00:00+00:00",
+            "shares": 200,
+            "cash_outlay": 100.0,
+            "fee_rate": 0.0,
+        }
+        s["open_positions"] = [p]
+        original = pt.check_and_settle_position
+        try:
+            pt.check_and_settle_position = lambda *_args, **_kwargs: "lookup_unavailable"
+            pt.mark_and_exit_positions(
+                s,
+                {"t1": 0.10},
+                {"t1": 0.0},
+                "2026-09-25T13:00:00+00:00",
+            )
+        finally:
+            pt.check_and_settle_position = original
+        self.assertEqual(len(s["open_positions"]), 1)
         self.assertEqual(s["closed_positions"], [])
 
     def test_stop_loss_close_updates_cash_and_realized_pnl(self):

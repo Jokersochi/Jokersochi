@@ -803,7 +803,8 @@ def _trim_shadow_signals(root: dict[str, Any]) -> None:
     pending = [s for s in signals if s.get("status") != "matured"]
     matured = [s for s in signals if s.get("status") == "matured"]
     keep_matured = max(0, SHADOW_SIGNAL_LIMIT - len(pending))
-    root["signals"] = (pending + matured[-keep_matured:])[-SHADOW_SIGNAL_LIMIT:]
+    matured_tail = matured[-keep_matured:] if keep_matured > 0 else []
+    root["signals"] = (pending + matured_tail)[-SHADOW_SIGNAL_LIMIT:]
 
 
 def _shadow_horizon_stats(signals: list[dict[str, Any]], horizon: int) -> dict[str, Any]:

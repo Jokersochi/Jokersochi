@@ -9,12 +9,12 @@
   "target_equity": 1000000000.0,
   "bankrupt_equity": 0.0,
   "cash": 295.467443,
-  "equity": 370.232989,
+  "equity": 369.55486,
   "realized_pnl": -631.21239,
-  "unrealized_pnl": 1.445379,
+  "unrealized_pnl": 0.76725,
   "fees_paid": 306.83471,
-  "ticks": 329,
-  "last_tick_at": "2026-09-25T20:43:34+00:00",
+  "ticks": 330,
+  "last_tick_at": "2026-09-25T23:35:20+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -69,9 +69,9 @@
       "volume_24h": 109741.22,
       "end_date": "2026-10-01",
       "paper": true,
-      "mark_price": 0.912,
-      "mark_spread": 0.004,
-      "mark_net_liquidation": 20.716928
+      "mark_price": 0.915,
+      "mark_spread": 0.008,
+      "mark_net_liquidation": 20.740737
     },
     {
       "position_id": "601826-NO-1790301513",
@@ -95,9 +95,9 @@
       "volume_24h": 138026.08,
       "end_date": "2026-10-04",
       "paper": true,
-      "mark_price": 0.4445,
+      "mark_price": 0.4265,
       "mark_spread": 0.001,
-      "mark_net_liquidation": 16.943426
+      "mark_net_liquidation": 16.241488
     },
     {
       "position_id": "2176270-YES-1790301513",
@@ -10282,6 +10282,16 @@
       "fees_paid": 306.83471,
       "open_positions": 4,
       "closed_positions": 189
+    },
+    {
+      "ts": "2026-09-25T23:35:20+00:00",
+      "equity": 369.55486,
+      "cash": 295.467443,
+      "realized_pnl": -631.21239,
+      "unrealized_pnl": 0.76725,
+      "fees_paid": 306.83471,
+      "open_positions": 4,
+      "closed_positions": 189
     }
   ],
   "shadow_challenger": {
@@ -10308,7 +10318,36 @@
       "auto_promotion": false,
       "warning": "Diagnostic gate only; correlated markets reduce effective sample size."
     },
-    "signals": [],
+    "signals": [
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:4521506:YES:1790379320",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "4521506",
+        "question": "Will Spain win on 2026-09-26?",
+        "category": "Other",
+        "outcome": "YES",
+        "token_id": "104048447692267192697984869154789122909973167387539927094908597358649141295924",
+        "observed_at": "2026-09-25T23:35:20+00:00",
+        "end_date": "2026-09-26",
+        "entry_mid": 0.435,
+        "entry_spread": 0.01,
+        "entry_price": 0.44,
+        "shares": 221.08241953,
+        "gross_trade": 97.276265,
+        "entry_fee": 2.72374,
+        "cash_outlay": 100.000005,
+        "fee_rate": 0.05,
+        "momentum_24h": 0.03,
+        "momentum_6h": 0.01,
+        "liquidity": 206053.2,
+        "volume_24h": 259085.18,
+        "score": 0.08,
+        "horizon_results": {},
+        "status": "pending",
+        "paper_only": true,
+        "capital_impact": 0.0
+      }
+    ],
     "summary": {
       "6": {
         "n": 0,
@@ -10328,25 +10367,25 @@
       }
     },
     "verdict": "NO_EVIDENCE",
-    "updated_at": "2026-09-25T20:43:34+00:00",
+    "updated_at": "2026-09-25T23:35:20+00:00",
     "auto_promotion": false,
     "last_observation": {
-      "ts": "2026-09-25T20:43:34+00:00",
-      "candidates_seen": 3,
+      "ts": "2026-09-25T23:35:20+00:00",
+      "candidates_seen": 1,
       "deduplicated": 0,
-      "rejected_price": 3,
+      "rejected_price": 0,
       "rejected_spread": 0,
       "rejected_invalid_quote": 0,
-      "added": 0
+      "added": 1
     },
     "observation_totals": {
-      "ticks": 3,
-      "candidates_seen": 5,
+      "ticks": 4,
+      "candidates_seen": 6,
       "deduplicated": 0,
       "rejected_price": 5,
       "rejected_spread": 0,
       "rejected_invalid_quote": 0,
-      "added": 0
+      "added": 1
     }
   }
 }

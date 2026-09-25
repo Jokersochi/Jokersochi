@@ -37,6 +37,35 @@ class PaperTraderRuntimeTests(unittest.TestCase):
         self.assertLess(net, 49.0)
         self.assertGreater(fee, 0)
 
+    def test_legacy_momentum_entries_are_blocked_by_default(self):
+        self.assertFalse(pt.ALLOW_LEGACY_MOMENTUM_ENTRIES)
+        s = pt.fresh_state()
+        candidate = pt.Candidate(
+            market_id="m1",
+            question="Test market?",
+            category="Other",
+            yes_token="yes1",
+            no_token="no1",
+            yes_price=0.50,
+            yes_spread=0.01,
+            liquidity=100000.0,
+            volume_24h=50000.0,
+            momentum_24h=0.10,
+            momentum_6h=0.05,
+            end_date=None,
+        )
+        opened = pt.open_candidate(
+            s,
+            candidate,
+            {"yes1": 0.50},
+            {"yes1": 0.01},
+            pt.utc_now(),
+        )
+        self.assertFalse(opened)
+        self.assertEqual(s["cash"], 1000.0)
+        self.assertEqual(s["open_positions"], [])
+        self.assertEqual(s["entry_policy"], "legacy_momentum_blocked")
+
     def test_stop_loss_close_updates_cash_and_realized_pnl(self):
         s = pt.fresh_state()
         s["cash"] = 900.0

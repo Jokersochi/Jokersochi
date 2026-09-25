@@ -1087,6 +1087,20 @@ def validate_state(state: dict[str, Any]) -> None:
         assert isinstance(root, dict)
         assert root.get("model_version") == SHADOW_MODEL_VERSION
         assert root.get("auto_promotion") is False
+        spec = root.get("strategy_spec")
+        assert isinstance(spec, dict)
+        assert spec.get("forward_only") is True
+        assert _as_float(spec.get("min_entry_price")) == SHADOW_MIN_ENTRY_PRICE
+        assert _as_float(spec.get("max_spread")) == SHADOW_MAX_SPREAD
+        assert _as_float(spec.get("dedup_hours")) == SHADOW_DEDUP_HOURS
+        assert _as_float(spec.get("notional")) == SHADOW_NOTIONAL
+        assert tuple(spec.get("horizons_hours", [])) == SHADOW_HORIZONS_HOURS
+        assert spec.get("legacy_capital_execution") is False
+        gate = root.get("review_gate")
+        assert isinstance(gate, dict)
+        assert int(gate.get("min_matured_signals", -1)) == SHADOW_REVIEW_MIN_24H
+        assert _as_float(gate.get("min_profit_factor")) == SHADOW_REVIEW_MIN_PROFIT_FACTOR
+        assert gate.get("auto_promotion") is False
         for signal in root.get("signals", []):
             assert signal.get("paper_only") is True
             assert _as_float(signal.get("capital_impact")) == 0.0

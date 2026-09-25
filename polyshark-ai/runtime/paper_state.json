@@ -9,12 +9,12 @@
   "target_equity": 1000000000.0,
   "bankrupt_equity": 0.0,
   "cash": 258.46241,
-  "equity": 366.827883,
+  "equity": 365.51517,
   "realized_pnl": -632.034459,
-  "unrealized_pnl": -1.137658,
+  "unrealized_pnl": -2.450371,
   "fees_paid": 306.26851,
-  "ticks": 325,
-  "last_tick_at": "2026-09-25T13:48:36+00:00",
+  "ticks": 326,
+  "last_tick_at": "2026-09-25T13:55:06+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -69,9 +69,9 @@
       "volume_24h": 109741.22,
       "end_date": "2026-10-01",
       "paper": true,
-      "mark_price": 0.8915,
-      "mark_spread": 0.011,
-      "mark_net_liquidation": 20.146238
+      "mark_price": 0.888,
+      "mark_spread": 0.019,
+      "mark_net_liquidation": 19.968162
     },
     {
       "position_id": "2589813-YES-1790284144",
@@ -121,9 +121,9 @@
       "volume_24h": 129770.37,
       "end_date": "2026-10-01",
       "paper": true,
-      "mark_price": 0.745,
-      "mark_spread": 0.01,
-      "mark_net_liquidation": 20.271843
+      "mark_price": 0.71,
+      "mark_spread": 0.02,
+      "mark_net_liquidation": 19.137205
     },
     {
       "position_id": "601826-NO-1790301513",
@@ -10210,6 +10210,63 @@
       "fees_paid": 306.26851,
       "open_positions": 6,
       "closed_positions": 187
+    },
+    {
+      "ts": "2026-09-25T13:55:06+00:00",
+      "equity": 365.51517,
+      "cash": 258.46241,
+      "realized_pnl": -632.034459,
+      "unrealized_pnl": -2.450371,
+      "fees_paid": 306.26851,
+      "open_positions": 6,
+      "closed_positions": 187
     }
-  ]
+  ],
+  "shadow_challenger": {
+    "model_version": "risk-filtered-momentum-v1-forward-20260925",
+    "started_at": "2026-09-25T13:55:06+00:00",
+    "strategy_spec": {
+      "source": "existing dual-horizon momentum candidate stream",
+      "forward_only": true,
+      "min_entry_price": 0.4,
+      "max_spread": 0.02,
+      "dedup_hours": 24.0,
+      "notional": 100.0,
+      "horizons_hours": [
+        6,
+        24
+      ],
+      "legacy_capital_execution": false
+    },
+    "review_gate": {
+      "horizon_hours": 24,
+      "min_matured_signals": 100,
+      "mean_return_ci95_lower_gt": 0.0,
+      "min_profit_factor": 1.2,
+      "auto_promotion": false,
+      "warning": "Diagnostic gate only; correlated markets reduce effective sample size."
+    },
+    "signals": [],
+    "summary": {
+      "6": {
+        "n": 0,
+        "mean_return": null,
+        "win_rate": null,
+        "profit_factor": null,
+        "ci95_lower": null,
+        "ci95_upper": null
+      },
+      "24": {
+        "n": 0,
+        "mean_return": null,
+        "win_rate": null,
+        "profit_factor": null,
+        "ci95_lower": null,
+        "ci95_upper": null
+      }
+    },
+    "verdict": "NO_EVIDENCE",
+    "updated_at": "2026-09-25T13:55:06+00:00",
+    "auto_promotion": false
+  }
 }

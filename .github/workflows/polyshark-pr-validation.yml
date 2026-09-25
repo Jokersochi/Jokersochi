@@ -1,0 +1,73 @@
+name: PolyShark PR Validation
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "polyshark-ai/runtime/**"
+      - "polyshark-ai/tests/**"
+      - ".github/workflows/polyshark-pr-validation.yml"
+      - ".github/workflows/polyshark-paper-trading-v2.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  paper-runtime-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Prove paper-only static invariants
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          files = [
+              Path("polyshark-ai/runtime/paper_trader.py"),
+              Path("polyshark-ai/runtime/paper_daemon.py"),
+          ]
+          forbidden = [
+              "create_order(",
+              "post_order(",
+              "cancel_all(",
+              "POLYMARKET_PRIVATE_KEY",
+          ]
+          hits = [
+              f"{path}:{needle}"
+              for path in files
+              for needle in forbidden
+              if needle in path.read_text(encoding="utf-8")
+          ]
+          if hits:
+              raise SystemExit(f"Unsafe live-trading primitives found: {hits}")
+          print("paper-only static guard: PASS")
+          PY
+
+      - name: Python unit tests
+        run: |
+          python polyshark-ai/tests/test_paper_trader_runtime.py -q
+          python polyshark-ai/tests/test_paper_daemon.py -q
+
+      - name: Python syntax check
+        run: |
+          python -m py_compile             polyshark-ai/runtime/paper_trader.py             polyshark-ai/runtime/paper_daemon.py
+
+      - name: Verify committed state remains paper-only
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          state = json.loads(
+              Path("polyshark-ai/runtime/paper_state.json").read_text(encoding="utf-8")
+          )
+          assert state.get("paper_only") is True
+          assert state.get("real_orders_enabled") is False
+          print("committed paper-state invariants: PASS")
+          PY

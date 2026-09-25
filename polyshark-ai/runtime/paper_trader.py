@@ -52,6 +52,9 @@ REQUEST_TIMEOUT = float(os.getenv("PAPER_REQUEST_TIMEOUT", "15"))
 ALLOW_LEGACY_MOMENTUM_ENTRIES = os.getenv(
     "PAPER_ALLOW_LEGACY_MOMENTUM_ENTRIES", "false"
 ).strip().lower() in {"1", "true", "yes", "on"}
+SETTLEMENT_CHECK_COOLDOWN_SECONDS = float(os.getenv("PAPER_SETTLEMENT_CHECK_COOLDOWN_SECONDS", "1800"))
+SETTLEMENT_PRICE_EPSILON = float(os.getenv("PAPER_SETTLEMENT_PRICE_EPSILON", "0.001"))
+EQUITY_HISTORY_LIMIT = int(os.getenv("PAPER_EQUITY_HISTORY_LIMIT", "2016"))
 
 FEE_RATE_BY_CATEGORY = {
     "crypto": 0.07,
@@ -376,6 +379,146 @@ def get_quote(token_id: str) -> tuple[float, float] | None:
     return mid, spread
 
 
+def fetch_market_by_id(market_id: str) -> dict[str, Any] | None:
+    if not market_id:
+        return None
+    quoted = urllib.parse.quote(str(market_id), safe="")
+    try:
+        data = _request_json(f"{GAMMA_MARKETS}/{quoted}")
+        if isinstance(data, dict):
+            return data
+    except urllib.error.HTTPError as exc:
+        if exc.code != 404:
+            raise
+    params = urllib.parse.urlencode({"id": str(market_id), "limit": 1})
+    data = _request_json(f"{GAMMA_MARKETS}?{params}")
+    if isinstance(data, list) and data and isinstance(data[0], dict):
+        return data[0]
+    return None
+
+
+def resolved_payout_from_market(position: dict[str, Any], market: dict[str, Any]) -> float | None:
+    if not bool(market.get("closed", False)):
+        return None
+    outcomes = [str(x).upper() for x in _as_json_list(market.get("outcomes"))]
+    prices = [_as_float(x, -1.0) for x in _as_json_list(market.get("outcomePrices"))]
+    tokens = [str(x) for x in _as_json_list(market.get("clobTokenIds"))]
+    if len(outcomes) != 2 or len(prices) != 2:
+        return None
+    final_prices: list[float] = []
+    for price in prices:
+        if price >= 1.0 - SETTLEMENT_PRICE_EPSILON:
+            final_prices.append(1.0)
+        elif 0.0 <= price <= SETTLEMENT_PRICE_EPSILON:
+            final_prices.append(0.0)
+        else:
+            return None
+    if sum(final_prices) != 1.0:
+        return None
+    idx = None
+    token_id = str(position.get("token_id") or "")
+    if token_id and token_id in tokens:
+        idx = tokens.index(token_id)
+    else:
+        outcome = str(position.get("outcome") or "").upper()
+        if outcome and outcome in outcomes:
+            idx = outcomes.index(outcome)
+    if idx is None or idx >= len(final_prices):
+        return None
+    return final_prices[idx]
+
+
+def settle_position(
+    state: dict[str, Any],
+    position: dict[str, Any],
+    *,
+    payout: float,
+    reason: str,
+    now: str,
+    source: str = "gamma_closed_market",
+) -> None:
+    payout = 1.0 if payout >= 0.5 else 0.0
+    shares = _as_float(position.get("shares"))
+    net = shares * payout
+    cash_outlay = _as_float(position.get("cash_outlay"))
+    pnl = net - cash_outlay
+    state["cash"] = round(_as_float(state.get("cash")) + net, 6)
+    state["realized_pnl"] = round(_as_float(state.get("realized_pnl")) + pnl, 6)
+    closed = dict(position)
+    closed.update({
+        "closed_at": now,
+        "exit_price": payout,
+        "exit_fee": 0.0,
+        "net_proceeds": round(net, 6),
+        "pnl": round(pnl, 6),
+        "return_pct": round((pnl / cash_outlay * 100.0) if cash_outlay > 0 else 0.0, 4),
+        "close_reason": reason,
+        "settlement_source": source,
+        "settlement_status": "resolved",
+    })
+    state.setdefault("closed_positions", []).append(closed)
+    state.setdefault("audit", []).append({
+        "ts": now,
+        "event": "PAPER_SETTLE",
+        "market_id": position.get("market_id"),
+        "outcome": position.get("outcome"),
+        "payout": payout,
+        "pnl": round(pnl, 6),
+        "reason": reason,
+        "source": source,
+    })
+
+
+def check_and_settle_position(state: dict[str, Any], position: dict[str, Any], now: str) -> str:
+    last_check = position.get("last_settlement_check_at")
+    if last_check:
+        try:
+            age = parse_ts(now) - parse_ts(str(last_check))
+            if age < SETTLEMENT_CHECK_COOLDOWN_SECONDS:
+                return str(position.get("settlement_status") or "cooldown")
+        except Exception:
+            pass
+    position["last_settlement_check_at"] = now
+    try:
+        market = fetch_market_by_id(str(position.get("market_id") or ""))
+    except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, json.JSONDecodeError):
+        position["settlement_status"] = "lookup_unavailable"
+        return "lookup_unavailable"
+    if not market:
+        position["settlement_status"] = "market_not_found"
+        return "market_not_found"
+    position["market_closed"] = bool(market.get("closed", False))
+    position["market_accepting_orders"] = bool(market.get("acceptingOrders", False))
+    if market.get("umaResolutionStatus") is not None:
+        position["uma_resolution_status"] = str(market.get("umaResolutionStatus"))
+    if not position["market_closed"]:
+        position["settlement_status"] = "open"
+        return "open"
+    payout = resolved_payout_from_market(position, market)
+    if payout is None:
+        position["settlement_status"] = "closed_pending_resolution"
+        return "closed_pending_resolution"
+    reason = "resolved_win" if payout >= 0.5 else "resolved_loss"
+    settle_position(state, position, payout=payout, reason=reason, now=now)
+    return "settled"
+
+
+def append_equity_history(state: dict[str, Any], now: str) -> None:
+    history = state.setdefault("equity_history", [])
+    history.append({
+        "ts": now,
+        "equity": round(_as_float(state.get("equity")), 6),
+        "cash": round(_as_float(state.get("cash")), 6),
+        "realized_pnl": round(_as_float(state.get("realized_pnl")), 6),
+        "unrealized_pnl": round(_as_float(state.get("unrealized_pnl")), 6),
+        "fees_paid": round(_as_float(state.get("fees_paid")), 6),
+        "open_positions": len(state.get("open_positions", [])),
+        "closed_positions": len(state.get("closed_positions", [])),
+    })
+    if len(history) > EQUITY_HISTORY_LIMIT:
+        state["equity_history"] = history[-EQUITY_HISTORY_LIMIT:]
+
+
 def close_position(state: dict[str, Any], position: dict[str, Any], *, mid: float, spread: float, reason: str, now: str) -> None:
     net, exit_price, exit_fee = position_liquidation(position, mid, spread)
     cash_outlay = _as_float(position.get("cash_outlay"))
@@ -391,20 +534,39 @@ def close_position(state: dict[str, Any], position: dict[str, Any], *, mid: floa
 
 def mark_and_exit_positions(state: dict[str, Any], mids: dict[str, float], spreads: dict[str, float], now: str) -> None:
     remaining: list[dict[str, Any]] = []
+    now_ts = parse_ts(now)
     for position in state.get("open_positions", []):
+        end_passed = False
+        end_date = position.get("end_date")
+        if end_date:
+            try:
+                end_passed = parse_ts(str(end_date)) <= now_ts
+            except Exception:
+                end_passed = False
+        if end_passed:
+            settlement_state = check_and_settle_position(state, position, now)
+            if settlement_state == "settled":
+                continue
+            if settlement_state != "open":
+                remaining.append(position)
+                continue
+
         token_id = str(position.get("token_id"))
         mid = mids.get(token_id)
         spread = spreads.get(token_id)
         if mid is None or spread is None or not (0 < mid < 1):
             quote = get_quote(token_id)
             if quote is None:
+                settlement_state = check_and_settle_position(state, position, now)
+                if settlement_state == "settled":
+                    continue
                 remaining.append(position)
                 continue
             mid, spread = quote
         cash_outlay = _as_float(position.get("cash_outlay"))
         net, _, _ = position_liquidation(position, mid, spread)
         ret = (net - cash_outlay) / cash_outlay if cash_outlay > 0 else 0.0
-        held_hours = (parse_ts(now) - parse_ts(str(position["opened_at"]))) / 3600.0
+        held_hours = (now_ts - parse_ts(str(position["opened_at"]))) / 3600.0
         reason = "take_profit" if ret >= TAKE_PROFIT_RETURN else "stop_loss" if ret <= STOP_LOSS_RETURN else "max_hold" if held_hours >= MAX_HOLD_HOURS else None
         if reason:
             close_position(state, position, mid=mid, spread=spread, reason=reason, now=now)
@@ -543,6 +705,7 @@ def tick(state: dict[str, Any]) -> dict[str, Any]:
     state["ticks"] = int(state.get("ticks", 0)) + 1
     state["last_tick_at"] = now
     state["last_error"] = None
+    append_equity_history(state, now)
     if len(state.get("closed_positions", [])) > 500:
         state["closed_positions"] = state["closed_positions"][-500:]
     if len(state.get("audit", [])) > 2000:

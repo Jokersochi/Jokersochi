@@ -693,19 +693,66 @@ def observe_shadow_candidates(
         if s.get("model_version") == SHADOW_MODEL_VERSION
         and parse_ts(str(s.get("observed_at"))) >= cutoff
     }
+    counters = {
+        "candidates_seen": len(candidates),
+        "deduplicated": 0,
+        "rejected_price": 0,
+        "rejected_spread": 0,
+        "rejected_invalid_quote": 0,
+        "added": 0,
+    }
     added = 0
     for candidate in candidates:
         if added >= SHADOW_TOP_PER_TICK:
             break
         key = (candidate.market_id, candidate.outcome)
         if key in recent_keys:
+            counters["deduplicated"] += 1
+            continue
+        token_id = candidate.token_id
+        mid = mids.get(token_id, candidate.token_mid)
+        spread = spreads.get(token_id, candidate.yes_spread)
+        if not (0 < mid < 1) or not (0 <= spread < 1):
+            counters["rejected_invalid_quote"] += 1
+            continue
+        if not (SHADOW_MIN_ENTRY_PRICE <= mid <= MAX_PRICE):
+            counters["rejected_price"] += 1
+            continue
+        if spread > SHADOW_MAX_SPREAD:
+            counters["rejected_spread"] += 1
             continue
         signal = _shadow_entry(candidate, mids, spreads, now)
         if signal is None:
+            counters["rejected_invalid_quote"] += 1
             continue
         signals.append(signal)
         recent_keys.add(key)
         added += 1
+        counters["added"] = added
+
+    root["last_observation"] = {"ts": now, **counters}
+    totals = root.setdefault(
+        "observation_totals",
+        {
+            "ticks": 0,
+            "candidates_seen": 0,
+            "deduplicated": 0,
+            "rejected_price": 0,
+            "rejected_spread": 0,
+            "rejected_invalid_quote": 0,
+            "added": 0,
+        },
+    )
+    totals["ticks"] = int(totals.get("ticks", 0)) + 1
+    for name in (
+        "candidates_seen",
+        "deduplicated",
+        "rejected_price",
+        "rejected_spread",
+        "rejected_invalid_quote",
+        "added",
+    ):
+        totals[name] = int(totals.get(name, 0)) + int(counters[name])
     return added
 
 

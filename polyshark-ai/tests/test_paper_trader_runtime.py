@@ -238,6 +238,41 @@ class PaperTraderRuntimeTests(unittest.TestCase):
         )
         self.assertEqual(second, 0)
         self.assertEqual(len(s["shadow_challenger"]["signals"]), 1)
+        last = s["shadow_challenger"]["last_observation"]
+        self.assertEqual(last["candidates_seen"], 1)
+        self.assertEqual(last["deduplicated"], 1)
+        totals = s["shadow_challenger"]["observation_totals"]
+        self.assertEqual(totals["ticks"], 2)
+        self.assertEqual(totals["rejected_price"], 1)
+        self.assertEqual(totals["added"], 1)
+
+    def test_shadow_funnel_records_spread_rejection(self):
+        s = pt.fresh_state()
+        candidate = pt.Candidate(
+            market_id="wide",
+            question="Wide fixture?",
+            category="Other",
+            yes_token="yes-wide",
+            no_token="no-wide",
+            yes_price=0.55,
+            yes_spread=0.03,
+            liquidity=100000.0,
+            volume_24h=50000.0,
+            momentum_24h=0.10,
+            momentum_6h=0.05,
+            end_date="2026-10-31T00:00:00+00:00",
+        )
+        added = pt.observe_shadow_candidates(
+            s,
+            [candidate],
+            {"yes-wide": 0.55, "no-wide": 0.45},
+            {"yes-wide": 0.03, "no-wide": 0.03},
+            "2026-09-25T14:00:00+00:00",
+        )
+        self.assertEqual(added, 0)
+        last = s["shadow_challenger"]["last_observation"]
+        self.assertEqual(last["rejected_spread"], 1)
+        self.assertEqual(last["added"], 0)
 
     def test_shadow_matures_after_cost_return_without_touching_portfolio(self):
         s = pt.fresh_state()

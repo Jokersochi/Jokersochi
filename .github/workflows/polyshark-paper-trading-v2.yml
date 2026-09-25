@@ -120,6 +120,7 @@ jobs:
               'paper_only': state.get('paper_only'),
               'shadow_signals': len(shadow.get('signals', [])),
               'shadow_verdict': shadow.get('verdict'),
+              'shadow_last_observation': shadow.get('last_observation'),
           })
           PY
 

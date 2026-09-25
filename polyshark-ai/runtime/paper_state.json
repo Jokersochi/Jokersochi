@@ -9,12 +9,12 @@
   "target_equity": 1000000000.0,
   "bankrupt_equity": 0.0,
   "cash": 258.46241,
-  "equity": 365.51517,
+  "equity": 366.237894,
   "realized_pnl": -632.034459,
-  "unrealized_pnl": -2.450371,
+  "unrealized_pnl": -1.727647,
   "fees_paid": 306.26851,
-  "ticks": 326,
-  "last_tick_at": "2026-09-25T13:55:06+00:00",
+  "ticks": 327,
+  "last_tick_at": "2026-09-25T13:58:30+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -69,9 +69,9 @@
       "volume_24h": 109741.22,
       "end_date": "2026-10-01",
       "paper": true,
-      "mark_price": 0.888,
-      "mark_spread": 0.019,
-      "mark_net_liquidation": 19.968162
+      "mark_price": 0.8975,
+      "mark_spread": 0.001,
+      "mark_net_liquidation": 20.407644
     },
     {
       "position_id": "2589813-YES-1790284144",
@@ -121,9 +121,9 @@
       "volume_24h": 129770.37,
       "end_date": "2026-10-01",
       "paper": true,
-      "mark_price": 0.71,
-      "mark_spread": 0.02,
-      "mark_net_liquidation": 19.137205
+      "mark_price": 0.715,
+      "mark_spread": 0.01,
+      "mark_net_liquidation": 19.420447
     },
     {
       "position_id": "601826-NO-1790301513",
@@ -10220,6 +10220,16 @@
       "fees_paid": 306.26851,
       "open_positions": 6,
       "closed_positions": 187
+    },
+    {
+      "ts": "2026-09-25T13:58:30+00:00",
+      "equity": 366.237894,
+      "cash": 258.46241,
+      "realized_pnl": -632.034459,
+      "unrealized_pnl": -1.727647,
+      "fees_paid": 306.26851,
+      "open_positions": 6,
+      "closed_positions": 187
     }
   ],
   "shadow_challenger": {
@@ -10266,7 +10276,25 @@
       }
     },
     "verdict": "NO_EVIDENCE",
-    "updated_at": "2026-09-25T13:55:06+00:00",
-    "auto_promotion": false
+    "updated_at": "2026-09-25T13:58:30+00:00",
+    "auto_promotion": false,
+    "last_observation": {
+      "ts": "2026-09-25T13:58:30+00:00",
+      "candidates_seen": 1,
+      "deduplicated": 0,
+      "rejected_price": 1,
+      "rejected_spread": 0,
+      "rejected_invalid_quote": 0,
+      "added": 0
+    },
+    "observation_totals": {
+      "ticks": 1,
+      "candidates_seen": 1,
+      "deduplicated": 0,
+      "rejected_price": 1,
+      "rejected_spread": 0,
+      "rejected_invalid_quote": 0,
+      "added": 0
+    }
   }
 }

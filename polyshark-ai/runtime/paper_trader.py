@@ -56,6 +56,18 @@ SETTLEMENT_CHECK_COOLDOWN_SECONDS = float(os.getenv("PAPER_SETTLEMENT_CHECK_COOL
 SETTLEMENT_PRICE_EPSILON = float(os.getenv("PAPER_SETTLEMENT_PRICE_EPSILON", "0.001"))
 EQUITY_HISTORY_LIMIT = int(os.getenv("PAPER_EQUITY_HISTORY_LIMIT", "2016"))
 
+SHADOW_ENABLED = os.getenv("PAPER_SHADOW_ENABLED", "true").strip().lower() in {"1", "true", "yes", "on"}
+SHADOW_MODEL_VERSION = "risk-filtered-momentum-v1-forward-20260925"
+SHADOW_TOP_PER_TICK = int(os.getenv("PAPER_SHADOW_TOP_PER_TICK", "3"))
+SHADOW_NOTIONAL = float(os.getenv("PAPER_SHADOW_NOTIONAL", "100"))
+SHADOW_MIN_ENTRY_PRICE = float(os.getenv("PAPER_SHADOW_MIN_ENTRY_PRICE", "0.40"))
+SHADOW_MAX_SPREAD = float(os.getenv("PAPER_SHADOW_MAX_SPREAD", "0.020"))
+SHADOW_DEDUP_HOURS = float(os.getenv("PAPER_SHADOW_DEDUP_HOURS", "24"))
+SHADOW_HORIZONS_HOURS = (6, 24)
+SHADOW_SIGNAL_LIMIT = int(os.getenv("PAPER_SHADOW_SIGNAL_LIMIT", "1500"))
+SHADOW_REVIEW_MIN_24H = int(os.getenv("PAPER_SHADOW_REVIEW_MIN_24H", "100"))
+SHADOW_REVIEW_MIN_PROFIT_FACTOR = float(os.getenv("PAPER_SHADOW_REVIEW_MIN_PROFIT_FACTOR", "1.20"))
+
 FEE_RATE_BY_CATEGORY = {
     "crypto": 0.07,
     "sports": 0.03,
@@ -578,6 +590,301 @@ def mark_and_exit_positions(state: dict[str, Any], mids: dict[str, float], sprea
     state["open_positions"] = remaining
 
 
+def _shadow_root(state: dict[str, Any], now: str) -> dict[str, Any]:
+    root = state.setdefault("shadow_challenger", {})
+    if not isinstance(root, dict):
+        raise RuntimeError("shadow_challenger must be an object")
+    root.setdefault("model_version", SHADOW_MODEL_VERSION)
+    root.setdefault("started_at", now)
+    root.setdefault(
+        "strategy_spec",
+        {
+            "source": "existing dual-horizon momentum candidate stream",
+            "forward_only": True,
+            "min_entry_price": SHADOW_MIN_ENTRY_PRICE,
+            "max_spread": SHADOW_MAX_SPREAD,
+            "dedup_hours": SHADOW_DEDUP_HOURS,
+            "notional": SHADOW_NOTIONAL,
+            "horizons_hours": list(SHADOW_HORIZONS_HOURS),
+            "legacy_capital_execution": False,
+        },
+    )
+    root.setdefault(
+        "review_gate",
+        {
+            "horizon_hours": 24,
+            "min_matured_signals": SHADOW_REVIEW_MIN_24H,
+            "mean_return_ci95_lower_gt": 0.0,
+            "min_profit_factor": SHADOW_REVIEW_MIN_PROFIT_FACTOR,
+            "auto_promotion": False,
+            "warning": "Diagnostic gate only; correlated markets reduce effective sample size.",
+        },
+    )
+    root.setdefault("signals", [])
+    root.setdefault("summary", {})
+    root.setdefault("verdict", "NO_EVIDENCE")
+    return root
+
+
+def _shadow_entry(c: Candidate, mids: dict[str, float], spreads: dict[str, float], now: str) -> dict[str, Any] | None:
+    token_id = c.token_id
+    mid = mids.get(token_id, c.token_mid)
+    spread = spreads.get(token_id, c.yes_spread)
+    if not (SHADOW_MIN_ENTRY_PRICE <= mid <= MAX_PRICE):
+        return None
+    if not (0.0 <= spread <= SHADOW_MAX_SPREAD):
+        return None
+    entry_price = min(0.999, mid + spread / 2.0)
+    fee_rate = market_fee_rate(c.category)
+    gross_trade = (
+        SHADOW_NOTIONAL / (1.0 + fee_rate * (1.0 - entry_price))
+        if fee_rate > 0
+        else SHADOW_NOTIONAL
+    )
+    shares = gross_trade / entry_price
+    entry_fee = taker_fee(shares, entry_price, fee_rate)
+    cash_outlay = gross_trade + entry_fee
+    return {
+        "signal_id": f"{SHADOW_MODEL_VERSION}:{c.market_id}:{c.outcome}:{int(parse_ts(now))}",
+        "model_version": SHADOW_MODEL_VERSION,
+        "market_id": c.market_id,
+        "question": c.question,
+        "category": c.category,
+        "outcome": c.outcome,
+        "token_id": token_id,
+        "observed_at": now,
+        "end_date": c.end_date,
+        "entry_mid": round(mid, 6),
+        "entry_spread": round(spread, 6),
+        "entry_price": round(entry_price, 6),
+        "shares": round(shares, 8),
+        "gross_trade": round(gross_trade, 6),
+        "entry_fee": round(entry_fee, 6),
+        "cash_outlay": round(cash_outlay, 6),
+        "fee_rate": fee_rate,
+        "momentum_24h": round(c.momentum_24h, 6),
+        "momentum_6h": round(c.momentum_6h, 6),
+        "liquidity": round(c.liquidity, 2),
+        "volume_24h": round(c.volume_24h, 2),
+        "score": round(c.score, 6),
+        "horizon_results": {},
+        "status": "pending",
+        "paper_only": True,
+        "capital_impact": 0.0,
+    }
+
+
+def observe_shadow_candidates(
+    state: dict[str, Any],
+    candidates: list[Candidate],
+    mids: dict[str, float],
+    spreads: dict[str, float],
+    now: str,
+) -> int:
+    if not SHADOW_ENABLED:
+        return 0
+    root = _shadow_root(state, now)
+    signals = root["signals"]
+    now_ts = parse_ts(now)
+    cutoff = now_ts - SHADOW_DEDUP_HOURS * 3600.0
+    recent_keys = {
+        (str(s.get("market_id")), str(s.get("outcome")))
+        for s in signals
+        if s.get("model_version") == SHADOW_MODEL_VERSION
+        and parse_ts(str(s.get("observed_at"))) >= cutoff
+    }
+    added = 0
+    for candidate in candidates:
+        if added >= SHADOW_TOP_PER_TICK:
+            break
+        key = (candidate.market_id, candidate.outcome)
+        if key in recent_keys:
+            continue
+        signal = _shadow_entry(candidate, mids, spreads, now)
+        if signal is None:
+            continue
+        signals.append(signal)
+        recent_keys.add(key)
+        added += 1
+    return added
+
+
+def _shadow_resolved_net(signal: dict[str, Any]) -> float | None:
+    try:
+        market = fetch_market_by_id(str(signal.get("market_id") or ""))
+    except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, json.JSONDecodeError):
+        return None
+    if not market:
+        return None
+    payout = resolved_payout_from_market(signal, market)
+    if payout is None:
+        return None
+    return _as_float(signal.get("shares")) * payout
+
+
+def _shadow_record_horizon(
+    signal: dict[str, Any],
+    horizon: int,
+    *,
+    net: float,
+    exit_mid: float | None,
+    exit_spread: float | None,
+    evaluated_at: str,
+    source: str,
+) -> None:
+    basis = _as_float(signal.get("cash_outlay"))
+    pnl = net - basis
+    ret = pnl / basis if basis > 0 else 0.0
+    signal.setdefault("horizon_results", {})[str(horizon)] = {
+        "evaluated_at": evaluated_at,
+        "source": source,
+        "exit_mid": round(exit_mid, 6) if exit_mid is not None else None,
+        "exit_spread": round(exit_spread, 6) if exit_spread is not None else None,
+        "net_liquidation": round(net, 6),
+        "after_cost_pnl": round(pnl, 6),
+        "after_cost_return": round(ret, 8),
+        "profitable": pnl > 0.0,
+    }
+
+
+def update_shadow_signals(
+    state: dict[str, Any],
+    mids: dict[str, float],
+    spreads: dict[str, float],
+    now: str,
+) -> None:
+    if not SHADOW_ENABLED:
+        return
+    root = _shadow_root(state, now)
+    now_ts = parse_ts(now)
+    for signal in root["signals"]:
+        results = signal.setdefault("horizon_results", {})
+        age_seconds = now_ts - parse_ts(str(signal["observed_at"]))
+        for horizon in SHADOW_HORIZONS_HOURS:
+            key = str(horizon)
+            if key in results or age_seconds < horizon * 3600:
+                continue
+            token_id = str(signal.get("token_id") or "")
+            mid = mids.get(token_id, -1.0)
+            spread = spreads.get(token_id, -1.0)
+            if 0 < mid < 1 and 0 <= spread < 1:
+                net, _, _ = position_liquidation(signal, mid, spread)
+                _shadow_record_horizon(
+                    signal,
+                    horizon,
+                    net=net,
+                    exit_mid=mid,
+                    exit_spread=spread,
+                    evaluated_at=now,
+                    source="clob_liquidation",
+                )
+                continue
+            resolved_net = _shadow_resolved_net(signal)
+            if resolved_net is not None:
+                _shadow_record_horizon(
+                    signal,
+                    horizon,
+                    net=resolved_net,
+                    exit_mid=None,
+                    exit_spread=None,
+                    evaluated_at=now,
+                    source="gamma_resolution",
+                )
+        if all(str(h) in results for h in SHADOW_HORIZONS_HOURS):
+            signal["status"] = "matured"
+    _trim_shadow_signals(root)
+    _refresh_shadow_summary(root, now)
+
+
+def _trim_shadow_signals(root: dict[str, Any]) -> None:
+    signals = root.get("signals", [])
+    if len(signals) <= SHADOW_SIGNAL_LIMIT:
+        return
+    pending = [s for s in signals if s.get("status") != "matured"]
+    matured = [s for s in signals if s.get("status") == "matured"]
+    keep_matured = max(0, SHADOW_SIGNAL_LIMIT - len(pending))
+    matured_tail = matured[-keep_matured:] if keep_matured > 0 else []
+    root["signals"] = (pending + matured_tail)[-SHADOW_SIGNAL_LIMIT:]
+
+
+def _shadow_horizon_stats(signals: list[dict[str, Any]], horizon: int) -> dict[str, Any]:
+    returns = [
+        _as_float(s.get("horizon_results", {}).get(str(horizon), {}).get("after_cost_return"))
+        for s in signals
+        if str(horizon) in s.get("horizon_results", {})
+    ]
+    n = len(returns)
+    if not returns:
+        return {
+            "n": 0,
+            "mean_return": None,
+            "win_rate": None,
+            "profit_factor": None,
+            "ci95_lower": None,
+            "ci95_upper": None,
+        }
+    mean = math.fsum(returns) / n
+    wins = sum(1 for value in returns if value > 0.0)
+    positives = math.fsum(value for value in returns if value > 0.0)
+    negatives = abs(math.fsum(value for value in returns if value < 0.0))
+    profit_factor = (positives / negatives) if negatives > 0 else (999.0 if positives > 0 else 0.0)
+    if n >= 2:
+        variance = math.fsum((value - mean) ** 2 for value in returns) / (n - 1)
+        stderr = math.sqrt(max(0.0, variance)) / math.sqrt(n)
+        margin = 1.96 * stderr
+        ci_lower = mean - margin
+        ci_upper = mean + margin
+    else:
+        ci_lower = None
+        ci_upper = None
+    return {
+        "n": n,
+        "mean_return": round(mean, 8),
+        "win_rate": round(wins / n, 6),
+        "profit_factor": round(profit_factor, 6),
+        "ci95_lower": round(ci_lower, 8) if ci_lower is not None else None,
+        "ci95_upper": round(ci_upper, 8) if ci_upper is not None else None,
+    }
+
+
+def _refresh_shadow_summary(root: dict[str, Any], now: str) -> None:
+    signals = root.get("signals", [])
+    summary = {
+        str(horizon): _shadow_horizon_stats(signals, horizon)
+        for horizon in SHADOW_HORIZONS_HOURS
+    }
+    root["summary"] = summary
+    root["updated_at"] = now
+    stats24 = summary["24"]
+    if stats24["n"] < SHADOW_REVIEW_MIN_24H:
+        verdict = "NO_EVIDENCE"
+    elif (
+        stats24["ci95_lower"] is not None
+        and stats24["ci95_lower"] > 0.0
+        and stats24["profit_factor"] is not None
+        and stats24["profit_factor"] >= SHADOW_REVIEW_MIN_PROFIT_FACTOR
+    ):
+        verdict = "ELIGIBLE_FOR_REVIEW"
+    else:
+        verdict = "NOT_PROMOTED"
+    root["verdict"] = verdict
+    root["auto_promotion"] = False
+
+
+def pending_shadow_token_ids(state: dict[str, Any]) -> list[str]:
+    root = state.get("shadow_challenger")
+    if not isinstance(root, dict):
+        return []
+    out: list[str] = []
+    for signal in root.get("signals", []):
+        results = signal.get("horizon_results", {})
+        if not all(str(h) in results for h in SHADOW_HORIZONS_HOURS):
+            token_id = str(signal.get("token_id") or "")
+            if token_id:
+                out.append(token_id)
+    return out
+
+
 def open_candidate(state: dict[str, Any], c: Candidate, mids: dict[str, float], spreads: dict[str, float], now: str) -> bool:
     if not ALLOW_LEGACY_MOMENTUM_ENTRIES:
         return False
@@ -660,7 +967,9 @@ def tick(state: dict[str, Any]) -> dict[str, Any]:
     markets = fetch_markets()
     candidates, mids, spreads = build_candidates(markets)
     open_tokens = [str(p.get("token_id")) for p in state.get("open_positions", [])]
-    missing = [tid for tid in open_tokens if tid and tid not in mids]
+    shadow_tokens = pending_shadow_token_ids(state)
+    required_tokens = list(dict.fromkeys(open_tokens + shadow_tokens))
+    missing = [tid for tid in required_tokens if tid and tid not in mids]
     if missing:
         mids.update(batch_midpoints(missing))
         spreads.update(batch_spreads(missing))
@@ -702,6 +1011,11 @@ def tick(state: dict[str, Any]) -> dict[str, Any]:
                     capacity -= 1
                     opened += 1
         recalc_equity(state, mids, spreads)
+
+    update_shadow_signals(state, mids, spreads, now)
+    observe_shadow_candidates(state, candidates, mids, spreads, now)
+    _refresh_shadow_summary(_shadow_root(state, now), now)
+
     state["ticks"] = int(state.get("ticks", 0)) + 1
     state["last_tick_at"] = now
     state["last_error"] = None
@@ -721,6 +1035,14 @@ def validate_state(state: dict[str, Any]) -> None:
     assert _as_float(state.get("bankrupt_equity")) == BANKRUPT_EQUITY
     assert _as_float(state.get("cash")) >= -1e-6
     assert _as_float(state.get("equity")) >= -1e-6
+    if SHADOW_ENABLED:
+        root = state.get("shadow_challenger")
+        assert isinstance(root, dict)
+        assert root.get("model_version") == SHADOW_MODEL_VERSION
+        assert root.get("auto_promotion") is False
+        for signal in root.get("signals", []):
+            assert signal.get("paper_only") is True
+            assert _as_float(signal.get("capital_impact")) == 0.0
     if state.get("status") == "stopped_target":
         assert not state.get("open_positions")
         assert _as_float(state.get("equity")) >= TARGET_EQUITY - 2.0

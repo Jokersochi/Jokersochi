@@ -66,6 +66,11 @@ jobs:
           PAPER_MAX_POSITION_PCT: "0.05"
           PAPER_MAX_OPEN_POSITIONS: "8"
           PAPER_ALLOW_LEGACY_MOMENTUM_ENTRIES: "false"
+          PAPER_SHADOW_ENABLED: "true"
+          PAPER_SHADOW_MIN_ENTRY_PRICE: "0.40"
+          PAPER_SHADOW_MAX_SPREAD: "0.020"
+          PAPER_SHADOW_REVIEW_MIN_24H: "100"
+          PAPER_SHADOW_REVIEW_MIN_PROFIT_FACTOR: "1.20"
           PAPER_TICK_INTERVAL_SECONDS: "300"
           PAPER_RETRY_MIN_SECONDS: "15"
           PAPER_RETRY_MAX_SECONDS: "60"
@@ -98,6 +103,14 @@ jobs:
           assert state.get('real_orders_enabled') is False
           assert state.get('legacy_momentum_entries_enabled') is False
           assert state.get('entry_policy') == 'legacy_momentum_blocked'
+          shadow = state.get('shadow_challenger')
+          assert isinstance(shadow, dict)
+          assert shadow.get('model_version') == 'risk-filtered-momentum-v1-forward-20260925'
+          assert shadow.get('auto_promotion') is False
+          assert shadow.get('verdict') in {'NO_EVIDENCE', 'NOT_PROMOTED', 'ELIGIBLE_FOR_REVIEW'}
+          for signal in shadow.get('signals', []):
+              assert signal.get('paper_only') is True
+              assert signal.get('capital_impact') == 0.0
           assert not state.get('last_error'), state.get('last_error')
           print({
               'status': state.get('status'),
@@ -105,6 +118,8 @@ jobs:
               'open_positions': len(state.get('open_positions', [])),
               'ticks': state.get('ticks'),
               'paper_only': state.get('paper_only'),
+              'shadow_signals': len(shadow.get('signals', [])),
+              'shadow_verdict': shadow.get('verdict'),
           })
           PY
 

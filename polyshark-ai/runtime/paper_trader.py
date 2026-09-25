@@ -49,6 +49,9 @@ MAX_NEW_POSITIONS_PER_TICK = int(os.getenv("PAPER_MAX_NEW_POSITIONS_PER_TICK", "
 MARKET_SCAN_LIMIT = int(os.getenv("PAPER_MARKET_SCAN_LIMIT", "60"))
 HISTORY_CANDIDATE_LIMIT = int(os.getenv("PAPER_HISTORY_CANDIDATE_LIMIT", "20"))
 REQUEST_TIMEOUT = float(os.getenv("PAPER_REQUEST_TIMEOUT", "15"))
+ALLOW_LEGACY_MOMENTUM_ENTRIES = os.getenv(
+    "PAPER_ALLOW_LEGACY_MOMENTUM_ENTRIES", "false"
+).strip().lower() in {"1", "true", "yes", "on"}
 
 FEE_RATE_BY_CATEGORY = {
     "crypto": 0.07,
@@ -327,6 +330,9 @@ def fresh_state() -> dict[str, Any]:
         "real_orders_enabled": False,
         "paper_only": True,
         "strategy": "liquid-market dual-horizon momentum v2",
+        "legacy_momentum_entries_enabled": ALLOW_LEGACY_MOMENTUM_ENTRIES,
+        "entry_policy": "legacy_momentum_enabled" if ALLOW_LEGACY_MOMENTUM_ENTRIES else "legacy_momentum_blocked",
+        "entry_guard_reason": None if ALLOW_LEGACY_MOMENTUM_ENTRIES else "Legacy momentum v2 has not demonstrated after-cost OOS edge",
         "open_positions": [],
         "closed_positions": [],
         "audit": [{"ts": now, "event": "SESSION_RESET", "starting_equity": round(STARTING_EQUITY, 2), "target_equity": round(TARGET_EQUITY, 2), "bankrupt_equity": round(BANKRUPT_EQUITY, 2), "paper_only": True}],
@@ -411,6 +417,8 @@ def mark_and_exit_positions(state: dict[str, Any], mids: dict[str, float], sprea
 
 
 def open_candidate(state: dict[str, Any], c: Candidate, mids: dict[str, float], spreads: dict[str, float], now: str) -> bool:
+    if not ALLOW_LEGACY_MOMENTUM_ENTRIES:
+        return False
     token_id = c.token_id
     mid = mids.get(token_id, c.token_mid)
     spread = spreads.get(token_id, c.yes_spread)
@@ -501,18 +509,36 @@ def tick(state: dict[str, Any]) -> dict[str, Any]:
     elif equity <= _as_float(state.get("bankrupt_equity"), BANKRUPT_EQUITY) + 1e-9:
         stop_session(state, "bankrupt", now, mids, spreads)
     else:
-        existing_markets = {str(p.get("market_id")) for p in state.get("open_positions", [])}
-        capacity = max(0, MAX_OPEN_POSITIONS - len(state.get("open_positions", [])))
-        opened = 0
-        for c in candidates:
-            if capacity <= 0 or opened >= MAX_NEW_POSITIONS_PER_TICK:
-                break
-            if c.market_id in existing_markets:
-                continue
-            if open_candidate(state, c, mids, spreads, now):
-                existing_markets.add(c.market_id)
-                capacity -= 1
-                opened += 1
+        previous_policy = state.get("entry_policy")
+        state["legacy_momentum_entries_enabled"] = ALLOW_LEGACY_MOMENTUM_ENTRIES
+        state["entry_policy"] = "legacy_momentum_enabled" if ALLOW_LEGACY_MOMENTUM_ENTRIES else "legacy_momentum_blocked"
+        state["entry_guard_reason"] = (
+            None
+            if ALLOW_LEGACY_MOMENTUM_ENTRIES
+            else "Legacy momentum v2 has not demonstrated after-cost OOS edge"
+        )
+        if previous_policy != state["entry_policy"]:
+            state.setdefault("audit", []).append(
+                {
+                    "ts": now,
+                    "event": "ENTRY_POLICY_CHANGED",
+                    "entry_policy": state["entry_policy"],
+                    "reason": state["entry_guard_reason"],
+                }
+            )
+        if ALLOW_LEGACY_MOMENTUM_ENTRIES:
+            existing_markets = {str(p.get("market_id")) for p in state.get("open_positions", [])}
+            capacity = max(0, MAX_OPEN_POSITIONS - len(state.get("open_positions", [])))
+            opened = 0
+            for c in candidates:
+                if capacity <= 0 or opened >= MAX_NEW_POSITIONS_PER_TICK:
+                    break
+                if c.market_id in existing_markets:
+                    continue
+                if open_candidate(state, c, mids, spreads, now):
+                    existing_markets.add(c.market_id)
+                    capacity -= 1
+                    opened += 1
         recalc_equity(state, mids, spreads)
     state["ticks"] = int(state.get("ticks", 0)) + 1
     state["last_tick_at"] = now

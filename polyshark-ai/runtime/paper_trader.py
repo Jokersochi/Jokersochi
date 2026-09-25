@@ -403,6 +403,18 @@ def resolved_payout_from_market(position: dict[str, Any], market: dict[str, Any]
     outcomes = [str(x).upper() for x in _as_json_list(market.get("outcomes"))]
     prices = [_as_float(x, -1.0) for x in _as_json_list(market.get("outcomePrices"))]
     tokens = [str(x) for x in _as_json_list(market.get("clobTokenIds"))]
+    if len(outcomes) != 2 or len(prices) != 2:
+        return None
+    final_prices: list[float] = []
+    for price in prices:
+        if price >= 1.0 - SETTLEMENT_PRICE_EPSILON:
+            final_prices.append(1.0)
+        elif 0.0 <= price <= SETTLEMENT_PRICE_EPSILON:
+            final_prices.append(0.0)
+        else:
+            return None
+    if sum(final_prices) != 1.0:
+        return None
     idx = None
     token_id = str(position.get("token_id") or "")
     if token_id and token_id in tokens:
@@ -411,14 +423,9 @@ def resolved_payout_from_market(position: dict[str, Any], market: dict[str, Any]
         outcome = str(position.get("outcome") or "").upper()
         if outcome and outcome in outcomes:
             idx = outcomes.index(outcome)
-    if idx is None or idx >= len(prices):
+    if idx is None or idx >= len(final_prices):
         return None
-    price = prices[idx]
-    if price >= 1.0 - SETTLEMENT_PRICE_EPSILON:
-        return 1.0
-    if 0.0 <= price <= SETTLEMENT_PRICE_EPSILON:
-        return 0.0
-    return None
+    return final_prices[idx]
 
 
 def settle_position(
@@ -540,7 +547,7 @@ def mark_and_exit_positions(state: dict[str, Any], mids: dict[str, float], sprea
             settlement_state = check_and_settle_position(state, position, now)
             if settlement_state == "settled":
                 continue
-            if settlement_state == "closed_pending_resolution":
+            if settlement_state != "open":
                 remaining.append(position)
                 continue
 

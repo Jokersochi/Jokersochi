@@ -158,6 +158,145 @@ class PaperTraderRuntimeTests(unittest.TestCase):
         self.assertEqual(len(s["open_positions"]), 1)
         self.assertEqual(s["closed_positions"], [])
 
+    def test_shadow_observation_has_zero_capital_impact(self):
+        s = pt.fresh_state()
+        cash_before = s["cash"]
+        open_before = list(s["open_positions"])
+        candidate = pt.Candidate(
+            market_id="shadow1",
+            question="Shadow fixture?",
+            category="Other",
+            yes_token="yes-shadow1",
+            no_token="no-shadow1",
+            yes_price=0.55,
+            yes_spread=0.01,
+            liquidity=100000.0,
+            volume_24h=50000.0,
+            momentum_24h=0.10,
+            momentum_6h=0.05,
+            end_date="2026-10-31T00:00:00+00:00",
+        )
+        added = pt.observe_shadow_candidates(
+            s,
+            [candidate],
+            {"yes-shadow1": 0.55, "no-shadow1": 0.45},
+            {"yes-shadow1": 0.01, "no-shadow1": 0.01},
+            "2026-09-25T14:00:00+00:00",
+        )
+        self.assertEqual(added, 1)
+        self.assertEqual(s["cash"], cash_before)
+        self.assertEqual(s["open_positions"], open_before)
+        signal = s["shadow_challenger"]["signals"][0]
+        self.assertEqual(signal["capital_impact"], 0.0)
+        self.assertTrue(signal["paper_only"])
+        self.assertAlmostEqual(signal["cash_outlay"], pt.SHADOW_NOTIONAL, places=3)
+
+    def test_shadow_rejects_low_price_candidate_and_deduplicates(self):
+        s = pt.fresh_state()
+        low = pt.Candidate(
+            market_id="low",
+            question="Low fixture?",
+            category="Other",
+            yes_token="yes-low",
+            no_token="no-low",
+            yes_price=0.30,
+            yes_spread=0.01,
+            liquidity=100000.0,
+            volume_24h=50000.0,
+            momentum_24h=0.10,
+            momentum_6h=0.05,
+            end_date="2026-10-31T00:00:00+00:00",
+        )
+        good = pt.Candidate(
+            market_id="good",
+            question="Good fixture?",
+            category="Other",
+            yes_token="yes-good",
+            no_token="no-good",
+            yes_price=0.55,
+            yes_spread=0.01,
+            liquidity=100000.0,
+            volume_24h=50000.0,
+            momentum_24h=0.10,
+            momentum_6h=0.05,
+            end_date="2026-10-31T00:00:00+00:00",
+        )
+        mids = {
+            "yes-low": 0.30,
+            "no-low": 0.70,
+            "yes-good": 0.55,
+            "no-good": 0.45,
+        }
+        spreads = {token: 0.01 for token in mids}
+        added = pt.observe_shadow_candidates(
+            s, [low, good], mids, spreads, "2026-09-25T14:00:00+00:00"
+        )
+        self.assertEqual(added, 1)
+        self.assertEqual(s["shadow_challenger"]["signals"][0]["market_id"], "good")
+        second = pt.observe_shadow_candidates(
+            s, [good], mids, spreads, "2026-09-25T15:00:00+00:00"
+        )
+        self.assertEqual(second, 0)
+        self.assertEqual(len(s["shadow_challenger"]["signals"]), 1)
+
+    def test_shadow_matures_after_cost_return_without_touching_portfolio(self):
+        s = pt.fresh_state()
+        candidate = pt.Candidate(
+            market_id="mature",
+            question="Mature fixture?",
+            category="Other",
+            yes_token="yes-mature",
+            no_token="no-mature",
+            yes_price=0.50,
+            yes_spread=0.01,
+            liquidity=100000.0,
+            volume_24h=50000.0,
+            momentum_24h=0.10,
+            momentum_6h=0.05,
+            end_date="2026-10-31T00:00:00+00:00",
+        )
+        pt.observe_shadow_candidates(
+            s,
+            [candidate],
+            {"yes-mature": 0.50, "no-mature": 0.50},
+            {"yes-mature": 0.01, "no-mature": 0.01},
+            "2026-09-25T14:00:00+00:00",
+        )
+        cash_before = s["cash"]
+        pt.update_shadow_signals(
+            s,
+            {"yes-mature": 0.56},
+            {"yes-mature": 0.01},
+            "2026-09-25T20:01:00+00:00",
+        )
+        signal = s["shadow_challenger"]["signals"][0]
+        self.assertIn("6", signal["horizon_results"])
+        result = signal["horizon_results"]["6"]
+        self.assertGreater(result["after_cost_return"], 0.0)
+        self.assertEqual(result["source"], "clob_liquidation")
+        self.assertEqual(s["cash"], cash_before)
+        self.assertEqual(s["open_positions"], [])
+        self.assertEqual(s["shadow_challenger"]["verdict"], "NO_EVIDENCE")
+
+    def test_shadow_review_gate_never_auto_promotes(self):
+        root = {
+            "signals": [],
+            "summary": {},
+            "verdict": "NO_EVIDENCE",
+            "auto_promotion": False,
+        }
+        for index in range(pt.SHADOW_REVIEW_MIN_24H):
+            root["signals"].append(
+                {
+                    "horizon_results": {
+                        "24": {"after_cost_return": 0.02 + (index % 2) * 0.001}
+                    }
+                }
+            )
+        pt._refresh_shadow_summary(root, "2026-09-26T14:00:00+00:00")
+        self.assertEqual(root["verdict"], "ELIGIBLE_FOR_REVIEW")
+        self.assertFalse(root["auto_promotion"])
+
     def test_stop_loss_close_updates_cash_and_realized_pnl(self):
         s = pt.fresh_state()
         s["cash"] = 900.0

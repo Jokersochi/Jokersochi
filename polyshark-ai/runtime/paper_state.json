@@ -9,12 +9,12 @@
   "target_equity": 1000000000.0,
   "bankrupt_equity": 0.0,
   "cash": 310.660536,
-  "equity": 365.768022,
+  "equity": 365.701212,
   "realized_pnl": -634.010657,
-  "unrealized_pnl": -0.221321,
+  "unrealized_pnl": -0.288131,
   "fees_paid": 307.45952,
-  "ticks": 331,
-  "last_tick_at": "2026-09-26T01:55:48+00:00",
+  "ticks": 332,
+  "last_tick_at": "2026-09-26T06:58:23+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -43,9 +43,9 @@
       "volume_24h": 166950.29,
       "end_date": "2026-12-31",
       "paper": true,
-      "mark_price": 0.5715,
-      "mark_spread": 0.001,
-      "mark_net_liquidation": 17.510199
+      "mark_price": 0.568,
+      "mark_spread": 0.004,
+      "mark_net_liquidation": 17.352438
     },
     {
       "position_id": "4052417-NO-1790188111",
@@ -69,9 +69,9 @@
       "volume_24h": 109741.22,
       "end_date": "2026-10-01",
       "paper": true,
-      "mark_price": 0.9275,
-      "mark_spread": 0.001,
-      "mark_net_liquidation": 21.121967
+      "mark_price": 0.926,
+      "mark_spread": 0.01,
+      "mark_net_liquidation": 20.978934
     },
     {
       "position_id": "601826-NO-1790301513",
@@ -95,9 +95,9 @@
       "volume_24h": 138026.08,
       "end_date": "2026-10-04",
       "paper": true,
-      "mark_price": 0.4325,
+      "mark_price": 0.4385,
       "mark_spread": 0.001,
-      "mark_net_liquidation": 16.475321
+      "mark_net_liquidation": 16.709303
     }
   ],
   "closed_positions": [
@@ -10318,6 +10318,16 @@
       "fees_paid": 307.45952,
       "open_positions": 3,
       "closed_positions": 190
+    },
+    {
+      "ts": "2026-09-26T06:58:23+00:00",
+      "equity": 365.701212,
+      "cash": 310.660536,
+      "realized_pnl": -634.010657,
+      "unrealized_pnl": -0.288131,
+      "fees_paid": 307.45952,
+      "open_positions": 3,
+      "closed_positions": 190
     }
   ],
   "shadow_challenger": {
@@ -10368,7 +10378,18 @@
         "liquidity": 206053.2,
         "volume_24h": 259085.18,
         "score": 0.08,
-        "horizon_results": {},
+        "horizon_results": {
+          "6": {
+            "evaluated_at": "2026-09-26T06:58:23+00:00",
+            "source": "clob_liquidation",
+            "exit_mid": 0.455,
+            "exit_spread": 0.01,
+            "net_liquidation": 96.751199,
+            "after_cost_pnl": -3.248806,
+            "after_cost_return": -0.03248806,
+            "profitable": false
+          }
+        },
         "status": "pending",
         "paper_only": true,
         "capital_impact": 0.0
@@ -10432,10 +10453,10 @@
     ],
     "summary": {
       "6": {
-        "n": 0,
-        "mean_return": null,
-        "win_rate": null,
-        "profit_factor": null,
+        "n": 1,
+        "mean_return": -0.03248806,
+        "win_rate": 0.0,
+        "profit_factor": 0.0,
         "ci95_lower": null,
         "ci95_upper": null
       },
@@ -10449,21 +10470,21 @@
       }
     },
     "verdict": "NO_EVIDENCE",
-    "updated_at": "2026-09-26T01:55:48+00:00",
+    "updated_at": "2026-09-26T06:58:23+00:00",
     "auto_promotion": false,
     "last_observation": {
-      "ts": "2026-09-26T01:55:48+00:00",
+      "ts": "2026-09-26T06:58:23+00:00",
       "candidates_seen": 2,
-      "deduplicated": 0,
+      "deduplicated": 2,
       "rejected_price": 0,
       "rejected_spread": 0,
       "rejected_invalid_quote": 0,
-      "added": 2
+      "added": 0
     },
     "observation_totals": {
-      "ticks": 5,
-      "candidates_seen": 8,
-      "deduplicated": 0,
+      "ticks": 6,
+      "candidates_seen": 10,
+      "deduplicated": 2,
       "rejected_price": 5,
       "rejected_spread": 0,
       "rejected_invalid_quote": 0,

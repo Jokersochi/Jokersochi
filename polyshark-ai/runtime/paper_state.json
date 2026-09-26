@@ -8,13 +8,13 @@
   "starting_equity": 1000.0,
   "target_equity": 1000000000.0,
   "bankrupt_equity": 0.0,
-  "cash": 295.467443,
-  "equity": 369.55486,
-  "realized_pnl": -631.21239,
-  "unrealized_pnl": 0.76725,
-  "fees_paid": 306.83471,
-  "ticks": 330,
-  "last_tick_at": "2026-09-25T23:35:20+00:00",
+  "cash": 310.660536,
+  "equity": 365.768022,
+  "realized_pnl": -634.010657,
+  "unrealized_pnl": -0.221321,
+  "fees_paid": 307.45952,
+  "ticks": 331,
+  "last_tick_at": "2026-09-26T01:55:48+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -69,9 +69,9 @@
       "volume_24h": 109741.22,
       "end_date": "2026-10-01",
       "paper": true,
-      "mark_price": 0.915,
-      "mark_spread": 0.008,
-      "mark_net_liquidation": 20.740737
+      "mark_price": 0.9275,
+      "mark_spread": 0.001,
+      "mark_net_liquidation": 21.121967
     },
     {
       "position_id": "601826-NO-1790301513",
@@ -95,35 +95,9 @@
       "volume_24h": 138026.08,
       "end_date": "2026-10-04",
       "paper": true,
-      "mark_price": 0.4265,
+      "mark_price": 0.4325,
       "mark_spread": 0.001,
-      "mark_net_liquidation": 16.241488
-    },
-    {
-      "position_id": "2176270-YES-1790301513",
-      "market_id": "2176270",
-      "question": "Strait of Hormuz traffic returns to normal by December 31?",
-      "category": "Other",
-      "outcome": "YES",
-      "token_id": "83783489454659420807679723574840032660002326710045123865554753994450797728825",
-      "opened_at": "2026-09-25T01:58:30+00:00",
-      "entry_mid": 0.225,
-      "entry_spread": 0.01,
-      "entry_price": 0.23,
-      "shares": 75.32334659,
-      "gross_trade": 17.32437,
-      "entry_fee": 0.66699,
-      "cash_outlay": 17.99136,
-      "fee_rate": 0.05,
-      "momentum_24h": 0.03,
-      "momentum_6h": 0.01,
-      "liquidity": 370352.34,
-      "volume_24h": 197399.49,
-      "end_date": "2027-01-01",
-      "paper": true,
-      "mark_price": 0.275,
-      "mark_spread": 0.01,
-      "mark_net_liquidation": 19.594994
+      "mark_net_liquidation": 16.475321
     }
   ],
   "closed_positions": [
@@ -6375,6 +6349,39 @@
       "pnl": 2.757753,
       "return_pct": 15.2505,
       "close_reason": "take_profit"
+    },
+    {
+      "position_id": "2176270-YES-1790301513",
+      "market_id": "2176270",
+      "question": "Strait of Hormuz traffic returns to normal by December 31?",
+      "category": "Other",
+      "outcome": "YES",
+      "token_id": "83783489454659420807679723574840032660002326710045123865554753994450797728825",
+      "opened_at": "2026-09-25T01:58:30+00:00",
+      "entry_mid": 0.225,
+      "entry_spread": 0.01,
+      "entry_price": 0.23,
+      "shares": 75.32334659,
+      "gross_trade": 17.32437,
+      "entry_fee": 0.66699,
+      "cash_outlay": 17.99136,
+      "fee_rate": 0.05,
+      "momentum_24h": 0.03,
+      "momentum_6h": 0.01,
+      "liquidity": 370352.34,
+      "volume_24h": 197399.49,
+      "end_date": "2027-01-01",
+      "paper": true,
+      "mark_price": 0.275,
+      "mark_spread": 0.01,
+      "mark_net_liquidation": 19.594994,
+      "closed_at": "2026-09-26T01:55:48+00:00",
+      "exit_price": 0.21,
+      "exit_fee": 0.62481,
+      "net_proceeds": 15.193093,
+      "pnl": -2.798267,
+      "return_pct": -15.5534,
+      "close_reason": "stop_loss"
     }
   ],
   "audit": [
@@ -10227,6 +10234,15 @@
       "exit_price": 0.76,
       "pnl": 2.757753,
       "reason": "take_profit"
+    },
+    {
+      "ts": "2026-09-26T01:55:48+00:00",
+      "event": "PAPER_CLOSE",
+      "market_id": "2176270",
+      "outcome": "YES",
+      "exit_price": 0.21,
+      "pnl": -2.798267,
+      "reason": "stop_loss"
     }
   ],
   "legacy_momentum_entries_enabled": false,
@@ -10292,6 +10308,16 @@
       "fees_paid": 306.83471,
       "open_positions": 4,
       "closed_positions": 189
+    },
+    {
+      "ts": "2026-09-26T01:55:48+00:00",
+      "equity": 365.768022,
+      "cash": 310.660536,
+      "realized_pnl": -634.010657,
+      "unrealized_pnl": -0.221321,
+      "fees_paid": 307.45952,
+      "open_positions": 3,
+      "closed_positions": 190
     }
   ],
   "shadow_challenger": {
@@ -10346,6 +10372,62 @@
         "status": "pending",
         "paper_only": true,
         "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:3128886:NO:1790387748",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "3128886",
+        "question": "US announces end of Iranian blockade by December 31, 2026?",
+        "category": "Other",
+        "outcome": "NO",
+        "token_id": "39147524522707536456910747992621671433032838141439193264830818731544404472030",
+        "observed_at": "2026-09-26T01:55:48+00:00",
+        "end_date": "2027-01-01",
+        "entry_mid": 0.4315,
+        "entry_spread": 0.003,
+        "entry_price": 0.433,
+        "shares": 224.58003814,
+        "gross_trade": 97.243157,
+        "entry_fee": 2.75684,
+        "cash_outlay": 99.999997,
+        "fee_rate": 0.05,
+        "momentum_24h": -0.048,
+        "momentum_6h": -0.0785,
+        "liquidity": 190218.35,
+        "volume_24h": 118756.26,
+        "score": 0.13575,
+        "horizon_results": {},
+        "status": "pending",
+        "paper_only": true,
+        "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:3128888:NO:1790387748",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "3128888",
+        "question": "US announces end of Iranian blockade by October 31, 2026?",
+        "category": "Other",
+        "outcome": "NO",
+        "token_id": "77737603049704371401985143030203551130624520784925815473217168646825527075459",
+        "observed_at": "2026-09-26T01:55:48+00:00",
+        "end_date": "2026-11-01",
+        "entry_mid": 0.725,
+        "entry_spread": 0.01,
+        "entry_price": 0.73,
+        "shares": 135.16161951,
+        "gross_trade": 98.667982,
+        "entry_fee": 1.33202,
+        "cash_outlay": 100.000002,
+        "fee_rate": 0.05,
+        "momentum_24h": -0.03,
+        "momentum_6h": -0.09,
+        "liquidity": 81988.51,
+        "volume_24h": 136598.05,
+        "score": 0.119138,
+        "horizon_results": {},
+        "status": "pending",
+        "paper_only": true,
+        "capital_impact": 0.0
       }
     ],
     "summary": {
@@ -10367,25 +10449,25 @@
       }
     },
     "verdict": "NO_EVIDENCE",
-    "updated_at": "2026-09-25T23:35:20+00:00",
+    "updated_at": "2026-09-26T01:55:48+00:00",
     "auto_promotion": false,
     "last_observation": {
-      "ts": "2026-09-25T23:35:20+00:00",
-      "candidates_seen": 1,
+      "ts": "2026-09-26T01:55:48+00:00",
+      "candidates_seen": 2,
       "deduplicated": 0,
       "rejected_price": 0,
       "rejected_spread": 0,
       "rejected_invalid_quote": 0,
-      "added": 1
+      "added": 2
     },
     "observation_totals": {
-      "ticks": 4,
-      "candidates_seen": 6,
+      "ticks": 5,
+      "candidates_seen": 8,
       "deduplicated": 0,
       "rejected_price": 5,
       "rejected_spread": 0,
       "rejected_invalid_quote": 0,
-      "added": 1
+      "added": 3
     }
   }
 }

@@ -8,13 +8,13 @@
   "starting_equity": 1000.0,
   "target_equity": 1000000000.0,
   "bankrupt_equity": 0.0,
-  "cash": 310.660536,
-  "equity": 365.701212,
-  "realized_pnl": -634.010657,
-  "unrealized_pnl": -0.288131,
-  "fees_paid": 307.45952,
-  "ticks": 332,
-  "last_tick_at": "2026-09-26T06:58:23+00:00",
+  "cash": 332.116566,
+  "equity": 366.30451,
+  "realized_pnl": -631.209981,
+  "unrealized_pnl": -2.485509,
+  "fees_paid": 307.523,
+  "ticks": 333,
+  "last_tick_at": "2026-09-26T12:05:33+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -43,35 +43,9 @@
       "volume_24h": 166950.29,
       "end_date": "2026-12-31",
       "paper": true,
-      "mark_price": 0.568,
-      "mark_spread": 0.004,
-      "mark_net_liquidation": 17.352438
-    },
-    {
-      "position_id": "4052417-NO-1790188111",
-      "market_id": "4052417",
-      "question": "Will Bitcoin reach $90,000 in September?",
-      "category": "Other",
-      "outcome": "NO",
-      "token_id": "21164311782025361639338919864638388434077877389091169845133206760657732867402",
-      "opened_at": "2026-09-23T18:28:30+00:00",
-      "entry_mid": 0.8075,
-      "entry_spread": 0.001,
-      "entry_price": 0.808,
-      "shares": 22.86876695,
-      "gross_trade": 18.477964,
-      "entry_fee": 0.17739,
-      "cash_outlay": 18.655354,
-      "fee_rate": 0.05,
-      "momentum_24h": -0.277,
-      "momentum_6h": -0.14,
-      "liquidity": 61897.23,
-      "volume_24h": 109741.22,
-      "end_date": "2026-10-01",
-      "paper": true,
-      "mark_price": 0.926,
-      "mark_spread": 0.01,
-      "mark_net_liquidation": 20.978934
+      "mark_price": 0.571,
+      "mark_spread": 0.002,
+      "mark_net_liquidation": 17.478641
     },
     {
       "position_id": "601826-NO-1790301513",
@@ -6382,6 +6356,39 @@
       "pnl": -2.798267,
       "return_pct": -15.5534,
       "close_reason": "stop_loss"
+    },
+    {
+      "position_id": "4052417-NO-1790188111",
+      "market_id": "4052417",
+      "question": "Will Bitcoin reach $90,000 in September?",
+      "category": "Other",
+      "outcome": "NO",
+      "token_id": "21164311782025361639338919864638388434077877389091169845133206760657732867402",
+      "opened_at": "2026-09-23T18:28:30+00:00",
+      "entry_mid": 0.8075,
+      "entry_spread": 0.001,
+      "entry_price": 0.808,
+      "shares": 22.86876695,
+      "gross_trade": 18.477964,
+      "entry_fee": 0.17739,
+      "cash_outlay": 18.655354,
+      "fee_rate": 0.05,
+      "momentum_24h": -0.277,
+      "momentum_6h": -0.14,
+      "liquidity": 61897.23,
+      "volume_24h": 109741.22,
+      "end_date": "2026-10-01",
+      "paper": true,
+      "mark_price": 0.926,
+      "mark_spread": 0.01,
+      "mark_net_liquidation": 20.978934,
+      "closed_at": "2026-09-26T12:05:33+00:00",
+      "exit_price": 0.941,
+      "exit_fee": 0.06348,
+      "net_proceeds": 21.45603,
+      "pnl": 2.800676,
+      "return_pct": 15.0127,
+      "close_reason": "take_profit"
     }
   ],
   "audit": [
@@ -10243,6 +10250,15 @@
       "exit_price": 0.21,
       "pnl": -2.798267,
       "reason": "stop_loss"
+    },
+    {
+      "ts": "2026-09-26T12:05:33+00:00",
+      "event": "PAPER_CLOSE",
+      "market_id": "4052417",
+      "outcome": "NO",
+      "exit_price": 0.941,
+      "pnl": 2.800676,
+      "reason": "take_profit"
     }
   ],
   "legacy_momentum_entries_enabled": false,
@@ -10328,6 +10344,16 @@
       "fees_paid": 307.45952,
       "open_positions": 3,
       "closed_positions": 190
+    },
+    {
+      "ts": "2026-09-26T12:05:33+00:00",
+      "equity": 366.30451,
+      "cash": 332.116566,
+      "realized_pnl": -631.209981,
+      "unrealized_pnl": -2.485509,
+      "fees_paid": 307.523,
+      "open_positions": 2,
+      "closed_positions": 191
     }
   ],
   "shadow_challenger": {
@@ -10417,7 +10443,18 @@
         "liquidity": 190218.35,
         "volume_24h": 118756.26,
         "score": 0.13575,
-        "horizon_results": {},
+        "horizon_results": {
+          "6": {
+            "evaluated_at": "2026-09-26T12:05:33+00:00",
+            "source": "clob_liquidation",
+            "exit_mid": 0.432,
+            "exit_spread": 0.004,
+            "net_liquidation": 93.817186,
+            "after_cost_pnl": -6.182811,
+            "after_cost_return": -0.06182811,
+            "profitable": false
+          }
+        },
         "status": "pending",
         "paper_only": true,
         "capital_impact": 0.0
@@ -10445,7 +10482,18 @@
         "liquidity": 81988.51,
         "volume_24h": 136598.05,
         "score": 0.119138,
-        "horizon_results": {},
+        "horizon_results": {
+          "6": {
+            "evaluated_at": "2026-09-26T12:05:33+00:00",
+            "source": "clob_liquidation",
+            "exit_mid": 0.735,
+            "exit_spread": 0.01,
+            "net_liquidation": 97.335962,
+            "after_cost_pnl": -2.66404,
+            "after_cost_return": -0.0266404,
+            "profitable": false
+          }
+        },
         "status": "pending",
         "paper_only": true,
         "capital_impact": 0.0
@@ -10453,12 +10501,12 @@
     ],
     "summary": {
       "6": {
-        "n": 1,
-        "mean_return": -0.03248806,
+        "n": 3,
+        "mean_return": -0.04031886,
         "win_rate": 0.0,
         "profit_factor": 0.0,
-        "ci95_lower": null,
-        "ci95_upper": null
+        "ci95_lower": -0.06165601,
+        "ci95_upper": -0.0189817
       },
       "24": {
         "n": 0,
@@ -10470,19 +10518,19 @@
       }
     },
     "verdict": "NO_EVIDENCE",
-    "updated_at": "2026-09-26T06:58:23+00:00",
+    "updated_at": "2026-09-26T12:05:33+00:00",
     "auto_promotion": false,
     "last_observation": {
-      "ts": "2026-09-26T06:58:23+00:00",
-      "candidates_seen": 2,
-      "deduplicated": 2,
+      "ts": "2026-09-26T12:05:33+00:00",
+      "candidates_seen": 0,
+      "deduplicated": 0,
       "rejected_price": 0,
       "rejected_spread": 0,
       "rejected_invalid_quote": 0,
       "added": 0
     },
     "observation_totals": {
-      "ticks": 6,
+      "ticks": 7,
       "candidates_seen": 10,
       "deduplicated": 2,
       "rejected_price": 5,

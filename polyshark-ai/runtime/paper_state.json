@@ -8,45 +8,19 @@
   "starting_equity": 1000.0,
   "target_equity": 1000000000.0,
   "bankrupt_equity": 0.0,
-  "cash": 332.116566,
-  "equity": 366.30451,
-  "realized_pnl": -631.209981,
-  "unrealized_pnl": -2.485509,
-  "fees_paid": 307.523,
-  "ticks": 333,
-  "last_tick_at": "2026-09-26T12:05:33+00:00",
+  "cash": 349.626765,
+  "equity": 366.336068,
+  "realized_pnl": -632.381875,
+  "unrealized_pnl": -1.282057,
+  "fees_paid": 307.90683,
+  "ticks": 334,
+  "last_tick_at": "2026-09-26T16:17:32+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
   "paper_only": true,
   "strategy": "liquid-market dual-horizon momentum v2",
   "open_positions": [
-    {
-      "position_id": "629040-YES-1790173458",
-      "market_id": "629040",
-      "question": "Will Nithya Raman win the 2026 Los Angeles mayoral election?",
-      "category": "Other",
-      "outcome": "YES",
-      "token_id": "50292933818751585369672690878774599873941191925538325333138798248932182222864",
-      "opened_at": "2026-09-23T14:24:16+00:00",
-      "entry_mid": 0.582,
-      "entry_spread": 0.004,
-      "entry_price": 0.584,
-      "shares": 31.33805376,
-      "gross_trade": 18.301423,
-      "entry_fee": 0.38067,
-      "cash_outlay": 18.682093,
-      "fee_rate": 0.05,
-      "momentum_24h": 0.1615,
-      "momentum_6h": 0.1615,
-      "liquidity": 116541.97,
-      "volume_24h": 166950.29,
-      "end_date": "2026-12-31",
-      "paper": true,
-      "mark_price": 0.571,
-      "mark_spread": 0.002,
-      "mark_net_liquidation": 17.478641
-    },
     {
       "position_id": "601826-NO-1790301513",
       "market_id": "601826",
@@ -6389,6 +6363,39 @@
       "pnl": 2.800676,
       "return_pct": 15.0127,
       "close_reason": "take_profit"
+    },
+    {
+      "position_id": "629040-YES-1790173458",
+      "market_id": "629040",
+      "question": "Will Nithya Raman win the 2026 Los Angeles mayoral election?",
+      "category": "Other",
+      "outcome": "YES",
+      "token_id": "50292933818751585369672690878774599873941191925538325333138798248932182222864",
+      "opened_at": "2026-09-23T14:24:16+00:00",
+      "entry_mid": 0.582,
+      "entry_spread": 0.004,
+      "entry_price": 0.584,
+      "shares": 31.33805376,
+      "gross_trade": 18.301423,
+      "entry_fee": 0.38067,
+      "cash_outlay": 18.682093,
+      "fee_rate": 0.05,
+      "momentum_24h": 0.1615,
+      "momentum_6h": 0.1615,
+      "liquidity": 116541.97,
+      "volume_24h": 166950.29,
+      "end_date": "2026-12-31",
+      "paper": true,
+      "mark_price": 0.571,
+      "mark_spread": 0.002,
+      "mark_net_liquidation": 17.478641,
+      "closed_at": "2026-09-26T16:17:32+00:00",
+      "exit_price": 0.571,
+      "exit_fee": 0.38383,
+      "net_proceeds": 17.510199,
+      "pnl": -1.171894,
+      "return_pct": -6.2728,
+      "close_reason": "max_hold"
     }
   ],
   "audit": [
@@ -10259,6 +10266,15 @@
       "exit_price": 0.941,
       "pnl": 2.800676,
       "reason": "take_profit"
+    },
+    {
+      "ts": "2026-09-26T16:17:32+00:00",
+      "event": "PAPER_CLOSE",
+      "market_id": "629040",
+      "outcome": "YES",
+      "exit_price": 0.571,
+      "pnl": -1.171894,
+      "reason": "max_hold"
     }
   ],
   "legacy_momentum_entries_enabled": false,
@@ -10354,6 +10370,16 @@
       "fees_paid": 307.523,
       "open_positions": 2,
       "closed_positions": 191
+    },
+    {
+      "ts": "2026-09-26T16:17:32+00:00",
+      "equity": 366.336068,
+      "cash": 349.626765,
+      "realized_pnl": -632.381875,
+      "unrealized_pnl": -1.282057,
+      "fees_paid": 307.90683,
+      "open_positions": 1,
+      "closed_positions": 192
     }
   ],
   "shadow_challenger": {
@@ -10497,6 +10523,34 @@
         "status": "pending",
         "paper_only": true,
         "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:2176270:NO:1790439452",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "2176270",
+        "question": "Strait of Hormuz traffic returns to normal by December 31?",
+        "category": "Other",
+        "outcome": "NO",
+        "token_id": "48727431314333088243693016929623363710488980152833544156961659445129455301311",
+        "observed_at": "2026-09-26T16:17:32+00:00",
+        "end_date": "2027-01-01",
+        "entry_mid": 0.795,
+        "entry_spread": 0.01,
+        "entry_price": 0.8,
+        "shares": 123.76237624,
+        "gross_trade": 99.009901,
+        "entry_fee": 0.9901,
+        "cash_outlay": 100.000001,
+        "fee_rate": 0.05,
+        "momentum_24h": -0.03,
+        "momentum_6h": -0.01,
+        "liquidity": 410100.84,
+        "volume_24h": 387303.63,
+        "score": 0.08,
+        "horizon_results": {},
+        "status": "pending",
+        "paper_only": true,
+        "capital_impact": 0.0
       }
     ],
     "summary": {
@@ -10518,25 +10572,25 @@
       }
     },
     "verdict": "NO_EVIDENCE",
-    "updated_at": "2026-09-26T12:05:33+00:00",
+    "updated_at": "2026-09-26T16:17:32+00:00",
     "auto_promotion": false,
     "last_observation": {
-      "ts": "2026-09-26T12:05:33+00:00",
-      "candidates_seen": 0,
+      "ts": "2026-09-26T16:17:32+00:00",
+      "candidates_seen": 1,
       "deduplicated": 0,
       "rejected_price": 0,
       "rejected_spread": 0,
       "rejected_invalid_quote": 0,
-      "added": 0
+      "added": 1
     },
     "observation_totals": {
-      "ticks": 7,
-      "candidates_seen": 10,
+      "ticks": 8,
+      "candidates_seen": 11,
       "deduplicated": 2,
       "rejected_price": 5,
       "rejected_spread": 0,
       "rejected_invalid_quote": 0,
-      "added": 3
+      "added": 4
     }
   }
 }

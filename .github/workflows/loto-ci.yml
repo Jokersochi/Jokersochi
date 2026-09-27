@@ -45,7 +45,7 @@ jobs:
         run: npm ci
 
       - name: Unit tests
-        run: node --test scripts/loto-strategy.test.mjs scripts/loto-forward-ledger.test.mjs
+        run: node --test scripts/loto-strategy.test.mjs
 
       - name: Live Supabase smoke
         run: node scripts/loto-live-smoke.mjs

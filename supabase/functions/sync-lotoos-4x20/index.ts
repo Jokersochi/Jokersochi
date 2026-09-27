@@ -451,6 +451,45 @@ async function payoutBackfill(supabase: any, startedAt: string, body: any) {
   return { ok: true, mode: "payout_backfill", startPage, pages, draws: ordered.length, first, last, payoutRows: written.payoutRows };
 }
 
+
+async function automaticPayoutBackfill(supabase: any, startedAt: string) {
+  const pageSize = PAGE_SIZE;
+  const pages = MAX_BACKFILL_PAGES;
+  const [cursor, payoutState, latest] = await Promise.all([
+    getState(supabase, "payout_backfill_cursor"),
+    getState(supabase, "payout_status"),
+    latestStoredDraw(supabase),
+  ]);
+  if (cursor?.complete === true) {
+    return { ok: true, mode: "payout_backfill_auto", complete: true, reason: "already_complete" };
+  }
+  if (!latest) throw new Error("Cannot derive payout backfill cursor without canonical draws");
+
+  const latestDraw = Number(latest.draw_number);
+  const minCovered = Number(payoutState?.min_draw);
+  const derivedPage = Number.isInteger(minCovered) && minCovered > 1
+    ? Math.max(1, Math.floor((latestDraw - minCovered) / pageSize) + 1)
+    : 1;
+  const startPage = Math.max(1, Math.trunc(Number(cursor?.next_page) || derivedPage));
+  const result = await payoutBackfill(supabase, startedAt, { start_page: startPage, pages });
+
+  const complete = Number(result.first) <= 1;
+  const nextPage = complete ? startPage : startPage + Math.max(1, pages - 1);
+  await updateState(supabase, "payout_backfill_cursor", {
+    complete,
+    next_page: nextPage,
+    previous_start_page: startPage,
+    pages_per_run: pages,
+    overlap_pages: 1,
+    batch_first_draw: result.first,
+    batch_last_draw: result.last,
+    archive_last_at_run: latestDraw,
+    updated_at: new Date().toISOString(),
+    note: "Page batches overlap by one page so new draws cannot silently shift the archive boundary between scheduled runs.",
+  });
+  return { ...result, mode: "payout_backfill_auto", complete, nextPage };
+}
+
 Deno.serve(async (req: Request) => {
   const startedAt = new Date().toISOString();
   const supabase = adminClient();
@@ -465,8 +504,20 @@ Deno.serve(async (req: Request) => {
   if (!valid) return Response.json({ error: "unauthorized" }, { status: 401 });
   try {
     const body = req.method === "POST" ? await req.json().catch(() => ({})) : {};
-    const mode = body?.mode === "bootstrap" ? "bootstrap" : body?.mode === "payout_backfill" ? "payout_backfill" : "incremental";
-    const result = mode === "bootstrap" ? await retiredBootstrap() : mode === "payout_backfill" ? await payoutBackfill(supabase, startedAt, body) : await incremental(supabase, startedAt);
+    const mode = body?.mode === "bootstrap"
+      ? "bootstrap"
+      : body?.mode === "payout_backfill"
+        ? "payout_backfill"
+        : body?.mode === "payout_backfill_auto"
+          ? "payout_backfill_auto"
+          : "incremental";
+    const result = mode === "bootstrap"
+      ? await retiredBootstrap()
+      : mode === "payout_backfill"
+        ? await payoutBackfill(supabase, startedAt, body)
+        : mode === "payout_backfill_auto"
+          ? await automaticPayoutBackfill(supabase, startedAt)
+          : await incremental(supabase, startedAt);
     if ((result as any)?.status === 409 || (result as any)?.status === 410) return Response.json(result, { status: Number((result as any).status) });
     return Response.json(result);
   } catch (error) {

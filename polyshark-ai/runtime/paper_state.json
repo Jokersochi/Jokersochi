@@ -9,12 +9,12 @@
   "target_equity": 1000000000.0,
   "bankrupt_equity": 0.0,
   "cash": 349.626765,
-  "equity": 365.946177,
+  "equity": 365.907215,
   "realized_pnl": -632.381875,
-  "unrealized_pnl": -1.671948,
+  "unrealized_pnl": -1.71091,
   "fees_paid": 307.90683,
-  "ticks": 338,
-  "last_tick_at": "2026-09-27T05:26:33+00:00",
+  "ticks": 339,
+  "last_tick_at": "2026-09-27T10:39:32+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -43,9 +43,9 @@
       "volume_24h": 138026.08,
       "end_date": "2026-10-04",
       "paper": true,
-      "mark_price": 0.4285,
+      "mark_price": 0.4275,
       "mark_spread": 0.001,
-      "mark_net_liquidation": 16.319412
+      "mark_net_liquidation": 16.28045
     }
   ],
   "closed_positions": [
@@ -10420,6 +10420,16 @@
       "fees_paid": 307.90683,
       "open_positions": 1,
       "closed_positions": 192
+    },
+    {
+      "ts": "2026-09-27T10:39:32+00:00",
+      "equity": 365.907215,
+      "cash": 349.626765,
+      "realized_pnl": -632.381875,
+      "unrealized_pnl": -1.71091,
+      "fees_paid": 307.90683,
+      "open_positions": 1,
+      "closed_positions": 192
     }
   ],
   "shadow_challenger": {
@@ -10656,7 +10666,18 @@
         "liquidity": 69849.2,
         "volume_24h": 115483.77,
         "score": 0.180942,
-        "horizon_results": {},
+        "horizon_results": {
+          "6": {
+            "evaluated_at": "2026-09-27T10:39:32+00:00",
+            "source": "clob_liquidation",
+            "exit_mid": 0.485,
+            "exit_spread": 0.01,
+            "net_liquidation": 87.800481,
+            "after_cost_pnl": -12.199519,
+            "after_cost_return": -0.12199519,
+            "profitable": false
+          }
+        },
         "status": "pending",
         "paper_only": true,
         "capital_impact": 0.0
@@ -10664,12 +10685,12 @@
     ],
     "summary": {
       "6": {
-        "n": 4,
-        "mean_return": -0.03837498,
+        "n": 5,
+        "mean_return": -0.05509902,
         "win_rate": 0.0,
         "profit_factor": 0.0,
-        "ci95_lower": -0.05393625,
-        "ci95_upper": -0.02281371
+        "ci95_lower": -0.09002412,
+        "ci95_upper": -0.02017392
       },
       "24": {
         "n": 3,
@@ -10681,10 +10702,10 @@
       }
     },
     "verdict": "NO_EVIDENCE",
-    "updated_at": "2026-09-27T05:26:33+00:00",
+    "updated_at": "2026-09-27T10:39:32+00:00",
     "auto_promotion": false,
     "last_observation": {
-      "ts": "2026-09-27T05:26:33+00:00",
+      "ts": "2026-09-27T10:39:32+00:00",
       "candidates_seen": 0,
       "deduplicated": 0,
       "rejected_price": 0,
@@ -10693,7 +10714,7 @@
       "added": 0
     },
     "observation_totals": {
-      "ticks": 12,
+      "ticks": 13,
       "candidates_seen": 12,
       "deduplicated": 2,
       "rejected_price": 5,

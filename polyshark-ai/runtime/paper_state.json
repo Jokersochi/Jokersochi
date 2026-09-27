@@ -13,8 +13,8 @@
   "realized_pnl": -632.381875,
   "unrealized_pnl": -1.71091,
   "fees_paid": 307.90683,
-  "ticks": 339,
-  "last_tick_at": "2026-09-27T10:39:32+00:00",
+  "ticks": 340,
+  "last_tick_at": "2026-09-27T15:17:35+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -10430,6 +10430,16 @@
       "fees_paid": 307.90683,
       "open_positions": 1,
       "closed_positions": 192
+    },
+    {
+      "ts": "2026-09-27T15:17:35+00:00",
+      "equity": 365.907215,
+      "cash": 349.626765,
+      "realized_pnl": -632.381875,
+      "unrealized_pnl": -1.71091,
+      "fees_paid": 307.90683,
+      "open_positions": 1,
+      "closed_positions": 192
     }
   ],
   "shadow_challenger": {
@@ -10702,10 +10712,10 @@
       }
     },
     "verdict": "NO_EVIDENCE",
-    "updated_at": "2026-09-27T10:39:32+00:00",
+    "updated_at": "2026-09-27T15:17:35+00:00",
     "auto_promotion": false,
     "last_observation": {
-      "ts": "2026-09-27T10:39:32+00:00",
+      "ts": "2026-09-27T15:17:35+00:00",
       "candidates_seen": 0,
       "deduplicated": 0,
       "rejected_price": 0,
@@ -10714,7 +10724,7 @@
       "added": 0
     },
     "observation_totals": {
-      "ticks": 13,
+      "ticks": 14,
       "candidates_seen": 12,
       "deduplicated": 2,
       "rejected_price": 5,

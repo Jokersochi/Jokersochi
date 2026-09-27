@@ -1,4 +1,4 @@
-import { STRATEGIES } from "./lib/strategy-v2.mjs";
+import { STRATEGIES } from "./lib/strategy-engine.mjs";
 import { strategyTournament, walkForwardBacktest } from "./lib/backtest.mjs";
 import {
   loadLiveArchive,

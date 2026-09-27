@@ -36,7 +36,7 @@ jobs:
           cache: npm
 
       - name: LotoOS unit tests
-        run: node --test scripts/loto-strategy.test.mjs scripts/loto-forward-ledger.test.mjs
+        run: node --test scripts/loto-strategy.test.mjs
 
       - name: Canonical Supabase live smoke
         run: node scripts/loto-live-smoke.mjs

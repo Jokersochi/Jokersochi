@@ -9,12 +9,12 @@
   "target_equity": 1000000000.0,
   "bankrupt_equity": 0.0,
   "cash": 349.626765,
-  "equity": 366.336068,
+  "equity": 365.907215,
   "realized_pnl": -632.381875,
-  "unrealized_pnl": -1.282057,
+  "unrealized_pnl": -1.71091,
   "fees_paid": 307.90683,
-  "ticks": 336,
-  "last_tick_at": "2026-09-26T21:58:16+00:00",
+  "ticks": 337,
+  "last_tick_at": "2026-09-27T00:19:11+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -43,9 +43,9 @@
       "volume_24h": 138026.08,
       "end_date": "2026-10-04",
       "paper": true,
-      "mark_price": 0.4385,
-      "mark_spread": 0.001,
-      "mark_net_liquidation": 16.709303
+      "mark_price": 0.4285,
+      "mark_spread": 0.003,
+      "mark_net_liquidation": 16.28045
     }
   ],
   "closed_positions": [
@@ -10400,6 +10400,16 @@
       "fees_paid": 307.90683,
       "open_positions": 1,
       "closed_positions": 192
+    },
+    {
+      "ts": "2026-09-27T00:19:11+00:00",
+      "equity": 365.907215,
+      "cash": 349.626765,
+      "realized_pnl": -632.381875,
+      "unrealized_pnl": -1.71091,
+      "fees_paid": 307.90683,
+      "open_positions": 1,
+      "closed_positions": 192
     }
   ],
   "shadow_challenger": {
@@ -10460,9 +10470,19 @@
             "after_cost_pnl": -3.248806,
             "after_cost_return": -0.03248806,
             "profitable": false
+          },
+          "24": {
+            "evaluated_at": "2026-09-27T00:19:11+00:00",
+            "source": "gamma_resolution",
+            "exit_mid": null,
+            "exit_spread": null,
+            "net_liquidation": 221.08242,
+            "after_cost_pnl": 121.082415,
+            "after_cost_return": 1.21082408,
+            "profitable": true
           }
         },
-        "status": "pending",
+        "status": "matured",
         "paper_only": true,
         "capital_impact": 0.0
       },
@@ -10567,6 +10587,45 @@
         "liquidity": 410100.84,
         "volume_24h": 387303.63,
         "score": 0.08,
+        "horizon_results": {
+          "6": {
+            "evaluated_at": "2026-09-27T00:19:11+00:00",
+            "source": "clob_liquidation",
+            "exit_mid": 0.795,
+            "exit_spread": 0.01,
+            "net_liquidation": 96.745667,
+            "after_cost_pnl": -3.254334,
+            "after_cost_return": -0.03254334,
+            "profitable": false
+          }
+        },
+        "status": "pending",
+        "paper_only": true,
+        "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:4641065:NO:1790468351",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "4641065",
+        "question": "US x Iran ceasefire continues through October 31?",
+        "category": "Other",
+        "outcome": "NO",
+        "token_id": "114475889232765203212032217024645308497828327658421967586050553616813506019119",
+        "observed_at": "2026-09-27T00:19:11+00:00",
+        "end_date": "2026-10-31",
+        "entry_mid": 0.51,
+        "entry_spread": 0.02,
+        "entry_price": 0.52,
+        "shares": 187.80048077,
+        "gross_trade": 97.65625,
+        "entry_fee": 2.34375,
+        "cash_outlay": 100.0,
+        "fee_rate": 0.05,
+        "momentum_24h": -0.095,
+        "momentum_6h": -0.095,
+        "liquidity": 69849.2,
+        "volume_24h": 115483.77,
+        "score": 0.180942,
         "horizon_results": {},
         "status": "pending",
         "paper_only": true,
@@ -10575,42 +10634,42 @@
     ],
     "summary": {
       "6": {
-        "n": 3,
-        "mean_return": -0.04031886,
+        "n": 4,
+        "mean_return": -0.03837498,
         "win_rate": 0.0,
         "profit_factor": 0.0,
-        "ci95_lower": -0.06165601,
-        "ci95_upper": -0.0189817
+        "ci95_lower": -0.05393625,
+        "ci95_upper": -0.02281371
       },
       "24": {
-        "n": 0,
-        "mean_return": null,
-        "win_rate": null,
-        "profit_factor": null,
+        "n": 1,
+        "mean_return": 1.21082408,
+        "win_rate": 1.0,
+        "profit_factor": 999.0,
         "ci95_lower": null,
         "ci95_upper": null
       }
     },
     "verdict": "NO_EVIDENCE",
-    "updated_at": "2026-09-26T21:58:16+00:00",
+    "updated_at": "2026-09-27T00:19:11+00:00",
     "auto_promotion": false,
     "last_observation": {
-      "ts": "2026-09-26T21:58:16+00:00",
-      "candidates_seen": 0,
+      "ts": "2026-09-27T00:19:11+00:00",
+      "candidates_seen": 1,
       "deduplicated": 0,
       "rejected_price": 0,
       "rejected_spread": 0,
       "rejected_invalid_quote": 0,
-      "added": 0
+      "added": 1
     },
     "observation_totals": {
-      "ticks": 10,
-      "candidates_seen": 11,
+      "ticks": 11,
+      "candidates_seen": 12,
       "deduplicated": 2,
       "rejected_price": 5,
       "rejected_spread": 0,
       "rejected_invalid_quote": 0,
-      "added": 4
+      "added": 5
     }
   }
 }

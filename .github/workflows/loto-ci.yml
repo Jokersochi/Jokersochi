@@ -9,6 +9,8 @@ on:
       - "public/loto-analytics-4x20/**"
       - "supabase/functions/sync-lotoos-4x20/**"
       - "supabase/functions/advance-lotoos-evidence/**"
+      - "supabase/migrations/**"
+      - "docs/lotoos-architecture.md"
   push:
     branches:
       - "lotoos/**"
@@ -19,6 +21,8 @@ on:
       - "public/loto-analytics-4x20/**"
       - "supabase/functions/sync-lotoos-4x20/**"
       - "supabase/functions/advance-lotoos-evidence/**"
+      - "supabase/migrations/**"
+      - "docs/lotoos-architecture.md"
 
 permissions:
   contents: read

@@ -289,7 +289,13 @@ export function walkForwardBacktest(strategyKey, draws, options = {}) {
 export function strategyTournament(draws, options = {}) {
   const keys = options.strategyKeys ?? ["adaptive20", "balanced20", "ensemble", "portfolio5", "hybrid", "hot1000", "overdue", "random"];
   const reports = bhAdjust(keys.map((key) => walkForwardBacktest(key, draws, options)));
-  for (const report of reports) report.evidenceGrade = evidenceGrade(report.strategyKey, report, report.qValue);
+  for (const report of reports) {
+    report.evidenceGrade = evidenceGrade(
+      report.strategyKey,
+      { low: report.ci95Low, high: report.ci95High, mean: report.meanDelta },
+      report.qValue,
+    );
+  }
   return reports.sort((a, b) => {
     if (a.strategyKey === "random") return 1;
     if (b.strategyKey === "random") return -1;

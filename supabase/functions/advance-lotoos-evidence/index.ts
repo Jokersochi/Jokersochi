@@ -225,11 +225,6 @@ async function lockNextRuns(s:any, history:Draw[], versions:Map<string,StrategyV
   const locked:any[]=[];
   for (const strategyKey of STRATEGY_KEYS) {
     const version=versions.get(strategyKey)!;
-    const { data:existing, error:existingError } = await s.from("forward_runs")
-      .select("id").eq("target_draw",targetDraw).eq("strategy_version_id",version.id).maybeSingle();
-    if (existingError) throw new Error(`forward_runs lookup failed: ${existingError.message}`);
-    if (existing) continue;
-
     const generated=await generate(strategyKey,history,targetDraw);
     const ticketRows=[];
     for (let i=0;i<generated.tickets.length;i++) {
@@ -259,14 +254,14 @@ async function lockNextRuns(s:any, history:Draw[], versions:Map<string,StrategyV
       provenance_verified:true,
       metadata:{ engine_release:ENGINE_RELEASE, history_rows:history.length, generation:"pre_draw" },
     };
-    const { data:created, error:createError } = await s.from("forward_runs").insert(run).select("id").single();
-    if (createError) {
-      if (String(createError.code)==="23505") continue;
-      throw new Error(`forward run insert failed: ${createError.message}`);
-    }
-    const { error:ticketError } = await s.from("forward_tickets").insert(ticketRows.map((t)=>({...t,run_id:created.id})));
-    if (ticketError) throw new Error(`forward tickets insert failed: ${ticketError.message}`);
-    locked.push({strategyKey,targetDraw,runId:created.id,ticketsHash});
+    const { data:lockRows, error:lockError } = await s.rpc("lotoos_lock_forward_run", {
+      p_run:run,
+      p_tickets:ticketRows,
+    });
+    if (lockError) throw new Error(`atomic forward lock failed for ${strategyKey}: ${lockError.message}`);
+    const lock=Array.isArray(lockRows) ? lockRows[0] : lockRows;
+    if (!lock?.run_id) throw new Error(`atomic forward lock returned no run id for ${strategyKey}`);
+    if (lock.created === true) locked.push({strategyKey,targetDraw,runId:lock.run_id,ticketsHash});
   }
   return {targetDraw,locked};
 }

@@ -9,12 +9,12 @@
   "target_equity": 1000000000.0,
   "bankrupt_equity": 0.0,
   "cash": 349.626765,
-  "equity": 365.907215,
+  "equity": 365.946177,
   "realized_pnl": -632.381875,
-  "unrealized_pnl": -1.71091,
+  "unrealized_pnl": -1.671948,
   "fees_paid": 307.90683,
-  "ticks": 337,
-  "last_tick_at": "2026-09-27T00:19:11+00:00",
+  "ticks": 338,
+  "last_tick_at": "2026-09-27T05:26:33+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -44,8 +44,8 @@
       "end_date": "2026-10-04",
       "paper": true,
       "mark_price": 0.4285,
-      "mark_spread": 0.003,
-      "mark_net_liquidation": 16.28045
+      "mark_spread": 0.001,
+      "mark_net_liquidation": 16.319412
     }
   ],
   "closed_positions": [
@@ -10410,6 +10410,16 @@
       "fees_paid": 307.90683,
       "open_positions": 1,
       "closed_positions": 192
+    },
+    {
+      "ts": "2026-09-27T05:26:33+00:00",
+      "equity": 365.946177,
+      "cash": 349.626765,
+      "realized_pnl": -632.381875,
+      "unrealized_pnl": -1.671948,
+      "fees_paid": 307.90683,
+      "open_positions": 1,
+      "closed_positions": 192
     }
   ],
   "shadow_challenger": {
@@ -10519,9 +10529,19 @@
             "after_cost_pnl": -6.182811,
             "after_cost_return": -0.06182811,
             "profitable": false
+          },
+          "24": {
+            "evaluated_at": "2026-09-27T05:26:33+00:00",
+            "source": "clob_liquidation",
+            "exit_mid": 0.4415,
+            "exit_spread": 0.005,
+            "net_liquidation": 95.825167,
+            "after_cost_pnl": -4.17483,
+            "after_cost_return": -0.0417483,
+            "profitable": false
           }
         },
-        "status": "pending",
+        "status": "matured",
         "paper_only": true,
         "capital_impact": 0.0
       },
@@ -10558,9 +10578,19 @@
             "after_cost_pnl": -2.66404,
             "after_cost_return": -0.0266404,
             "profitable": false
+          },
+          "24": {
+            "evaluated_at": "2026-09-27T05:26:33+00:00",
+            "source": "clob_liquidation",
+            "exit_mid": 0.735,
+            "exit_spread": 0.01,
+            "net_liquidation": 97.335962,
+            "after_cost_pnl": -2.66404,
+            "after_cost_return": -0.0266404,
+            "profitable": false
           }
         },
-        "status": "pending",
+        "status": "matured",
         "paper_only": true,
         "capital_impact": 0.0
       },
@@ -10642,28 +10672,28 @@
         "ci95_upper": -0.02281371
       },
       "24": {
-        "n": 1,
-        "mean_return": 1.21082408,
-        "win_rate": 1.0,
-        "profit_factor": 999.0,
-        "ci95_lower": null,
-        "ci95_upper": null
+        "n": 3,
+        "mean_return": 0.38081179,
+        "win_rate": 0.333333,
+        "profit_factor": 17.705031,
+        "ci95_lower": -0.43264516,
+        "ci95_upper": 1.19426875
       }
     },
     "verdict": "NO_EVIDENCE",
-    "updated_at": "2026-09-27T00:19:11+00:00",
+    "updated_at": "2026-09-27T05:26:33+00:00",
     "auto_promotion": false,
     "last_observation": {
-      "ts": "2026-09-27T00:19:11+00:00",
-      "candidates_seen": 1,
+      "ts": "2026-09-27T05:26:33+00:00",
+      "candidates_seen": 0,
       "deduplicated": 0,
       "rejected_price": 0,
       "rejected_spread": 0,
       "rejected_invalid_quote": 0,
-      "added": 1
+      "added": 0
     },
     "observation_totals": {
-      "ticks": 11,
+      "ticks": 12,
       "candidates_seen": 12,
       "deduplicated": 2,
       "rejected_price": 5,

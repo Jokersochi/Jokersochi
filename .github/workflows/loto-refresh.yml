@@ -1,42 +1,33 @@
-name: LotoOS refresh 4x20
+name: LotoOS verify and publish
 
 on:
   workflow_dispatch:
   schedule:
-    - cron: "17 * * * *"
     - cron: "43 3 * * *"
   push:
     branches: [main]
     paths:
       - ".github/workflows/loto-refresh.yml"
-      - "scripts/loto-refresh.mjs"
-      - "scripts/loto-source.mjs"
-      - "scripts/loto-strategy.test.mjs"
-      - "scripts/loto-forward-ledger.mjs"
-      - "scripts/loto-forward-ledger.test.mjs"
-      - "scripts/loto-tournament-report.mjs"
-      - "public/loto-analytics-4x20/index.html"
-      - "public/loto-analytics-4x20/app.mjs"
-      - "public/loto-analytics-4x20/app-v2.mjs"
-      - "public/loto-analytics-4x20/styles.css"
-      - "public/loto-analytics-4x20/lib/**"
+      - ".github/workflows/loto-ci.yml"
+      - "scripts/loto-*.mjs"
+      - "public/loto-analytics-4x20/**"
+      - "supabase/functions/sync-lotoos-4x20/**"
+      - "supabase/functions/advance-lotoos-evidence/**"
 
 permissions:
   contents: write
 
 concurrency:
-  group: lotoos-4x20-refresh
+  group: lotoos-verify-publish
   cancel-in-progress: false
 
 jobs:
-  refresh:
+  verify:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v7.0.1
-        with:
-          ref: main
 
       - name: Setup Node
         uses: actions/setup-node@v7.0.0
@@ -44,135 +35,27 @@ jobs:
           node-version: 22
           cache: npm
 
-      - name: Strategy, source and forward-ledger tests
+      - name: LotoOS unit tests
         run: node --test scripts/loto-strategy.test.mjs scripts/loto-forward-ledger.test.mjs
 
-      - name: Refresh verified official archive
-        id: refresh
-        continue-on-error: true
-        env:
-          LOTO_FULL_AUDIT: ${{ github.event.schedule == '43 3 * * *' && '1' || '0' }}
-        run: node scripts/loto-refresh.mjs
+      - name: Canonical Supabase live smoke
+        run: node scripts/loto-live-smoke.mjs
 
-      - name: Read safe refresh status
-        id: status
-        shell: bash
-        run: |
-          node - <<'NODE' >> "$GITHUB_OUTPUT"
-          const fs = require('fs');
-          const status = JSON.parse(fs.readFileSync('.lotoos/refresh-status.json', 'utf8'));
-          console.log(`ok=${status.ok === true ? 'true' : 'false'}`);
-          console.log(`last=${status.last ?? ''}`);
-          console.log(`count=${status.count ?? ''}`);
-          NODE
-          cat .lotoos/refresh-status.json
-
-      - name: Advance immutable forward virtual ledger
-        if: steps.status.outputs.ok == 'true'
-        run: node scripts/loto-forward-ledger.mjs
-
-      - name: Generate walk-forward strategy evidence
-        if: steps.status.outputs.ok == 'true'
-        run: node scripts/loto-tournament-report.mjs
-
-      - name: Persist diagnostics, verified snapshot, forward ledger and evidence
-        id: persist
-        shell: bash
-        run: |
-          if git diff --quiet -- public/loto-analytics-4x20/data/draws.json; then
-            echo "snapshot_changed=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "snapshot_changed=true" >> "$GITHUB_OUTPUT"
-          fi
-
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add .lotoos/refresh-status.json public/loto-analytics-4x20/data/draws.json public/loto-analytics-4x20/data/forward-ledger.json public/loto-analytics-4x20/data/strategy-report.json
-
-          if git diff --cached --quiet; then
-            echo "No persisted changes"
-          else
-            git commit -m "data(lotoos): persist verified draw, forward picks and evidence"
-            git pull --rebase origin main
-            git push origin HEAD:main
-          fi
-
-      - name: Install dependencies for verified publish
-        if: steps.status.outputs.ok == 'true'
+      - name: Install dependencies
         run: npm ci
 
-      - name: Build verified site
-        if: steps.status.outputs.ok == 'true'
+      - name: Build site
         run: npm run build
 
-      - name: Publish verified site in the same workflow
-        if: steps.status.outputs.ok == 'true'
+      - name: Publish code build only
+        if: github.event_name != 'schedule'
         uses: peaceiris/actions-gh-pages@v4.1.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
           publish_branch: gh-pages
 
-      - name: Fail closed after saving diagnostics
-        if: steps.status.outputs.ok != 'true'
+      - name: Canonical ownership notice
         run: |
-          echo "Official archive refresh did not pass validation; publication was intentionally skipped."
-          exit 1
-
-  paper-tick-fallback:
-    name: PolyShark paper tick fallback
-    needs: refresh
-    if: always()
-    runs-on: ubuntu-latest
-    timeout-minutes: 4
-    concurrency:
-      group: polyshark-paper-trading
-      cancel-in-progress: false
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: main
-          fetch-depth: 0
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
-      - name: Prove paper-only invariants
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-          text = Path('polyshark-ai/runtime/paper_trader.py').read_text()
-          forbidden = ['create_order(', 'post_order(', 'cancel_all(', 'POLYMARKET_PRIVATE_KEY']
-          hits = [x for x in forbidden if x in text]
-          if hits:
-              raise SystemExit(f'Unsafe trading primitives found: {hits}')
-          print('Paper-only static guard: PASS')
-          PY
-
-      - name: Unit tests
-        run: python polyshark-ai/tests/test_paper_trader_runtime.py -q
-
-      - name: Run one live-quote paper tick
-        env:
-          PAPER_STARTING_EQUITY: "1000"
-          PAPER_TARGET_EQUITY: "2000"
-          PAPER_BANKRUPT_EQUITY: "0"
-          PAPER_MAX_POSITION_PCT: "0.05"
-          PAPER_MAX_OPEN_POSITIONS: "8"
-        run: python polyshark-ai/runtime/paper_trader.py --state polyshark-ai/runtime/paper_state.json
-
-      - name: Persist paper session state
-        run: |
-          if git diff --quiet -- polyshark-ai/runtime/paper_state.json; then
-            echo "No state change"
-            exit 0
-          fi
-          git config user.name "polyshark-paper-bot"
-          git config user.email "polyshark-paper-bot@users.noreply.github.com"
-          git add polyshark-ai/runtime/paper_state.json
-          git commit -m "chore(polyshark): persist fallback paper tick [skip ci]"
-          git pull --rebase origin main
-          git push origin HEAD:main
-
-# safe-trigger: pipeline-v5
+          echo "Supabase owns the canonical draw archive, payouts, forward locks and evidence."
+          echo "GitHub Actions verifies code and publishes the UI; it does not mutate canonical lottery data."

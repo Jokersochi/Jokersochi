@@ -257,11 +257,16 @@ async function writeRun(supabase: any, status: string, details: any, rowsSeen = 
 async function markSourceVerified(supabase: any, mode: string, latestDraw?: number) {
   const now = new Date().toISOString();
   const { data: row } = await supabase.from("data_sources").select("verification_meta").eq("source_key", "stoloto_official").maybeSingle();
+  const previousVerifiedDraw = Number(row?.verification_meta?.last_verified_draw);
+  const candidateVerifiedDraw = Number(latestDraw);
+  const lastVerifiedDraw = Number.isFinite(candidateVerifiedDraw)
+    ? Math.max(Number.isFinite(previousVerifiedDraw) ? previousVerifiedDraw : 0, candidateVerifiedDraw)
+    : (Number.isFinite(previousVerifiedDraw) ? previousVerifiedDraw : null);
   const verificationMeta = {
     ...(row?.verification_meta || {}),
     canonical_role: "primary_truth",
     last_mode: mode,
-    last_verified_draw: latestDraw ?? null,
+    last_verified_draw: lastVerifiedDraw,
     last_verified_at: now,
   };
   const { error } = await supabase.from("data_sources").update({

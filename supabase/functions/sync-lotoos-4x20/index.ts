@@ -2,7 +2,6 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.111.0";
 
 const OFFICIAL_ENDPOINT = "https://www.stoloto.ru/p/api/mobile/api/v35/service/draws/archive";
-const SNAPSHOT_URL = "https://raw.githubusercontent.com/Jokersochi/Jokersochi/main/public/loto-analytics-4x20/data/draws.json";
 const PAGE_SIZE = 50;
 const MAX_INCREMENTAL_PAGES = 12;
 const MAX_BACKFILL_PAGES = 10;
@@ -102,25 +101,6 @@ async function exactDrawCount(supabase: any) {
 function validField(field: unknown): field is number[] {
   return Array.isArray(field) && field.length === 4 && new Set(field).size === 4 &&
     field.every((n) => Number.isInteger(Number(n)) && Number(n) >= 1 && Number(n) <= 20);
-}
-
-function normalizeSnapshotDraw(row: any): CanonicalDraw {
-  const number = Number(row?.number);
-  const field1 = Array.isArray(row?.fieldA) ? row.fieldA.map(Number) : null;
-  const field2 = Array.isArray(row?.fieldB) ? row.fieldB.map(Number) : null;
-  const date = row?.date;
-  if (!Number.isInteger(number) || number < 1 || !validField(field1) || !validField(field2) || !date || Number.isNaN(Date.parse(date))) {
-    throw new Error(`Invalid snapshot draw ${String(row?.number)}`);
-  }
-  return {
-    draw_number: number,
-    draw_date: new Date(date).toISOString(),
-    status: "COMPLETED",
-    field1,
-    field2,
-    source_url: row?.sourceUrl || `https://www.stoloto.ru/4x20/archive/${number}`,
-    raw: { validationStatus: row?.validationStatus || "verified", snapshot: true },
-  };
 }
 
 function normalizeOfficialRecord(item: any): OfficialRecord | null {
@@ -237,9 +217,83 @@ async function upsertOfficialRecords(supabase: any, records: OfficialRecord[]) {
   return { drawRows, payoutRows };
 }
 
-async function writeRun(supabase: any, status: string, details: any, rowsSeen = 0, rowsUpserted = 0) {
-  const { error } = await supabase.from("ingestion_runs").insert({ source_key: "stoloto_official", started_at: details.started_at, finished_at: new Date().toISOString(), rows_seen: rowsSeen, rows_upserted: rowsUpserted, gap_count: details.gap_count ?? null, mismatch_count: details.mismatch_count ?? 0, status, details });
+type FailureClass = { error_class: string; failure_code: string; severity: "warning" | "error" | "critical" };
+
+function classifyFailure(message: string): FailureClass {
+  const m = message.toLowerCase();
+  if (m.includes("schema changed") || m.includes("unexpected") && m.includes("schema")) {
+    return { error_class: "source_schema", failure_code: "OFFICIAL_SCHEMA_DRIFT", severity: "critical" };
+  }
+  if (m.includes("gap") || m.includes("duplicate") || m.includes("integrity") || m.includes("mismatch")) {
+    return { error_class: "data_integrity", failure_code: "CANONICAL_INTEGRITY_FAILURE", severity: "critical" };
+  }
+  if (m.includes("unauthorized") || m.includes("token") || m.includes("credential")) {
+    return { error_class: "authentication", failure_code: "SYNC_AUTH_FAILURE", severity: "critical" };
+  }
+  if (m.includes("http 429") || m.includes("timeout") || m.includes("fetch")) {
+    return { error_class: "upstream_transient", failure_code: "OFFICIAL_UPSTREAM_TRANSIENT", severity: "warning" };
+  }
+  return { error_class: "runtime", failure_code: "SYNC_RUNTIME_FAILURE", severity: "error" };
+}
+
+async function writeRun(supabase: any, status: string, details: any, rowsSeen = 0, rowsUpserted = 0, failure?: FailureClass) {
+  const { error } = await supabase.from("ingestion_runs").insert({
+    source_key: "stoloto_official",
+    started_at: details.started_at,
+    finished_at: new Date().toISOString(),
+    rows_seen: rowsSeen,
+    rows_upserted: rowsUpserted,
+    gap_count: details.gap_count ?? null,
+    mismatch_count: details.mismatch_count ?? 0,
+    status,
+    error_class: failure?.error_class ?? null,
+    failure_code: failure?.failure_code ?? null,
+    severity: failure?.severity ?? (status === "success" ? "info" : "error"),
+    details,
+  });
   if (error) console.error("ingestion_runs insert failed", error.message);
+}
+
+async function markSourceVerified(supabase: any, mode: string, latestDraw?: number) {
+  const now = new Date().toISOString();
+  const { data: row } = await supabase.from("data_sources").select("verification_meta").eq("source_key", "stoloto_official").maybeSingle();
+  const verificationMeta = {
+    ...(row?.verification_meta || {}),
+    canonical_role: "primary_truth",
+    last_mode: mode,
+    last_verified_draw: latestDraw ?? null,
+    last_verified_at: now,
+  };
+  const { error } = await supabase.from("data_sources").update({
+    last_verified_at: now,
+    verification_meta: verificationMeta,
+  }).eq("source_key", "stoloto_official");
+  if (error) throw new Error(`data_sources verification update failed: ${error.message}`);
+}
+
+async function updateIngestionHealth(supabase: any, failure?: FailureClass) {
+  const { data, error } = await supabase
+    .from("ingestion_runs")
+    .select("status,error_class,failure_code,severity,finished_at")
+    .eq("source_key", "stoloto_official")
+    .order("id", { ascending: false })
+    .limit(10);
+  if (error) throw new Error(`ingestion health query failed: ${error.message}`);
+  let consecutiveFailures = 0;
+  for (const row of data || []) {
+    if (row.status !== "failed") break;
+    consecutiveFailures++;
+  }
+  const critical = failure?.severity === "critical";
+  const state = critical || consecutiveFailures >= 5 ? "blocked" : consecutiveFailures >= 3 ? "degraded" : consecutiveFailures > 0 ? "warning" : "healthy";
+  await updateState(supabase, "ingestion_health", {
+    state,
+    consecutive_failures: consecutiveFailures,
+    last_failure_class: failure?.error_class ?? null,
+    last_failure_code: failure?.failure_code ?? null,
+    thresholds: { degraded_after: 3, blocked_after: 5, critical_blocks_immediately: true },
+    checked_at: new Date().toISOString(),
+  });
 }
 
 async function updateState(supabase: any, key: string, payload: Record<string, unknown>) {
@@ -301,20 +355,14 @@ async function updatePayoutStatus(supabase: any, details: Record<string, unknown
   });
 }
 
-async function bootstrap(supabase: any, startedAt: string) {
-  const response = await fetch(SNAPSHOT_URL, { headers: { "user-agent": "LotoOS-Supabase-Bootstrap/1.3" }, signal: AbortSignal.timeout(30000) });
-  if (!response.ok) throw new Error(`Snapshot HTTP ${response.status}`);
-  const snapshot = await response.json();
-  if (snapshot?.source !== "official" || !Array.isArray(snapshot?.draws) || snapshot.draws.length < 1000) throw new Error("Unexpected GitHub snapshot schema/source");
-  const { sorted, qa } = auditContinuous(snapshot.draws.map(normalizeSnapshotDraw), true);
-  if (qa.count !== Number(snapshot.count) || qa.first !== Number(snapshot.first) || qa.last !== Number(snapshot.last)) throw new Error("Snapshot metadata mismatch");
-  const written = await upsertDraws(supabase, sorted);
-  const count = await exactDrawCount(supabase);
-  const latest = await latestStoredDraw(supabase);
-  if (!latest || count !== qa.count || Number(latest.draw_number) !== qa.last) throw new Error(`Post-import verification mismatch count=${count}/${qa.count} last=${latest?.draw_number}/${qa.last}`);
-  await updateState(supabase, "archive_status", { canonical_imported: true, verified_through: qa.last, verified_through_date: latest.draw_date, freshness_signal_through: qa.last, freshness_signal_date: new Date().toISOString().slice(0, 10), freshness_signal_class: "official_github_refresh_snapshot", official_source_verified: true, production_ready: true, block_reason: null, draw_count: count, gap_count: 0, duplicate_count: 0, invalid_count: 0, checked_at: new Date().toISOString(), source_snapshot_url: SNAPSHOT_URL, source_snapshot_retrieved_at: snapshot.retrievedAt || null });
-  await writeRun(supabase, "success", { started_at: startedAt, mode: "bootstrap", ...qa, gap_count: 0 }, qa.count, written);
-  return { ok: true, mode: "bootstrap", ...qa, written };
+async function retiredBootstrap() {
+  return {
+    ok: false,
+    mode: "bootstrap",
+    retired: true,
+    status: 410,
+    reason: "GitHub snapshot bootstrap retired: Supabase is the only canonical archive. Use controlled official-source rebuild tooling if recovery is required.",
+  };
 }
 
 async function fetchOfficialPage(page: number) {
@@ -372,7 +420,9 @@ async function incremental(supabase: any, startedAt: string) {
   const newest = fresh.at(-1)?.draw ?? currentRecord?.draw ?? latest;
   await reconcileArchiveStatus(supabase, newest, fresh.length ? "stoloto_official_v35_incremental" : "stoloto_official_v35_incremental_check");
   await updatePayoutStatus(supabase, { mode: "incremental", last_checked_draw: newest.draw_number, last_batch_payout_rows: written.payoutRows });
+  await markSourceVerified(supabase, "incremental", Number(newest.draw_number));
   await writeRun(supabase, "success", { started_at: startedAt, mode: "incremental", current, added: fresh.length, payout_rows: written.payoutRows, gap_count: 0 }, fresh.length, written.drawRows);
+  await updateIngestionHealth(supabase);
   return { ok: true, mode: "incremental", current: newest.draw_number, added: fresh.length, payoutRows: written.payoutRows };
 }
 
@@ -395,7 +445,9 @@ async function payoutBackfill(supabase: any, startedAt: string, body: any) {
   const first = ordered[0].draw.draw_number;
   const last = ordered.at(-1)!.draw.draw_number;
   await updatePayoutStatus(supabase, { mode: "payout_backfill", batch_start_page: startPage, batch_pages: pages, batch_first_draw: first, batch_last_draw: last, last_batch_payout_rows: written.payoutRows });
+  await markSourceVerified(supabase, "payout_backfill", last);
   await writeRun(supabase, "success", { started_at: startedAt, mode: "payout_backfill", start_page: startPage, pages, first, last, payout_rows: written.payoutRows, gap_count: 0 }, ordered.length, written.drawRows);
+  await updateIngestionHealth(supabase);
   return { ok: true, mode: "payout_backfill", startPage, pages, draws: ordered.length, first, last, payoutRows: written.payoutRows };
 }
 
@@ -414,12 +466,14 @@ Deno.serve(async (req: Request) => {
   try {
     const body = req.method === "POST" ? await req.json().catch(() => ({})) : {};
     const mode = body?.mode === "bootstrap" ? "bootstrap" : body?.mode === "payout_backfill" ? "payout_backfill" : "incremental";
-    const result = mode === "bootstrap" ? await bootstrap(supabase, startedAt) : mode === "payout_backfill" ? await payoutBackfill(supabase, startedAt, body) : await incremental(supabase, startedAt);
-    if ((result as any)?.status === 409) return Response.json(result, { status: 409 });
+    const result = mode === "bootstrap" ? await retiredBootstrap() : mode === "payout_backfill" ? await payoutBackfill(supabase, startedAt, body) : await incremental(supabase, startedAt);
+    if ((result as any)?.status === 409 || (result as any)?.status === 410) return Response.json(result, { status: Number((result as any).status) });
     return Response.json(result);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    await writeRun(supabase, "failed", { started_at: startedAt, error: message.slice(0, 500), gap_count: null }).catch(() => undefined);
-    return Response.json({ ok: false, error: message }, { status: 500 });
+    const failure = classifyFailure(message);
+    await writeRun(supabase, "failed", { started_at: startedAt, error: message.slice(0, 500), gap_count: null }, 0, 0, failure).catch(() => undefined);
+    await updateIngestionHealth(supabase, failure).catch(() => undefined);
+    return Response.json({ ok: false, error: message, failure_code: failure.failure_code }, { status: 500 });
   }
 });

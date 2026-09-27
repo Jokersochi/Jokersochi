@@ -155,6 +155,63 @@ export async function loadOfficialPayouts(firstDraw, lastDraw) {
   return normalizePayoutRows(rows, firstDraw, lastDraw);
 }
 
+
+export async function loadForwardEvidenceStatus() {
+  const states = await fetchJson("/rest/v1/system_state?key=eq.forward_evidence_status&select=payload,updated_at&limit=1");
+  const row = Array.isArray(states) ? states[0] : null;
+  return row ? { ...row.payload, updatedAt: row.updated_at } : null;
+}
+
+async function loadLatestStrategyVersion(strategyKey) {
+  const key = encodeURIComponent(strategyKey);
+  const rows = await fetchJson(`/rest/v1/strategy_versions?strategy_key=eq.${key}&status=in.(active,baseline,experimental)&select=id,strategy_key,version,status,engine_commit_sha,config_hash,created_at&order=created_at.desc&limit=1`);
+  const row = Array.isArray(rows) ? rows[0] : null;
+  if (!row) throw new Error(`Нет зарегистрированной production-версии стратегии ${strategyKey}`);
+  return row;
+}
+
+export async function loadCanonicalForwardPortfolio(targetDraw, strategyKey) {
+  if (!Number.isInteger(Number(targetDraw)) || Number(targetDraw) < 1) throw new Error("Некорректный target draw");
+  const version = await loadLatestStrategyVersion(strategyKey);
+  const runs = await fetchJson(`/rest/v1/forward_runs?target_draw=eq.${Number(targetDraw)}&strategy_version_id=eq.${version.id}&select=id,target_draw,training_cutoff,source_verified_through,dataset_hash,engine_commit_sha,seed,config_hash,tickets_hash,locked_at,provenance,provenance_verified,experiment_manifest_id&limit=1`);
+  const run = Array.isArray(runs) ? runs[0] : null;
+  if (!run) return null;
+  const tickets = await fetchJson(`/rest/v1/forward_tickets?run_id=eq.${run.id}&select=ticket_index,field1,field2,ticket_hash,created_at&order=ticket_index.asc`);
+  if (!Array.isArray(tickets) || tickets.length !== 5) throw new Error(`${strategyKey}: канонический forward-run не содержит 5 билетов`);
+  return {
+    strategyKey,
+    version: version.version,
+    strategyVersionId: version.id,
+    ...run,
+    targetDraw: Number(run.target_draw),
+    trainingCutoff: Number(run.training_cutoff),
+    sourceVerifiedThrough: Number(run.source_verified_through),
+    provenanceVerified: run.provenance_verified === true,
+    tickets: tickets.map((ticket) => ({
+      index: Number(ticket.ticket_index),
+      fieldA: ticket.field1.map(Number),
+      fieldB: ticket.field2.map(Number),
+      ticketHash: ticket.ticket_hash,
+      createdAt: ticket.created_at,
+    })),
+  };
+}
+
+export async function loadForwardOverview(targetDraw) {
+  const keys = ["adaptive20", "balanced20", "random"];
+  const [status, ...portfolios] = await Promise.all([
+    loadForwardEvidenceStatus(),
+    ...keys.map((key) => loadCanonicalForwardPortfolio(targetDraw, key)),
+  ]);
+  return { status, portfolios: portfolios.filter(Boolean) };
+}
+
+export async function loadLatestEvidenceRuns(limit = 10) {
+  const safeLimit = Math.max(1, Math.min(Number(limit) || 10, 50));
+  const rows = await fetchJson(`/rest/v1/evidence_runs?select=id,evaluation_start_draw,evaluation_end_draw,forward_draws,paired_delta_mean,bootstrap_ci_low,bootstrap_ci_high,p_value,q_value,gate_status,promoted,calculated_at&order=calculated_at.desc&limit=${safeLimit}`);
+  return Array.isArray(rows) ? rows : [];
+}
+
 export async function loadLiveArchive() {
   const states = await fetchJson("/rest/v1/system_state?key=eq.archive_status&select=payload,updated_at&limit=1");
   const state = Array.isArray(states) ? states[0] : null;

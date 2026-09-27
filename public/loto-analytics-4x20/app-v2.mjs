@@ -1,281 +1,247 @@
-import { STRATEGIES, generateTickets, maxUsefulTickets } from "./lib/strategy-v2.mjs";
+import { STRATEGIES } from "./lib/strategy-v2.mjs";
 import { strategyTournament, walkForwardBacktest } from "./lib/backtest.mjs";
-import { loadLiveArchive, loadOfficialPayouts } from "./lib/live-data.mjs";
-import { loadLedger, recordVirtualPortfolio, settleLedger, summarizeLedger } from "./lib/ledger.mjs";
+import {
+  loadLiveArchive,
+  loadOfficialPayouts,
+  loadForwardOverview,
+  loadLatestEvidenceRuns,
+} from "./lib/live-data.mjs";
 
 const $ = (s) => document.querySelector(s);
-const strategyGrid = $("#strategyGrid");
-const strategySelect = $("#strategy");
-const countInput = $("#count");
-const generateButton = $("#generate");
-const results = $("#results");
-const errorBox = $("#error");
 const status = $("#dataStatus");
-const countNote = $("#countNote");
-const ledgerStatus = $("#ledgerStatus");
 const qualityGrid = $("#qualityGrid");
 const latestDraw = $("#latestDraw");
-const backtestStatus = $("#backtestStatus");
-const backtestGrid = $("#backtestGrid");
-const backtestNote = $("#backtestNote");
+const forwardStatus = $("#forwardStatus");
+const forwardGrid = $("#forwardGrid");
+const forwardNote = $("#forwardNote");
+const evidenceStatus = $("#evidenceStatus");
+const evidenceGrid = $("#evidenceGrid");
+const evidenceNote = $("#evidenceNote");
+const researchStatus = $("#researchStatus");
+const researchGrid = $("#researchGrid");
+const researchNote = $("#researchNote");
+const researchStrategy = $("#researchStrategy");
 const tournamentStatus = $("#tournamentStatus");
 const tournamentBody = $("#tournamentBody");
 const tournamentNote = $("#tournamentNote");
+const errorBox = $("#error");
+
 let archive = null;
 let payoutRows = null;
-let payoutPromise = null;
-let backtestRun = 0;
-let tournamentRun = 0;
+let researchToken = 0;
+let tournamentToken = 0;
 
-const FIVE_TICKET_KEYS = new Set(["adaptive20", "balanced20", "ensemble", "portfolio5"]);
-const TOURNAMENT_KEYS = ["adaptive20", "balanced20", "portfolio5", "hybrid", "hot1000", "overdue", "cold200", "random"];
-const escapeHtml = (value) => String(value).replace(/[&<>'"]/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"})[c]);
+const PRODUCTION_LABELS = {
+  adaptive20: ["Adaptive Coverage 20", "candidate"],
+  balanced20: ["Balanced Coverage 20", "baseline"],
+  random: ["Random", "paired comparator"],
+};
+const RESEARCH_KEYS = ["adaptive20","balanced20","ensemble","portfolio5","hybrid","hot1000","hot200","cold200","overdue","random"];
+const TOURNAMENT_KEYS = ["adaptive20","balanced20","portfolio5","hybrid","hot1000","overdue","cold200","random"];
+
+const escapeHtml = (value) => String(value ?? "").replace(/[&<>'"]/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"})[c]);
 const balls = (numbers, cls) => `<div class="balls ${cls}">${numbers.map((n) => `<span class="ball">${n}</span>`).join("")}</div>`;
-const pct = (value) => value == null ? "—" : `${(value * 100).toFixed(1)}%`;
-const signed = (value) => `${value >= 0 ? "+" : ""}${value.toFixed(3)}`;
-const rub = (value) => new Intl.NumberFormat("ru-RU", { style:"currency", currency:"RUB", maximumFractionDigits:0 }).format(Number(value) || 0);
+const pct = (value, digits = 1) => value == null || !Number.isFinite(Number(value)) ? "—" : `${(Number(value) * 100).toFixed(digits)}%`;
+const num = (value, digits = 3) => value == null || !Number.isFinite(Number(value)) ? "—" : Number(value).toFixed(digits);
+const signed = (value, digits = 3) => value == null || !Number.isFinite(Number(value)) ? "—" : `${Number(value) >= 0 ? "+" : ""}${Number(value).toFixed(digits)}`;
+const rub = (value) => value == null || !Number.isFinite(Number(value)) ? "—" : new Intl.NumberFormat("ru-RU",{style:"currency",currency:"RUB",maximumFractionDigits:0}).format(Number(value));
+const shortHash = (value) => value ? `${String(value).slice(0,10)}…` : "—";
 
-function renderStrategies() {
-  strategyGrid.innerHTML = STRATEGIES.map((s) => `<article class="card"><div class="strategy-name"><h2>${escapeHtml(s.name)}</h2><span class="chip">${s.lookback ? `${s.lookback} тиражей` : "без истории"}</span></div><p><strong>${escapeHtml(s.shortDescription)}</strong></p><p class="muted">${escapeHtml(s.plainDescription)}</p></article>`).join("");
-  strategySelect.innerHTML = STRATEGIES.map((s) => `<option value="${s.key}">${escapeHtml(s.name)}</option>`).join("");
-  strategySelect.value = "adaptive20";
-  countInput.value = "5";
-  updateCountLimit();
-  renderLedgerStatus(loadLedger());
+function showError(message) {
+  errorBox.textContent = message;
+  errorBox.classList.remove("hidden");
 }
-
-function updateCountLimit() {
-  const key = strategySelect.value;
-  const max = maxUsefulTickets(key);
-  countInput.max = String(max);
-  if (Number(countInput.value) > max) countInput.value = String(max);
-  countInput.disabled = max === 1;
-  if (key === "adaptive20") {
-    countNote.textContent = "Default: 5 билетов, полное покрытие 1–20 в каждом поле. Исторические метрики влияют на распределение между билетами, но не исключают числа.";
-  } else if (key === "balanced20") {
-    countNote.textContent = "Контрольный портфель: 5 билетов покрывают все 20 чисел каждого поля ровно по одному разу, история не используется.";
-  } else if (key === "ensemble") {
-    countNote.textContent = "Ensemble выбирает 5-билетный подход только по предыдущим out-of-sample результатам, без доступа к будущему тиражу.";
-  } else if (key === "portfolio5") {
-    countNote.textContent = "Challenger: прежний Hybrid Coverage остаётся в турнире, но больше не является стратегией по умолчанию.";
-  } else if (max === 1) {
-    countNote.textContent = "Эта стратегия даёт одну определённую комбинацию; искусственные варианты не создаются.";
-  } else {
-    countNote.textContent = "Можно создать до 10 независимых случайных билетов.";
-  }
-}
-
-function renderLedgerStatus(entries) {
-  if (!ledgerStatus) return;
-  const summary = summarizeLedger(entries);
-  ledgerStatus.textContent = summary.portfolios === 0
-    ? "Virtual Ledger: пока нет зафиксированных портфелей. Следующая генерация будет сохранена до результата тиража."
-    : `Virtual Ledger: ${summary.portfolios} портф., ${summary.tickets} билетов · тиражей ${summary.targetDraws} · ожидают ${summary.pending} · проверено ${summary.checked}. Повторная генерация той же стратегии на тот же тираж заблокирована.`;
-}
+function clearError() { errorBox.classList.add("hidden"); errorBox.textContent = ""; }
 
 function renderDataQuality(data) {
-  const cards = [["Проверено до", `№${data.last}`],["Всего в архиве", data.totalCount.toLocaleString("ru-RU")],["Пропуски", "0"],["Некорректные", "0"]];
-  qualityGrid.innerHTML = cards.map(([label, value]) => `<div class="quality-item"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div>`).join("");
-  const draw = data.draws.at(-1);
-  const date = new Date(draw.date).toLocaleString("ru-RU", {dateStyle:"medium", timeStyle:"short"});
-  const economics = draw.ticketPriceRub ? `<span class="chip">билет ${escapeHtml(rub(draw.ticketPriceRub))}</span>` : "";
-  latestDraw.innerHTML = `<div class="latest-head"><div><span class="eyebrow">Последний подтверждённый тираж</span><h2>№${draw.number}</h2></div><div class="latest-chips"><span class="chip">${escapeHtml(date)}</span>${economics}</div></div><div class="fields"><div class="lotto-field field-a"><strong>Поле 1</strong>${balls(draw.fieldA,"field-a")}</div><div class="lotto-field field-b"><strong>Поле 2</strong>${balls(draw.fieldB,"field-b")}</div></div>`;
-}
-
-async function ensurePayouts() {
-  if (payoutRows) return payoutRows;
-  if (!archive) throw new Error("Live-архив ещё не загружен");
-  if (!payoutPromise) {
-    const first = archive.draws.at(-300)?.number;
-    const last = archive.draws.at(-1)?.number;
-    payoutPromise = loadOfficialPayouts(first, last).then((rows) => {
-      payoutRows = rows;
-      return rows;
-    }).finally(() => { payoutPromise = null; });
-  }
-  return payoutPromise;
-}
-
-function renderBacktestReport(report, payoutError = null) {
-  const hitLift = report.hitLift == null ? "н/д" : `${report.hitLift >= 0 ? "+" : ""}${(report.hitLift * 100).toFixed(1)}%`;
   const cards = [
-    ["Evidence Grade", report.evidenceGrade],
-    ["Walk-forward", `${report.evaluationDraws} тиражей`],
-    ["Средний лучший score", `${report.meanBestMatches.toFixed(3)} vs ${report.baselineMeanBestMatches.toFixed(3)}`],
-    ["Excess score vs Random · 95% CI", `${signed(report.excessProxyScore)} [${signed(report.ci95Low)}; ${signed(report.ci95High)}]`],
-    ["Proxy hit-rate", `${pct(report.proxyHitRate)} vs ${pct(report.baselineProxyHitRate)}`],
-    ["Hit Lift vs Random", hitLift],
-    ["Proxy 2+2", `${pct(report.balanced22Rate)} vs ${pct(report.baselineBalanced22Rate)}`],
-    ["Max просадка score", report.maxProxyDrawdown.toFixed(1)],
+    ["Проверено до", `№${data.last}`],
+    ["Тиражей", data.totalCount.toLocaleString("ru-RU")],
+    ["Gap / duplicate", "0 / 0"],
+    ["Источник", "Stoloto official"],
   ];
-  if (report.financialDataAvailable) {
-    cards.push(
-      [report.financialRoiAvailable ? "Архивный ROI" : "ROI · нижняя граница", `${report.financialRoiAvailable ? "" : "≥ "}${pct(report.financialRoiAvailable ? report.strategyRoi : report.strategyRoiLowerBound)} vs random ${report.financialRoiAvailable ? "" : "≥ "}${pct(report.financialRoiAvailable ? report.baselineRoi : report.baselineRoiLowerBound)}`],
-      ["Payout coverage", `${pct(report.financialCoverage)} vs ${pct(report.baselineFinancialCoverage)}`],
-      ["Расход → выплаты", `${rub(report.strategyStakeRub)} → ${rub(report.strategyReturnRub)}`],
-    );
-  } else {
-    cards.push(["Архивный ROI", "данные выплат недоступны"]);
-  }
-  backtestGrid.innerHTML = cards.map(([label, value]) => `<div class="quality-item evidence-item"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div>`).join("");
-  const moneyNote = report.financialDataAvailable
-    ? `${report.financialMethodology}. Неопределённых виртуальных исходов: ${report.unresolvedStrategyTickets}; у random: ${report.unresolvedBaselineTickets}.`
-    : `Денежный блок недоступен${payoutError ? `: ${payoutError}` : "."}`;
-  backtestNote.textContent = `Проверка №${report.firstEvaluatedDraw}–${report.lastEvaluatedDraw}. ${report.methodology}. ${report.financialStatus} ${moneyNote}`;
-  backtestStatus.className = report.evidenceGrade === "Слабый положительный сигнал" ? "status warn" : "status ok";
-  backtestStatus.textContent = report.evidenceGrade;
+  qualityGrid.innerHTML = cards.map(([label,value]) => `<div class="quality-item"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div>`).join("");
+  const draw = data.draws.at(-1);
+  const date = new Date(draw.date).toLocaleString("ru-RU",{dateStyle:"medium",timeStyle:"short"});
+  latestDraw.innerHTML = `
+    <div class="latest-head">
+      <div><span class="eyebrow">Последний подтверждённый тираж</span><h2>№${draw.number}</h2></div>
+      <div class="latest-chips"><span class="chip">${escapeHtml(date)}</span><span class="chip">билет ${escapeHtml(rub(draw.ticketPriceRub))}</span></div>
+    </div>
+    <div class="fields">
+      <div class="lotto-field field-a"><strong>Поле 1</strong>${balls(draw.fieldA,"field-a")}</div>
+      <div class="lotto-field field-b"><strong>Поле 2</strong>${balls(draw.fieldB,"field-b")}</div>
+    </div>`;
 }
 
-async function renderBacktest() {
+function forwardTicket(ticket) {
+  return `<div class="forward-ticket"><span class="ticket-index">#${ticket.index}</span><div class="mini-fields"><div>${balls(ticket.fieldA,"field-a")}</div><div>${balls(ticket.fieldB,"field-b")}</div></div></div>`;
+}
+
+function renderForward(overview, targetDraw) {
+  const portfolios = overview.portfolios || [];
+  if (portfolios.length !== 3) {
+    forwardStatus.className = "status danger";
+    forwardStatus.textContent = `BLOCKED · canonical locks ${portfolios.length}/3`;
+  } else {
+    forwardStatus.className = "status ok";
+    forwardStatus.textContent = `LOCKED · тираж №${targetDraw} · 3/3`;
+  }
+  forwardGrid.innerHTML = portfolios.map((portfolio) => {
+    const [name,role] = PRODUCTION_LABELS[portfolio.strategyKey] || [portfolio.strategyKey,"production"];
+    const lockDate = new Date(portfolio.locked_at).toLocaleString("ru-RU",{dateStyle:"short",timeStyle:"short"});
+    return `<article class="card portfolio-card">
+      <div class="portfolio-head"><div><span class="eyebrow">${escapeHtml(role)}</span><h2>${escapeHtml(name)}</h2></div><span class="mode-badge">${portfolio.provenanceVerified ? "VERIFIED LOCK" : "UNVERIFIED"}</span></div>
+      <div class="portfolio-meta"><span>target №${portfolio.targetDraw}</span><span>cutoff №${portfolio.trainingCutoff}</span><span>${escapeHtml(lockDate)}</span></div>
+      <div class="forward-tickets">${portfolio.tickets.map(forwardTicket).join("")}</div>
+      <div class="hash-line">tickets <code>${escapeHtml(shortHash(portfolio.tickets_hash))}</code> · dataset <code>${escapeHtml(shortHash(portfolio.dataset_hash))}</code> · engine <code>${escapeHtml(shortHash(portfolio.engine_commit_sha))}</code></div>
+    </article>`;
+  }).join("");
+  const gate = overview.status;
+  forwardNote.textContent = gate
+    ? `Forward counter: ${Number(gate.forward_draws || 0)} / ${Number(gate.min_forward_draws || 1000)}. Эти записи хранятся в append-only Supabase и не зависят от LocalStorage браузера.`
+    : "Forward status пока не опубликован; портфели всё равно считаются каноническими только при VERIFIED LOCK.";
+}
+
+function renderEvidence(statusRow, evidenceRuns) {
+  if (!statusRow) {
+    evidenceStatus.className = "status danger";
+    evidenceStatus.textContent = "Evidence status отсутствует";
+    evidenceGrid.innerHTML = "";
+    return;
+  }
+  const gate = statusRow.gate_status || "insufficient_forward";
+  const promoted = statusRow.promoted === true;
+  evidenceStatus.className = promoted ? "status ok" : gate === "blocked" ? "status danger" : "status warn";
+  evidenceStatus.textContent = promoted ? "PROMOTED" : gate.toUpperCase().replaceAll("_"," ");
+  const ci = Array.isArray(statusRow.bootstrap_ci95) ? `[${signed(statusRow.bootstrap_ci95[0])}; ${signed(statusRow.bootstrap_ci95[1])}]` : "ещё не рассчитывается";
+  const cards = [
+    ["Forward draws", `${Number(statusRow.forward_draws || 0)} / ${Number(statusRow.min_forward_draws || 1000)}`],
+    ["Paired Δ vs Random", signed(statusRow.paired_delta_mean)],
+    ["Bootstrap 95% CI", ci],
+    ["q-value · BH", num(statusRow.q_value,4)],
+    ["α", num(statusRow.alpha,2)],
+    ["Promotion", promoted ? "да" : "нет"],
+  ];
+  evidenceGrid.innerHTML = cards.map(([label,value]) => `<div class="quality-item evidence-item"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div>`).join("");
+  const latest = evidenceRuns?.[0];
+  evidenceNote.textContent = `Preregistered: ${statusRow.experiment_key || "adaptive20 forward primary"}. Исторические тесты не добавляют ни одного draw к этому счётчику. ${latest ? `Последний immutable evidence snapshot: №${latest.evaluation_start_draw}–${latest.evaluation_end_draw}, n=${latest.forward_draws}.` : "До min-forward threshold evidence snapshot с inferential gate не создаётся."}`;
+}
+
+async function ensureResearchPayouts() {
+  if (payoutRows) return payoutRows;
+  const first = archive.draws.at(-300).number;
+  const last = archive.last;
+  payoutRows = await loadOfficialPayouts(first,last);
+  return payoutRows;
+}
+
+function renderResearchReport(report, payoutError = null) {
+  researchStatus.className = report.evidenceGrade.includes("положительный") ? "status warn" : "status ok";
+  researchStatus.textContent = "HISTORICAL · " + report.evidenceGrade;
+  const cards = [
+    ["Окно", `${report.evaluationDraws} тиражей`],
+    ["Δ score vs Random", signed(report.meanDelta)],
+    ["Bootstrap 95% CI", `[${signed(report.ci95Low)}; ${signed(report.ci95High)}]`],
+    ["p-value", num(report.pValue,4)],
+    ["Proxy hit lift", pct(report.hitLift)],
+    ["Max proxy drawdown", num(report.maxProxyDrawdown,1)],
+    ["Payout coverage", pct(report.financialCoverage)],
+    ["ROI benchmark", report.financialDataAvailable ? (report.financialRoiAvailable ? pct(report.strategyRoi) : `lower bound ${pct(report.strategyRoiLowerBound)}`) : "н/д"],
+  ];
+  researchGrid.innerHTML = cards.map(([label,value]) => `<div class="quality-item evidence-item"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div>`).join("");
+  researchNote.textContent = `№${report.firstEvaluatedDraw}–${report.lastEvaluatedDraw}. ${report.methodology}. Это exploratory historical evidence и оно не может продвинуть стратегию в production. ${report.financialStatus}${payoutError ? ` Payout error: ${payoutError}` : ""}`;
+}
+
+async function renderResearch() {
   if (!archive) return;
-  const run = ++backtestRun;
-  backtestStatus.className = "status warn";
-  backtestStatus.textContent = "Считаю walk-forward + ROI…";
-  backtestGrid.innerHTML = "";
-  backtestNote.textContent = "";
-  await new Promise((resolve) => requestAnimationFrame(resolve));
-  let payouts = null;
-  let payoutError = null;
+  const token = ++researchToken;
+  researchStatus.className = "status warn";
+  researchStatus.textContent = "Считаю bootstrap walk-forward…";
+  await new Promise((resolve)=>requestAnimationFrame(resolve));
+  let payouts = null, payoutError = null;
+  try { payouts = await ensureResearchPayouts(); }
+  catch (error) { payoutError = error instanceof Error ? error.message : String(error); }
   try {
-    payouts = await ensurePayouts();
+    const key = researchStrategy.value;
+    const report = walkForwardBacktest(key,archive.draws,{evaluationDraws:300,bootstrapResamples:3000,payoutRows:payouts});
+    if (token !== researchToken) return;
+    renderResearchReport(report,payoutError);
   } catch (error) {
-    payoutError = error instanceof Error ? error.message : String(error);
+    if (token !== researchToken) return;
+    researchStatus.className = "status danger";
+    researchStatus.textContent = "Research blocked";
+    researchNote.textContent = error instanceof Error ? error.message : String(error);
   }
-  try {
-    const evaluationDraws = strategySelect.value === "ensemble" ? 120 : 300;
-    const report = walkForwardBacktest(strategySelect.value, archive.draws, { evaluationDraws, payoutRows: payouts });
-    if (run !== backtestRun) return;
-    renderBacktestReport(report, payoutError);
-  } catch (error) {
-    if (run !== backtestRun) return;
-    backtestStatus.className = "status danger";
-    backtestStatus.textContent = "Backtest недоступен";
-    backtestNote.textContent = error instanceof Error ? error.message : String(error);
-  }
+}
+
+function gradeClass(grade) {
+  if (/положительный/i.test(grade)) return "grade-warn";
+  if (/отрицательный/i.test(grade)) return "grade-bad";
+  return "grade-neutral";
 }
 
 async function renderTournament() {
-  if (!archive || !tournamentStatus || !tournamentBody) return;
-  const run = ++tournamentRun;
-  tournamentStatus.className = "status warn";
-  tournamentStatus.textContent = "Считаю рейтинг + ROI…";
-  tournamentBody.innerHTML = "";
-  await new Promise((resolve) => requestAnimationFrame(resolve));
-  let payouts = null;
-  let payoutError = null;
+  if (!archive) return;
+  const token=++tournamentToken;
+  tournamentStatus.className="status warn";
+  tournamentStatus.textContent="Считаю family + BH…";
+  await new Promise((resolve)=>requestAnimationFrame(resolve));
+  let payouts=null;
+  try { payouts=await ensureResearchPayouts(); } catch {}
   try {
-    payouts = await ensurePayouts();
+    const reports=strategyTournament(archive.draws,{evaluationDraws:120,bootstrapResamples:1500,payoutRows:payouts,strategyKeys:TOURNAMENT_KEYS});
+    if (token!==tournamentToken) return;
+    tournamentBody.innerHTML=reports.filter((r)=>r.strategyKey!=="random").map((r)=>`<tr>
+      <td><strong>${escapeHtml(r.strategyName)}</strong></td>
+      <td>${r.ticketCount}</td>
+      <td>${signed(r.meanDelta)}</td>
+      <td>[${signed(r.ci95Low)}; ${signed(r.ci95High)}]</td>
+      <td>${num(r.pValue,4)}</td>
+      <td>${num(r.qValue,4)}</td>
+      <td>${r.financialDataAvailable ? (r.financialRoiAvailable ? pct(r.strategyRoi) : `≥ ${pct(r.strategyRoiLowerBound)}`) : "н/д"}</td>
+      <td><span class="grade ${gradeClass(r.evidenceGrade)}">${escapeHtml(r.evidenceGrade)}</span></td>
+    </tr>`).join("");
+    tournamentStatus.className="status ok";
+    tournamentStatus.textContent="EXPLORATORY · BH/FDR applied";
+    tournamentNote.textContent="Семейство exploratory-гипотез корректируется методом Benjamini–Hochberg. Даже q<0.05 здесь не является promotion gate: production требует отдельные preregistered forward-тиражи.";
   } catch (error) {
-    payoutError = error instanceof Error ? error.message : String(error);
-  }
-  try {
-    const reports = strategyTournament(archive.draws, { evaluationDraws: 80, strategyKeys: TOURNAMENT_KEYS, payoutRows: payouts });
-    if (run !== tournamentRun) return;
-    const random = reports.find((report) => report.strategyKey === "random");
-    const ranked = reports.filter((report) => report.strategyKey !== "random");
-    tournamentBody.innerHTML = ranked.map((report, index) => {
-      const lift = report.hitLift == null ? "н/д" : `${report.hitLift >= 0 ? "+" : ""}${(report.hitLift * 100).toFixed(1)}%`;
-      const gradeClass = report.evidenceGrade === "Слабый положительный сигнал" ? "grade-warn" : report.evidenceGrade === "Отрицательный сигнал" ? "grade-bad" : "grade-neutral";
-      const roiValue = report.financialDataAvailable
-        ? `${report.financialRoiAvailable ? "" : "≥ "}${pct(report.financialRoiAvailable ? report.strategyRoi : report.strategyRoiLowerBound)}`
-        : "н/д";
-      const coverage = report.financialDataAvailable ? pct(report.financialCoverage) : "н/д";
-      return `<tr><td>${index + 1}</td><td><strong>${escapeHtml(report.strategyName)}</strong></td><td>${report.ticketCount}</td><td>${signed(report.excessProxyScore)}</td><td>${escapeHtml(lift)}</td><td>${escapeHtml(roiValue)}</td><td>${escapeHtml(coverage)}</td><td><span class="grade ${gradeClass}">${escapeHtml(report.evidenceGrade)}</span></td></tr>`;
-    }).join("");
-    tournamentStatus.className = "status ok";
-    tournamentStatus.textContent = `${ranked.length} стратегий · 80 walk-forward тиражей`;
-    if (tournamentNote) {
-      const payoutText = payouts
-        ? "ROI использует фактическую цену и опубликованные выплаты конкретных тиражей; при неполном coverage показана только нижняя граница."
-        : `ROI недоступен${payoutError ? `: ${payoutError}` : "."}`;
-      tournamentNote.textContent = `Рейтинг сортируется по excess proxy-score против Random того же размера. Random-контроль: ${random ? `${random.ticketCount} бил./тираж` : "н/д"}. ${payoutText} Evidence Grade не зависит от исторического ROI. Walk-Forward Ensemble оценивается отдельно в Evidence Lab, чтобы не делать вложенный самореферентный турнир слишком тяжёлым для браузера.`;
-    }
-  } catch (error) {
-    if (run !== tournamentRun) return;
-    tournamentStatus.className = "status danger";
-    tournamentStatus.textContent = "Tournament недоступен";
-    if (tournamentNote) tournamentNote.textContent = error instanceof Error ? error.message : String(error);
+    if (token!==tournamentToken) return;
+    tournamentStatus.className="status danger";
+    tournamentStatus.textContent="Tournament blocked";
+    tournamentNote.textContent=error instanceof Error ? error.message : String(error);
   }
 }
 
-async function loadArchive() {
-  status.className = "status warn";
-  status.textContent = "Данные: проверяю live-backend…";
-  try {
-    archive = await loadLiveArchive();
-    payoutRows = null;
-    payoutPromise = null;
-    status.className = "status ok";
-    status.textContent = `LIVE · официальный архив · до №${archive.last} · без пропусков`;
-    renderDataQuality(archive);
-    renderLedgerStatus(settleLedger(archive.draws));
-    generateButton.disabled = false;
-    renderBacktest();
-    renderTournament();
-  } catch (error) {
-    archive = null;
-    generateButton.disabled = true;
-    status.className = "status danger";
-    status.textContent = "BLOCKED · live-архив не прошёл проверку";
-    backtestStatus.className = "status danger";
-    backtestStatus.textContent = "Backtest заблокирован";
-    if (tournamentStatus) {
-      tournamentStatus.className = "status danger";
-      tournamentStatus.textContent = "Tournament заблокирован";
-    }
-    throw error;
-  }
+async function loadAll() {
+  clearError();
+  status.className="status warn";
+  status.textContent="LIVE: проверяю canonical backend…";
+  archive=await loadLiveArchive();
+  status.className="status ok";
+  status.textContent=`LIVE · official · №${archive.last}`;
+  renderDataQuality(archive);
+
+  const target=archive.last+1;
+  const [forward,evidenceRuns]=await Promise.all([
+    loadForwardOverview(target),
+    loadLatestEvidenceRuns(10),
+  ]);
+  renderForward(forward,target);
+  renderEvidence(forward.status,evidenceRuns);
+
+  researchStrategy.innerHTML=RESEARCH_KEYS.map((key)=>{
+    const meta=STRATEGIES.find((s)=>s.key===key);
+    return `<option value="${key}">${escapeHtml(meta?.name || key)}</option>`;
+  }).join("");
+  researchStrategy.value="adaptive20";
+  await renderResearch();
+  renderTournament();
 }
 
-function renderTicket(ticket, index) {
-  const fields = ticket.explanation.fields.map((field, i) => `<details class="reason" ${i === 0 ? "open" : ""}><summary>${escapeHtml(field.summary)}</summary><ul>${field.details.map((d) => `<li>${escapeHtml(d)}</li>`).join("")}</ul></details>`).join("");
-  return `<article class="ticket"><div class="ticket-head"><h2>Билет ${index + 1}</h2><span class="chip">${escapeHtml(ticket.explanation.strategyName)}</span></div><div class="fields"><div class="lotto-field field-a"><strong>Поле 1</strong>${balls(ticket.fieldA,"field-a")}</div><div class="lotto-field field-b"><strong>Поле 2</strong>${balls(ticket.fieldB,"field-b")}</div></div><section class="why"><h3>Почему выбраны эти числа</h3><p class="muted">${escapeHtml(ticket.explanation.summary)}</p>${fields}<div class="disclaimer">${escapeHtml(ticket.explanation.disclaimer)}</div></section></article>`;
-}
-
-async function generate() {
-  errorBox.classList.add("hidden");
-  generateButton.disabled = true;
-  generateButton.textContent = "Считаю…";
-  try {
-    if (!archive) await loadArchive();
-    const key = strategySelect.value;
-    const targetDraw = Number(archive.last) + 1;
-    const meta = STRATEGIES.find((strategy) => strategy.key === key);
-    const alreadyLocked = loadLedger().find((entry) => Number(entry.targetDraw) === targetDraw && entry.strategyKey === key);
-    if (alreadyLocked) {
-      throw new Error(`${meta?.name ?? key} для тиража №${targetDraw} уже зафиксирована в Virtual Ledger (${alreadyLocked.fingerprint}). Новую комбинацию для той же стратегии можно создать только после завершения этого тиража.`);
-    }
-
-    const tickets = generateTickets(key, archive.draws, Math.max(1, Number(countInput.value) || 1), Date.now());
-    const entry = recordVirtualPortfolio({
-      strategyKey: key,
-      strategyName: meta?.name ?? key,
-      tickets,
-      targetDraw,
-      sourceLast: Number(archive.last),
-    });
-    results.innerHTML = tickets.map(renderTicket).join("");
-    renderLedgerStatus(loadLedger());
-    if (ledgerStatus) ledgerStatus.textContent += ` Последняя фиксация: ${entry.strategyName} → тираж №${entry.targetDraw}, fingerprint ${entry.fingerprint}.`;
-    results.scrollIntoView({behavior:"smooth", block:"start"});
-  } catch (error) {
-    errorBox.textContent = `Не удалось безопасно сгенерировать билет: ${error instanceof Error ? error.message : String(error)}.`;
-    errorBox.classList.remove("hidden");
-  } finally {
-    generateButton.disabled = archive == null;
-    generateButton.textContent = "Сгенерировать";
-  }
-}
-
-strategySelect.addEventListener("change", () => {
-  if (FIVE_TICKET_KEYS.has(strategySelect.value)) countInput.value = "5";
-  updateCountLimit();
-  renderBacktest();
-});
-generateButton.addEventListener("click", generate);
-renderStrategies();
-generateButton.disabled = true;
-loadArchive().catch((error) => {
-  errorBox.textContent = `Live-backend заблокировал генерацию: ${error instanceof Error ? error.message : String(error)}.`;
-  errorBox.classList.remove("hidden");
+researchStrategy.addEventListener("change",renderResearch);
+loadAll().catch((error)=>{
+  status.className="status danger";
+  status.textContent="BLOCKED";
+  showError(`LotoOS заблокировал расчёт: ${error instanceof Error ? error.message : String(error)}`);
 });

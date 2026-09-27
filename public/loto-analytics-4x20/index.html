@@ -1,1 +1,87 @@
-<!doctype html><html lang="ru"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="description" content="LotoOS — честный анализ стратегий Спортлото 4 из 20 на live-архиве с Adaptive Coverage, walk-forward проверкой, официальными выплатами, ROI, случайным baseline и виртуальным журналом ставок."><title>LotoOS — live стратегии 4 из 20</title><link rel="stylesheet" href="./styles.css"></head><body><main class="shell"><header class="top"><div><div class="brand">LotoOS · 4 из 20</div><h1>Live-архив, Adaptive Coverage и проверяемые стратегии</h1><p class="muted">LotoOS сначала проверяет официальный архив и непрерывность данных, затем рассчитывает стратегии. Default — Adaptive Coverage 20: пять билетов сохраняют полное покрытие чисел 1–20 в каждом поле, а исторические метрики используются только для распределения между билетами. Финансовый блок использует официальные выплаты конкретных тиражей. Прошлые результаты не гарантируют будущий выигрыш.</p></div><div id="dataStatus" class="status warn">Данные: ещё не проверены</div></header><section class="quality-section"><div id="qualityGrid" class="quality-grid"></div><article id="latestDraw" class="card latest-draw"></article></section><section><div class="section-head"><div><span class="eyebrow">Стратегии</span><h2>Что именно считает алгоритм</h2></div><p class="muted evidence-note">Стратегии — проверяемые правила отбора, а не обещание преимущества. Генератор объясняет каждое выбранное число.</p></div><div id="strategyGrid" class="grid"></div></section><section class="evidence-section"><div class="section-head"><div><span class="eyebrow">Evidence Lab</span><h2>Walk-forward против случайного baseline</h2></div><div id="backtestStatus" class="status warn">Ожидаю live-архив…</div></div><div id="backtestGrid" class="quality-grid evidence-grid"></div><p id="backtestNote" class="muted evidence-note-wide">Каждый проверяемый тираж исключается из истории, по которой строится стратегия.</p></section><section class="evidence-section tournament-section"><div class="section-head"><div><span class="eyebrow">Strategy Tournament</span><h2>Какая стратегия реально лучше Random</h2></div><div id="tournamentStatus" class="status warn">Ожидаю live-архив…</div></div><div class="table-wrap"><table class="tournament-table"><thead><tr><th>#</th><th>Стратегия</th><th>Бил.</th><th>Excess score</th><th>Hit Lift</th><th>ROI</th><th>Payout coverage</th><th>Evidence</th></tr></thead><tbody id="tournamentBody"></tbody></table></div><p id="tournamentNote" class="muted evidence-note-wide">Сравнение строится только на будущих относительно каждой точки теста тиражах. Evidence Grade и финансовый ROI оцениваются раздельно.</p></section><section class="generator"><div class="card"><h2>Сгенерировать виртуальный портфель</h2><p class="muted">По умолчанию включён Adaptive Coverage 20: пять билетов используют все числа 1–20 ровно по одному разу в каждом поле. Первая генерация стратегии на следующий тираж блокируется в Virtual Ledger — повторно перегенерировать её до результата нельзя.</p><div class="controls"><div class="field"><label for="strategy">Стратегия</label><select id="strategy"></select></div><div class="field"><label for="count">Билетов</label><input id="count" type="number" min="1" max="10" value="5" inputmode="numeric"></div><button id="generate" disabled>Сгенерировать</button></div><div id="countNote" class="note"></div><div id="ledgerStatus" class="note"></div><div id="error" class="error hidden"></div></div><div id="results" class="results"></div></section></main><script type="module" src="./app-v2.mjs"></script></body></html>
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="description" content="LotoOS — Lottery Quant Research OS для Спортлото 4 из 20: официальный live-архив, preregistered forward-портфели, paired Random baseline, bootstrap evidence и исторический Research Lab.">
+  <title>LotoOS — Lottery Quant Research OS</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+<main class="shell">
+  <header class="top">
+    <div>
+      <div class="brand">LotoOS · 4 из 20</div>
+      <h1>Lottery Quant Research OS</h1>
+      <p class="muted">Официальные данные → неизменяемая фиксация билетов до результата → forward-only проверка → статистические evidence gates. Исторические паттерны исследуются отдельно и не выдаются за предсказание случайного тиража.</p>
+    </div>
+    <div id="dataStatus" class="status warn">LIVE: проверяю…</div>
+  </header>
+
+  <nav class="nav-strip" aria-label="Разделы LotoOS">
+    <a href="#live">LIVE</a>
+    <a href="#forward">FORWARD LAB</a>
+    <a href="#evidence">EVIDENCE LAB</a>
+    <a href="#research">RESEARCH LAB</a>
+  </nav>
+
+  <section id="live" class="quality-section">
+    <div class="section-head">
+      <div><span class="eyebrow">LIVE</span><h2>Канонический архив Supabase</h2></div>
+      <p class="muted evidence-note">Supabase — единственный operational source of truth. GitHub больше не владеет архивом тиражей.</p>
+    </div>
+    <div id="qualityGrid" class="quality-grid"></div>
+    <article id="latestDraw" class="card latest-draw"></article>
+  </section>
+
+  <section id="forward" class="evidence-section">
+    <div class="section-head">
+      <div><span class="eyebrow">Forward Lab</span><h2>Портфели, зафиксированные до результата</h2></div>
+      <div id="forwardStatus" class="status warn">Ожидаю canonical lock…</div>
+    </div>
+    <div id="forwardGrid" class="forward-grid"></div>
+    <p id="forwardNote" class="muted evidence-note-wide">Эти билеты создаются сервером один раз для следующего тиража и сохраняются append-only. Перегенерация после просмотра результата невозможна.</p>
+  </section>
+
+  <section id="evidence" class="evidence-section">
+    <div class="section-head">
+      <div><span class="eyebrow">Evidence Lab</span><h2>Preregistered promotion gate</h2></div>
+      <div id="evidenceStatus" class="status warn">Собираю forward evidence…</div>
+    </div>
+    <div id="evidenceGrid" class="quality-grid evidence-grid"></div>
+    <p id="evidenceNote" class="muted evidence-note-wide">Исторический backtest не засчитывается в promotion gate. Требуются новые forward-тиражи, paired Random, bootstrap CI и коррекция множественных гипотез.</p>
+  </section>
+
+  <section id="research" class="evidence-section">
+    <div class="section-head">
+      <div><span class="eyebrow">Research Lab</span><h2>Исторические гипотезы и challengers</h2></div>
+      <div id="researchStatus" class="status warn">Ожидаю live-архив…</div>
+    </div>
+    <div class="card research-controls">
+      <div class="field">
+        <label for="researchStrategy">Стратегия для historical walk-forward</label>
+        <select id="researchStrategy"></select>
+      </div>
+      <p class="muted">Adaptive/прежние hot/cold/overdue/hybrid/ensemble/portfolio5 здесь являются исследовательскими правилами. Они не получают production-статус из-за исторического результата.</p>
+    </div>
+    <div id="researchGrid" class="quality-grid evidence-grid"></div>
+    <p id="researchNote" class="muted evidence-note-wide"></p>
+
+    <div class="section-head tournament-head">
+      <div><span class="eyebrow">Exploratory family</span><h2>BH/FDR-сравнение challengers</h2></div>
+      <div id="tournamentStatus" class="status warn">Ожидаю расчёт…</div>
+    </div>
+    <div class="table-wrap">
+      <table class="tournament-table">
+        <thead><tr><th>Стратегия</th><th>Бил.</th><th>Δ score</th><th>Bootstrap 95% CI</th><th>p</th><th>q (BH)</th><th>ROI*</th><th>Статус</th></tr></thead>
+        <tbody id="tournamentBody"></tbody>
+      </table>
+    </div>
+    <p id="tournamentNote" class="muted evidence-note-wide">* ROI — архивный benchmark только там, где опубликованная payout-таблица позволяет оценить конкретный гипотетический билет без недоказанного контрфактического допущения.</p>
+  </section>
+
+  <div id="error" class="error hidden" role="alert"></div>
+</main>
+<script type="module" src="./app.mjs"></script>
+</body>
+</html>

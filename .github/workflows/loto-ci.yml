@@ -4,15 +4,25 @@ on:
   pull_request:
     paths:
       - ".github/workflows/loto-ci.yml"
+      - ".github/workflows/loto-refresh.yml"
       - "scripts/loto-*.mjs"
       - "public/loto-analytics-4x20/**"
+      - "supabase/functions/sync-lotoos-4x20/**"
+      - "supabase/functions/advance-lotoos-evidence/**"
+      - "supabase/migrations/**"
+      - "docs/lotoos-architecture.md"
   push:
     branches:
       - "lotoos/**"
     paths:
       - ".github/workflows/loto-ci.yml"
+      - ".github/workflows/loto-refresh.yml"
       - "scripts/loto-*.mjs"
       - "public/loto-analytics-4x20/**"
+      - "supabase/functions/sync-lotoos-4x20/**"
+      - "supabase/functions/advance-lotoos-evidence/**"
+      - "supabase/migrations/**"
+      - "docs/lotoos-architecture.md"
 
 permissions:
   contents: read
@@ -24,7 +34,7 @@ concurrency:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v7.0.1
@@ -33,9 +43,16 @@ jobs:
         uses: actions/setup-node@v7.0.0
         with:
           node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
 
       - name: Unit tests
         run: node --test scripts/loto-strategy.test.mjs
 
       - name: Live Supabase smoke
         run: node scripts/loto-live-smoke.mjs
+
+      - name: Build
+        run: npm run build

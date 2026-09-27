@@ -1,4 +1,4 @@
-import { STRATEGIES, generateTickets } from "./strategy-v2.mjs";
+import { STRATEGIES, generateTickets } from "./strategy-engine.mjs";
 
 function mean(values) {
   return values.reduce((sum, value) => sum + value, 0) / Math.max(1, values.length);

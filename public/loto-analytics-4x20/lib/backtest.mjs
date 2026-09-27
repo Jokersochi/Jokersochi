@@ -4,12 +4,66 @@ function mean(values) {
   return values.reduce((sum, value) => sum + value, 0) / Math.max(1, values.length);
 }
 
-function pairedCi95(values) {
-  if (values.length < 2) return { mean: values[0] ?? 0, low: values[0] ?? 0, high: values[0] ?? 0 };
+function mulberry32(seed) {
+  let a = seed >>> 0;
+  return () => {
+    a |= 0;
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function inferenceSeed(values, salt = 0) {
+  let h = (2166136261 ^ salt) >>> 0;
+  for (const value of values) {
+    h ^= ((Number(value) + 16) * 1000003) | 0;
+    h = Math.imul(h, 16777619) >>> 0;
+  }
+  return h >>> 0;
+}
+
+function pairedInference(values, resamples = 5000) {
+  if (values.length < 2) {
+    const value = values[0] ?? 0;
+    return { mean: value, low: value, high: value, pValue: 1, resamples };
+  }
   const avg = mean(values);
-  const variance = values.reduce((sum, value) => sum + ((value - avg) ** 2), 0) / (values.length - 1);
-  const margin = 1.96 * Math.sqrt(variance / values.length);
-  return { mean: avg, low: avg - margin, high: avg + margin };
+  const rnd = mulberry32(inferenceSeed(values, 0x85ebca6b));
+  const boot = new Array(resamples);
+  for (let b = 0; b < resamples; b++) {
+    let sum = 0;
+    for (let i = 0; i < values.length; i++) sum += values[Math.floor(rnd() * values.length)];
+    boot[b] = sum / values.length;
+  }
+  boot.sort((a, b) => a - b);
+  const low = boot[Math.floor(0.025 * (resamples - 1))];
+  const high = boot[Math.floor(0.975 * (resamples - 1))];
+
+  const signRnd = mulberry32(inferenceSeed(values, 0x9e3779b9));
+  let extreme = 0;
+  const observed = Math.abs(avg);
+  for (let b = 0; b < resamples; b++) {
+    let sum = 0;
+    for (const value of values) sum += signRnd() < 0.5 ? -value : value;
+    if (Math.abs(sum / values.length) >= observed) extreme++;
+  }
+  const pValue = (extreme + 1) / (resamples + 1);
+  return { mean: avg, low, high, pValue, resamples };
+}
+
+function bhAdjust(reports) {
+  const eligible = reports.filter((report) => Number.isFinite(report.pValue) && report.strategyKey !== "random");
+  const sorted = [...eligible].sort((a, b) => a.pValue - b.pValue);
+  const m = sorted.length;
+  let next = 1;
+  for (let i = m - 1; i >= 0; i--) {
+    const rank = i + 1;
+    next = Math.min(next, (sorted[i].pValue * m) / rank);
+    sorted[i].qValue = Math.min(1, next);
+  }
+  return reports;
 }
 
 function scoreDraw(tickets, draw) {
@@ -37,11 +91,11 @@ function maxDrawdown(deltas) {
   return drawdown;
 }
 
-function evidenceGrade(strategyKey, ci) {
+function evidenceGrade(strategyKey, ci, qValue = null) {
   if (strategyKey === "random") return "Контроль";
-  if (ci.low > 0 && ci.mean > 0.05) return "Слабый положительный сигнал";
-  if (ci.high < 0) return "Отрицательный сигнал";
-  return "Преимущество не обнаружено";
+  if (ci.high < 0) return "Отрицательный исследовательский сигнал";
+  if (ci.low > 0 && ci.mean > 0.05 && (qValue == null || qValue < 0.05)) return "Исследовательский положительный сигнал";
+  return "Надёжное преимущество не обнаружено";
 }
 
 function ticketCountFor(strategyKey) {
@@ -120,7 +174,7 @@ export function walkForwardBacktest(strategyKey, draws, options = {}) {
   if (!meta) throw new Error("Неизвестная стратегия для backtest");
   if (!Array.isArray(draws) || draws.length < 250) throw new Error("Недостаточно истории для walk-forward backtest");
 
-  const requested = Math.max(50, Math.min(Number(options.evaluationDraws) || 300, 400));
+  const requested = Math.max(50, Math.min(Number(options.evaluationDraws) || 300, 1000));
   const lookback = meta.lookback ?? 200;
   const start = Math.max(lookback, draws.length - requested);
   const evalCount = draws.length - start;
@@ -173,7 +227,7 @@ export function walkForwardBacktest(strategyKey, draws, options = {}) {
     }
   }
 
-  const ci = pairedCi95(deltas);
+  const ci = pairedInference(deltas, Math.max(1000, Number(options.bootstrapResamples) || 5000));
   const proxyHitRate = strategyProxyHits / evalCount;
   const baselineProxyHitRate = baselineProxyHits / evalCount;
   const hitLift = baselineProxyHitRate > 0 ? (proxyHitRate / baselineProxyHitRate) - 1 : null;
@@ -208,7 +262,10 @@ export function walkForwardBacktest(strategyKey, draws, options = {}) {
     baselineProxyHitRate,
     hitLift,
     maxProxyDrawdown: maxDrawdown(deltas),
-    evidenceGrade: evidenceGrade(strategyKey, ci),
+    evidenceGrade: evidenceGrade(strategyKey, ci, ci.pValue),
+    pValue: ci.pValue,
+    qValue: ci.pValue,
+    bootstrapResamples: ci.resamples,
     financialRoiAvailable: fullFinancialCoverage,
     financialDataAvailable: payouts.size > 0,
     strategyStakeRub: strategyStake,
@@ -224,14 +281,15 @@ export function walkForwardBacktest(strategyKey, draws, options = {}) {
     unresolvedStrategyTickets: strategyUnresolved,
     unresolvedBaselineTickets: baselineUnresolved,
     financialStatus,
-    methodology: "walk-forward: каждый проверяемый тираж исключён из обучающей истории; сравнение парное со случайным портфелем того же размера",
+    methodology: "historical walk-forward: каждый проверяемый тираж исключён из обучающей истории; сравнение парное со случайным портфелем того же размера; 95% CI — bootstrap; p-value — paired sign-flip Monte Carlo",
     financialMethodology: "архивный payout benchmark: стоимость билета и выплата берутся из официальных данных конкретного тиража; категории без фактических победителей считаются неопределёнными, поэтому при неполном покрытии ROI показан только как нижняя граница",
   };
 }
 
 export function strategyTournament(draws, options = {}) {
   const keys = options.strategyKeys ?? ["adaptive20", "balanced20", "ensemble", "portfolio5", "hybrid", "hot1000", "overdue", "random"];
-  const reports = keys.map((key) => walkForwardBacktest(key, draws, options));
+  const reports = bhAdjust(keys.map((key) => walkForwardBacktest(key, draws, options)));
+  for (const report of reports) report.evidenceGrade = evidenceGrade(report.strategyKey, report, report.qValue);
   return reports.sort((a, b) => {
     if (a.strategyKey === "random") return 1;
     if (b.strategyKey === "random") return -1;

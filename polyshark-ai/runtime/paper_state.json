@@ -13,8 +13,8 @@
   "realized_pnl": -634.248613,
   "unrealized_pnl": 0.0,
   "fees_paid": 308.38584,
-  "ticks": 345,
-  "last_tick_at": "2026-09-28T11:59:37+00:00",
+  "ticks": 346,
+  "last_tick_at": "2026-09-28T19:27:48+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -10505,6 +10505,16 @@
       "fees_paid": 308.38584,
       "open_positions": 0,
       "closed_positions": 193
+    },
+    {
+      "ts": "2026-09-28T19:27:48+00:00",
+      "equity": 365.751387,
+      "cash": 365.751387,
+      "realized_pnl": -634.248613,
+      "unrealized_pnl": 0.0,
+      "fees_paid": 308.38584,
+      "open_positions": 0,
+      "closed_positions": 193
     }
   ],
   "shadow_challenger": {
@@ -10839,7 +10849,18 @@
         "liquidity": 70678.74,
         "volume_24h": 136437.46,
         "score": 0.563493,
-        "horizon_results": {},
+        "horizon_results": {
+          "6": {
+            "evaluated_at": "2026-09-28T19:27:48+00:00",
+            "source": "clob_liquidation",
+            "exit_mid": 0.575,
+            "exit_spread": 0.01,
+            "net_liquidation": 68.209413,
+            "after_cost_pnl": -31.790587,
+            "after_cost_return": -0.31790587,
+            "profitable": false
+          }
+        },
         "status": "pending",
         "paper_only": true,
         "capital_impact": 0.0
@@ -10867,6 +10888,101 @@
         "liquidity": 119743.92,
         "volume_24h": 174201.03,
         "score": 0.1575,
+        "horizon_results": {
+          "6": {
+            "evaluated_at": "2026-09-28T19:27:48+00:00",
+            "source": "clob_liquidation",
+            "exit_mid": 0.775,
+            "exit_spread": 0.01,
+            "net_liquidation": 97.726145,
+            "after_cost_pnl": -2.27386,
+            "after_cost_return": -0.0227386,
+            "profitable": false
+          }
+        },
+        "status": "pending",
+        "paper_only": true,
+        "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:608545:YES:1790623668",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "608545",
+        "question": "Will Lamine Yamal win the 2026 Ballon d'Or?",
+        "category": "Other",
+        "outcome": "YES",
+        "token_id": "10466835326554416965099784068156829774726248334728156046559014834812912458273",
+        "observed_at": "2026-09-28T19:27:48+00:00",
+        "end_date": "2027-01-01",
+        "entry_mid": 0.4225,
+        "entry_spread": 0.005,
+        "entry_price": 0.425,
+        "shares": 228.71846187,
+        "gross_trade": 97.205346,
+        "entry_fee": 2.79465,
+        "cash_outlay": 99.999996,
+        "fee_rate": 0.05,
+        "momentum_24h": 0.1345,
+        "momentum_6h": 0.074,
+        "liquidity": 68231.62,
+        "volume_24h": 153288.31,
+        "score": 0.21734,
+        "horizon_results": {},
+        "status": "pending",
+        "paper_only": true,
+        "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:2589813:YES:1790623668",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "2589813",
+        "question": "Will the Fed increase interest rates by 25 bps after the October 2026 meeting?",
+        "category": "Other",
+        "outcome": "YES",
+        "token_id": "55159722761418013044126414276680602270318000841690689684819994448621694923050",
+        "observed_at": "2026-09-28T19:27:48+00:00",
+        "end_date": "2026-10-29",
+        "entry_mid": 0.685,
+        "entry_spread": 0.01,
+        "entry_price": 0.69,
+        "shares": 142.71544681,
+        "gross_trade": 98.473658,
+        "entry_fee": 1.52634,
+        "cash_outlay": 99.999998,
+        "fee_rate": 0.05,
+        "momentum_24h": 0.04,
+        "momentum_6h": 0.03,
+        "liquidity": 428628.94,
+        "volume_24h": 245490.34,
+        "score": 0.1,
+        "horizon_results": {},
+        "status": "pending",
+        "paper_only": true,
+        "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:2589812:NO:1790623668",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "2589812",
+        "question": "Will there be no change in Fed interest rates after the October 2026 meeting?",
+        "category": "Other",
+        "outcome": "NO",
+        "token_id": "42038775866198212615491650114881818219665139981763207699110491615333273795415",
+        "observed_at": "2026-09-28T19:27:48+00:00",
+        "end_date": "2026-10-29",
+        "entry_mid": 0.695,
+        "entry_spread": 0.01,
+        "entry_price": 0.7,
+        "shares": 140.74595355,
+        "gross_trade": 98.522167,
+        "entry_fee": 1.47783,
+        "cash_outlay": 99.999997,
+        "fee_rate": 0.05,
+        "momentum_24h": -0.03,
+        "momentum_6h": -0.03,
+        "liquidity": 341687.41,
+        "volume_24h": 245238.97,
+        "score": 0.09,
         "horizon_results": {},
         "status": "pending",
         "paper_only": true,
@@ -10875,12 +10991,12 @@
     ],
     "summary": {
       "6": {
-        "n": 6,
-        "mean_return": -0.06154933,
+        "n": 8,
+        "mean_return": -0.08874255,
         "win_rate": 0.0,
         "profit_factor": 0.0,
-        "ci95_lower": -0.09274244,
-        "ci95_upper": -0.03035621
+        "ci95_lower": -0.15749621,
+        "ci95_upper": -0.0199889
       },
       "24": {
         "n": 5,
@@ -10892,25 +11008,25 @@
       }
     },
     "verdict": "NO_EVIDENCE",
-    "updated_at": "2026-09-28T11:59:37+00:00",
+    "updated_at": "2026-09-28T19:27:48+00:00",
     "auto_promotion": false,
     "last_observation": {
-      "ts": "2026-09-28T11:59:37+00:00",
+      "ts": "2026-09-28T19:27:48+00:00",
       "candidates_seen": 4,
-      "deduplicated": 0,
-      "rejected_price": 2,
+      "deduplicated": 1,
+      "rejected_price": 0,
       "rejected_spread": 0,
       "rejected_invalid_quote": 0,
-      "added": 2
+      "added": 3
     },
     "observation_totals": {
-      "ticks": 19,
-      "candidates_seen": 17,
-      "deduplicated": 2,
+      "ticks": 20,
+      "candidates_seen": 21,
+      "deduplicated": 3,
       "rejected_price": 7,
       "rejected_spread": 0,
       "rejected_invalid_quote": 0,
-      "added": 8
+      "added": 11
     }
   }
 }

@@ -1,12 +1,6 @@
 {
-  "ok": true,
+  "ok": false,
   "source": "official",
-  "mode": "incremental",
-  "count": 15441,
-  "first": 1,
-  "last": 15441,
-  "previousLast": 15433,
-  "continuous": true,
-  "passes": 1,
-  "recoveredTransientGap": false
+  "stage": "refresh-or-validation",
+  "error": "HTTP 502"
 }

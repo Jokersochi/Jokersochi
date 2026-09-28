@@ -13,8 +13,8 @@
   "realized_pnl": -634.248613,
   "unrealized_pnl": 0.0,
   "fees_paid": 308.38584,
-  "ticks": 344,
-  "last_tick_at": "2026-09-28T05:41:51+00:00",
+  "ticks": 345,
+  "last_tick_at": "2026-09-28T11:59:37+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -10495,6 +10495,16 @@
       "fees_paid": 308.38584,
       "open_positions": 0,
       "closed_positions": 193
+    },
+    {
+      "ts": "2026-09-28T11:59:37+00:00",
+      "equity": 365.751387,
+      "cash": 365.751387,
+      "realized_pnl": -634.248613,
+      "unrealized_pnl": 0.0,
+      "fees_paid": 308.38584,
+      "open_positions": 0,
+      "closed_positions": 193
     }
   ],
   "shadow_challenger": {
@@ -10790,6 +10800,73 @@
         "liquidity": 70171.9,
         "volume_24h": 97987.65,
         "score": 0.163462,
+        "horizon_results": {
+          "6": {
+            "evaluated_at": "2026-09-28T11:59:37+00:00",
+            "source": "clob_liquidation",
+            "exit_mid": 0.695,
+            "exit_spread": 0.01,
+            "net_liquidation": 90.619917,
+            "after_cost_pnl": -9.380086,
+            "after_cost_return": -0.09380086,
+            "profitable": false
+          }
+        },
+        "status": "pending",
+        "paper_only": true,
+        "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:4797724:YES:1790596777",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "4797724",
+        "question": "Will Bitcoin dip to $82,500 in September?",
+        "category": "Other",
+        "outcome": "YES",
+        "token_id": "106878811489163060073432918143331660202011834176026823613576260885763574273538",
+        "observed_at": "2026-09-28T11:59:37+00:00",
+        "end_date": "2026-10-01",
+        "entry_mid": 0.805,
+        "entry_spread": 0.01,
+        "entry_price": 0.81,
+        "shares": 122.29498774,
+        "gross_trade": 99.05894,
+        "entry_fee": 0.94106,
+        "cash_outlay": 100.0,
+        "fee_rate": 0.05,
+        "momentum_24h": 0.45,
+        "momentum_6h": 0.14,
+        "liquidity": 70678.74,
+        "volume_24h": 136437.46,
+        "score": 0.563493,
+        "horizon_results": {},
+        "status": "pending",
+        "paper_only": true,
+        "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:3215008:YES:1790596777",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "3215008",
+        "question": "Will the Fed increase interest rates by 25 bps after the December 2026 meeting?",
+        "category": "Other",
+        "outcome": "YES",
+        "token_id": "111662129652828266889360374468657435151479595863413519836161861837506140152890",
+        "observed_at": "2026-09-28T11:59:37+00:00",
+        "end_date": "2026-12-09",
+        "entry_mid": 0.76,
+        "entry_spread": 0.02,
+        "entry_price": 0.77,
+        "shares": 128.39360343,
+        "gross_trade": 98.863075,
+        "entry_fee": 1.13693,
+        "cash_outlay": 100.000005,
+        "fee_rate": 0.05,
+        "momentum_24h": 0.075,
+        "momentum_6h": 0.085,
+        "liquidity": 119743.92,
+        "volume_24h": 174201.03,
+        "score": 0.1575,
         "horizon_results": {},
         "status": "pending",
         "paper_only": true,
@@ -10798,12 +10875,12 @@
     ],
     "summary": {
       "6": {
-        "n": 5,
-        "mean_return": -0.05509902,
+        "n": 6,
+        "mean_return": -0.06154933,
         "win_rate": 0.0,
         "profit_factor": 0.0,
-        "ci95_lower": -0.09002412,
-        "ci95_upper": -0.02017392
+        "ci95_lower": -0.09274244,
+        "ci95_upper": -0.03035621
       },
       "24": {
         "n": 5,
@@ -10815,25 +10892,25 @@
       }
     },
     "verdict": "NO_EVIDENCE",
-    "updated_at": "2026-09-28T05:41:51+00:00",
+    "updated_at": "2026-09-28T11:59:37+00:00",
     "auto_promotion": false,
     "last_observation": {
-      "ts": "2026-09-28T05:41:51+00:00",
-      "candidates_seen": 0,
+      "ts": "2026-09-28T11:59:37+00:00",
+      "candidates_seen": 4,
       "deduplicated": 0,
-      "rejected_price": 0,
+      "rejected_price": 2,
       "rejected_spread": 0,
       "rejected_invalid_quote": 0,
-      "added": 0
+      "added": 2
     },
     "observation_totals": {
-      "ticks": 18,
-      "candidates_seen": 13,
+      "ticks": 19,
+      "candidates_seen": 17,
       "deduplicated": 2,
-      "rejected_price": 5,
+      "rejected_price": 7,
       "rejected_spread": 0,
       "rejected_invalid_quote": 0,
-      "added": 6
+      "added": 8
     }
   }
 }

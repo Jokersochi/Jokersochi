@@ -13,8 +13,8 @@
   "realized_pnl": -634.248613,
   "unrealized_pnl": 0.0,
   "fees_paid": 308.38584,
-  "ticks": 348,
-  "last_tick_at": "2026-09-29T02:47:59+00:00",
+  "ticks": 349,
+  "last_tick_at": "2026-09-29T09:06:31+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -10535,6 +10535,16 @@
       "fees_paid": 308.38584,
       "open_positions": 0,
       "closed_positions": 193
+    },
+    {
+      "ts": "2026-09-29T09:06:31+00:00",
+      "equity": 365.751387,
+      "cash": 365.751387,
+      "realized_pnl": -634.248613,
+      "unrealized_pnl": 0.0,
+      "fees_paid": 308.38584,
+      "open_positions": 0,
+      "closed_positions": 193
     }
   ],
   "shadow_challenger": {
@@ -11074,6 +11084,45 @@
         "liquidity": 49662.33,
         "volume_24h": 177272.42,
         "score": 0.37196,
+        "horizon_results": {
+          "6": {
+            "evaluated_at": "2026-09-29T09:06:31+00:00",
+            "source": "clob_liquidation",
+            "exit_mid": 0.545,
+            "exit_spread": 0.01,
+            "net_liquidation": 111.676048,
+            "after_cost_pnl": 11.676045,
+            "after_cost_return": 0.11676044,
+            "profitable": true
+          }
+        },
+        "status": "pending",
+        "paper_only": true,
+        "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:3128888:NO:1790672791",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "3128888",
+        "question": "US announces end of Iranian blockade by October 31, 2026?",
+        "category": "Other",
+        "outcome": "NO",
+        "token_id": "77737603049704371401985143030203551130624520784925815473217168646825527075459",
+        "observed_at": "2026-09-29T09:06:31+00:00",
+        "end_date": "2026-11-01",
+        "entry_mid": 0.755,
+        "entry_spread": 0.01,
+        "entry_price": 0.76,
+        "shares": 130.0187227,
+        "gross_trade": 98.814229,
+        "entry_fee": 1.18577,
+        "cash_outlay": 99.999999,
+        "fee_rate": 0.05,
+        "momentum_24h": -0.08,
+        "momentum_6h": -0.02,
+        "liquidity": 101086.03,
+        "volume_24h": 182072.26,
+        "score": 0.135,
         "horizon_results": {},
         "status": "pending",
         "paper_only": true,
@@ -11082,12 +11131,12 @@
     ],
     "summary": {
       "6": {
-        "n": 11,
-        "mean_return": -0.07254357,
-        "win_rate": 0.090909,
-        "profit_factor": 0.001163,
-        "ci95_lower": -0.12472942,
-        "ci95_upper": -0.02035772
+        "n": 12,
+        "mean_return": -0.05676823,
+        "win_rate": 0.166667,
+        "profit_factor": 0.147313,
+        "ci95_lower": -0.11356167,
+        "ci95_upper": 2.52e-05
       },
       "24": {
         "n": 6,
@@ -11099,10 +11148,10 @@
       }
     },
     "verdict": "NO_EVIDENCE",
-    "updated_at": "2026-09-29T02:47:59+00:00",
+    "updated_at": "2026-09-29T09:06:31+00:00",
     "auto_promotion": false,
     "last_observation": {
-      "ts": "2026-09-29T02:47:59+00:00",
+      "ts": "2026-09-29T09:06:31+00:00",
       "candidates_seen": 2,
       "deduplicated": 1,
       "rejected_price": 0,
@@ -11111,13 +11160,13 @@
       "added": 1
     },
     "observation_totals": {
-      "ticks": 22,
-      "candidates_seen": 25,
-      "deduplicated": 6,
+      "ticks": 23,
+      "candidates_seen": 27,
+      "deduplicated": 7,
       "rejected_price": 7,
       "rejected_spread": 0,
       "rejected_invalid_quote": 0,
-      "added": 12
+      "added": 13
     }
   }
 }

@@ -13,8 +13,8 @@
   "realized_pnl": -634.248613,
   "unrealized_pnl": 0.0,
   "fees_paid": 308.38584,
-  "ticks": 347,
-  "last_tick_at": "2026-09-28T23:52:28+00:00",
+  "ticks": 348,
+  "last_tick_at": "2026-09-29T02:47:59+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -10525,6 +10525,16 @@
       "fees_paid": 308.38584,
       "open_positions": 0,
       "closed_positions": 193
+    },
+    {
+      "ts": "2026-09-29T02:47:59+00:00",
+      "equity": 365.751387,
+      "cash": 365.751387,
+      "realized_pnl": -634.248613,
+      "unrealized_pnl": 0.0,
+      "fees_paid": 308.38584,
+      "open_positions": 0,
+      "closed_positions": 193
     }
   ],
   "shadow_challenger": {
@@ -10830,9 +10840,19 @@
             "after_cost_pnl": -9.380086,
             "after_cost_return": -0.09380086,
             "profitable": false
+          },
+          "24": {
+            "evaluated_at": "2026-09-29T02:47:59+00:00",
+            "source": "clob_liquidation",
+            "exit_mid": 0.7,
+            "exit_spread": 0.02,
+            "net_liquidation": 90.619917,
+            "after_cost_pnl": -9.380086,
+            "after_cost_return": -0.09380086,
+            "profitable": false
           }
         },
-        "status": "pending",
+        "status": "matured",
         "paper_only": true,
         "capital_impact": 0.0
       },
@@ -10937,7 +10957,18 @@
         "liquidity": 68231.62,
         "volume_24h": 153288.31,
         "score": 0.21734,
-        "horizon_results": {},
+        "horizon_results": {
+          "6": {
+            "evaluated_at": "2026-09-29T02:47:59+00:00",
+            "source": "clob_liquidation",
+            "exit_mid": 0.4525,
+            "exit_spread": 0.005,
+            "net_liquidation": 100.092918,
+            "after_cost_pnl": 0.092922,
+            "after_cost_return": 0.00092922,
+            "profitable": true
+          }
+        },
         "status": "pending",
         "paper_only": true,
         "capital_impact": 0.0
@@ -10965,7 +10996,18 @@
         "liquidity": 428628.94,
         "volume_24h": 245490.34,
         "score": 0.1,
-        "horizon_results": {},
+        "horizon_results": {
+          "6": {
+            "evaluated_at": "2026-09-29T02:47:59+00:00",
+            "source": "clob_liquidation",
+            "exit_mid": 0.685,
+            "exit_spread": 0.01,
+            "net_liquidation": 95.493764,
+            "after_cost_pnl": -4.506234,
+            "after_cost_return": -0.04506234,
+            "profitable": false
+          }
+        },
         "status": "pending",
         "paper_only": true,
         "capital_impact": 0.0
@@ -10993,6 +11035,45 @@
         "liquidity": 341687.41,
         "volume_24h": 245238.97,
         "score": 0.09,
+        "horizon_results": {
+          "6": {
+            "evaluated_at": "2026-09-29T02:47:59+00:00",
+            "source": "clob_liquidation",
+            "exit_mid": 0.695,
+            "exit_spread": 0.01,
+            "net_liquidation": 95.609428,
+            "after_cost_pnl": -4.390569,
+            "after_cost_return": -0.04390569,
+            "profitable": false
+          }
+        },
+        "status": "pending",
+        "paper_only": true,
+        "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:4769494:YES:1790650079",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "4769494",
+        "question": "Trump renames AI by September 30?",
+        "category": "Other",
+        "outcome": "YES",
+        "token_id": "65155996440691380875542586760220883640477900840310449106732523002917845045754",
+        "observed_at": "2026-09-29T02:47:59+00:00",
+        "end_date": "2026-10-01",
+        "entry_mid": 0.455,
+        "entry_spread": 0.01,
+        "entry_price": 0.46,
+        "shares": 211.67605097,
+        "gross_trade": 97.370983,
+        "entry_fee": 2.62902,
+        "cash_outlay": 100.000003,
+        "fee_rate": 0.05,
+        "momentum_24h": 0.23,
+        "momentum_6h": 0.2,
+        "liquidity": 49662.33,
+        "volume_24h": 177272.42,
+        "score": 0.37196,
         "horizon_results": {},
         "status": "pending",
         "paper_only": true,
@@ -11001,42 +11082,42 @@
     ],
     "summary": {
       "6": {
-        "n": 8,
-        "mean_return": -0.08874255,
-        "win_rate": 0.0,
-        "profit_factor": 0.0,
-        "ci95_lower": -0.15749621,
-        "ci95_upper": -0.0199889
+        "n": 11,
+        "mean_return": -0.07254357,
+        "win_rate": 0.090909,
+        "profit_factor": 0.001163,
+        "ci95_lower": -0.12472942,
+        "ci95_upper": -0.02035772
       },
       "24": {
-        "n": 5,
-        "mean_return": 0.19128697,
-        "win_rate": 0.2,
-        "profit_factor": 4.75973,
-        "ci95_lower": -0.30984637,
-        "ci95_upper": 0.69242031
+        "n": 6,
+        "mean_return": 0.14377234,
+        "win_rate": 0.166667,
+        "profit_factor": 3.47748,
+        "ci95_lower": -0.27586565,
+        "ci95_upper": 0.56341032
       }
     },
     "verdict": "NO_EVIDENCE",
-    "updated_at": "2026-09-28T23:52:28+00:00",
+    "updated_at": "2026-09-29T02:47:59+00:00",
     "auto_promotion": false,
     "last_observation": {
-      "ts": "2026-09-28T23:52:28+00:00",
+      "ts": "2026-09-29T02:47:59+00:00",
       "candidates_seen": 2,
-      "deduplicated": 2,
+      "deduplicated": 1,
       "rejected_price": 0,
       "rejected_spread": 0,
       "rejected_invalid_quote": 0,
-      "added": 0
+      "added": 1
     },
     "observation_totals": {
-      "ticks": 21,
-      "candidates_seen": 23,
-      "deduplicated": 5,
+      "ticks": 22,
+      "candidates_seen": 25,
+      "deduplicated": 6,
       "rejected_price": 7,
       "rejected_spread": 0,
       "rejected_invalid_quote": 0,
-      "added": 11
+      "added": 12
     }
   }
 }

@@ -13,8 +13,8 @@
   "realized_pnl": -634.248613,
   "unrealized_pnl": 0.0,
   "fees_paid": 308.38584,
-  "ticks": 356,
-  "last_tick_at": "2026-09-30T20:09:18+00:00",
+  "ticks": 357,
+  "last_tick_at": "2026-09-30T23:46:28+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -10615,6 +10615,16 @@
       "fees_paid": 308.38584,
       "open_positions": 0,
       "closed_positions": 193
+    },
+    {
+      "ts": "2026-09-30T23:46:28+00:00",
+      "equity": 365.751387,
+      "cash": 365.751387,
+      "realized_pnl": -634.248613,
+      "unrealized_pnl": 0.0,
+      "fees_paid": 308.38584,
+      "open_positions": 0,
+      "closed_positions": 193
     }
   ],
   "shadow_challenger": {
@@ -11312,9 +11322,19 @@
             "after_cost_pnl": 2.854569,
             "after_cost_return": 0.02854569,
             "profitable": true
+          },
+          "24": {
+            "evaluated_at": "2026-09-30T23:46:28+00:00",
+            "source": "clob_liquidation",
+            "exit_mid": 0.665,
+            "exit_spread": 0.01,
+            "net_liquidation": 121.841197,
+            "after_cost_pnl": 21.841197,
+            "after_cost_return": 0.21841197,
+            "profitable": true
           }
         },
-        "status": "pending",
+        "status": "matured",
         "paper_only": true,
         "capital_impact": 0.0
       },
@@ -11351,8 +11371,102 @@
             "after_cost_pnl": 2.895725,
             "after_cost_return": 0.02895725,
             "profitable": true
+          },
+          "24": {
+            "evaluated_at": "2026-09-30T23:46:28+00:00",
+            "source": "clob_liquidation",
+            "exit_mid": 0.655,
+            "exit_spread": 0.01,
+            "net_liquidation": 122.226054,
+            "after_cost_pnl": 22.226054,
+            "after_cost_return": 0.22226054,
+            "profitable": true
           }
         },
+        "status": "matured",
+        "paper_only": true,
+        "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:2589812:YES:1790811988",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "2589812",
+        "question": "Will there be no change in Fed interest rates after the October 2026 meeting?",
+        "category": "Other",
+        "outcome": "YES",
+        "token_id": "111061902544814266207267295505639408607400625795891618462682726460921782993748",
+        "observed_at": "2026-09-30T23:46:28+00:00",
+        "end_date": "2026-10-29",
+        "entry_mid": 0.655,
+        "entry_spread": 0.01,
+        "entry_price": 0.66,
+        "shares": 148.98244987,
+        "gross_trade": 98.328417,
+        "entry_fee": 1.67158,
+        "cash_outlay": 99.999997,
+        "fee_rate": 0.05,
+        "momentum_24h": 0.1,
+        "momentum_6h": 0.04,
+        "liquidity": 317300.79,
+        "volume_24h": 549889.2,
+        "score": 0.165,
+        "horizon_results": {},
+        "status": "pending",
+        "paper_only": true,
+        "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:2589813:NO:1790811988",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "2589813",
+        "question": "Will the Fed increase interest rates by 25 bps after the October 2026 meeting?",
+        "category": "Other",
+        "outcome": "NO",
+        "token_id": "78632395083310670734315205502061249602319069653915932320155846460019107676757",
+        "observed_at": "2026-09-30T23:46:28+00:00",
+        "end_date": "2026-10-29",
+        "entry_mid": 0.665,
+        "entry_spread": 0.01,
+        "entry_price": 0.67,
+        "shares": 146.83101952,
+        "gross_trade": 98.376783,
+        "entry_fee": 1.62322,
+        "cash_outlay": 100.000003,
+        "fee_rate": 0.05,
+        "momentum_24h": -0.1,
+        "momentum_6h": -0.03,
+        "liquidity": 265339.25,
+        "volume_24h": 707936.49,
+        "score": 0.16,
+        "horizon_results": {},
+        "status": "pending",
+        "paper_only": true,
+        "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:4678632:YES:1790811988",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "4678632",
+        "question": "Will Norway win on 2026-10-01?",
+        "category": "Other",
+        "outcome": "YES",
+        "token_id": "41046354085753268874258043449392127979274901716666479363917014314854654431103",
+        "observed_at": "2026-09-30T23:46:28+00:00",
+        "end_date": "2026-10-01",
+        "entry_mid": 0.675,
+        "entry_spread": 0.01,
+        "entry_price": 0.68,
+        "shares": 144.74293654,
+        "gross_trade": 98.425197,
+        "entry_fee": 1.5748,
+        "cash_outlay": 99.999997,
+        "fee_rate": 0.05,
+        "momentum_24h": 0.03,
+        "momentum_6h": 0.02,
+        "liquidity": 154754.37,
+        "volume_24h": 352787.61,
+        "score": 0.085,
+        "horizon_results": {},
         "status": "pending",
         "paper_only": true,
         "capital_impact": 0.0
@@ -11368,34 +11482,34 @@
         "ci95_upper": -0.00093191
       },
       "24": {
-        "n": 13,
-        "mean_return": 0.07755974,
-        "win_rate": 0.230769,
-        "profit_factor": 1.737002,
-        "ci95_lower": -0.19172242,
-        "ci95_upper": 0.34684191
+        "n": 15,
+        "mean_return": 0.09659661,
+        "win_rate": 0.333333,
+        "profit_factor": 2.059113,
+        "ci95_lower": -0.13688407,
+        "ci95_upper": 0.3300773
       }
     },
     "verdict": "NO_EVIDENCE",
-    "updated_at": "2026-09-30T20:09:18+00:00",
+    "updated_at": "2026-09-30T23:46:28+00:00",
     "auto_promotion": false,
     "last_observation": {
-      "ts": "2026-09-30T20:09:18+00:00",
-      "candidates_seen": 0,
+      "ts": "2026-09-30T23:46:28+00:00",
+      "candidates_seen": 5,
       "deduplicated": 0,
       "rejected_price": 0,
-      "rejected_spread": 0,
+      "rejected_spread": 2,
       "rejected_invalid_quote": 0,
-      "added": 0
+      "added": 3
     },
     "observation_totals": {
-      "ticks": 30,
-      "candidates_seen": 43,
+      "ticks": 31,
+      "candidates_seen": 48,
       "deduplicated": 15,
       "rejected_price": 13,
-      "rejected_spread": 0,
+      "rejected_spread": 2,
       "rejected_invalid_quote": 0,
-      "added": 15
+      "added": 18
     }
   }
 }

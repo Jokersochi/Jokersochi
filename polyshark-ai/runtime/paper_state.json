@@ -13,8 +13,8 @@
   "realized_pnl": -634.248613,
   "unrealized_pnl": 0.0,
   "fees_paid": 308.38584,
-  "ticks": 362,
-  "last_tick_at": "2026-10-02T00:49:22+00:00",
+  "ticks": 363,
+  "last_tick_at": "2026-10-02T06:18:55+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -10675,6 +10675,16 @@
       "fees_paid": 308.38584,
       "open_positions": 0,
       "closed_positions": 193
+    },
+    {
+      "ts": "2026-10-02T06:18:55+00:00",
+      "equity": 365.751387,
+      "cash": 365.751387,
+      "realized_pnl": -634.248613,
+      "unrealized_pnl": 0.0,
+      "fees_paid": 308.38584,
+      "open_positions": 0,
+      "closed_positions": 193
     }
   ],
   "shadow_challenger": {
@@ -11617,9 +11627,19 @@
             "after_cost_pnl": -12.350068,
             "after_cost_return": -0.12350068,
             "profitable": false
+          },
+          "24": {
+            "evaluated_at": "2026-10-02T06:18:55+00:00",
+            "source": "clob_liquidation",
+            "exit_mid": 0.625,
+            "exit_spread": 0.01,
+            "net_liquidation": 76.189885,
+            "after_cost_pnl": -23.810115,
+            "after_cost_return": -0.23810115,
+            "profitable": false
           }
         },
-        "status": "pending",
+        "status": "matured",
         "paper_only": true,
         "capital_impact": 0.0
       },
@@ -11656,9 +11676,19 @@
             "after_cost_pnl": -6.088681,
             "after_cost_return": -0.06088681,
             "profitable": false
+          },
+          "24": {
+            "evaluated_at": "2026-10-02T06:18:55+00:00",
+            "source": "clob_liquidation",
+            "exit_mid": 0.6165,
+            "exit_spread": 0.009,
+            "net_liquidation": 80.900523,
+            "after_cost_pnl": -19.099476,
+            "after_cost_return": -0.19099476,
+            "profitable": false
           }
         },
-        "status": "pending",
+        "status": "matured",
         "paper_only": true,
         "capital_impact": 0.0
       },
@@ -11695,9 +11725,19 @@
             "after_cost_pnl": -3.203854,
             "after_cost_return": -0.03203854,
             "profitable": false
+          },
+          "24": {
+            "evaluated_at": "2026-10-02T06:18:55+00:00",
+            "source": "clob_liquidation",
+            "exit_mid": 0.606,
+            "exit_spread": 0.004,
+            "net_liquidation": 92.9831,
+            "after_cost_pnl": -7.016899,
+            "after_cost_return": -0.07016899,
+            "profitable": false
           }
         },
-        "status": "pending",
+        "status": "matured",
         "paper_only": true,
         "capital_impact": 0.0
       },
@@ -11802,7 +11842,18 @@
         "liquidity": 89517.62,
         "volume_24h": 130978.87,
         "score": 0.278269,
-        "horizon_results": {},
+        "horizon_results": {
+          "6": {
+            "evaluated_at": "2026-10-02T06:18:55+00:00",
+            "source": "clob_liquidation",
+            "exit_mid": 0.5345,
+            "exit_spread": 0.003,
+            "net_liquidation": 83.97166,
+            "after_cost_pnl": -16.028338,
+            "after_cost_return": -0.16028339,
+            "profitable": false
+          }
+        },
         "status": "pending",
         "paper_only": true,
         "capital_impact": 0.0
@@ -11862,46 +11913,74 @@
         "status": "pending",
         "paper_only": true,
         "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:3865960:NO:1790921935",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "3865960",
+        "question": "Will Bitcoin dip to $70,000 by December 31, 2026?",
+        "category": "Other",
+        "outcome": "NO",
+        "token_id": "43873895024879972348799332304583852450961083930689783649843650004302588743583",
+        "observed_at": "2026-10-02T06:18:55+00:00",
+        "end_date": "2027-01-01",
+        "entry_mid": 0.705,
+        "entry_spread": 0.01,
+        "entry_price": 0.71,
+        "shares": 138.83200633,
+        "gross_trade": 98.570724,
+        "entry_fee": 1.42928,
+        "cash_outlay": 100.000004,
+        "fee_rate": 0.05,
+        "momentum_24h": -0.03,
+        "momentum_6h": -0.04,
+        "liquidity": 59337.89,
+        "volume_24h": 131724.21,
+        "score": 0.092733,
+        "horizon_results": {},
+        "status": "pending",
+        "paper_only": true,
+        "capital_impact": 0.0
       }
     ],
     "summary": {
       "6": {
-        "n": 23,
-        "mean_return": -0.05136693,
-        "win_rate": 0.217391,
-        "profit_factor": 0.147614,
-        "ci95_lower": -0.08426216,
-        "ci95_upper": -0.01847169
+        "n": 24,
+        "mean_return": -0.05590511,
+        "win_rate": 0.208333,
+        "profit_factor": 0.132313,
+        "ci95_lower": -0.08863186,
+        "ci95_upper": -0.02317836
       },
       "24": {
-        "n": 18,
-        "mean_return": 0.03469747,
-        "win_rate": 0.388889,
-        "profit_factor": 1.263739,
-        "ci95_lower": -0.19255557,
-        "ci95_upper": 0.26195051
+        "n": 21,
+        "mean_return": 0.00596617,
+        "win_rate": 0.333333,
+        "profit_factor": 1.043695,
+        "ci95_lower": -0.1907949,
+        "ci95_upper": 0.20272724
       }
     },
     "verdict": "NO_EVIDENCE",
-    "updated_at": "2026-10-02T00:49:22+00:00",
+    "updated_at": "2026-10-02T06:18:55+00:00",
     "auto_promotion": false,
     "last_observation": {
-      "ts": "2026-10-02T00:49:22+00:00",
+      "ts": "2026-10-02T06:18:55+00:00",
       "candidates_seen": 2,
-      "deduplicated": 0,
+      "deduplicated": 1,
       "rejected_price": 0,
       "rejected_spread": 0,
       "rejected_invalid_quote": 0,
-      "added": 2
+      "added": 1
     },
     "observation_totals": {
-      "ticks": 36,
-      "candidates_seen": 63,
-      "deduplicated": 20,
+      "ticks": 37,
+      "candidates_seen": 65,
+      "deduplicated": 21,
       "rejected_price": 14,
       "rejected_spread": 2,
       "rejected_invalid_quote": 0,
-      "added": 26
+      "added": 27
     }
   }
 }

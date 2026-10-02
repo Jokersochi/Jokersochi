@@ -13,8 +13,8 @@
   "realized_pnl": -634.248613,
   "unrealized_pnl": 0.0,
   "fees_paid": 308.38584,
-  "ticks": 365,
-  "last_tick_at": "2026-10-02T18:04:39+00:00",
+  "ticks": 366,
+  "last_tick_at": "2026-10-02T22:07:19+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -10705,6 +10705,16 @@
       "fees_paid": 308.38584,
       "open_positions": 0,
       "closed_positions": 193
+    },
+    {
+      "ts": "2026-10-02T22:07:19+00:00",
+      "equity": 365.751387,
+      "cash": 365.751387,
+      "realized_pnl": -634.248613,
+      "unrealized_pnl": 0.0,
+      "fees_paid": 308.38584,
+      "open_positions": 0,
+      "closed_positions": 193
     }
   ],
   "shadow_challenger": {
@@ -11892,9 +11902,19 @@
             "after_cost_pnl": -16.028338,
             "after_cost_return": -0.16028339,
             "profitable": false
+          },
+          "24": {
+            "evaluated_at": "2026-10-02T22:07:19+00:00",
+            "source": "clob_liquidation",
+            "exit_mid": 0.5015,
+            "exit_spread": 0.001,
+            "net_liquidation": 78.800907,
+            "after_cost_pnl": -21.199091,
+            "after_cost_return": -0.21199092,
+            "profitable": false
           }
         },
-        "status": "pending",
+        "status": "matured",
         "paper_only": true,
         "capital_impact": 0.0
       },
@@ -12038,7 +12058,18 @@
         "liquidity": 679125.84,
         "volume_24h": 740436.25,
         "score": 0.15,
-        "horizon_results": {},
+        "horizon_results": {
+          "6": {
+            "evaluated_at": "2026-10-02T22:07:19+00:00",
+            "source": "clob_liquidation",
+            "exit_mid": 0.425,
+            "exit_spread": 0.01,
+            "net_liquidation": 88.201131,
+            "after_cost_pnl": -11.79887,
+            "after_cost_return": -0.1179887,
+            "profitable": false
+          }
+        },
         "status": "pending",
         "paper_only": true,
         "capital_impact": 0.0
@@ -12066,6 +12097,73 @@
         "liquidity": 472166.99,
         "volume_24h": 695597.26,
         "score": 0.14075,
+        "horizon_results": {
+          "6": {
+            "evaluated_at": "2026-10-02T22:07:19+00:00",
+            "source": "clob_liquidation",
+            "exit_mid": 0.4305,
+            "exit_spread": 0.001,
+            "net_liquidation": 91.541847,
+            "after_cost_pnl": -8.458157,
+            "after_cost_return": -0.08458157,
+            "profitable": false
+          }
+        },
+        "status": "pending",
+        "paper_only": true,
+        "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:608545:NO:1790978839",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "608545",
+        "question": "Will Lamine Yamal win the 2026 Ballon d'Or?",
+        "category": "Other",
+        "outcome": "NO",
+        "token_id": "115364229170068359509280114761107502298430910856477421813089992309112580316620",
+        "observed_at": "2026-10-02T22:07:19+00:00",
+        "end_date": "2027-01-01",
+        "entry_mid": 0.4985,
+        "entry_spread": 0.001,
+        "entry_price": 0.499,
+        "shares": 195.50344042,
+        "gross_trade": 97.556217,
+        "entry_fee": 2.44378,
+        "cash_outlay": 99.999997,
+        "fee_rate": 0.05,
+        "momentum_24h": -0.099,
+        "momentum_6h": -0.04,
+        "liquidity": 97165.8,
+        "volume_24h": 189595.38,
+        "score": 0.168375,
+        "horizon_results": {},
+        "status": "pending",
+        "paper_only": true,
+        "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:4037599:YES:1790978839",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "4037599",
+        "question": "Will Lula win the most votes in the first round of the 2026 Brazil presidential election?",
+        "category": "Other",
+        "outcome": "YES",
+        "token_id": "59263952479040461395118740393989526475872507834003057062766690093774519981624",
+        "observed_at": "2026-10-02T22:07:19+00:00",
+        "end_date": "2026-10-05",
+        "entry_mid": 0.75,
+        "entry_spread": 0.02,
+        "entry_price": 0.76,
+        "shares": 130.0187227,
+        "gross_trade": 98.814229,
+        "entry_fee": 1.18577,
+        "cash_outlay": 99.999999,
+        "fee_rate": 0.05,
+        "momentum_24h": 0.035,
+        "momentum_6h": 0.015,
+        "liquidity": 95339.52,
+        "volume_24h": 177950.23,
+        "score": 0.082293,
         "horizon_results": {},
         "status": "pending",
         "paper_only": true,
@@ -12074,42 +12172,42 @@
     ],
     "summary": {
       "6": {
-        "n": 27,
-        "mean_return": -0.04559034,
-        "win_rate": 0.259259,
-        "profit_factor": 0.225373,
-        "ci95_lower": -0.07753636,
-        "ci95_upper": -0.01364433
+        "n": 29,
+        "mean_return": -0.04943136,
+        "win_rate": 0.241379,
+        "profit_factor": 0.199892,
+        "ci95_lower": -0.07963505,
+        "ci95_upper": -0.01922768
       },
       "24": {
-        "n": 23,
-        "mean_return": -0.00322678,
-        "win_rate": 0.304348,
-        "profit_factor": 0.975801,
-        "ci95_lower": -0.18315847,
-        "ci95_upper": 0.1767049
+        "n": 24,
+        "mean_return": -0.01192529,
+        "win_rate": 0.291667,
+        "profit_factor": 0.912711,
+        "ci95_lower": -0.18503835,
+        "ci95_upper": 0.16118777
       }
     },
     "verdict": "NO_EVIDENCE",
-    "updated_at": "2026-10-02T18:04:39+00:00",
+    "updated_at": "2026-10-02T22:07:19+00:00",
     "auto_promotion": false,
     "last_observation": {
-      "ts": "2026-10-02T18:04:39+00:00",
-      "candidates_seen": 2,
+      "ts": "2026-10-02T22:07:19+00:00",
+      "candidates_seen": 5,
       "deduplicated": 2,
-      "rejected_price": 0,
+      "rejected_price": 1,
       "rejected_spread": 0,
       "rejected_invalid_quote": 0,
-      "added": 0
+      "added": 2
     },
     "observation_totals": {
-      "ticks": 39,
-      "candidates_seen": 72,
-      "deduplicated": 26,
-      "rejected_price": 14,
+      "ticks": 40,
+      "candidates_seen": 77,
+      "deduplicated": 28,
+      "rejected_price": 15,
       "rejected_spread": 2,
       "rejected_invalid_quote": 0,
-      "added": 29
+      "added": 31
     }
   }
 }

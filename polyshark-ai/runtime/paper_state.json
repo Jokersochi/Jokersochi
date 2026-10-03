@@ -13,8 +13,8 @@
   "realized_pnl": -634.248613,
   "unrealized_pnl": 0.0,
   "fees_paid": 308.38584,
-  "ticks": 367,
-  "last_tick_at": "2026-10-03T01:08:15+00:00",
+  "ticks": 368,
+  "last_tick_at": "2026-10-03T06:26:31+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -10725,6 +10725,16 @@
       "fees_paid": 308.38584,
       "open_positions": 0,
       "closed_positions": 193
+    },
+    {
+      "ts": "2026-10-03T06:26:31+00:00",
+      "equity": 365.751387,
+      "cash": 365.751387,
+      "realized_pnl": -634.248613,
+      "unrealized_pnl": 0.0,
+      "fees_paid": 308.38584,
+      "open_positions": 0,
+      "closed_positions": 193
     }
   ],
   "shadow_challenger": {
@@ -12059,9 +12069,19 @@
             "after_cost_pnl": -4.27534,
             "after_cost_return": -0.04275339,
             "profitable": false
+          },
+          "24": {
+            "evaluated_at": "2026-10-03T06:26:31+00:00",
+            "source": "clob_liquidation",
+            "exit_mid": 0.685,
+            "exit_spread": 0.01,
+            "net_liquidation": 92.895274,
+            "after_cost_pnl": -7.10473,
+            "after_cost_return": -0.07104729,
+            "profitable": false
           }
         },
-        "status": "pending",
+        "status": "matured",
         "paper_only": true,
         "capital_impact": 0.0
       },
@@ -12166,7 +12186,18 @@
         "liquidity": 97165.8,
         "volume_24h": 189595.38,
         "score": 0.168375,
-        "horizon_results": {},
+        "horizon_results": {
+          "6": {
+            "evaluated_at": "2026-10-03T06:26:31+00:00",
+            "source": "clob_liquidation",
+            "exit_mid": 0.5305,
+            "exit_spread": 0.001,
+            "net_liquidation": 101.181823,
+            "after_cost_pnl": 1.181826,
+            "after_cost_return": 0.01181826,
+            "profitable": true
+          }
+        },
         "status": "pending",
         "paper_only": true,
         "capital_impact": 0.0
@@ -12194,7 +12225,18 @@
         "liquidity": 95339.52,
         "volume_24h": 177950.23,
         "score": 0.082293,
-        "horizon_results": {},
+        "horizon_results": {
+          "6": {
+            "evaluated_at": "2026-10-03T06:26:31+00:00",
+            "source": "clob_liquidation",
+            "exit_mid": 0.745,
+            "exit_spread": 0.01,
+            "net_liquidation": 94.963075,
+            "after_cost_pnl": -5.036924,
+            "after_cost_return": -0.05036924,
+            "profitable": false
+          }
+        },
         "status": "pending",
         "paper_only": true,
         "capital_impact": 0.0
@@ -12230,36 +12272,36 @@
     ],
     "summary": {
       "6": {
-        "n": 29,
-        "mean_return": -0.04943136,
-        "win_rate": 0.241379,
-        "profit_factor": 0.199892,
-        "ci95_lower": -0.07963505,
-        "ci95_upper": -0.01922768
+        "n": 31,
+        "mean_return": -0.04748582,
+        "win_rate": 0.258065,
+        "profit_factor": 0.200842,
+        "ci95_lower": -0.07597316,
+        "ci95_upper": -0.01899848
       },
       "24": {
-        "n": 26,
-        "mean_return": -0.00613584,
-        "win_rate": 0.346154,
-        "profit_factor": 0.951345,
-        "ci95_lower": -0.16586126,
-        "ci95_upper": 0.15358957
+        "n": 27,
+        "mean_return": -0.00853997,
+        "win_rate": 0.333333,
+        "profit_factor": 0.931168,
+        "ci95_lower": -0.16230804,
+        "ci95_upper": 0.1452281
       }
     },
     "verdict": "NO_EVIDENCE",
-    "updated_at": "2026-10-03T01:08:15+00:00",
+    "updated_at": "2026-10-03T06:26:31+00:00",
     "auto_promotion": false,
     "last_observation": {
-      "ts": "2026-10-03T01:08:15+00:00",
-      "candidates_seen": 2,
-      "deduplicated": 1,
+      "ts": "2026-10-03T06:26:31+00:00",
+      "candidates_seen": 0,
+      "deduplicated": 0,
       "rejected_price": 0,
       "rejected_spread": 0,
       "rejected_invalid_quote": 0,
-      "added": 1
+      "added": 0
     },
     "observation_totals": {
-      "ticks": 41,
+      "ticks": 42,
       "candidates_seen": 79,
       "deduplicated": 29,
       "rejected_price": 15,

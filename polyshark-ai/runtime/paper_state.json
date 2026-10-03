@@ -13,8 +13,8 @@
   "realized_pnl": -634.248613,
   "unrealized_pnl": 0.0,
   "fees_paid": 308.38584,
-  "ticks": 369,
-  "last_tick_at": "2026-10-03T11:52:50+00:00",
+  "ticks": 370,
+  "last_tick_at": "2026-10-03T15:15:43+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -10745,6 +10745,16 @@
       "fees_paid": 308.38584,
       "open_positions": 0,
       "closed_positions": 193
+    },
+    {
+      "ts": "2026-10-03T15:15:43+00:00",
+      "equity": 365.751387,
+      "cash": 365.751387,
+      "realized_pnl": -634.248613,
+      "unrealized_pnl": 0.0,
+      "fees_paid": 308.38584,
+      "open_positions": 0,
+      "closed_positions": 193
     }
   ],
   "shadow_challenger": {
@@ -12128,9 +12138,19 @@
             "after_cost_pnl": -11.79887,
             "after_cost_return": -0.1179887,
             "profitable": false
+          },
+          "24": {
+            "evaluated_at": "2026-10-03T15:15:43+00:00",
+            "source": "clob_liquidation",
+            "exit_mid": 0.415,
+            "exit_spread": 0.01,
+            "net_liquidation": 86.056774,
+            "after_cost_pnl": -13.943227,
+            "after_cost_return": -0.13943227,
+            "profitable": false
           }
         },
-        "status": "pending",
+        "status": "matured",
         "paper_only": true,
         "capital_impact": 0.0
       },
@@ -12167,9 +12187,19 @@
             "after_cost_pnl": -8.458157,
             "after_cost_return": -0.08458157,
             "profitable": false
+          },
+          "24": {
+            "evaluated_at": "2026-10-03T15:15:43+00:00",
+            "source": "clob_liquidation",
+            "exit_mid": 0.4175,
+            "exit_spread": 0.001,
+            "net_liquidation": 88.714904,
+            "after_cost_pnl": -11.2851,
+            "after_cost_return": -0.112851,
+            "profitable": false
           }
         },
-        "status": "pending",
+        "status": "matured",
         "paper_only": true,
         "capital_impact": 0.0
       },
@@ -12289,6 +12319,34 @@
         "status": "pending",
         "paper_only": true,
         "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:601819:NO:1791040543",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "601819",
+        "question": "Will Luiz Inácio Lula da Silva win the 2026 Brazilian presidential election?",
+        "category": "Other",
+        "outcome": "NO",
+        "token_id": "79191939610100241429039499950443680906623179487184628479206155805558220344190",
+        "observed_at": "2026-10-03T15:15:43+00:00",
+        "end_date": "2026-10-05",
+        "entry_mid": 0.585,
+        "entry_spread": 0.01,
+        "entry_price": 0.59,
+        "shares": 166.08674711,
+        "gross_trade": 97.991181,
+        "entry_fee": 2.00882,
+        "cash_outlay": 100.000001,
+        "fee_rate": 0.05,
+        "momentum_24h": -0.03,
+        "momentum_6h": -0.01,
+        "liquidity": 786174.19,
+        "volume_24h": 653638.83,
+        "score": 0.08,
+        "horizon_results": {},
+        "status": "pending",
+        "paper_only": true,
+        "capital_impact": 0.0
       }
     ],
     "summary": {
@@ -12301,34 +12359,34 @@
         "ci95_upper": -0.01930863
       },
       "24": {
-        "n": 27,
-        "mean_return": -0.00853997,
-        "win_rate": 0.333333,
-        "profit_factor": 0.931168,
-        "ci95_lower": -0.16230804,
-        "ci95_upper": 0.1452281
+        "n": 29,
+        "mean_return": -0.01665043,
+        "win_rate": 0.310345,
+        "profit_factor": 0.865952,
+        "ci95_lower": -0.16005559,
+        "ci95_upper": 0.12675472
       }
     },
     "verdict": "NO_EVIDENCE",
-    "updated_at": "2026-10-03T11:52:50+00:00",
+    "updated_at": "2026-10-03T15:15:43+00:00",
     "auto_promotion": false,
     "last_observation": {
-      "ts": "2026-10-03T11:52:50+00:00",
-      "candidates_seen": 0,
+      "ts": "2026-10-03T15:15:43+00:00",
+      "candidates_seen": 1,
       "deduplicated": 0,
       "rejected_price": 0,
       "rejected_spread": 0,
       "rejected_invalid_quote": 0,
-      "added": 0
+      "added": 1
     },
     "observation_totals": {
-      "ticks": 43,
-      "candidates_seen": 79,
+      "ticks": 44,
+      "candidates_seen": 80,
       "deduplicated": 29,
       "rejected_price": 15,
       "rejected_spread": 2,
       "rejected_invalid_quote": 0,
-      "added": 32
+      "added": 33
     }
   }
 }

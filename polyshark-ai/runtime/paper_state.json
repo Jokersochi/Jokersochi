@@ -13,8 +13,8 @@
   "realized_pnl": -634.248613,
   "unrealized_pnl": 0.0,
   "fees_paid": 308.38584,
-  "ticks": 373,
-  "last_tick_at": "2026-10-04T00:06:46+00:00",
+  "ticks": 374,
+  "last_tick_at": "2026-10-04T05:44:00+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -10785,6 +10785,16 @@
       "fees_paid": 308.38584,
       "open_positions": 0,
       "closed_positions": 193
+    },
+    {
+      "ts": "2026-10-04T05:44:00+00:00",
+      "equity": 365.751387,
+      "cash": 365.751387,
+      "realized_pnl": -634.248613,
+      "unrealized_pnl": 0.0,
+      "fees_paid": 308.38584,
+      "open_positions": 0,
+      "closed_positions": 193
     }
   ],
   "shadow_challenger": {
@@ -12364,9 +12374,19 @@
             "after_cost_pnl": -2.919165,
             "after_cost_return": -0.02919164,
             "profitable": false
+          },
+          "24": {
+            "evaluated_at": "2026-10-04T05:44:00+00:00",
+            "source": "clob_liquidation",
+            "exit_mid": 0.825,
+            "exit_spread": 0.01,
+            "net_liquidation": 97.080839,
+            "after_cost_pnl": -2.919165,
+            "after_cost_return": -0.02919164,
+            "profitable": false
           }
         },
-        "status": "pending",
+        "status": "matured",
         "paper_only": true,
         "capital_impact": 0.0
       },
@@ -12432,7 +12452,18 @@
         "liquidity": 559760.44,
         "volume_24h": 381766.75,
         "score": 0.1105,
-        "horizon_results": {},
+        "horizon_results": {
+          "6": {
+            "evaluated_at": "2026-10-04T05:44:00+00:00",
+            "source": "clob_liquidation",
+            "exit_mid": 0.6505,
+            "exit_spread": 0.007,
+            "net_liquidation": 101.394568,
+            "after_cost_pnl": 1.394572,
+            "after_cost_return": 0.01394572,
+            "profitable": true
+          }
+        },
         "status": "pending",
         "paper_only": true,
         "capital_impact": 0.0
@@ -12464,46 +12495,74 @@
         "status": "pending",
         "paper_only": true,
         "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:4877193:YES:1791092640",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "4877193",
+        "question": "Will Spain win on 2026-10-06?",
+        "category": "Other",
+        "outcome": "YES",
+        "token_id": "29066270452685560826989070278602031797236725768662533602750565582979546866778",
+        "observed_at": "2026-10-04T05:44:00+00:00",
+        "end_date": "2026-10-06",
+        "entry_mid": 0.745,
+        "entry_spread": 0.01,
+        "entry_price": 0.75,
+        "shares": 131.6872428,
+        "gross_trade": 98.765432,
+        "entry_fee": 1.23457,
+        "cash_outlay": 100.000002,
+        "fee_rate": 0.05,
+        "momentum_24h": 0.06,
+        "momentum_6h": 0.03,
+        "liquidity": 43819.34,
+        "volume_24h": 147558.99,
+        "score": 0.116417,
+        "horizon_results": {},
+        "status": "pending",
+        "paper_only": true,
+        "capital_impact": 0.0
       }
     ],
     "summary": {
       "6": {
-        "n": 33,
-        "mean_return": -0.0456933,
-        "win_rate": 0.242424,
-        "profit_factor": 0.197011,
-        "ci95_lower": -0.07255598,
-        "ci95_upper": -0.01883062
+        "n": 34,
+        "mean_return": -0.04393921,
+        "win_rate": 0.264706,
+        "profit_factor": 0.204437,
+        "ci95_lower": -0.07022564,
+        "ci95_upper": -0.01765278
       },
       "24": {
-        "n": 31,
-        "mean_return": -0.02356831,
-        "win_rate": 0.290323,
-        "profit_factor": 0.810226,
-        "ci95_lower": -0.15819625,
-        "ci95_upper": 0.11105964
+        "n": 32,
+        "mean_return": -0.02374404,
+        "win_rate": 0.28125,
+        "profit_factor": 0.804128,
+        "ci95_lower": -0.15409744,
+        "ci95_upper": 0.10660937
       }
     },
     "verdict": "NO_EVIDENCE",
-    "updated_at": "2026-10-04T00:06:46+00:00",
+    "updated_at": "2026-10-04T05:44:00+00:00",
     "auto_promotion": false,
     "last_observation": {
-      "ts": "2026-10-04T00:06:46+00:00",
-      "candidates_seen": 5,
-      "deduplicated": 2,
-      "rejected_price": 2,
+      "ts": "2026-10-04T05:44:00+00:00",
+      "candidates_seen": 3,
+      "deduplicated": 1,
+      "rejected_price": 1,
       "rejected_spread": 0,
       "rejected_invalid_quote": 0,
       "added": 1
     },
     "observation_totals": {
-      "ticks": 47,
-      "candidates_seen": 87,
-      "deduplicated": 32,
-      "rejected_price": 17,
+      "ticks": 48,
+      "candidates_seen": 90,
+      "deduplicated": 33,
+      "rejected_price": 18,
       "rejected_spread": 2,
       "rejected_invalid_quote": 0,
-      "added": 35
+      "added": 36
     }
   }
 }

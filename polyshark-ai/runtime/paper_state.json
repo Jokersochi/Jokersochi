@@ -13,8 +13,8 @@
   "realized_pnl": -634.248613,
   "unrealized_pnl": 0.0,
   "fees_paid": 308.38584,
-  "ticks": 372,
-  "last_tick_at": "2026-10-03T21:46:26+00:00",
+  "ticks": 373,
+  "last_tick_at": "2026-10-04T00:06:46+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -10775,6 +10775,16 @@
       "fees_paid": 308.38584,
       "open_positions": 0,
       "closed_positions": 193
+    },
+    {
+      "ts": "2026-10-04T00:06:46+00:00",
+      "equity": 365.751387,
+      "cash": 365.751387,
+      "realized_pnl": -634.248613,
+      "unrealized_pnl": 0.0,
+      "fees_paid": 308.38584,
+      "open_positions": 0,
+      "closed_positions": 193
     }
   ],
   "shadow_challenger": {
@@ -12256,9 +12266,19 @@
             "after_cost_pnl": 1.181826,
             "after_cost_return": 0.01181826,
             "profitable": true
+          },
+          "24": {
+            "evaluated_at": "2026-10-04T00:06:46+00:00",
+            "source": "clob_liquidation",
+            "exit_mid": 0.5175,
+            "exit_spread": 0.013,
+            "net_liquidation": 97.459648,
+            "after_cost_pnl": -2.540349,
+            "after_cost_return": -0.02540349,
+            "profitable": false
           }
         },
-        "status": "pending",
+        "status": "matured",
         "paper_only": true,
         "capital_impact": 0.0
       },
@@ -12295,9 +12315,19 @@
             "after_cost_pnl": -5.036924,
             "after_cost_return": -0.05036924,
             "profitable": false
+          },
+          "24": {
+            "evaluated_at": "2026-10-04T00:06:46+00:00",
+            "source": "clob_liquidation",
+            "exit_mid": 0.62,
+            "exit_spread": 0.02,
+            "net_liquidation": 77.764851,
+            "after_cost_pnl": -22.235148,
+            "after_cost_return": -0.22235148,
+            "profitable": false
           }
         },
-        "status": "pending",
+        "status": "matured",
         "paper_only": true,
         "capital_impact": 0.0
       },
@@ -12406,6 +12436,34 @@
         "status": "pending",
         "paper_only": true,
         "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:5166375:NO:1791072406",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "5166375",
+        "question": "Any of the Cornell 7 charged with a felony sex crime?",
+        "category": "Other",
+        "outcome": "NO",
+        "token_id": "6149779234558008449668378032744510118788834956169689501483606904259359125734",
+        "observed_at": "2026-10-04T00:06:46+00:00",
+        "end_date": "2027-02-01",
+        "entry_mid": 0.675,
+        "entry_spread": 0.01,
+        "entry_price": 0.68,
+        "shares": 144.74293654,
+        "gross_trade": 98.425197,
+        "entry_fee": 1.5748,
+        "cash_outlay": 99.999997,
+        "fee_rate": 0.05,
+        "momentum_24h": -0.04,
+        "momentum_6h": -0.01,
+        "liquidity": 45076.83,
+        "volume_24h": 138669.25,
+        "score": 0.08654,
+        "horizon_results": {},
+        "status": "pending",
+        "paper_only": true,
+        "capital_impact": 0.0
       }
     ],
     "summary": {
@@ -12418,34 +12476,34 @@
         "ci95_upper": -0.01883062
       },
       "24": {
-        "n": 29,
-        "mean_return": -0.01665043,
-        "win_rate": 0.310345,
-        "profit_factor": 0.865952,
-        "ci95_lower": -0.16005559,
-        "ci95_upper": 0.12675472
+        "n": 31,
+        "mean_return": -0.02356831,
+        "win_rate": 0.290323,
+        "profit_factor": 0.810226,
+        "ci95_lower": -0.15819625,
+        "ci95_upper": 0.11105964
       }
     },
     "verdict": "NO_EVIDENCE",
-    "updated_at": "2026-10-03T21:46:26+00:00",
+    "updated_at": "2026-10-04T00:06:46+00:00",
     "auto_promotion": false,
     "last_observation": {
-      "ts": "2026-10-03T21:46:26+00:00",
-      "candidates_seen": 2,
-      "deduplicated": 1,
-      "rejected_price": 0,
+      "ts": "2026-10-04T00:06:46+00:00",
+      "candidates_seen": 5,
+      "deduplicated": 2,
+      "rejected_price": 2,
       "rejected_spread": 0,
       "rejected_invalid_quote": 0,
       "added": 1
     },
     "observation_totals": {
-      "ticks": 46,
-      "candidates_seen": 82,
-      "deduplicated": 30,
-      "rejected_price": 15,
+      "ticks": 47,
+      "candidates_seen": 87,
+      "deduplicated": 32,
+      "rejected_price": 17,
       "rejected_spread": 2,
       "rejected_invalid_quote": 0,
-      "added": 34
+      "added": 35
     }
   }
 }

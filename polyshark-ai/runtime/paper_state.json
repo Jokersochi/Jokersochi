@@ -13,8 +13,8 @@
   "realized_pnl": -634.248613,
   "unrealized_pnl": 0.0,
   "fees_paid": 308.38584,
-  "ticks": 379,
-  "last_tick_at": "2026-10-05T00:34:06+00:00",
+  "ticks": 380,
+  "last_tick_at": "2026-10-05T06:08:45+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -10845,6 +10845,16 @@
       "fees_paid": 308.38584,
       "open_positions": 0,
       "closed_positions": 193
+    },
+    {
+      "ts": "2026-10-05T06:08:45+00:00",
+      "equity": 365.751387,
+      "cash": 365.751387,
+      "realized_pnl": -634.248613,
+      "unrealized_pnl": 0.0,
+      "fees_paid": 308.38584,
+      "open_positions": 0,
+      "closed_positions": 193
     }
   ],
   "shadow_challenger": {
@@ -12620,9 +12630,19 @@
             "after_cost_pnl": -1.118687,
             "after_cost_return": -0.01118687,
             "profitable": false
+          },
+          "24": {
+            "evaluated_at": "2026-10-05T06:08:45+00:00",
+            "source": "clob_liquidation",
+            "exit_mid": 0.785,
+            "exit_spread": 0.01,
+            "net_liquidation": 101.586169,
+            "after_cost_pnl": 1.586167,
+            "after_cost_return": 0.01586167,
+            "profitable": true
           }
         },
-        "status": "pending",
+        "status": "matured",
         "paper_only": true,
         "capital_impact": 0.0
       },
@@ -12688,7 +12708,18 @@
         "liquidity": 600167.46,
         "volume_24h": 1613057.15,
         "score": 0.405,
-        "horizon_results": {},
+        "horizon_results": {
+          "6": {
+            "evaluated_at": "2026-10-05T06:08:45+00:00",
+            "source": "clob_liquidation",
+            "exit_mid": 0.825,
+            "exit_spread": 0.01,
+            "net_liquidation": 94.890675,
+            "after_cost_pnl": -5.109328,
+            "after_cost_return": -0.05109328,
+            "profitable": false
+          }
+        },
         "status": "pending",
         "paper_only": true,
         "capital_impact": 0.0
@@ -12716,6 +12747,45 @@
         "liquidity": 391838.37,
         "volume_24h": 1735219.19,
         "score": 0.3915,
+        "horizon_results": {
+          "6": {
+            "evaluated_at": "2026-10-05T06:08:45+00:00",
+            "source": "clob_liquidation",
+            "exit_mid": 0.824,
+            "exit_spread": 0.008,
+            "net_liquidation": 95.972693,
+            "after_cost_pnl": -4.027306,
+            "after_cost_return": -0.04027306,
+            "profitable": false
+          }
+        },
+        "status": "pending",
+        "paper_only": true,
+        "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:3866000:NO:1791180525",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "3866000",
+        "question": "Will Ethereum dip to $2,250 by December 31, 2026?",
+        "category": "Other",
+        "outcome": "NO",
+        "token_id": "63382519856399132244485492020084100091374236550290181904952415637486462703240",
+        "observed_at": "2026-10-05T06:08:45+00:00",
+        "end_date": "2027-01-01",
+        "entry_mid": 0.78,
+        "entry_spread": 0.02,
+        "entry_price": 0.79,
+        "shares": 125.26697524,
+        "gross_trade": 98.96091,
+        "entry_fee": 1.03909,
+        "cash_outlay": 100.0,
+        "fee_rate": 0.05,
+        "momentum_24h": -0.165,
+        "momentum_6h": -0.075,
+        "liquidity": 29621.97,
+        "volume_24h": 268401.88,
+        "score": 0.237216,
         "horizon_results": {},
         "status": "pending",
         "paper_only": true,
@@ -12724,42 +12794,42 @@
     ],
     "summary": {
       "6": {
-        "n": 37,
-        "mean_return": -0.04281097,
-        "win_rate": 0.243243,
-        "profit_factor": 0.19508,
-        "ci95_lower": -0.06700761,
-        "ci95_upper": -0.01861433
+        "n": 39,
+        "mean_return": -0.04295826,
+        "win_rate": 0.230769,
+        "profit_factor": 0.186425,
+        "ci95_lower": -0.06590191,
+        "ci95_upper": -0.02001461
       },
       "24": {
-        "n": 35,
-        "mean_return": -0.01239541,
-        "win_rate": 0.314286,
-        "profit_factor": 0.888218,
-        "ci95_lower": -0.13294426,
-        "ci95_upper": 0.10815343
+        "n": 36,
+        "mean_return": -0.01161049,
+        "win_rate": 0.333333,
+        "profit_factor": 0.892305,
+        "ci95_lower": -0.12877302,
+        "ci95_upper": 0.10555203
       }
     },
     "verdict": "NO_EVIDENCE",
-    "updated_at": "2026-10-05T00:34:06+00:00",
+    "updated_at": "2026-10-05T06:08:45+00:00",
     "auto_promotion": false,
     "last_observation": {
-      "ts": "2026-10-05T00:34:06+00:00",
-      "candidates_seen": 0,
+      "ts": "2026-10-05T06:08:45+00:00",
+      "candidates_seen": 1,
       "deduplicated": 0,
       "rejected_price": 0,
       "rejected_spread": 0,
       "rejected_invalid_quote": 0,
-      "added": 0
+      "added": 1
     },
     "observation_totals": {
-      "ticks": 53,
-      "candidates_seen": 96,
+      "ticks": 54,
+      "candidates_seen": 97,
       "deduplicated": 35,
       "rejected_price": 19,
       "rejected_spread": 2,
       "rejected_invalid_quote": 0,
-      "added": 39
+      "added": 40
     }
   }
 }

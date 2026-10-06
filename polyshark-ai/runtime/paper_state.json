@@ -13,8 +13,8 @@
   "realized_pnl": -634.248613,
   "unrealized_pnl": 0.0,
   "fees_paid": 308.38584,
-  "ticks": 385,
-  "last_tick_at": "2026-10-06T15:09:53+00:00",
+  "ticks": 386,
+  "last_tick_at": "2026-10-06T20:15:05+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -10905,6 +10905,16 @@
       "fees_paid": 308.38584,
       "open_positions": 0,
       "closed_positions": 193
+    },
+    {
+      "ts": "2026-10-06T20:15:05+00:00",
+      "equity": 365.751387,
+      "cash": 365.751387,
+      "realized_pnl": -634.248613,
+      "unrealized_pnl": 0.0,
+      "fees_paid": 308.38584,
+      "open_positions": 0,
+      "closed_positions": 193
     }
   ],
   "shadow_challenger": {
@@ -12891,6 +12901,34 @@
         "status": "matured",
         "paper_only": true,
         "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:2589812:YES:1791317705",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "2589812",
+        "question": "Will there be no change in Fed interest rates after the October 2026 meeting?",
+        "category": "Other",
+        "outcome": "YES",
+        "token_id": "111061902544814266207267295505639408607400625795891618462682726460921782993748",
+        "observed_at": "2026-10-06T20:15:05+00:00",
+        "end_date": "2026-10-29",
+        "entry_mid": 0.825,
+        "entry_spread": 0.01,
+        "entry_price": 0.83,
+        "shares": 119.46646278,
+        "gross_trade": 99.157164,
+        "entry_fee": 0.84284,
+        "cash_outlay": 100.000004,
+        "fee_rate": 0.05,
+        "momentum_24h": 0.04,
+        "momentum_6h": 0.01,
+        "liquidity": 779654.77,
+        "volume_24h": 137136.0,
+        "score": 0.09,
+        "horizon_results": {},
+        "status": "pending",
+        "paper_only": true,
+        "capital_impact": 0.0
       }
     ],
     "summary": {
@@ -12912,25 +12950,25 @@
       }
     },
     "verdict": "NO_EVIDENCE",
-    "updated_at": "2026-10-06T15:09:53+00:00",
+    "updated_at": "2026-10-06T20:15:05+00:00",
     "auto_promotion": false,
     "last_observation": {
-      "ts": "2026-10-06T15:09:53+00:00",
-      "candidates_seen": 0,
+      "ts": "2026-10-06T20:15:05+00:00",
+      "candidates_seen": 1,
       "deduplicated": 0,
       "rejected_price": 0,
       "rejected_spread": 0,
       "rejected_invalid_quote": 0,
-      "added": 0
+      "added": 1
     },
     "observation_totals": {
-      "ticks": 59,
-      "candidates_seen": 100,
+      "ticks": 60,
+      "candidates_seen": 101,
       "deduplicated": 35,
       "rejected_price": 22,
       "rejected_spread": 2,
       "rejected_invalid_quote": 0,
-      "added": 40
+      "added": 41
     }
   }
 }

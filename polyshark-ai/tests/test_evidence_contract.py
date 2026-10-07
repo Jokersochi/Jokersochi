@@ -130,6 +130,7 @@ class EvidenceContractTests(unittest.TestCase):
             shadow["signals"].append(
                 {
                     "signal_id": f"s{index}",
+                    "model_version": "fixture-v1",
                     "market_id": f"m{index}",
                     "horizon_results": {"24": {"after_cost_return": 0.02}},
                 }
@@ -138,6 +139,7 @@ class EvidenceContractTests(unittest.TestCase):
             "calibration_records": [
                 {
                     "signal_id": f"cal-{index}",
+                    "model_version": "fixture-v1",
                     "forecast_probability": 0.9 if index % 2 == 0 else 0.1,
                     "actual": 1 if index % 2 == 0 else 0,
                     "brier": 0.01,

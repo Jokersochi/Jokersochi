@@ -15,6 +15,7 @@ on:
       - "polyshark-ai/tests/test_paper_trader_runtime.py"
       - "polyshark-ai/tests/test_paper_daemon.py"
       - "polyshark-ai/tests/test_evidence_contract.py"
+      - "polyshark-ai/tests/test_evidence_contract_limits.py"
       - "polyshark-ai/tests/test_evidence_daemon_integration.py"
       - ".github/workflows/polyshark-paper-trading-v2.yml"
 
@@ -62,6 +63,7 @@ jobs:
           python polyshark-ai/tests/test_paper_trader_runtime.py -q
           python polyshark-ai/tests/test_paper_daemon.py -q
           python polyshark-ai/tests/test_evidence_contract.py -q
+          python polyshark-ai/tests/test_evidence_contract_limits.py -q
           python polyshark-ai/tests/test_evidence_daemon_integration.py -q
           python -m py_compile \
             polyshark-ai/runtime/paper_trader.py \
@@ -84,6 +86,7 @@ jobs:
           PAPER_CALIBRATION_MAX_BRIER: "0.25"
           PAPER_CALIBRATION_MAX_ECE: "0.10"
           PAPER_MIN_UNIQUE_MARKET_RATIO: "0.80"
+          PAPER_CALIBRATION_LOOKUPS_PER_TICK: "25"
           PAPER_TICK_INTERVAL_SECONDS: "300"
           PAPER_RETRY_MIN_SECONDS: "15"
           PAPER_RETRY_MAX_SECONDS: "60"
@@ -135,6 +138,8 @@ jobs:
           assert dossier.get('paper_only') is True
           assert dossier.get('real_orders_enabled') is False
           assert dossier.get('review_status') in {'BLOCKED', 'REVIEW_ELIGIBLE'}
+          scan = evidence.get('last_calibration_scan', {})
+          assert int(scan.get('lookups', 0)) <= 25
           for record in evidence.get('calibration_records', []):
               assert record.get('paper_only') is True
               assert record.get('capital_impact') == 0.0
@@ -151,6 +156,7 @@ jobs:
               'evidence_review_status': dossier.get('review_status'),
               'evidence_blocked_by': dossier.get('blocked_by'),
               'calibration': dossier.get('calibration'),
+              'calibration_scan': scan,
           })
           PY
 

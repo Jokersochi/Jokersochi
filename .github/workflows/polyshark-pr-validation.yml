@@ -55,6 +55,7 @@ jobs:
           python polyshark-ai/tests/test_paper_trader_runtime.py -q
           python polyshark-ai/tests/test_paper_daemon.py -q
           python polyshark-ai/tests/test_evidence_contract.py -q
+          python polyshark-ai/tests/test_evidence_contract_limits.py -q
           python polyshark-ai/tests/test_evidence_daemon_integration.py -q
 
       - name: Python syntax check

@@ -11,8 +11,12 @@ on:
     paths:
       - "polyshark-ai/runtime/paper_trader.py"
       - "polyshark-ai/runtime/paper_daemon.py"
+      - "polyshark-ai/runtime/evidence_contract.py"
       - "polyshark-ai/tests/test_paper_trader_runtime.py"
       - "polyshark-ai/tests/test_paper_daemon.py"
+      - "polyshark-ai/tests/test_evidence_contract.py"
+      - "polyshark-ai/tests/test_evidence_contract_limits.py"
+      - "polyshark-ai/tests/test_evidence_daemon_integration.py"
       - ".github/workflows/polyshark-paper-trading-v2.yml"
 
 permissions:
@@ -42,6 +46,7 @@ jobs:
           files = [
               Path('polyshark-ai/runtime/paper_trader.py'),
               Path('polyshark-ai/runtime/paper_daemon.py'),
+              Path('polyshark-ai/runtime/evidence_contract.py'),
           ]
           forbidden = ['create_order(', 'post_order(', 'cancel_all(', 'POLYMARKET_PRIVATE_KEY']
           hits = []
@@ -57,7 +62,13 @@ jobs:
         run: |
           python polyshark-ai/tests/test_paper_trader_runtime.py -q
           python polyshark-ai/tests/test_paper_daemon.py -q
-          python -m py_compile polyshark-ai/runtime/paper_trader.py polyshark-ai/runtime/paper_daemon.py
+          python polyshark-ai/tests/test_evidence_contract.py -q
+          python polyshark-ai/tests/test_evidence_contract_limits.py -q
+          python polyshark-ai/tests/test_evidence_daemon_integration.py -q
+          python -m py_compile \
+            polyshark-ai/runtime/paper_trader.py \
+            polyshark-ai/runtime/paper_daemon.py \
+            polyshark-ai/runtime/evidence_contract.py
 
       - name: Выполнить paper-tick с автоматическими повторами
         env:
@@ -71,6 +82,11 @@ jobs:
           PAPER_SHADOW_MAX_SPREAD: "0.020"
           PAPER_SHADOW_REVIEW_MIN_24H: "100"
           PAPER_SHADOW_REVIEW_MIN_PROFIT_FACTOR: "1.20"
+          PAPER_CALIBRATION_MIN_RESOLVED: "50"
+          PAPER_CALIBRATION_MAX_BRIER: "0.25"
+          PAPER_CALIBRATION_MAX_ECE: "0.10"
+          PAPER_MIN_UNIQUE_MARKET_RATIO: "0.80"
+          PAPER_CALIBRATION_LOOKUPS_PER_TICK: "25"
           PAPER_TICK_INTERVAL_SECONDS: "300"
           PAPER_RETRY_MIN_SECONDS: "15"
           PAPER_RETRY_MAX_SECONDS: "60"
@@ -89,7 +105,7 @@ jobs:
             sleep $((attempt * 15))
           done
           if [ "$success" -ne 1 ]; then
-            echo "Paper-tick не восстановился после трёх попыток"
+            echo "Paper-tick/evidence gate не восстановился после трёх попыток"
             exit 1
           fi
 
@@ -103,6 +119,7 @@ jobs:
           assert state.get('real_orders_enabled') is False
           assert state.get('legacy_momentum_entries_enabled') is False
           assert state.get('entry_policy') == 'legacy_momentum_blocked'
+          assert state.get('capital_decision') == 'NO_TRADE'
           shadow = state.get('shadow_challenger')
           assert isinstance(shadow, dict)
           assert shadow.get('model_version') == 'risk-filtered-momentum-v1-forward-20260925'
@@ -111,6 +128,21 @@ jobs:
           for signal in shadow.get('signals', []):
               assert signal.get('paper_only') is True
               assert signal.get('capital_impact') == 0.0
+          evidence = state.get('evidence_contract')
+          assert isinstance(evidence, dict)
+          assert evidence.get('contract_version') == 'trade-dossier-v1-20261008'
+          dossier = evidence.get('trade_dossier')
+          assert isinstance(dossier, dict)
+          assert dossier.get('capital_decision') == 'NO_TRADE'
+          assert dossier.get('auto_promotion') is False
+          assert dossier.get('paper_only') is True
+          assert dossier.get('real_orders_enabled') is False
+          assert dossier.get('review_status') in {'BLOCKED', 'REVIEW_ELIGIBLE'}
+          scan = evidence.get('last_calibration_scan', {})
+          assert int(scan.get('lookups', 0)) <= 25
+          for record in evidence.get('calibration_records', []):
+              assert record.get('paper_only') is True
+              assert record.get('capital_impact') == 0.0
           assert not state.get('last_error'), state.get('last_error')
           print({
               'status': state.get('status'),
@@ -118,9 +150,13 @@ jobs:
               'open_positions': len(state.get('open_positions', [])),
               'ticks': state.get('ticks'),
               'paper_only': state.get('paper_only'),
+              'capital_decision': state.get('capital_decision'),
               'shadow_signals': len(shadow.get('signals', [])),
               'shadow_verdict': shadow.get('verdict'),
-              'shadow_last_observation': shadow.get('last_observation'),
+              'evidence_review_status': dossier.get('review_status'),
+              'evidence_blocked_by': dossier.get('blocked_by'),
+              'calibration': dossier.get('calibration'),
+              'calibration_scan': scan,
           })
           PY
 

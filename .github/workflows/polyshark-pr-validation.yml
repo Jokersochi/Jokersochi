@@ -31,6 +31,7 @@ jobs:
           files = [
               Path("polyshark-ai/runtime/paper_trader.py"),
               Path("polyshark-ai/runtime/paper_daemon.py"),
+              Path("polyshark-ai/runtime/evidence_contract.py"),
           ]
           forbidden = [
               "create_order(",
@@ -53,10 +54,16 @@ jobs:
         run: |
           python polyshark-ai/tests/test_paper_trader_runtime.py -q
           python polyshark-ai/tests/test_paper_daemon.py -q
+          python polyshark-ai/tests/test_evidence_contract.py -q
+          python polyshark-ai/tests/test_evidence_contract_limits.py -q
+          python polyshark-ai/tests/test_evidence_daemon_integration.py -q
 
       - name: Python syntax check
         run: |
-          python -m py_compile             polyshark-ai/runtime/paper_trader.py             polyshark-ai/runtime/paper_daemon.py
+          python -m py_compile \
+            polyshark-ai/runtime/paper_trader.py \
+            polyshark-ai/runtime/paper_daemon.py \
+            polyshark-ai/runtime/evidence_contract.py
 
       - name: Verify committed state remains paper-only
         run: |
@@ -69,5 +76,6 @@ jobs:
           )
           assert state.get("paper_only") is True
           assert state.get("real_orders_enabled") is False
+          assert state.get("legacy_momentum_entries_enabled") is False
           print("committed paper-state invariants: PASS")
           PY

@@ -3,6 +3,7 @@
 
 Процесс постоянно работает, выполняет безопасный paper-tick с заданным интервалом,
 пишет heartbeat, повторяет попытки после временных ошибок и не включает реальные ордера.
+После каждого тика применяется независимый fail-closed evidence contract.
 """
 from __future__ import annotations
 
@@ -16,6 +17,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+import evidence_contract as evidence
 import paper_trader as trader
 
 DEFAULT_INTERVAL_SECONDS = max(30, int(os.getenv("PAPER_TICK_INTERVAL_SECONDS", "300")))
@@ -77,12 +79,44 @@ def prepare_continuous_state(state: dict[str, Any], target_equity: float) -> dic
     return state
 
 
+def _apply_evidence_fail_closed(state: dict[str, Any]) -> dict[str, Any]:
+    """Всегда оставляет capital_decision=NO_TRADE при любой ошибке evidence-слоя."""
+    state["capital_decision"] = "NO_TRADE"
+    try:
+        evidence.apply_contract(state)
+        evidence.validate_contract(state)
+    except Exception as exc:
+        now = utc_now()
+        error = f"EvidenceContractError: {type(exc).__name__}: {exc}"
+        state["capital_decision"] = "NO_TRADE"
+        state["capital_decision_reason"] = f"Evidence contract failed closed: {type(exc).__name__}: {exc}"
+        state["last_error"] = error
+        root = state.setdefault("evidence_contract", {})
+        root["contract_version"] = evidence.CONTRACT_VERSION
+        root["updated_at"] = now
+        root["trade_dossier"] = evidence.blocked_error_dossier(error, now)
+        state.setdefault("audit", []).append(
+            {
+                "ts": now,
+                "event": "EVIDENCE_CONTRACT_ERROR",
+                "error": error,
+                "capital_decision": "NO_TRADE",
+                "review_status": "BLOCKED",
+            }
+        )
+    return state
+
+
 def run_tick(state_path: Path, target_equity: float = CONTINUOUS_TARGET_EQUITY) -> dict[str, Any]:
-    """Выполняет один paper-only тик и возвращает сохранённое состояние."""
+    """Выполняет один paper-only тик, evidence gate и возвращает сохранённое состояние."""
     trader.TARGET_EQUITY = target_equity
     state = trader.load_state(state_path)
     state = prepare_continuous_state(state, target_equity)
+    state["capital_decision"] = "NO_TRADE"
     try:
+        # Снимок делается ДО trader.tick(), потому что shadow retention может удалить
+        # старые matured-сигналы; их forward probability должна сохраниться до resolution.
+        evidence.snapshot_calibration_candidates(state)
         state = trader.tick(state)
     except Exception as exc:  # fail-closed: торговых действий после ошибки нет
         state["last_tick_at"] = utc_now()
@@ -90,12 +124,14 @@ def run_tick(state_path: Path, target_equity: float = CONTINUOUS_TARGET_EQUITY) 
         state.setdefault("audit", []).append(
             {"ts": state["last_tick_at"], "event": "TICK_ERROR", "error": state["last_error"]}
         )
+    state = _apply_evidence_fail_closed(state)
     trader.validate_state(state)
     trader.save_state(state_path, state)
     return state
 
 
 def heartbeat_payload(state: dict[str, Any], *, status: str, consecutive_errors: int, next_tick_in: int) -> dict[str, Any]:
+    dossier = state.get("evidence_contract", {}).get("trade_dossier", {})
     return {
         "service": "PolyShark paper 24/7",
         "status": status,
@@ -110,6 +146,8 @@ def heartbeat_payload(state: dict[str, Any], *, status: str, consecutive_errors:
         "ticks": state.get("ticks"),
         "paper_only": state.get("paper_only") is True,
         "real_orders_enabled": state.get("real_orders_enabled") is True,
+        "capital_decision": state.get("capital_decision", "NO_TRADE"),
+        "evidence_review_status": dossier.get("review_status", "BLOCKED"),
     }
 
 
@@ -117,6 +155,9 @@ def healthcheck(heartbeat_path: Path, max_age_seconds: int) -> int:
     heartbeat = _read_json(heartbeat_path)
     if not heartbeat or heartbeat.get("paper_only") is not True or heartbeat.get("real_orders_enabled") is True:
         print("НЕИСПРАВНО: нет корректного paper-only heartbeat")
+        return 1
+    if heartbeat.get("capital_decision") != "NO_TRADE":
+        print("НЕИСПРАВНО: evidence gate не подтверждает NO_TRADE")
         return 1
     updated_at = heartbeat.get("updated_at")
     try:
@@ -128,7 +169,7 @@ def healthcheck(heartbeat_path: Path, max_age_seconds: int) -> int:
     if age > max_age_seconds:
         print(f"НЕИСПРАВНО: heartbeat устарел на {int(age)} сек.")
         return 1
-    print("ИСПРАВНО: paper-only раннер активен")
+    print("ИСПРАВНО: paper-only раннер активен, evidence decision = NO_TRADE")
     return 0
 
 
@@ -172,7 +213,7 @@ def main(argv: list[str] | None = None) -> int:
             consecutive_errors += 1
             delay = min(RETRY_MAX_SECONDS, RETRY_MIN_SECONDS * (2 ** min(consecutive_errors - 1, 6)))
             status = "ошибка_ожидание_повтора"
-            print(f"Ошибка paper-tick: {error}. Повтор через {delay} сек.", flush=True)
+            print(f"Ошибка paper-tick/evidence: {error}. Повтор через {delay} сек.", flush=True)
         else:
             consecutive_errors = 0
             elapsed = int(time.monotonic() - started)
@@ -186,6 +227,7 @@ def main(argv: list[str] | None = None) -> int:
                         "деньги": state.get("cash"),
                         "открытых_позиций": len(state.get("open_positions", [])),
                         "тиков": state.get("ticks"),
+                        "решение_по_капиталу": state.get("capital_decision"),
                         "paper_only": True,
                     },
                     ensure_ascii=False,

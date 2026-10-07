@@ -28,6 +28,9 @@ CALIBRATION_MAX_BRIER = float(os.getenv("PAPER_CALIBRATION_MAX_BRIER", "0.25"))
 CALIBRATION_MAX_ECE = float(os.getenv("PAPER_CALIBRATION_MAX_ECE", "0.10"))
 MIN_UNIQUE_MARKET_RATIO = float(os.getenv("PAPER_MIN_UNIQUE_MARKET_RATIO", "0.80"))
 CALIBRATION_RECORD_LIMIT = int(os.getenv("PAPER_CALIBRATION_RECORD_LIMIT", "2000"))
+CALIBRATION_LOOKUPS_PER_TICK = max(
+    1, int(os.getenv("PAPER_CALIBRATION_LOOKUPS_PER_TICK", "25"))
+)
 
 
 def utc_now() -> str:
@@ -35,7 +38,10 @@ def utc_now() -> str:
 
 
 def parse_ts(value: str) -> float:
-    return datetime.fromisoformat(value.replace("Z", "+00:00")).timestamp()
+    parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    return parsed.timestamp()
 
 
 def _as_float(value: Any, default: float = 0.0) -> float:
@@ -127,18 +133,34 @@ def collect_calibration_records(
     shadow = state.get("shadow_challenger")
     if not isinstance(shadow, dict):
         return existing
+
     now_ts = parse_ts(now)
+    current_model = str(shadow.get("model_version") or "")
+    lookups = 0
+    resolved_added = 0
+    eligible_unresolved = 0
+
     for signal in shadow.get("signals", []):
+        if not isinstance(signal, dict):
+            continue
+        if current_model and str(signal.get("model_version") or "") != current_model:
+            continue
         signal_id = str(signal.get("signal_id") or "")
         if not signal_id or signal_id in by_signal:
             continue
         end_date = signal.get("end_date")
-        if end_date:
-            try:
-                if parse_ts(str(end_date)) > now_ts:
-                    continue
-            except Exception:
-                pass
+        if not end_date:
+            continue
+        try:
+            if parse_ts(str(end_date)) > now_ts:
+                continue
+        except Exception:
+            continue
+
+        eligible_unresolved += 1
+        if lookups >= CALIBRATION_LOOKUPS_PER_TICK:
+            continue
+        lookups += 1
         try:
             market = market_fetcher(str(signal.get("market_id") or ""))
         except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, json.JSONDecodeError):
@@ -165,8 +187,19 @@ def collect_calibration_records(
         }
         existing.append(record)
         by_signal[signal_id] = record
+        resolved_added += 1
+
     if len(existing) > CALIBRATION_RECORD_LIMIT:
         del existing[:-CALIBRATION_RECORD_LIMIT]
+    root["last_calibration_scan"] = {
+        "ts": now,
+        "model_version": current_model or None,
+        "eligible_unresolved": eligible_unresolved,
+        "lookups": lookups,
+        "lookup_limit": CALIBRATION_LOOKUPS_PER_TICK,
+        "resolved_added": resolved_added,
+        "records_total": len(existing),
+    }
     return existing
 
 
@@ -223,7 +256,13 @@ def calibration_summary(records: list[dict[str, Any]]) -> dict[str, Any]:
 
 
 def independence_summary(shadow: dict[str, Any]) -> dict[str, Any]:
-    signals = [item for item in shadow.get("signals", []) if isinstance(item, dict)]
+    current_model = str(shadow.get("model_version") or "")
+    signals = [
+        item
+        for item in shadow.get("signals", [])
+        if isinstance(item, dict)
+        and (not current_model or str(item.get("model_version") or "") == current_model)
+    ]
     matured_24h = [item for item in signals if "24" in item.get("horizon_results", {})]
     if not matured_24h:
         return {
@@ -247,7 +286,14 @@ def independence_summary(shadow: dict[str, Any]) -> dict[str, Any]:
 def build_trade_dossier(state: dict[str, Any], now: str) -> dict[str, Any]:
     shadow = state.get("shadow_challenger") if isinstance(state.get("shadow_challenger"), dict) else {}
     root = state.setdefault("evidence_contract", {})
-    calibration = calibration_summary(root.get("calibration_records", []))
+    current_model = str(shadow.get("model_version") or "")
+    calibration_records = [
+        item
+        for item in root.get("calibration_records", [])
+        if isinstance(item, dict)
+        and (not current_model or str(item.get("model_version") or "") == current_model)
+    ]
+    calibration = calibration_summary(calibration_records)
     independence = independence_summary(shadow)
     summary24 = shadow.get("summary", {}).get("24", {}) if isinstance(shadow.get("summary"), dict) else {}
     forward_passed = shadow.get("verdict") == "ELIGIBLE_FOR_REVIEW"
@@ -268,8 +314,6 @@ def build_trade_dossier(state: dict[str, Any], now: str) -> dict[str, Any]:
     }
     review_eligible = all(gates.values())
     reasons = [name for name, passed in gates.items() if not passed]
-    # Capital execution remains fail-closed by contract. A future, separately reviewed
-    # paper strategy may consume REVIEW_ELIGIBLE, but this module never opens trades.
     return {
         "contract_version": CONTRACT_VERSION,
         "generated_at": now,
@@ -288,6 +332,7 @@ def build_trade_dossier(state: dict[str, Any], now: str) -> dict[str, Any]:
         "calibration": calibration,
         "independence": independence,
         "execution_assumptions": shadow.get("strategy_spec", {}),
+        "calibration_scan": root.get("last_calibration_scan", {}),
         "warning": "REVIEW_ELIGIBLE is not permission to trade; capital_decision remains NO_TRADE until a separate reviewed paper-execution change.",
     }
 
@@ -338,6 +383,9 @@ def validate_contract(state: dict[str, Any]) -> None:
     assert dossier.get("auto_promotion") is False
     assert dossier.get("paper_only") is True
     assert dossier.get("real_orders_enabled") is False
+    scan = root.get("last_calibration_scan", {})
+    if scan:
+        assert int(scan.get("lookups", 0)) <= CALIBRATION_LOOKUPS_PER_TICK
     for record in root.get("calibration_records", []):
         assert record.get("paper_only") is True
         assert _as_float(record.get("capital_impact")) == 0.0
@@ -356,6 +404,7 @@ def main(argv: list[str] | None = None) -> int:
         "blocked_by": dossier["blocked_by"],
         "calibration": dossier["calibration"],
         "independence": dossier["independence"],
+        "calibration_scan": dossier["calibration_scan"],
     }, ensure_ascii=False))
     return 0
 

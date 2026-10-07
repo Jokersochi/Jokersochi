@@ -87,15 +87,21 @@ def _apply_evidence_fail_closed(state: dict[str, Any]) -> dict[str, Any]:
         evidence.validate_contract(state)
     except Exception as exc:
         now = utc_now()
+        error = f"EvidenceContractError: {type(exc).__name__}: {exc}"
         state["capital_decision"] = "NO_TRADE"
         state["capital_decision_reason"] = f"Evidence contract failed closed: {type(exc).__name__}: {exc}"
-        state["last_error"] = f"EvidenceContractError: {type(exc).__name__}: {exc}"
+        state["last_error"] = error
+        root = state.setdefault("evidence_contract", {})
+        root["contract_version"] = evidence.CONTRACT_VERSION
+        root["updated_at"] = now
+        root["trade_dossier"] = evidence.blocked_error_dossier(error, now)
         state.setdefault("audit", []).append(
             {
                 "ts": now,
                 "event": "EVIDENCE_CONTRACT_ERROR",
-                "error": state["last_error"],
+                "error": error,
                 "capital_decision": "NO_TRADE",
+                "review_status": "BLOCKED",
             }
         )
     return state
@@ -108,6 +114,9 @@ def run_tick(state_path: Path, target_equity: float = CONTINUOUS_TARGET_EQUITY) 
     state = prepare_continuous_state(state, target_equity)
     state["capital_decision"] = "NO_TRADE"
     try:
+        # Снимок делается ДО trader.tick(), потому что shadow retention может удалить
+        # старые matured-сигналы; их forward probability должна сохраниться до resolution.
+        evidence.snapshot_calibration_candidates(state)
         state = trader.tick(state)
     except Exception as exc:  # fail-closed: торговых действий после ошибки нет
         state["last_tick_at"] = utc_now()

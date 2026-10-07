@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """PolyShark evidence decision contract.
 
-This module is intentionally paper-only. It never places orders and never promotes a
-strategy automatically. It turns the forward shadow challenger evidence into an
-explicit TradeDossier with a fail-closed NO_TRADE capital decision.
+Paper-only by construction. This module never places orders and never promotes a
+strategy automatically. It turns forward shadow evidence into an explicit
+TradeDossier with a fail-closed NO_TRADE capital decision.
 """
 from __future__ import annotations
 
@@ -28,8 +28,19 @@ CALIBRATION_MAX_BRIER = float(os.getenv("PAPER_CALIBRATION_MAX_BRIER", "0.25"))
 CALIBRATION_MAX_ECE = float(os.getenv("PAPER_CALIBRATION_MAX_ECE", "0.10"))
 MIN_UNIQUE_MARKET_RATIO = float(os.getenv("PAPER_MIN_UNIQUE_MARKET_RATIO", "0.80"))
 CALIBRATION_RECORD_LIMIT = int(os.getenv("PAPER_CALIBRATION_RECORD_LIMIT", "2000"))
+FORECAST_ARCHIVE_LIMIT = max(
+    CALIBRATION_RECORD_LIMIT,
+    int(os.getenv("PAPER_FORECAST_ARCHIVE_LIMIT", "5000")),
+)
 CALIBRATION_LOOKUPS_PER_TICK = max(
     1, int(os.getenv("PAPER_CALIBRATION_LOOKUPS_PER_TICK", "25"))
+)
+RESOLUTION_RETRY_BASE_SECONDS = max(
+    60, int(os.getenv("PAPER_RESOLUTION_RETRY_BASE_SECONDS", "3600"))
+)
+RESOLUTION_RETRY_MAX_SECONDS = max(
+    RESOLUTION_RETRY_BASE_SECONDS,
+    int(os.getenv("PAPER_RESOLUTION_RETRY_MAX_SECONDS", "86400")),
 )
 
 
@@ -42,6 +53,10 @@ def parse_ts(value: str) -> float:
     if parsed.tzinfo is None:
         parsed = parsed.replace(tzinfo=timezone.utc)
     return parsed.timestamp()
+
+
+def iso_from_ts(value: float) -> str:
+    return datetime.fromtimestamp(value, timezone.utc).isoformat(timespec="seconds")
 
 
 def _as_float(value: Any, default: float = 0.0) -> float:
@@ -94,7 +109,7 @@ def fetch_market_by_id(market_id: str) -> dict[str, Any] | None:
 
 
 def resolved_outcome_for_signal(signal: dict[str, Any], market: dict[str, Any]) -> int | None:
-    """Return 1 when the selected shadow outcome won, 0 when it lost, else None."""
+    """Return 1 when the selected forecast outcome won, 0 when it lost, else None."""
     if not bool(market.get("closed", False)):
         return None
     outcomes = [str(item).upper() for item in _as_json_list(market.get("outcomes"))]
@@ -121,6 +136,66 @@ def resolved_outcome_for_signal(signal: dict[str, Any], market: dict[str, Any]) 
     return None
 
 
+def snapshot_calibration_candidates(state: dict[str, Any], now: str | None = None) -> int:
+    """Persist compact forward forecasts before shadow retention can discard them."""
+    now = now or utc_now()
+    root = state.setdefault("evidence_contract", {})
+    archive = root.setdefault("forecast_archive", [])
+    records = root.setdefault("calibration_records", [])
+    archived_ids = {str(item.get("signal_id")) for item in archive if item.get("signal_id")}
+    resolved_ids = {str(item.get("signal_id")) for item in records if item.get("signal_id")}
+    shadow = state.get("shadow_challenger")
+    if not isinstance(shadow, dict):
+        return 0
+    current_model = str(shadow.get("model_version") or "")
+    added = 0
+    for signal in shadow.get("signals", []):
+        if not isinstance(signal, dict):
+            continue
+        signal_id = str(signal.get("signal_id") or "")
+        if not signal_id or signal_id in archived_ids or signal_id in resolved_ids:
+            continue
+        if current_model and str(signal.get("model_version") or "") != current_model:
+            continue
+        end_date = signal.get("end_date")
+        probability = _as_float(signal.get("entry_mid"), -1.0)
+        if not end_date or not 0.0 < probability < 1.0:
+            continue
+        archive.append(
+            {
+                "signal_id": signal_id,
+                "model_version": signal.get("model_version"),
+                "market_id": str(signal.get("market_id") or ""),
+                "outcome": signal.get("outcome"),
+                "token_id": str(signal.get("token_id") or ""),
+                "observed_at": signal.get("observed_at"),
+                "end_date": str(end_date),
+                "forecast_probability": round(probability, 8),
+                "archived_at": now,
+                "resolution_checks": 0,
+                "next_resolution_check_at": str(end_date),
+                "paper_only": True,
+                "capital_impact": 0.0,
+            }
+        )
+        archived_ids.add(signal_id)
+        added += 1
+    if len(archive) > FORECAST_ARCHIVE_LIMIT:
+        # Keep the most recent bounded archive. This is evidence retention, not capital state.
+        root["forecast_archive"] = archive[-FORECAST_ARCHIVE_LIMIT:]
+    return added
+
+
+def _schedule_resolution_retry(item: dict[str, Any], now_ts: float) -> None:
+    checks = int(item.get("resolution_checks", 0)) + 1
+    item["resolution_checks"] = checks
+    delay = min(
+        RESOLUTION_RETRY_MAX_SECONDS,
+        RESOLUTION_RETRY_BASE_SECONDS * (2 ** min(max(0, checks - 1), 5)),
+    )
+    item["next_resolution_check_at"] = iso_from_ts(now_ts + delay)
+
+
 def collect_calibration_records(
     state: dict[str, Any],
     now: str,
@@ -128,56 +203,66 @@ def collect_calibration_records(
     market_fetcher=fetch_market_by_id,
 ) -> list[dict[str, Any]]:
     root = state.setdefault("evidence_contract", {})
+    snapshot_calibration_candidates(state, now)
+    archive = root.setdefault("forecast_archive", [])
     existing = root.setdefault("calibration_records", [])
     by_signal = {str(item.get("signal_id")): item for item in existing if item.get("signal_id")}
     shadow = state.get("shadow_challenger")
-    if not isinstance(shadow, dict):
-        return existing
-
+    current_model = str(shadow.get("model_version") or "") if isinstance(shadow, dict) else ""
     now_ts = parse_ts(now)
-    current_model = str(shadow.get("model_version") or "")
-    lookups = 0
-    resolved_added = 0
-    eligible_unresolved = 0
 
-    for signal in shadow.get("signals", []):
-        if not isinstance(signal, dict):
+    due: list[dict[str, Any]] = []
+    for item in archive:
+        if not isinstance(item, dict):
             continue
-        if current_model and str(signal.get("model_version") or "") != current_model:
+        if current_model and str(item.get("model_version") or "") != current_model:
             continue
-        signal_id = str(signal.get("signal_id") or "")
+        signal_id = str(item.get("signal_id") or "")
         if not signal_id or signal_id in by_signal:
             continue
-        end_date = signal.get("end_date")
-        if not end_date:
-            continue
         try:
-            if parse_ts(str(end_date)) > now_ts:
+            if parse_ts(str(item.get("end_date") or "")) > now_ts:
+                continue
+            next_check = item.get("next_resolution_check_at")
+            if next_check and parse_ts(str(next_check)) > now_ts:
                 continue
         except Exception:
             continue
+        due.append(item)
 
-        eligible_unresolved += 1
-        if lookups >= CALIBRATION_LOOKUPS_PER_TICK:
-            continue
+    due.sort(
+        key=lambda item: (
+            parse_ts(str(item.get("next_resolution_check_at") or item.get("end_date"))),
+            parse_ts(str(item.get("observed_at") or item.get("archived_at") or now)),
+        )
+    )
+    lookups = 0
+    resolved_added = 0
+    resolved_ids: set[str] = set()
+    for item in due[:CALIBRATION_LOOKUPS_PER_TICK]:
         lookups += 1
+        signal_id = str(item.get("signal_id") or "")
         try:
-            market = market_fetcher(str(signal.get("market_id") or ""))
+            market = market_fetcher(str(item.get("market_id") or ""))
         except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, json.JSONDecodeError):
+            _schedule_resolution_retry(item, now_ts)
             continue
         if not isinstance(market, dict):
+            _schedule_resolution_retry(item, now_ts)
             continue
-        actual = resolved_outcome_for_signal(signal, market)
+        actual = resolved_outcome_for_signal(item, market)
         if actual is None:
+            _schedule_resolution_retry(item, now_ts)
             continue
-        probability = _as_float(signal.get("entry_mid"), -1.0)
+        probability = _as_float(item.get("forecast_probability"), -1.0)
         if not 0.0 < probability < 1.0:
+            resolved_ids.add(signal_id)
             continue
         record = {
             "signal_id": signal_id,
-            "model_version": signal.get("model_version"),
-            "market_id": str(signal.get("market_id") or ""),
-            "observed_at": signal.get("observed_at"),
+            "model_version": item.get("model_version"),
+            "market_id": str(item.get("market_id") or ""),
+            "observed_at": item.get("observed_at"),
             "resolved_at_observed": now,
             "forecast_probability": round(probability, 8),
             "actual": int(actual),
@@ -187,14 +272,27 @@ def collect_calibration_records(
         }
         existing.append(record)
         by_signal[signal_id] = record
+        resolved_ids.add(signal_id)
         resolved_added += 1
 
+    if resolved_ids:
+        root["forecast_archive"] = [
+            item for item in archive if str(item.get("signal_id") or "") not in resolved_ids
+        ]
     if len(existing) > CALIBRATION_RECORD_LIMIT:
         del existing[:-CALIBRATION_RECORD_LIMIT]
+
+    current_archive = [
+        item
+        for item in root.get("forecast_archive", [])
+        if isinstance(item, dict)
+        and (not current_model or str(item.get("model_version") or "") == current_model)
+    ]
     root["last_calibration_scan"] = {
         "ts": now,
         "model_version": current_model or None,
-        "eligible_unresolved": eligible_unresolved,
+        "archive_pending": len(current_archive),
+        "due": len(due),
         "lookups": lookups,
         "lookup_limit": CALIBRATION_LOOKUPS_PER_TICK,
         "resolved_added": resolved_added,
@@ -255,7 +353,29 @@ def calibration_summary(records: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
-def independence_summary(shadow: dict[str, Any]) -> dict[str, Any]:
+def _unique_market_summary(items: list[dict[str, Any]]) -> dict[str, Any]:
+    if not items:
+        return {
+            "n": 0,
+            "unique_markets": 0,
+            "unique_market_ratio": None,
+            "min_unique_market_ratio": MIN_UNIQUE_MARKET_RATIO,
+            "passed": False,
+        }
+    unique = len({str(item.get("market_id") or "") for item in items})
+    ratio = unique / len(items)
+    return {
+        "n": len(items),
+        "unique_markets": unique,
+        "unique_market_ratio": round(ratio, 8),
+        "min_unique_market_ratio": MIN_UNIQUE_MARKET_RATIO,
+        "passed": ratio >= MIN_UNIQUE_MARKET_RATIO,
+    }
+
+
+def independence_summary(
+    shadow: dict[str, Any], calibration_records: list[dict[str, Any]]
+) -> dict[str, Any]:
     current_model = str(shadow.get("model_version") or "")
     signals = [
         item
@@ -264,22 +384,18 @@ def independence_summary(shadow: dict[str, Any]) -> dict[str, Any]:
         and (not current_model or str(item.get("model_version") or "") == current_model)
     ]
     matured_24h = [item for item in signals if "24" in item.get("horizon_results", {})]
-    if not matured_24h:
-        return {
-            "n_24h": 0,
-            "unique_markets": 0,
-            "unique_market_ratio": None,
-            "min_unique_market_ratio": MIN_UNIQUE_MARKET_RATIO,
-            "passed": False,
-        }
-    unique = len({str(item.get("market_id") or "") for item in matured_24h})
-    ratio = unique / len(matured_24h)
+    calibration_current = [
+        item
+        for item in calibration_records
+        if isinstance(item, dict)
+        and (not current_model or str(item.get("model_version") or "") == current_model)
+    ]
+    forward = _unique_market_summary(matured_24h)
+    calibration = _unique_market_summary(calibration_current)
     return {
-        "n_24h": len(matured_24h),
-        "unique_markets": unique,
-        "unique_market_ratio": round(ratio, 8),
-        "min_unique_market_ratio": MIN_UNIQUE_MARKET_RATIO,
-        "passed": ratio >= MIN_UNIQUE_MARKET_RATIO,
+        "forward_24h": forward,
+        "calibration_resolved": calibration,
+        "passed": bool(forward.get("passed")) and bool(calibration.get("passed")),
     }
 
 
@@ -294,7 +410,7 @@ def build_trade_dossier(state: dict[str, Any], now: str) -> dict[str, Any]:
         and (not current_model or str(item.get("model_version") or "") == current_model)
     ]
     calibration = calibration_summary(calibration_records)
-    independence = independence_summary(shadow)
+    independence = independence_summary(shadow, calibration_records)
     summary24 = shadow.get("summary", {}).get("24", {}) if isinstance(shadow.get("summary"), dict) else {}
     forward_passed = shadow.get("verdict") == "ELIGIBLE_FOR_REVIEW"
     cost_passed = (
@@ -346,6 +462,7 @@ def apply_contract(
     now = now or utc_now()
     if state.get("paper_only") is not True or state.get("real_orders_enabled") is not False:
         raise RuntimeError("Evidence contract refuses non-paper state")
+    snapshot_calibration_candidates(state, now)
     collect_calibration_records(state, now, market_fetcher=market_fetcher)
     dossier = build_trade_dossier(state, now)
     root = state.setdefault("evidence_contract", {})
@@ -359,6 +476,23 @@ def apply_contract(
         else "Evidence gate not satisfied: " + ", ".join(dossier["blocked_by"])
     )
     return state
+
+
+def blocked_error_dossier(error: str, now: str) -> dict[str, Any]:
+    return {
+        "contract_version": CONTRACT_VERSION,
+        "generated_at": now,
+        "model_version": None,
+        "capital_decision": "NO_TRADE",
+        "review_status": "BLOCKED",
+        "auto_promotion": False,
+        "paper_only": True,
+        "real_orders_enabled": False,
+        "gates": {"evidence_contract_healthy": False},
+        "blocked_by": ["evidence_contract_error"],
+        "error": error,
+        "warning": "Evidence evaluation failed; review eligibility invalidated fail-closed.",
+    }
 
 
 def apply_state_file(path: Path) -> dict[str, Any]:
@@ -386,9 +520,10 @@ def validate_contract(state: dict[str, Any]) -> None:
     scan = root.get("last_calibration_scan", {})
     if scan:
         assert int(scan.get("lookups", 0)) <= CALIBRATION_LOOKUPS_PER_TICK
-    for record in root.get("calibration_records", []):
-        assert record.get("paper_only") is True
-        assert _as_float(record.get("capital_impact")) == 0.0
+    for collection_name in ("forecast_archive", "calibration_records"):
+        for record in root.get(collection_name, []):
+            assert record.get("paper_only") is True
+            assert _as_float(record.get("capital_impact")) == 0.0
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -402,9 +537,9 @@ def main(argv: list[str] | None = None) -> int:
         "capital_decision": dossier["capital_decision"],
         "review_status": dossier["review_status"],
         "blocked_by": dossier["blocked_by"],
-        "calibration": dossier["calibration"],
-        "independence": dossier["independence"],
-        "calibration_scan": dossier["calibration_scan"],
+        "calibration": dossier.get("calibration"),
+        "independence": dossier.get("independence"),
+        "calibration_scan": dossier.get("calibration_scan"),
     }, ensure_ascii=False))
     return 0
 

@@ -14,11 +14,17 @@ spec.loader.exec_module(pd)
 
 
 class EvidenceDaemonIntegrationTests(unittest.TestCase):
-    def test_evidence_failure_keeps_no_trade(self):
+    def test_evidence_failure_keeps_no_trade_and_invalidates_stale_review(self):
         state = {
             "paper_only": True,
             "real_orders_enabled": False,
             "audit": [],
+            "evidence_contract": {
+                "trade_dossier": {
+                    "review_status": "REVIEW_ELIGIBLE",
+                    "capital_decision": "NO_TRADE",
+                }
+            },
         }
         original_apply = pd.evidence.apply_contract
         try:
@@ -29,6 +35,10 @@ class EvidenceDaemonIntegrationTests(unittest.TestCase):
         self.assertEqual(out["capital_decision"], "NO_TRADE")
         self.assertIn("EvidenceContractError", out["last_error"])
         self.assertEqual(out["audit"][-1]["event"], "EVIDENCE_CONTRACT_ERROR")
+        dossier = out["evidence_contract"]["trade_dossier"]
+        self.assertEqual(dossier["review_status"], "BLOCKED")
+        self.assertEqual(dossier["capital_decision"], "NO_TRADE")
+        self.assertIn("evidence_contract_error", dossier["blocked_by"])
 
     def test_heartbeat_exposes_evidence_decision(self):
         state = {

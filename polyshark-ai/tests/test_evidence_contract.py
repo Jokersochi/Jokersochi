@@ -84,6 +84,7 @@ class EvidenceContractTests(unittest.TestCase):
         self.assertAlmostEqual(records[0]["brier"], 0.09)
         self.assertEqual(records[0]["capital_impact"], 0.0)
         self.assertTrue(records[0]["paper_only"])
+        self.assertEqual(state["evidence_contract"]["forecast_archive"], [])
 
     def test_calibration_deduplicates_same_signal(self):
         state = self._state()
@@ -140,6 +141,7 @@ class EvidenceContractTests(unittest.TestCase):
                 {
                     "signal_id": f"cal-{index}",
                     "model_version": "fixture-v1",
+                    "market_id": f"cal-market-{index}",
                     "forecast_probability": 0.9 if index % 2 == 0 else 0.1,
                     "actual": 1 if index % 2 == 0 else 0,
                     "brier": 0.01,
@@ -158,6 +160,8 @@ class EvidenceContractTests(unittest.TestCase):
         self.assertEqual(dossier["review_status"], "REVIEW_ELIGIBLE")
         self.assertEqual(dossier["capital_decision"], "NO_TRADE")
         self.assertFalse(dossier["auto_promotion"])
+        self.assertTrue(dossier["independence"]["forward_24h"]["passed"])
+        self.assertTrue(dossier["independence"]["calibration_resolved"]["passed"])
         self.assertEqual(state["capital_decision"], "NO_TRADE")
 
     def test_non_paper_state_is_rejected(self):

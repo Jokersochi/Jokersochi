@@ -13,8 +13,8 @@
   "realized_pnl": -634.248613,
   "unrealized_pnl": 0.0,
   "fees_paid": 308.38584,
-  "ticks": 397,
-  "last_tick_at": "2026-10-09T00:23:20+00:00",
+  "ticks": 398,
+  "last_tick_at": "2026-10-09T06:22:54+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -11025,6 +11025,16 @@
       "fees_paid": 308.38584,
       "open_positions": 0,
       "closed_positions": 193
+    },
+    {
+      "ts": "2026-10-09T06:22:54+00:00",
+      "equity": 365.751387,
+      "cash": 365.751387,
+      "realized_pnl": -634.248613,
+      "unrealized_pnl": 0.0,
+      "fees_paid": 308.38584,
+      "open_positions": 0,
+      "closed_positions": 193
     }
   ],
   "shadow_challenger": {
@@ -13133,7 +13143,18 @@
         "liquidity": 161050.86,
         "volume_24h": 231048.64,
         "score": 0.16,
-        "horizon_results": {},
+        "horizon_results": {
+          "6": {
+            "evaluated_at": "2026-10-09T06:22:54+00:00",
+            "source": "clob_liquidation",
+            "exit_mid": 0.765,
+            "exit_spread": 0.01,
+            "net_liquidation": 94.060471,
+            "after_cost_pnl": -5.939529,
+            "after_cost_return": -0.05939529,
+            "profitable": false
+          }
+        },
         "status": "pending",
         "paper_only": true,
         "capital_impact": 0.0
@@ -13141,12 +13162,12 @@
     ],
     "summary": {
       "6": {
-        "n": 42,
-        "mean_return": -0.04297358,
-        "win_rate": 0.214286,
-        "profit_factor": 0.175393,
-        "ci95_lower": -0.0643228,
-        "ci95_upper": -0.02162436
+        "n": 43,
+        "mean_return": -0.04335548,
+        "win_rate": 0.209302,
+        "profit_factor": 0.17076,
+        "ci95_lower": -0.06421573,
+        "ci95_upper": -0.02249523
       },
       "24": {
         "n": 42,
@@ -13158,22 +13179,22 @@
       }
     },
     "verdict": "NO_EVIDENCE",
-    "updated_at": "2026-10-09T00:23:20+00:00",
+    "updated_at": "2026-10-09T06:22:54+00:00",
     "auto_promotion": false,
     "last_observation": {
-      "ts": "2026-10-09T00:23:20+00:00",
-      "candidates_seen": 1,
+      "ts": "2026-10-09T06:22:54+00:00",
+      "candidates_seen": 2,
       "deduplicated": 0,
-      "rejected_price": 1,
+      "rejected_price": 2,
       "rejected_spread": 0,
       "rejected_invalid_quote": 0,
       "added": 0
     },
     "observation_totals": {
-      "ticks": 71,
-      "candidates_seen": 106,
+      "ticks": 72,
+      "candidates_seen": 108,
       "deduplicated": 37,
-      "rejected_price": 23,
+      "rejected_price": 25,
       "rejected_spread": 2,
       "rejected_invalid_quote": 0,
       "added": 43
@@ -13813,20 +13834,20 @@
       }
     ],
     "last_calibration_scan": {
-      "ts": "2026-10-09T00:23:21+00:00",
+      "ts": "2026-10-09T06:22:55+00:00",
       "model_version": "risk-filtered-momentum-v1-forward-20260925",
       "archive_pending": 37,
-      "due": 8,
-      "lookups": 8,
+      "due": 0,
+      "lookups": 0,
       "lookup_limit": 25,
       "resolved_added": 0,
       "records_total": 6
     },
     "contract_version": "trade-dossier-v1-20261008",
-    "updated_at": "2026-10-09T00:23:21+00:00",
+    "updated_at": "2026-10-09T06:22:55+00:00",
     "trade_dossier": {
       "contract_version": "trade-dossier-v1-20261008",
-      "generated_at": "2026-10-09T00:23:21+00:00",
+      "generated_at": "2026-10-09T06:22:55+00:00",
       "model_version": "risk-filtered-momentum-v1-forward-20260925",
       "capital_decision": "NO_TRADE",
       "review_status": "BLOCKED",
@@ -13899,11 +13920,11 @@
         "legacy_capital_execution": false
       },
       "calibration_scan": {
-        "ts": "2026-10-09T00:23:21+00:00",
+        "ts": "2026-10-09T06:22:55+00:00",
         "model_version": "risk-filtered-momentum-v1-forward-20260925",
         "archive_pending": 37,
-        "due": 8,
-        "lookups": 8,
+        "due": 0,
+        "lookups": 0,
         "lookup_limit": 25,
         "resolved_added": 0,
         "records_total": 6

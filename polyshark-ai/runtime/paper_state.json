@@ -13,8 +13,8 @@
   "realized_pnl": -634.248613,
   "unrealized_pnl": 0.0,
   "fees_paid": 308.38584,
-  "ticks": 409,
-  "last_tick_at": "2026-10-11T13:24:21+00:00",
+  "ticks": 410,
+  "last_tick_at": "2026-10-11T18:12:23+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -11145,6 +11145,16 @@
       "fees_paid": 308.38584,
       "open_positions": 0,
       "closed_positions": 193
+    },
+    {
+      "ts": "2026-10-11T18:12:23+00:00",
+      "equity": 365.751387,
+      "cash": 365.751387,
+      "realized_pnl": -634.248613,
+      "unrealized_pnl": 0.0,
+      "fees_paid": 308.38584,
+      "open_positions": 0,
+      "closed_positions": 193
     }
   ],
   "shadow_challenger": {
@@ -13361,9 +13371,19 @@
             "after_cost_pnl": -2.17606,
             "after_cost_return": -0.0217606,
             "profitable": false
+          },
+          "24": {
+            "evaluated_at": "2026-10-11T18:12:23+00:00",
+            "source": "clob_liquidation",
+            "exit_mid": 0.785,
+            "exit_spread": 0.01,
+            "net_liquidation": 97.823938,
+            "after_cost_pnl": -2.17606,
+            "after_cost_return": -0.0217606,
+            "profitable": false
           }
         },
-        "status": "pending",
+        "status": "matured",
         "paper_only": true,
         "capital_impact": 0.0
       },
@@ -13456,19 +13476,19 @@
         "ci95_upper": -0.02386675
       },
       "24": {
-        "n": 44,
-        "mean_return": -0.01672824,
-        "win_rate": 0.272727,
-        "profit_factor": 0.824717,
-        "ci95_lower": -0.11243978,
-        "ci95_upper": 0.0789833
+        "n": 45,
+        "mean_return": -0.01684007,
+        "win_rate": 0.266667,
+        "profit_factor": 0.820466,
+        "ci95_lower": -0.11040077,
+        "ci95_upper": 0.07672063
       }
     },
     "verdict": "NO_EVIDENCE",
-    "updated_at": "2026-10-11T13:24:21+00:00",
+    "updated_at": "2026-10-11T18:12:23+00:00",
     "auto_promotion": false,
     "last_observation": {
-      "ts": "2026-10-11T13:24:21+00:00",
+      "ts": "2026-10-11T18:12:23+00:00",
       "candidates_seen": 0,
       "deduplicated": 0,
       "rejected_price": 0,
@@ -13477,7 +13497,7 @@
       "added": 0
     },
     "observation_totals": {
-      "ticks": 83,
+      "ticks": 84,
       "candidates_seen": 116,
       "deduplicated": 38,
       "rejected_price": 28,
@@ -14180,7 +14200,7 @@
       }
     ],
     "last_calibration_scan": {
-      "ts": "2026-10-11T13:24:22+00:00",
+      "ts": "2026-10-11T18:12:24+00:00",
       "model_version": "risk-filtered-momentum-v1-forward-20260925",
       "archive_pending": 41,
       "due": 0,
@@ -14190,10 +14210,10 @@
       "records_total": 6
     },
     "contract_version": "trade-dossier-v1-20261008",
-    "updated_at": "2026-10-11T13:24:22+00:00",
+    "updated_at": "2026-10-11T18:12:24+00:00",
     "trade_dossier": {
       "contract_version": "trade-dossier-v1-20261008",
-      "generated_at": "2026-10-11T13:24:22+00:00",
+      "generated_at": "2026-10-11T18:12:24+00:00",
       "model_version": "risk-filtered-momentum-v1-forward-20260925",
       "capital_decision": "NO_TRADE",
       "review_status": "BLOCKED",
@@ -14218,12 +14238,12 @@
       "forward_evidence": {
         "shadow_verdict": "NO_EVIDENCE",
         "stats_24h": {
-          "n": 44,
-          "mean_return": -0.01672824,
-          "win_rate": 0.272727,
-          "profit_factor": 0.824717,
-          "ci95_lower": -0.11243978,
-          "ci95_upper": 0.0789833
+          "n": 45,
+          "mean_return": -0.01684007,
+          "win_rate": 0.266667,
+          "profit_factor": 0.820466,
+          "ci95_lower": -0.11040077,
+          "ci95_upper": 0.07672063
         }
       },
       "calibration": {
@@ -14237,9 +14257,9 @@
       },
       "independence": {
         "forward_24h": {
-          "n": 44,
+          "n": 45,
           "unique_markets": 23,
-          "unique_market_ratio": 0.52272727,
+          "unique_market_ratio": 0.51111111,
           "min_unique_market_ratio": 0.8,
           "passed": false
         },
@@ -14266,7 +14286,7 @@
         "legacy_capital_execution": false
       },
       "calibration_scan": {
-        "ts": "2026-10-11T13:24:22+00:00",
+        "ts": "2026-10-11T18:12:24+00:00",
         "model_version": "risk-filtered-momentum-v1-forward-20260925",
         "archive_pending": 41,
         "due": 0,

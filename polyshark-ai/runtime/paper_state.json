@@ -13,8 +13,8 @@
   "realized_pnl": -634.248613,
   "unrealized_pnl": 0.0,
   "fees_paid": 308.38584,
-  "ticks": 429,
-  "last_tick_at": "2026-10-15T15:45:14+00:00",
+  "ticks": 430,
+  "last_tick_at": "2026-10-15T19:26:02+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -11345,6 +11345,16 @@
       "fees_paid": 308.38584,
       "open_positions": 0,
       "closed_positions": 193
+    },
+    {
+      "ts": "2026-10-15T19:26:02+00:00",
+      "equity": 365.751387,
+      "cash": 365.751387,
+      "realized_pnl": -634.248613,
+      "unrealized_pnl": 0.0,
+      "fees_paid": 308.38584,
+      "open_positions": 0,
+      "closed_positions": 193
     }
   ],
   "shadow_challenger": {
@@ -13811,6 +13821,62 @@
         "status": "pending",
         "paper_only": true,
         "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:5170739:NO:1792092362",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "5170739",
+        "question": "Will Bitcoin dip to $77,500 in October?",
+        "category": "Other",
+        "outcome": "NO",
+        "token_id": "107296114993852456879225680181902759867747119948269590573492859802799754303155",
+        "observed_at": "2026-10-15T19:26:02+00:00",
+        "end_date": "2026-11-01",
+        "entry_mid": 0.66,
+        "entry_spread": 0.02,
+        "entry_price": 0.67,
+        "shares": 146.83101952,
+        "gross_trade": 98.376783,
+        "entry_fee": 1.62322,
+        "cash_outlay": 100.000003,
+        "fee_rate": 0.05,
+        "momentum_24h": -0.125,
+        "momentum_6h": -0.225,
+        "liquidity": 58214.28,
+        "volume_24h": 219611.83,
+        "score": 0.27515,
+        "horizon_results": {},
+        "status": "pending",
+        "paper_only": true,
+        "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:2589812:YES:1792092362",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "2589812",
+        "question": "Will there be no change in Fed interest rates after the October 2026 meeting?",
+        "category": "Other",
+        "outcome": "YES",
+        "token_id": "111061902544814266207267295505639408607400625795891618462682726460921782993748",
+        "observed_at": "2026-10-15T19:26:02+00:00",
+        "end_date": "2026-10-29",
+        "entry_mid": 0.725,
+        "entry_spread": 0.01,
+        "entry_price": 0.73,
+        "shares": 135.16161951,
+        "gross_trade": 98.667982,
+        "entry_fee": 1.33202,
+        "cash_outlay": 100.000002,
+        "fee_rate": 0.05,
+        "momentum_24h": 0.04,
+        "momentum_6h": 0.01,
+        "liquidity": 207331.91,
+        "volume_24h": 1172120.7,
+        "score": 0.09,
+        "horizon_results": {},
+        "status": "pending",
+        "paper_only": true,
+        "capital_impact": 0.0
       }
     ],
     "summary": {
@@ -13832,25 +13898,25 @@
       }
     },
     "verdict": "NO_EVIDENCE",
-    "updated_at": "2026-10-15T15:45:14+00:00",
+    "updated_at": "2026-10-15T19:26:02+00:00",
     "auto_promotion": false,
     "last_observation": {
-      "ts": "2026-10-15T15:45:14+00:00",
-      "candidates_seen": 0,
+      "ts": "2026-10-15T19:26:02+00:00",
+      "candidates_seen": 2,
       "deduplicated": 0,
       "rejected_price": 0,
       "rejected_spread": 0,
       "rejected_invalid_quote": 0,
-      "added": 0
+      "added": 2
     },
     "observation_totals": {
-      "ticks": 103,
-      "candidates_seen": 126,
+      "ticks": 104,
+      "candidates_seen": 128,
       "deduplicated": 39,
       "rejected_price": 34,
       "rejected_spread": 2,
       "rejected_invalid_quote": 0,
-      "added": 50
+      "added": 52
     }
   },
   "capital_decision": "NO_TRADE",
@@ -14515,6 +14581,36 @@
         "next_resolution_check_at": "2026-10-28",
         "paper_only": true,
         "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:5170739:NO:1792092362",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "5170739",
+        "outcome": "NO",
+        "token_id": "107296114993852456879225680181902759867747119948269590573492859802799754303155",
+        "observed_at": "2026-10-15T19:26:02+00:00",
+        "end_date": "2026-11-01",
+        "forecast_probability": 0.66,
+        "archived_at": "2026-10-15T19:26:02+00:00",
+        "resolution_checks": 0,
+        "next_resolution_check_at": "2026-11-01",
+        "paper_only": true,
+        "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:2589812:YES:1792092362",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "2589812",
+        "outcome": "YES",
+        "token_id": "111061902544814266207267295505639408607400625795891618462682726460921782993748",
+        "observed_at": "2026-10-15T19:26:02+00:00",
+        "end_date": "2026-10-29",
+        "forecast_probability": 0.725,
+        "archived_at": "2026-10-15T19:26:02+00:00",
+        "resolution_checks": 0,
+        "next_resolution_check_at": "2026-10-29",
+        "paper_only": true,
+        "capital_impact": 0.0
       }
     ],
     "calibration_records": [
@@ -14592,9 +14688,9 @@
       }
     ],
     "last_calibration_scan": {
-      "ts": "2026-10-15T15:45:14+00:00",
+      "ts": "2026-10-15T19:26:02+00:00",
       "model_version": "risk-filtered-momentum-v1-forward-20260925",
-      "archive_pending": 44,
+      "archive_pending": 46,
       "due": 0,
       "lookups": 0,
       "lookup_limit": 25,
@@ -14602,10 +14698,10 @@
       "records_total": 6
     },
     "contract_version": "trade-dossier-v1-20261008",
-    "updated_at": "2026-10-15T15:45:14+00:00",
+    "updated_at": "2026-10-15T19:26:02+00:00",
     "trade_dossier": {
       "contract_version": "trade-dossier-v1-20261008",
-      "generated_at": "2026-10-15T15:45:14+00:00",
+      "generated_at": "2026-10-15T19:26:02+00:00",
       "model_version": "risk-filtered-momentum-v1-forward-20260925",
       "capital_decision": "NO_TRADE",
       "review_status": "BLOCKED",
@@ -14678,9 +14774,9 @@
         "legacy_capital_execution": false
       },
       "calibration_scan": {
-        "ts": "2026-10-15T15:45:14+00:00",
+        "ts": "2026-10-15T19:26:02+00:00",
         "model_version": "risk-filtered-momentum-v1-forward-20260925",
-        "archive_pending": 44,
+        "archive_pending": 46,
         "due": 0,
         "lookups": 0,
         "lookup_limit": 25,

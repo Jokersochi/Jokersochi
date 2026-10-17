@@ -13,8 +13,8 @@
   "realized_pnl": -634.248613,
   "unrealized_pnl": 0.0,
   "fees_paid": 308.38584,
-  "ticks": 439,
-  "last_tick_at": "2026-10-17T01:18:38+00:00",
+  "ticks": 440,
+  "last_tick_at": "2026-10-17T05:40:27+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -11445,6 +11445,16 @@
       "fees_paid": 308.38584,
       "open_positions": 0,
       "closed_positions": 193
+    },
+    {
+      "ts": "2026-10-17T05:40:27+00:00",
+      "equity": 365.751387,
+      "cash": 365.751387,
+      "realized_pnl": -634.248613,
+      "unrealized_pnl": 0.0,
+      "fees_paid": 308.38584,
+      "open_positions": 0,
+      "closed_positions": 193
     }
   ],
   "shadow_challenger": {
@@ -14102,8 +14112,46 @@
             "after_cost_pnl": -0.279667,
             "after_cost_return": -0.00279667,
             "profitable": false
+          },
+          "24": {
+            "evaluated_at": "2026-10-17T05:40:27+00:00",
+            "source": "clob_liquidation",
+            "exit_mid": 0.865,
+            "exit_spread": 0.01,
+            "net_liquidation": 99.720336,
+            "after_cost_pnl": -0.279667,
+            "after_cost_return": -0.00279667,
+            "profitable": false
           }
         },
+        "status": "matured",
+        "paper_only": true,
+        "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:682705:NO:1792215627",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "682705",
+        "question": "Will Benjamin Netanyahu be the next Prime Minister of Israel?",
+        "category": "Other",
+        "outcome": "NO",
+        "token_id": "54533569528927082430133047556849600511985191158927477533124630301934489498530",
+        "observed_at": "2026-10-17T05:40:27+00:00",
+        "end_date": "2026-10-28",
+        "entry_mid": 0.735,
+        "entry_spread": 0.01,
+        "entry_price": 0.74,
+        "shares": 133.40092313,
+        "gross_trade": 98.716683,
+        "entry_fee": 1.28332,
+        "cash_outlay": 100.000003,
+        "fee_rate": 0.05,
+        "momentum_24h": -0.04,
+        "momentum_6h": -0.03,
+        "liquidity": 364532.98,
+        "volume_24h": 177212.04,
+        "score": 0.1,
+        "horizon_results": {},
         "status": "pending",
         "paper_only": true,
         "capital_impact": 0.0
@@ -14119,34 +14167,34 @@
         "ci95_upper": -0.02324315
       },
       "24": {
-        "n": 53,
-        "mean_return": -0.02128035,
-        "win_rate": 0.245283,
-        "profit_factor": 0.762318,
-        "ci95_lower": -0.1011864,
-        "ci95_upper": 0.0586257
+        "n": 54,
+        "mean_return": -0.02093806,
+        "win_rate": 0.240741,
+        "profit_factor": 0.761869,
+        "ci95_lower": -0.09935327,
+        "ci95_upper": 0.05747716
       }
     },
     "verdict": "NO_EVIDENCE",
-    "updated_at": "2026-10-17T01:18:38+00:00",
+    "updated_at": "2026-10-17T05:40:27+00:00",
     "auto_promotion": false,
     "last_observation": {
-      "ts": "2026-10-17T01:18:38+00:00",
-      "candidates_seen": 0,
+      "ts": "2026-10-17T05:40:27+00:00",
+      "candidates_seen": 1,
       "deduplicated": 0,
       "rejected_price": 0,
       "rejected_spread": 0,
       "rejected_invalid_quote": 0,
-      "added": 0
+      "added": 1
     },
     "observation_totals": {
-      "ticks": 113,
-      "candidates_seen": 138,
+      "ticks": 114,
+      "candidates_seen": 139,
       "deduplicated": 44,
       "rejected_price": 37,
       "rejected_spread": 2,
       "rejected_invalid_quote": 0,
-      "added": 54
+      "added": 55
     }
   },
   "capital_decision": "NO_TRADE",
@@ -14871,6 +14919,21 @@
         "next_resolution_check_at": "2026-10-29",
         "paper_only": true,
         "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:682705:NO:1792215627",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "682705",
+        "outcome": "NO",
+        "token_id": "54533569528927082430133047556849600511985191158927477533124630301934489498530",
+        "observed_at": "2026-10-17T05:40:27+00:00",
+        "end_date": "2026-10-28",
+        "forecast_probability": 0.735,
+        "archived_at": "2026-10-17T05:40:28+00:00",
+        "resolution_checks": 0,
+        "next_resolution_check_at": "2026-10-28",
+        "paper_only": true,
+        "capital_impact": 0.0
       }
     ],
     "calibration_records": [
@@ -14948,9 +15011,9 @@
       }
     ],
     "last_calibration_scan": {
-      "ts": "2026-10-17T01:18:39+00:00",
+      "ts": "2026-10-17T05:40:28+00:00",
       "model_version": "risk-filtered-momentum-v1-forward-20260925",
-      "archive_pending": 48,
+      "archive_pending": 49,
       "due": 0,
       "lookups": 0,
       "lookup_limit": 25,
@@ -14958,10 +15021,10 @@
       "records_total": 6
     },
     "contract_version": "trade-dossier-v1-20261008",
-    "updated_at": "2026-10-17T01:18:39+00:00",
+    "updated_at": "2026-10-17T05:40:28+00:00",
     "trade_dossier": {
       "contract_version": "trade-dossier-v1-20261008",
-      "generated_at": "2026-10-17T01:18:39+00:00",
+      "generated_at": "2026-10-17T05:40:28+00:00",
       "model_version": "risk-filtered-momentum-v1-forward-20260925",
       "capital_decision": "NO_TRADE",
       "review_status": "BLOCKED",
@@ -14986,12 +15049,12 @@
       "forward_evidence": {
         "shadow_verdict": "NO_EVIDENCE",
         "stats_24h": {
-          "n": 53,
-          "mean_return": -0.02128035,
-          "win_rate": 0.245283,
-          "profit_factor": 0.762318,
-          "ci95_lower": -0.1011864,
-          "ci95_upper": 0.0586257
+          "n": 54,
+          "mean_return": -0.02093806,
+          "win_rate": 0.240741,
+          "profit_factor": 0.761869,
+          "ci95_lower": -0.09935327,
+          "ci95_upper": 0.05747716
         }
       },
       "calibration": {
@@ -15005,9 +15068,9 @@
       },
       "independence": {
         "forward_24h": {
-          "n": 53,
+          "n": 54,
           "unique_markets": 27,
-          "unique_market_ratio": 0.50943396,
+          "unique_market_ratio": 0.5,
           "min_unique_market_ratio": 0.8,
           "passed": false
         },
@@ -15034,9 +15097,9 @@
         "legacy_capital_execution": false
       },
       "calibration_scan": {
-        "ts": "2026-10-17T01:18:39+00:00",
+        "ts": "2026-10-17T05:40:28+00:00",
         "model_version": "risk-filtered-momentum-v1-forward-20260925",
-        "archive_pending": 48,
+        "archive_pending": 49,
         "due": 0,
         "lookups": 0,
         "lookup_limit": 25,

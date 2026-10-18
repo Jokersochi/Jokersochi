@@ -13,8 +13,8 @@
   "realized_pnl": -634.248613,
   "unrealized_pnl": 0.0,
   "fees_paid": 308.38584,
-  "ticks": 449,
-  "last_tick_at": "2026-10-18T09:15:44+00:00",
+  "ticks": 450,
+  "last_tick_at": "2026-10-18T13:20:44+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -11545,6 +11545,16 @@
       "fees_paid": 308.38584,
       "open_positions": 0,
       "closed_positions": 193
+    },
+    {
+      "ts": "2026-10-18T13:20:44+00:00",
+      "equity": 365.751387,
+      "cash": 365.751387,
+      "realized_pnl": -634.248613,
+      "unrealized_pnl": 0.0,
+      "fees_paid": 308.38584,
+      "open_positions": 0,
+      "closed_positions": 193
     }
   ],
   "shadow_challenger": {
@@ -14368,7 +14378,18 @@
         "liquidity": 443691.37,
         "volume_24h": 103824.84,
         "score": 0.09,
-        "horizon_results": {},
+        "horizon_results": {
+          "6": {
+            "evaluated_at": "2026-10-18T13:20:44+00:00",
+            "source": "clob_liquidation",
+            "exit_mid": 0.785,
+            "exit_spread": 0.01,
+            "net_liquidation": 97.823938,
+            "after_cost_pnl": -2.17606,
+            "after_cost_return": -0.0217606,
+            "profitable": false
+          }
+        },
         "status": "pending",
         "paper_only": true,
         "capital_impact": 0.0
@@ -14376,12 +14397,12 @@
     ],
     "summary": {
       "6": {
-        "n": 57,
-        "mean_return": -0.04092531,
-        "win_rate": 0.175439,
-        "profit_factor": 0.179454,
-        "ci95_lower": -0.05805779,
-        "ci95_upper": -0.02379282
+        "n": 58,
+        "mean_return": -0.04059488,
+        "win_rate": 0.172414,
+        "profit_factor": 0.178091,
+        "ci95_lower": -0.05744183,
+        "ci95_upper": -0.02374792
       },
       "24": {
         "n": 55,
@@ -14393,10 +14414,10 @@
       }
     },
     "verdict": "NO_EVIDENCE",
-    "updated_at": "2026-10-18T09:15:44+00:00",
+    "updated_at": "2026-10-18T13:20:44+00:00",
     "auto_promotion": false,
     "last_observation": {
-      "ts": "2026-10-18T09:15:44+00:00",
+      "ts": "2026-10-18T13:20:44+00:00",
       "candidates_seen": 0,
       "deduplicated": 0,
       "rejected_price": 0,
@@ -14405,7 +14426,7 @@
       "added": 0
     },
     "observation_totals": {
-      "ticks": 123,
+      "ticks": 124,
       "candidates_seen": 146,
       "deduplicated": 47,
       "rejected_price": 38,
@@ -14667,8 +14688,8 @@
         "end_date": "2026-10-05",
         "forecast_probability": 0.624,
         "archived_at": "2026-10-07T23:23:44+00:00",
-        "resolution_checks": 13,
-        "next_resolution_check_at": "2026-10-18T09:40:04+00:00",
+        "resolution_checks": 14,
+        "next_resolution_check_at": "2026-10-19T13:20:44+00:00",
         "paper_only": true,
         "capital_impact": 0.0
       },
@@ -14697,8 +14718,8 @@
         "end_date": "2026-10-05",
         "forecast_probability": 0.635,
         "archived_at": "2026-10-07T23:23:44+00:00",
-        "resolution_checks": 13,
-        "next_resolution_check_at": "2026-10-18T09:40:04+00:00",
+        "resolution_checks": 14,
+        "next_resolution_check_at": "2026-10-19T13:20:44+00:00",
         "paper_only": true,
         "capital_impact": 0.0
       },
@@ -14772,8 +14793,8 @@
         "end_date": "2026-10-05",
         "forecast_probability": 0.445,
         "archived_at": "2026-10-07T23:23:44+00:00",
-        "resolution_checks": 13,
-        "next_resolution_check_at": "2026-10-18T09:40:04+00:00",
+        "resolution_checks": 14,
+        "next_resolution_check_at": "2026-10-19T13:20:44+00:00",
         "paper_only": true,
         "capital_impact": 0.0
       },
@@ -14787,8 +14808,8 @@
         "end_date": "2026-10-05",
         "forecast_probability": 0.4435,
         "archived_at": "2026-10-07T23:23:44+00:00",
-        "resolution_checks": 13,
-        "next_resolution_check_at": "2026-10-18T09:40:04+00:00",
+        "resolution_checks": 14,
+        "next_resolution_check_at": "2026-10-19T13:20:44+00:00",
         "paper_only": true,
         "capital_impact": 0.0
       },
@@ -14832,8 +14853,8 @@
         "end_date": "2026-10-05",
         "forecast_probability": 0.585,
         "archived_at": "2026-10-07T23:23:44+00:00",
-        "resolution_checks": 13,
-        "next_resolution_check_at": "2026-10-18T09:40:04+00:00",
+        "resolution_checks": 14,
+        "next_resolution_check_at": "2026-10-19T13:20:44+00:00",
         "paper_only": true,
         "capital_impact": 0.0
       },
@@ -14847,8 +14868,8 @@
         "end_date": "2026-10-05",
         "forecast_probability": 0.6145,
         "archived_at": "2026-10-07T23:23:44+00:00",
-        "resolution_checks": 13,
-        "next_resolution_check_at": "2026-10-18T09:40:04+00:00",
+        "resolution_checks": 14,
+        "next_resolution_check_at": "2026-10-19T13:20:44+00:00",
         "paper_only": true,
         "capital_impact": 0.0
       },
@@ -14892,8 +14913,8 @@
         "end_date": "2026-10-05",
         "forecast_probability": 0.845,
         "archived_at": "2026-10-07T23:23:44+00:00",
-        "resolution_checks": 13,
-        "next_resolution_check_at": "2026-10-18T09:40:04+00:00",
+        "resolution_checks": 14,
+        "next_resolution_check_at": "2026-10-19T13:20:44+00:00",
         "paper_only": true,
         "capital_impact": 0.0
       },
@@ -14907,8 +14928,8 @@
         "end_date": "2026-10-05",
         "forecast_probability": 0.8365,
         "archived_at": "2026-10-07T23:23:44+00:00",
-        "resolution_checks": 13,
-        "next_resolution_check_at": "2026-10-18T09:40:04+00:00",
+        "resolution_checks": 14,
+        "next_resolution_check_at": "2026-10-19T13:20:44+00:00",
         "paper_only": true,
         "capital_impact": 0.0
       },
@@ -15273,20 +15294,20 @@
       }
     ],
     "last_calibration_scan": {
-      "ts": "2026-10-18T09:15:45+00:00",
+      "ts": "2026-10-18T13:20:44+00:00",
       "model_version": "risk-filtered-momentum-v1-forward-20260925",
       "archive_pending": 52,
-      "due": 0,
-      "lookups": 0,
+      "due": 8,
+      "lookups": 8,
       "lookup_limit": 25,
       "resolved_added": 0,
       "records_total": 6
     },
     "contract_version": "trade-dossier-v1-20261008",
-    "updated_at": "2026-10-18T09:15:45+00:00",
+    "updated_at": "2026-10-18T13:20:44+00:00",
     "trade_dossier": {
       "contract_version": "trade-dossier-v1-20261008",
-      "generated_at": "2026-10-18T09:15:45+00:00",
+      "generated_at": "2026-10-18T13:20:44+00:00",
       "model_version": "risk-filtered-momentum-v1-forward-20260925",
       "capital_decision": "NO_TRADE",
       "review_status": "BLOCKED",
@@ -15359,11 +15380,11 @@
         "legacy_capital_execution": false
       },
       "calibration_scan": {
-        "ts": "2026-10-18T09:15:45+00:00",
+        "ts": "2026-10-18T13:20:44+00:00",
         "model_version": "risk-filtered-momentum-v1-forward-20260925",
         "archive_pending": 52,
-        "due": 0,
-        "lookups": 0,
+        "due": 8,
+        "lookups": 8,
         "lookup_limit": 25,
         "resolved_added": 0,
         "records_total": 6

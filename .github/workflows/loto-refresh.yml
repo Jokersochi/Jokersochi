@@ -156,7 +156,7 @@ jobs:
       - name: Run one live-quote paper tick
         env:
           PAPER_STARTING_EQUITY: "1000"
-          PAPER_TARGET_EQUITY: "2000"
+          PAPER_TARGET_EQUITY: "1000000000"
           PAPER_BANKRUPT_EQUITY: "0"
           PAPER_MAX_POSITION_PCT: "0.05"
           PAPER_MAX_OPEN_POSITIONS: "8"

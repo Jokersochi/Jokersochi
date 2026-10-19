@@ -13,8 +13,8 @@
   "realized_pnl": -634.248613,
   "unrealized_pnl": 0.0,
   "fees_paid": 308.38584,
-  "ticks": 457,
-  "last_tick_at": "2026-10-19T06:06:34+00:00",
+  "ticks": 458,
+  "last_tick_at": "2026-10-19T07:50:26+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -11625,6 +11625,16 @@
       "fees_paid": 308.38584,
       "open_positions": 0,
       "closed_positions": 193
+    },
+    {
+      "ts": "2026-10-19T07:50:26+00:00",
+      "equity": 365.751387,
+      "cash": 365.751387,
+      "realized_pnl": -634.248613,
+      "unrealized_pnl": 0.0,
+      "fees_paid": 308.38584,
+      "open_positions": 0,
+      "closed_positions": 193
     }
   ],
   "shadow_challenger": {
@@ -14493,6 +14503,34 @@
         "status": "matured",
         "paper_only": true,
         "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:4640849:NO:1792396226",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "4640849",
+        "question": "Perim Island no longer under Houthi control by December 31?",
+        "category": "Other",
+        "outcome": "NO",
+        "token_id": "62643595743509401117305703496524916720166374943642440986343786223248911828837",
+        "observed_at": "2026-10-19T07:50:26+00:00",
+        "end_date": "2027-01-01",
+        "entry_mid": 0.71,
+        "entry_spread": 0.02,
+        "entry_price": 0.72,
+        "shares": 136.97129082,
+        "gross_trade": 98.619329,
+        "entry_fee": 1.38067,
+        "cash_outlay": 99.999999,
+        "fee_rate": 0.05,
+        "momentum_24h": -0.03,
+        "momentum_6h": -0.01,
+        "liquidity": 35824.9,
+        "volume_24h": 91592.38,
+        "score": 0.070542,
+        "horizon_results": {},
+        "status": "pending",
+        "paper_only": true,
+        "capital_impact": 0.0
       }
     ],
     "summary": {
@@ -14514,25 +14552,25 @@
       }
     },
     "verdict": "NO_EVIDENCE",
-    "updated_at": "2026-10-19T06:06:34+00:00",
+    "updated_at": "2026-10-19T07:50:26+00:00",
     "auto_promotion": false,
     "last_observation": {
-      "ts": "2026-10-19T06:06:34+00:00",
-      "candidates_seen": 1,
+      "ts": "2026-10-19T07:50:26+00:00",
+      "candidates_seen": 2,
       "deduplicated": 0,
       "rejected_price": 1,
       "rejected_spread": 0,
       "rejected_invalid_quote": 0,
-      "added": 0
+      "added": 1
     },
     "observation_totals": {
-      "ticks": 131,
-      "candidates_seen": 152,
+      "ticks": 132,
+      "candidates_seen": 154,
       "deduplicated": 47,
-      "rejected_price": 44,
+      "rejected_price": 45,
       "rejected_spread": 2,
       "rejected_invalid_quote": 0,
-      "added": 58
+      "added": 59
     }
   },
   "capital_decision": "NO_TRADE",

@@ -13,8 +13,8 @@
   "realized_pnl": -634.248613,
   "unrealized_pnl": 0.0,
   "fees_paid": 308.38584,
-  "ticks": 461,
-  "last_tick_at": "2026-10-19T15:41:02+00:00",
+  "ticks": 462,
+  "last_tick_at": "2026-10-19T19:10:39+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -11665,6 +11665,16 @@
       "fees_paid": 308.38584,
       "open_positions": 0,
       "closed_positions": 193
+    },
+    {
+      "ts": "2026-10-19T19:10:39+00:00",
+      "equity": 365.751387,
+      "cash": 365.751387,
+      "realized_pnl": -634.248613,
+      "unrealized_pnl": 0.0,
+      "fees_paid": 308.38584,
+      "open_positions": 0,
+      "closed_positions": 193
     }
   ],
   "shadow_challenger": {
@@ -14596,7 +14606,18 @@
         "liquidity": 159030.63,
         "volume_24h": 161173.17,
         "score": 0.1215,
-        "horizon_results": {},
+        "horizon_results": {
+          "6": {
+            "evaluated_at": "2026-10-19T19:10:39+00:00",
+            "source": "clob_liquidation",
+            "exit_mid": 0.3765,
+            "exit_spread": 0.007,
+            "net_liquidation": 86.634105,
+            "after_cost_pnl": -13.365894,
+            "after_cost_return": -0.13365894,
+            "profitable": false
+          }
+        },
         "status": "pending",
         "paper_only": true,
         "capital_impact": 0.0
@@ -14624,7 +14645,18 @@
         "liquidity": 35314.67,
         "volume_24h": 141749.62,
         "score": 0.08798,
-        "horizon_results": {},
+        "horizon_results": {
+          "6": {
+            "evaluated_at": "2026-10-19T19:10:39+00:00",
+            "source": "clob_liquidation",
+            "exit_mid": 0.775,
+            "exit_spread": 0.01,
+            "net_liquidation": 90.931296,
+            "after_cost_pnl": -9.068708,
+            "after_cost_return": -0.09068707,
+            "profitable": false
+          }
+        },
         "status": "pending",
         "paper_only": true,
         "capital_impact": 0.0
@@ -14656,16 +14688,44 @@
         "status": "pending",
         "paper_only": true,
         "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:608545:NO:1792437039",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "608545",
+        "question": "Will Lamine Yamal win the 2026 Ballon d'Or?",
+        "category": "Other",
+        "outcome": "NO",
+        "token_id": "115364229170068359509280114761107502298430910856477421813089992309112580316620",
+        "observed_at": "2026-10-19T19:10:39+00:00",
+        "end_date": "2027-01-01",
+        "entry_mid": 0.7675,
+        "entry_spread": 0.001,
+        "entry_price": 0.768,
+        "shares": 128.71523659,
+        "gross_trade": 98.853302,
+        "entry_fee": 1.1467,
+        "cash_outlay": 100.000002,
+        "fee_rate": 0.05,
+        "momentum_24h": -0.032,
+        "momentum_6h": -0.016,
+        "liquidity": 123178.9,
+        "volume_24h": 125544.59,
+        "score": 0.0895,
+        "horizon_results": {},
+        "status": "pending",
+        "paper_only": true,
+        "capital_impact": 0.0
       }
     ],
     "summary": {
       "6": {
-        "n": 59,
-        "mean_return": -0.040612,
-        "win_rate": 0.169492,
-        "profit_factor": 0.175542,
-        "ci95_lower": -0.05717099,
-        "ci95_upper": -0.02405302
+        "n": 61,
+        "mean_return": -0.04295826,
+        "win_rate": 0.163934,
+        "profit_factor": 0.162962,
+        "ci95_lower": -0.05932091,
+        "ci95_upper": -0.02659561
       },
       "24": {
         "n": 58,
@@ -14677,25 +14737,25 @@
       }
     },
     "verdict": "NO_EVIDENCE",
-    "updated_at": "2026-10-19T15:41:02+00:00",
+    "updated_at": "2026-10-19T19:10:39+00:00",
     "auto_promotion": false,
     "last_observation": {
-      "ts": "2026-10-19T15:41:02+00:00",
-      "candidates_seen": 3,
-      "deduplicated": 2,
-      "rejected_price": 0,
+      "ts": "2026-10-19T19:10:39+00:00",
+      "candidates_seen": 2,
+      "deduplicated": 0,
+      "rejected_price": 1,
       "rejected_spread": 0,
       "rejected_invalid_quote": 0,
       "added": 1
     },
     "observation_totals": {
-      "ticks": 135,
-      "candidates_seen": 160,
+      "ticks": 136,
+      "candidates_seen": 162,
       "deduplicated": 50,
-      "rejected_price": 45,
+      "rejected_price": 46,
       "rejected_spread": 2,
       "rejected_invalid_quote": 0,
-      "added": 62
+      "added": 63
     }
   },
   "capital_decision": "NO_TRADE",
@@ -14951,8 +15011,8 @@
         "end_date": "2026-10-05",
         "forecast_probability": 0.624,
         "archived_at": "2026-10-07T23:23:44+00:00",
-        "resolution_checks": 14,
-        "next_resolution_check_at": "2026-10-19T13:20:44+00:00",
+        "resolution_checks": 15,
+        "next_resolution_check_at": "2026-10-20T19:10:40+00:00",
         "paper_only": true,
         "capital_impact": 0.0
       },
@@ -14981,8 +15041,8 @@
         "end_date": "2026-10-05",
         "forecast_probability": 0.635,
         "archived_at": "2026-10-07T23:23:44+00:00",
-        "resolution_checks": 14,
-        "next_resolution_check_at": "2026-10-19T13:20:44+00:00",
+        "resolution_checks": 15,
+        "next_resolution_check_at": "2026-10-20T19:10:40+00:00",
         "paper_only": true,
         "capital_impact": 0.0
       },
@@ -15056,8 +15116,8 @@
         "end_date": "2026-10-05",
         "forecast_probability": 0.445,
         "archived_at": "2026-10-07T23:23:44+00:00",
-        "resolution_checks": 14,
-        "next_resolution_check_at": "2026-10-19T13:20:44+00:00",
+        "resolution_checks": 15,
+        "next_resolution_check_at": "2026-10-20T19:10:40+00:00",
         "paper_only": true,
         "capital_impact": 0.0
       },
@@ -15071,8 +15131,8 @@
         "end_date": "2026-10-05",
         "forecast_probability": 0.4435,
         "archived_at": "2026-10-07T23:23:44+00:00",
-        "resolution_checks": 14,
-        "next_resolution_check_at": "2026-10-19T13:20:44+00:00",
+        "resolution_checks": 15,
+        "next_resolution_check_at": "2026-10-20T19:10:40+00:00",
         "paper_only": true,
         "capital_impact": 0.0
       },
@@ -15116,8 +15176,8 @@
         "end_date": "2026-10-05",
         "forecast_probability": 0.585,
         "archived_at": "2026-10-07T23:23:44+00:00",
-        "resolution_checks": 14,
-        "next_resolution_check_at": "2026-10-19T13:20:44+00:00",
+        "resolution_checks": 15,
+        "next_resolution_check_at": "2026-10-20T19:10:40+00:00",
         "paper_only": true,
         "capital_impact": 0.0
       },
@@ -15131,8 +15191,8 @@
         "end_date": "2026-10-05",
         "forecast_probability": 0.6145,
         "archived_at": "2026-10-07T23:23:44+00:00",
-        "resolution_checks": 14,
-        "next_resolution_check_at": "2026-10-19T13:20:44+00:00",
+        "resolution_checks": 15,
+        "next_resolution_check_at": "2026-10-20T19:10:40+00:00",
         "paper_only": true,
         "capital_impact": 0.0
       },
@@ -15176,8 +15236,8 @@
         "end_date": "2026-10-05",
         "forecast_probability": 0.845,
         "archived_at": "2026-10-07T23:23:44+00:00",
-        "resolution_checks": 14,
-        "next_resolution_check_at": "2026-10-19T13:20:44+00:00",
+        "resolution_checks": 15,
+        "next_resolution_check_at": "2026-10-20T19:10:40+00:00",
         "paper_only": true,
         "capital_impact": 0.0
       },
@@ -15191,8 +15251,8 @@
         "end_date": "2026-10-05",
         "forecast_probability": 0.8365,
         "archived_at": "2026-10-07T23:23:44+00:00",
-        "resolution_checks": 14,
-        "next_resolution_check_at": "2026-10-19T13:20:44+00:00",
+        "resolution_checks": 15,
+        "next_resolution_check_at": "2026-10-20T19:10:40+00:00",
         "paper_only": true,
         "capital_impact": 0.0
       },
@@ -15525,6 +15585,36 @@
         "next_resolution_check_at": "2026-11-04",
         "paper_only": true,
         "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:4641065:YES:1792424462",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "4641065",
+        "outcome": "YES",
+        "token_id": "67102598924726349989742049657609063097299442010642912942032681022413402597017",
+        "observed_at": "2026-10-19T15:41:02+00:00",
+        "end_date": "2026-10-31",
+        "forecast_probability": 0.845,
+        "archived_at": "2026-10-19T19:10:39+00:00",
+        "resolution_checks": 0,
+        "next_resolution_check_at": "2026-10-31",
+        "paper_only": true,
+        "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:608545:NO:1792437039",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "608545",
+        "outcome": "NO",
+        "token_id": "115364229170068359509280114761107502298430910856477421813089992309112580316620",
+        "observed_at": "2026-10-19T19:10:39+00:00",
+        "end_date": "2027-01-01",
+        "forecast_probability": 0.7675,
+        "archived_at": "2026-10-19T19:10:40+00:00",
+        "resolution_checks": 0,
+        "next_resolution_check_at": "2027-01-01",
+        "paper_only": true,
+        "capital_impact": 0.0
       }
     ],
     "calibration_records": [
@@ -15602,20 +15692,20 @@
       }
     ],
     "last_calibration_scan": {
-      "ts": "2026-10-19T12:59:55+00:00",
+      "ts": "2026-10-19T19:10:40+00:00",
       "model_version": "risk-filtered-momentum-v1-forward-20260925",
-      "archive_pending": 55,
-      "due": 0,
-      "lookups": 0,
+      "archive_pending": 57,
+      "due": 8,
+      "lookups": 8,
       "lookup_limit": 25,
       "resolved_added": 0,
       "records_total": 6
     },
     "contract_version": "trade-dossier-v1-20261008",
-    "updated_at": "2026-10-19T12:59:55+00:00",
+    "updated_at": "2026-10-19T19:10:40+00:00",
     "trade_dossier": {
       "contract_version": "trade-dossier-v1-20261008",
-      "generated_at": "2026-10-19T12:59:55+00:00",
+      "generated_at": "2026-10-19T19:10:40+00:00",
       "model_version": "risk-filtered-momentum-v1-forward-20260925",
       "capital_decision": "NO_TRADE",
       "review_status": "BLOCKED",
@@ -15688,11 +15778,11 @@
         "legacy_capital_execution": false
       },
       "calibration_scan": {
-        "ts": "2026-10-19T12:59:55+00:00",
+        "ts": "2026-10-19T19:10:40+00:00",
         "model_version": "risk-filtered-momentum-v1-forward-20260925",
-        "archive_pending": 55,
-        "due": 0,
-        "lookups": 0,
+        "archive_pending": 57,
+        "due": 8,
+        "lookups": 8,
         "lookup_limit": 25,
         "resolved_added": 0,
         "records_total": 6

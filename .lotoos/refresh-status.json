@@ -2,10 +2,10 @@
   "ok": true,
   "source": "official",
   "mode": "incremental",
-  "count": 15861,
+  "count": 15868,
   "first": 1,
-  "last": 15861,
-  "previousLast": 15852,
+  "last": 15868,
+  "previousLast": 15861,
   "continuous": true,
   "passes": 1,
   "recoveredTransientGap": false

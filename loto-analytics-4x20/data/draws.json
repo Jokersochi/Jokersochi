@@ -1,11 +1,11 @@
 {
   "source": "official",
-  "retrievedAt": "2026-10-20T17:11:02.351Z",
-  "count": 15883,
+  "retrievedAt": "2026-10-20T20:37:29.204Z",
+  "count": 15887,
   "first": 1,
-  "last": 15883,
+  "last": 15887,
   "quality": {
-    "duplicates": 92,
+    "duplicates": 94,
     "gaps": [],
     "continuous": true
   },
@@ -285902,6 +285902,78 @@
         7
       ],
       "sourceUrl": "https://www.stoloto.ru/4x20/archive/15883",
+      "validationStatus": "verified"
+    },
+    {
+      "number": 15884,
+      "date": "2026-10-20T20:37:30+0300",
+      "fieldA": [
+        6,
+        8,
+        19,
+        1
+      ],
+      "fieldB": [
+        17,
+        4,
+        2,
+        6
+      ],
+      "sourceUrl": "https://www.stoloto.ru/4x20/archive/15884",
+      "validationStatus": "verified"
+    },
+    {
+      "number": 15885,
+      "date": "2026-10-20T21:07:30+0300",
+      "fieldA": [
+        5,
+        18,
+        10,
+        6
+      ],
+      "fieldB": [
+        10,
+        12,
+        9,
+        1
+      ],
+      "sourceUrl": "https://www.stoloto.ru/4x20/archive/15885",
+      "validationStatus": "verified"
+    },
+    {
+      "number": 15886,
+      "date": "2026-10-20T21:37:30+0300",
+      "fieldA": [
+        1,
+        7,
+        17,
+        16
+      ],
+      "fieldB": [
+        14,
+        3,
+        17,
+        9
+      ],
+      "sourceUrl": "https://www.stoloto.ru/4x20/archive/15886",
+      "validationStatus": "verified"
+    },
+    {
+      "number": 15887,
+      "date": "2026-10-20T22:00:00+0300",
+      "fieldA": [
+        17,
+        4,
+        16,
+        15
+      ],
+      "fieldB": [
+        4,
+        16,
+        12,
+        9
+      ],
+      "sourceUrl": "https://www.stoloto.ru/4x20/archive/15887",
       "validationStatus": "verified"
     }
   ]

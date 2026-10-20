@@ -13,8 +13,8 @@
   "realized_pnl": -634.248613,
   "unrealized_pnl": 0.0,
   "fees_paid": 308.38584,
-  "ticks": 474,
-  "last_tick_at": "2026-10-20T19:38:13+00:00",
+  "ticks": 475,
+  "last_tick_at": "2026-10-20T20:38:09+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -11795,6 +11795,16 @@
       "fees_paid": 308.38584,
       "open_positions": 0,
       "closed_positions": 193
+    },
+    {
+      "ts": "2026-10-20T20:38:09+00:00",
+      "equity": 365.751387,
+      "cash": 365.751387,
+      "realized_pnl": -634.248613,
+      "unrealized_pnl": 0.0,
+      "fees_paid": 308.38584,
+      "open_positions": 0,
+      "closed_positions": 193
     }
   ],
   "shadow_challenger": {
@@ -14936,6 +14946,34 @@
         "status": "pending",
         "paper_only": true,
         "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:608547:YES:1792528689",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "608547",
+        "question": "Will Harry Kane win the 2026 Ballon d'Or?",
+        "category": "Other",
+        "outcome": "YES",
+        "token_id": "72710166409980712002774407052535905861151156175854323762835102340552522606004",
+        "observed_at": "2026-10-20T20:38:09+00:00",
+        "end_date": "2027-01-01",
+        "entry_mid": 0.731,
+        "entry_spread": 0.006,
+        "entry_price": 0.734,
+        "shares": 134.45157605,
+        "gross_trade": 98.687457,
+        "entry_fee": 1.31254,
+        "cash_outlay": 99.999997,
+        "fee_rate": 0.05,
+        "momentum_24h": 0.045,
+        "momentum_6h": 0.0175,
+        "liquidity": 118328.94,
+        "volume_24h": 144315.35,
+        "score": 0.10075,
+        "horizon_results": {},
+        "status": "pending",
+        "paper_only": true,
+        "capital_impact": 0.0
       }
     ],
     "summary": {
@@ -14957,25 +14995,25 @@
       }
     },
     "verdict": "NO_EVIDENCE",
-    "updated_at": "2026-10-20T19:38:13+00:00",
+    "updated_at": "2026-10-20T20:38:09+00:00",
     "auto_promotion": false,
     "last_observation": {
-      "ts": "2026-10-20T19:38:13+00:00",
+      "ts": "2026-10-20T20:38:09+00:00",
       "candidates_seen": 1,
-      "deduplicated": 1,
+      "deduplicated": 0,
       "rejected_price": 0,
       "rejected_spread": 0,
       "rejected_invalid_quote": 0,
-      "added": 0
+      "added": 1
     },
     "observation_totals": {
-      "ticks": 148,
-      "candidates_seen": 171,
+      "ticks": 149,
+      "candidates_seen": 172,
       "deduplicated": 54,
       "rejected_price": 50,
       "rejected_spread": 2,
       "rejected_invalid_quote": 0,
-      "added": 64
+      "added": 65
     }
   },
   "capital_decision": "NO_TRADE",

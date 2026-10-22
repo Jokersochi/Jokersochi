@@ -13,8 +13,8 @@
   "realized_pnl": -634.248613,
   "unrealized_pnl": 0.0,
   "fees_paid": 308.38584,
-  "ticks": 499,
-  "last_tick_at": "2026-10-22T22:31:52+00:00",
+  "ticks": 500,
+  "last_tick_at": "2026-10-22T23:25:23+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -12045,6 +12045,16 @@
       "fees_paid": 308.38584,
       "open_positions": 0,
       "closed_positions": 193
+    },
+    {
+      "ts": "2026-10-22T23:25:23+00:00",
+      "equity": 365.751387,
+      "cash": 365.751387,
+      "realized_pnl": -634.248613,
+      "unrealized_pnl": 0.0,
+      "fees_paid": 308.38584,
+      "open_positions": 0,
+      "closed_positions": 193
     }
   ],
   "shadow_challenger": {
@@ -15339,9 +15349,19 @@
             "after_cost_pnl": -4.73897,
             "after_cost_return": -0.0473897,
             "profitable": false
+          },
+          "24": {
+            "evaluated_at": "2026-10-22T23:25:23+00:00",
+            "source": "clob_liquidation",
+            "exit_mid": 0.685,
+            "exit_spread": 0.01,
+            "net_liquidation": 98.247573,
+            "after_cost_pnl": -1.75243,
+            "after_cost_return": -0.0175243,
+            "profitable": false
           }
         },
-        "status": "pending",
+        "status": "matured",
         "paper_only": true,
         "capital_impact": 0.0
       },
@@ -15467,6 +15487,34 @@
         "status": "pending",
         "paper_only": true,
         "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:562828:YES:1792711523",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "562828",
+        "question": "2026 Balance of Power: D Senate, D House",
+        "category": "Other",
+        "outcome": "YES",
+        "token_id": "34722410608062854697106861099776685947172185964394483545370684749662285977831",
+        "observed_at": "2026-10-22T23:25:23+00:00",
+        "end_date": "2026-11-04",
+        "entry_mid": 0.685,
+        "entry_spread": 0.01,
+        "entry_price": 0.69,
+        "shares": 142.71544681,
+        "gross_trade": 98.473658,
+        "entry_fee": 1.52634,
+        "cash_outlay": 99.999998,
+        "fee_rate": 0.05,
+        "momentum_24h": 0.03,
+        "momentum_6h": 0.02,
+        "liquidity": 3463838.53,
+        "volume_24h": 583545.6,
+        "score": 0.085,
+        "horizon_results": {},
+        "status": "pending",
+        "paper_only": true,
+        "capital_impact": 0.0
       }
     ],
     "summary": {
@@ -15479,34 +15527,34 @@
         "ci95_upper": -0.02729472
       },
       "24": {
-        "n": 66,
-        "mean_return": -0.02277288,
-        "win_rate": 0.242424,
-        "profit_factor": 0.711411,
-        "ci95_lower": -0.08699882,
-        "ci95_upper": 0.04145306
+        "n": 67,
+        "mean_return": -0.02269454,
+        "win_rate": 0.238806,
+        "profit_factor": 0.709025,
+        "ci95_lower": -0.08595481,
+        "ci95_upper": 0.04056573
       }
     },
     "verdict": "NO_EVIDENCE",
-    "updated_at": "2026-10-22T22:31:52+00:00",
+    "updated_at": "2026-10-22T23:25:23+00:00",
     "auto_promotion": false,
     "last_observation": {
-      "ts": "2026-10-22T22:31:52+00:00",
+      "ts": "2026-10-22T23:25:23+00:00",
       "candidates_seen": 3,
-      "deduplicated": 2,
+      "deduplicated": 1,
       "rejected_price": 1,
       "rejected_spread": 0,
       "rejected_invalid_quote": 0,
-      "added": 0
+      "added": 1
     },
     "observation_totals": {
-      "ticks": 173,
-      "candidates_seen": 215,
-      "deduplicated": 73,
-      "rejected_price": 68,
+      "ticks": 174,
+      "candidates_seen": 218,
+      "deduplicated": 74,
+      "rejected_price": 69,
       "rejected_spread": 2,
       "rejected_invalid_quote": 0,
-      "added": 71
+      "added": 72
     }
   },
   "capital_decision": "NO_TRADE",

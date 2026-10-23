@@ -13,8 +13,8 @@
   "realized_pnl": -634.248613,
   "unrealized_pnl": 0.0,
   "fees_paid": 308.38584,
-  "ticks": 500,
-  "last_tick_at": "2026-10-22T23:25:23+00:00",
+  "ticks": 501,
+  "last_tick_at": "2026-10-23T00:52:25+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -12055,6 +12055,16 @@
       "fees_paid": 308.38584,
       "open_positions": 0,
       "closed_positions": 193
+    },
+    {
+      "ts": "2026-10-23T00:52:25+00:00",
+      "equity": 365.751387,
+      "cash": 365.751387,
+      "realized_pnl": -634.248613,
+      "unrealized_pnl": 0.0,
+      "fees_paid": 308.38584,
+      "open_positions": 0,
+      "closed_positions": 193
     }
   ],
   "shadow_challenger": {
@@ -15536,22 +15546,22 @@
       }
     },
     "verdict": "NO_EVIDENCE",
-    "updated_at": "2026-10-22T23:25:23+00:00",
+    "updated_at": "2026-10-23T00:52:25+00:00",
     "auto_promotion": false,
     "last_observation": {
-      "ts": "2026-10-22T23:25:23+00:00",
+      "ts": "2026-10-23T00:52:25+00:00",
       "candidates_seen": 3,
-      "deduplicated": 1,
+      "deduplicated": 2,
       "rejected_price": 1,
       "rejected_spread": 0,
       "rejected_invalid_quote": 0,
-      "added": 1
+      "added": 0
     },
     "observation_totals": {
-      "ticks": 174,
-      "candidates_seen": 218,
-      "deduplicated": 74,
-      "rejected_price": 69,
+      "ticks": 175,
+      "candidates_seen": 221,
+      "deduplicated": 76,
+      "rejected_price": 70,
       "rejected_spread": 2,
       "rejected_invalid_quote": 0,
       "added": 72
@@ -15810,8 +15820,8 @@
         "end_date": "2026-10-05",
         "forecast_probability": 0.624,
         "archived_at": "2026-10-07T23:23:44+00:00",
-        "resolution_checks": 17,
-        "next_resolution_check_at": "2026-10-22T22:38:12+00:00",
+        "resolution_checks": 18,
+        "next_resolution_check_at": "2026-10-24T00:52:27+00:00",
         "paper_only": true,
         "capital_impact": 0.0
       },
@@ -15840,8 +15850,8 @@
         "end_date": "2026-10-05",
         "forecast_probability": 0.635,
         "archived_at": "2026-10-07T23:23:44+00:00",
-        "resolution_checks": 17,
-        "next_resolution_check_at": "2026-10-22T22:38:12+00:00",
+        "resolution_checks": 18,
+        "next_resolution_check_at": "2026-10-24T00:52:27+00:00",
         "paper_only": true,
         "capital_impact": 0.0
       },
@@ -15915,8 +15925,8 @@
         "end_date": "2026-10-05",
         "forecast_probability": 0.445,
         "archived_at": "2026-10-07T23:23:44+00:00",
-        "resolution_checks": 17,
-        "next_resolution_check_at": "2026-10-22T22:38:12+00:00",
+        "resolution_checks": 18,
+        "next_resolution_check_at": "2026-10-24T00:52:27+00:00",
         "paper_only": true,
         "capital_impact": 0.0
       },
@@ -15930,8 +15940,8 @@
         "end_date": "2026-10-05",
         "forecast_probability": 0.4435,
         "archived_at": "2026-10-07T23:23:44+00:00",
-        "resolution_checks": 17,
-        "next_resolution_check_at": "2026-10-22T22:38:12+00:00",
+        "resolution_checks": 18,
+        "next_resolution_check_at": "2026-10-24T00:52:27+00:00",
         "paper_only": true,
         "capital_impact": 0.0
       },
@@ -15975,8 +15985,8 @@
         "end_date": "2026-10-05",
         "forecast_probability": 0.585,
         "archived_at": "2026-10-07T23:23:44+00:00",
-        "resolution_checks": 17,
-        "next_resolution_check_at": "2026-10-22T22:38:12+00:00",
+        "resolution_checks": 18,
+        "next_resolution_check_at": "2026-10-24T00:52:27+00:00",
         "paper_only": true,
         "capital_impact": 0.0
       },
@@ -15990,8 +16000,8 @@
         "end_date": "2026-10-05",
         "forecast_probability": 0.6145,
         "archived_at": "2026-10-07T23:23:44+00:00",
-        "resolution_checks": 17,
-        "next_resolution_check_at": "2026-10-22T22:38:12+00:00",
+        "resolution_checks": 18,
+        "next_resolution_check_at": "2026-10-24T00:52:27+00:00",
         "paper_only": true,
         "capital_impact": 0.0
       },
@@ -16035,8 +16045,8 @@
         "end_date": "2026-10-05",
         "forecast_probability": 0.845,
         "archived_at": "2026-10-07T23:23:44+00:00",
-        "resolution_checks": 17,
-        "next_resolution_check_at": "2026-10-22T22:38:12+00:00",
+        "resolution_checks": 18,
+        "next_resolution_check_at": "2026-10-24T00:52:27+00:00",
         "paper_only": true,
         "capital_impact": 0.0
       },
@@ -16050,8 +16060,8 @@
         "end_date": "2026-10-05",
         "forecast_probability": 0.8365,
         "archived_at": "2026-10-07T23:23:44+00:00",
-        "resolution_checks": 17,
-        "next_resolution_check_at": "2026-10-22T22:38:12+00:00",
+        "resolution_checks": 18,
+        "next_resolution_check_at": "2026-10-24T00:52:27+00:00",
         "paper_only": true,
         "capital_impact": 0.0
       },
@@ -16534,6 +16544,21 @@
         "next_resolution_check_at": "2026-10-25",
         "paper_only": true,
         "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:562828:YES:1792711523",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "562828",
+        "outcome": "YES",
+        "token_id": "34722410608062854697106861099776685947172185964394483545370684749662285977831",
+        "observed_at": "2026-10-22T23:25:23+00:00",
+        "end_date": "2026-11-04",
+        "forecast_probability": 0.685,
+        "archived_at": "2026-10-23T00:52:25+00:00",
+        "resolution_checks": 0,
+        "next_resolution_check_at": "2026-11-04",
+        "paper_only": true,
+        "capital_impact": 0.0
       }
     ],
     "calibration_records": [
@@ -16611,20 +16636,20 @@
       }
     ],
     "last_calibration_scan": {
-      "ts": "2026-10-22T22:31:53+00:00",
+      "ts": "2026-10-23T00:52:27+00:00",
       "model_version": "risk-filtered-momentum-v1-forward-20260925",
-      "archive_pending": 65,
-      "due": 0,
-      "lookups": 0,
+      "archive_pending": 66,
+      "due": 8,
+      "lookups": 8,
       "lookup_limit": 25,
       "resolved_added": 0,
       "records_total": 6
     },
     "contract_version": "trade-dossier-v1-20261008",
-    "updated_at": "2026-10-22T22:31:53+00:00",
+    "updated_at": "2026-10-23T00:52:27+00:00",
     "trade_dossier": {
       "contract_version": "trade-dossier-v1-20261008",
-      "generated_at": "2026-10-22T22:31:53+00:00",
+      "generated_at": "2026-10-23T00:52:27+00:00",
       "model_version": "risk-filtered-momentum-v1-forward-20260925",
       "capital_decision": "NO_TRADE",
       "review_status": "BLOCKED",
@@ -16649,12 +16674,12 @@
       "forward_evidence": {
         "shadow_verdict": "NO_EVIDENCE",
         "stats_24h": {
-          "n": 66,
-          "mean_return": -0.02277288,
-          "win_rate": 0.242424,
-          "profit_factor": 0.711411,
-          "ci95_lower": -0.08699882,
-          "ci95_upper": 0.04145306
+          "n": 67,
+          "mean_return": -0.02269454,
+          "win_rate": 0.238806,
+          "profit_factor": 0.709025,
+          "ci95_lower": -0.08595481,
+          "ci95_upper": 0.04056573
         }
       },
       "calibration": {
@@ -16668,9 +16693,9 @@
       },
       "independence": {
         "forward_24h": {
-          "n": 66,
+          "n": 67,
           "unique_markets": 30,
-          "unique_market_ratio": 0.45454545,
+          "unique_market_ratio": 0.44776119,
           "min_unique_market_ratio": 0.8,
           "passed": false
         },
@@ -16697,11 +16722,11 @@
         "legacy_capital_execution": false
       },
       "calibration_scan": {
-        "ts": "2026-10-22T22:31:53+00:00",
+        "ts": "2026-10-23T00:52:27+00:00",
         "model_version": "risk-filtered-momentum-v1-forward-20260925",
-        "archive_pending": 65,
-        "due": 0,
-        "lookups": 0,
+        "archive_pending": 66,
+        "due": 8,
+        "lookups": 8,
         "lookup_limit": 25,
         "resolved_added": 0,
         "records_total": 6

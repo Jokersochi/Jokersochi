@@ -13,8 +13,8 @@
   "realized_pnl": -634.248613,
   "unrealized_pnl": 0.0,
   "fees_paid": 308.38584,
-  "ticks": 537,
-  "last_tick_at": "2026-10-25T19:40:02+00:00",
+  "ticks": 538,
+  "last_tick_at": "2026-10-25T21:17:03+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -12425,6 +12425,16 @@
       "fees_paid": 308.38584,
       "open_positions": 0,
       "closed_positions": 193
+    },
+    {
+      "ts": "2026-10-25T21:17:03+00:00",
+      "equity": 365.751387,
+      "cash": 365.751387,
+      "realized_pnl": -634.248613,
+      "unrealized_pnl": 0.0,
+      "fees_paid": 308.38584,
+      "open_positions": 0,
+      "closed_positions": 193
     }
   ],
   "shadow_challenger": {
@@ -16221,6 +16231,62 @@
         "status": "pending",
         "paper_only": true,
         "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:608547:YES:1792963023",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "608547",
+        "question": "Will Harry Kane win the 2026 Ballon d'Or?",
+        "category": "Other",
+        "outcome": "YES",
+        "token_id": "72710166409980712002774407052535905861151156175854323762835102340552522606004",
+        "observed_at": "2026-10-25T21:17:03+00:00",
+        "end_date": "2026-10-27",
+        "entry_mid": 0.7385,
+        "entry_spread": 0.001,
+        "entry_price": 0.739,
+        "shares": 133.57484556,
+        "gross_trade": 98.711811,
+        "entry_fee": 1.28819,
+        "cash_outlay": 100.000001,
+        "fee_rate": 0.05,
+        "momentum_24h": 0.032,
+        "momentum_6h": 0.026,
+        "liquidity": 169157.11,
+        "volume_24h": 405451.0,
+        "score": 0.0945,
+        "horizon_results": {},
+        "status": "pending",
+        "paper_only": true,
+        "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:4641065:YES:1792963023",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "4641065",
+        "question": "US x Iran ceasefire continues through October 31?",
+        "category": "Other",
+        "outcome": "YES",
+        "token_id": "67102598924726349989742049657609063097299442010642912942032681022413402597017",
+        "observed_at": "2026-10-25T21:17:03+00:00",
+        "end_date": "2026-10-31",
+        "entry_mid": 0.845,
+        "entry_spread": 0.01,
+        "entry_price": 0.85,
+        "shares": 116.77127427,
+        "gross_trade": 99.255583,
+        "entry_fee": 0.74442,
+        "cash_outlay": 100.000003,
+        "fee_rate": 0.05,
+        "momentum_24h": 0.03,
+        "momentum_6h": 0.02,
+        "liquidity": 102689.47,
+        "volume_24h": 601240.07,
+        "score": 0.085,
+        "horizon_results": {},
+        "status": "pending",
+        "paper_only": true,
+        "capital_impact": 0.0
       }
     ],
     "summary": {
@@ -16242,25 +16308,25 @@
       }
     },
     "verdict": "NO_EVIDENCE",
-    "updated_at": "2026-10-25T19:40:02+00:00",
+    "updated_at": "2026-10-25T21:17:03+00:00",
     "auto_promotion": false,
     "last_observation": {
-      "ts": "2026-10-25T19:40:02+00:00",
-      "candidates_seen": 2,
-      "deduplicated": 0,
+      "ts": "2026-10-25T21:17:03+00:00",
+      "candidates_seen": 5,
+      "deduplicated": 1,
       "rejected_price": 2,
       "rejected_spread": 0,
       "rejected_invalid_quote": 0,
-      "added": 0
+      "added": 2
     },
     "observation_totals": {
-      "ticks": 211,
-      "candidates_seen": 274,
-      "deduplicated": 96,
-      "rejected_price": 96,
+      "ticks": 212,
+      "candidates_seen": 279,
+      "deduplicated": 97,
+      "rejected_price": 98,
       "rejected_spread": 3,
       "rejected_invalid_quote": 0,
-      "added": 78
+      "added": 80
     }
   },
   "capital_decision": "NO_TRADE",
@@ -17345,6 +17411,36 @@
         "next_resolution_check_at": "2026-10-26",
         "paper_only": true,
         "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:608547:YES:1792963023",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "608547",
+        "outcome": "YES",
+        "token_id": "72710166409980712002774407052535905861151156175854323762835102340552522606004",
+        "observed_at": "2026-10-25T21:17:03+00:00",
+        "end_date": "2026-10-27",
+        "forecast_probability": 0.7385,
+        "archived_at": "2026-10-25T21:17:03+00:00",
+        "resolution_checks": 0,
+        "next_resolution_check_at": "2026-10-27",
+        "paper_only": true,
+        "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:4641065:YES:1792963023",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "4641065",
+        "outcome": "YES",
+        "token_id": "67102598924726349989742049657609063097299442010642912942032681022413402597017",
+        "observed_at": "2026-10-25T21:17:03+00:00",
+        "end_date": "2026-10-31",
+        "forecast_probability": 0.845,
+        "archived_at": "2026-10-25T21:17:03+00:00",
+        "resolution_checks": 0,
+        "next_resolution_check_at": "2026-10-31",
+        "paper_only": true,
+        "capital_impact": 0.0
       }
     ],
     "calibration_records": [
@@ -17422,20 +17518,20 @@
       }
     ],
     "last_calibration_scan": {
-      "ts": "2026-10-25T18:52:56+00:00",
+      "ts": "2026-10-25T21:17:03+00:00",
       "model_version": "risk-filtered-momentum-v1-forward-20260925",
-      "archive_pending": 72,
-      "due": 3,
-      "lookups": 3,
+      "archive_pending": 74,
+      "due": 0,
+      "lookups": 0,
       "lookup_limit": 25,
       "resolved_added": 0,
       "records_total": 6
     },
     "contract_version": "trade-dossier-v1-20261008",
-    "updated_at": "2026-10-25T18:52:56+00:00",
+    "updated_at": "2026-10-25T21:17:03+00:00",
     "trade_dossier": {
       "contract_version": "trade-dossier-v1-20261008",
-      "generated_at": "2026-10-25T18:52:56+00:00",
+      "generated_at": "2026-10-25T21:17:03+00:00",
       "model_version": "risk-filtered-momentum-v1-forward-20260925",
       "capital_decision": "NO_TRADE",
       "review_status": "BLOCKED",
@@ -17460,12 +17556,12 @@
       "forward_evidence": {
         "shadow_verdict": "NO_EVIDENCE",
         "stats_24h": {
-          "n": 74,
-          "mean_return": -0.02686546,
-          "win_rate": 0.216216,
-          "profit_factor": 0.650801,
-          "ci95_lower": -0.08419399,
-          "ci95_upper": 0.03046308
+          "n": 75,
+          "mean_return": -0.02608444,
+          "win_rate": 0.226667,
+          "profit_factor": 0.656371,
+          "ci95_lower": -0.08266414,
+          "ci95_upper": 0.03049526
         }
       },
       "calibration": {
@@ -17479,9 +17575,9 @@
       },
       "independence": {
         "forward_24h": {
-          "n": 74,
+          "n": 75,
           "unique_markets": 34,
-          "unique_market_ratio": 0.45945946,
+          "unique_market_ratio": 0.45333333,
           "min_unique_market_ratio": 0.8,
           "passed": false
         },
@@ -17508,11 +17604,11 @@
         "legacy_capital_execution": false
       },
       "calibration_scan": {
-        "ts": "2026-10-25T18:52:56+00:00",
+        "ts": "2026-10-25T21:17:03+00:00",
         "model_version": "risk-filtered-momentum-v1-forward-20260925",
-        "archive_pending": 72,
-        "due": 3,
-        "lookups": 3,
+        "archive_pending": 74,
+        "due": 0,
+        "lookups": 0,
         "lookup_limit": 25,
         "resolved_added": 0,
         "records_total": 6

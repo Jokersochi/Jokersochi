@@ -13,8 +13,8 @@
   "realized_pnl": -634.248613,
   "unrealized_pnl": 0.0,
   "fees_paid": 308.38584,
-  "ticks": 538,
-  "last_tick_at": "2026-10-25T21:17:03+00:00",
+  "ticks": 539,
+  "last_tick_at": "2026-10-25T22:35:43+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -12435,6 +12435,16 @@
       "fees_paid": 308.38584,
       "open_positions": 0,
       "closed_positions": 193
+    },
+    {
+      "ts": "2026-10-25T22:35:43+00:00",
+      "equity": 365.751387,
+      "cash": 365.751387,
+      "realized_pnl": -634.248613,
+      "unrealized_pnl": 0.0,
+      "fees_paid": 308.38584,
+      "open_positions": 0,
+      "closed_positions": 193
     }
   ],
   "shadow_challenger": {
@@ -16199,7 +16209,18 @@
         "liquidity": 174314.29,
         "volume_24h": 579555.01,
         "score": 0.082,
-        "horizon_results": {},
+        "horizon_results": {
+          "6": {
+            "evaluated_at": "2026-10-25T22:35:43+00:00",
+            "source": "clob_liquidation",
+            "exit_mid": 0.8325,
+            "exit_spread": 0.003,
+            "net_liquidation": 97.425267,
+            "after_cost_pnl": -2.574732,
+            "after_cost_return": -0.02574732,
+            "profitable": false
+          }
+        },
         "status": "pending",
         "paper_only": true,
         "capital_impact": 0.0
@@ -16227,7 +16248,18 @@
         "liquidity": 85436.43,
         "volume_24h": 232911.54,
         "score": 0.169316,
-        "horizon_results": {},
+        "horizon_results": {
+          "6": {
+            "evaluated_at": "2026-10-25T22:35:43+00:00",
+            "source": "clob_liquidation",
+            "exit_mid": 0.215,
+            "exit_spread": 0.03,
+            "net_liquidation": 36.746758,
+            "after_cost_pnl": -63.253242,
+            "after_cost_return": -0.63253242,
+            "profitable": false
+          }
+        },
         "status": "pending",
         "paper_only": true,
         "capital_impact": 0.0
@@ -16287,16 +16319,72 @@
         "status": "pending",
         "paper_only": true,
         "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:601826:NO:1792967743",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "601826",
+        "question": "Will Flávio Bolsonaro win the 2026 Brazilian presidential election?",
+        "category": "Other",
+        "outcome": "NO",
+        "token_id": "38310927461258927563020508025396887688249787380193911540547071417200646834355",
+        "observed_at": "2026-10-25T22:35:43+00:00",
+        "end_date": "2026-10-26",
+        "entry_mid": 0.665,
+        "entry_spread": 0.01,
+        "entry_price": 0.67,
+        "shares": 146.83101952,
+        "gross_trade": 98.376783,
+        "entry_fee": 1.62322,
+        "cash_outlay": 100.000003,
+        "fee_rate": 0.05,
+        "momentum_24h": -0.493,
+        "momentum_6h": -0.452,
+        "liquidity": 297875.96,
+        "volume_24h": 6569635.95,
+        "score": 0.764,
+        "horizon_results": {},
+        "status": "pending",
+        "paper_only": true,
+        "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:601819:YES:1792967743",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "601819",
+        "question": "Will Luiz Inácio Lula da Silva win the 2026 Brazilian presidential election?",
+        "category": "Other",
+        "outcome": "YES",
+        "token_id": "30630994248667897740988010928640156931882346081873066002335460180076741328029",
+        "observed_at": "2026-10-25T22:35:43+00:00",
+        "end_date": "2026-10-26",
+        "entry_mid": 0.665,
+        "entry_spread": 0.006,
+        "entry_price": 0.668,
+        "shares": 147.25614677,
+        "gross_trade": 98.367106,
+        "entry_fee": 1.63289,
+        "cash_outlay": 99.999996,
+        "fee_rate": 0.05,
+        "momentum_24h": 0.49,
+        "momentum_6h": 0.45,
+        "liquidity": 186998.79,
+        "volume_24h": 3829659.53,
+        "score": 0.762,
+        "horizon_results": {},
+        "status": "pending",
+        "paper_only": true,
+        "capital_impact": 0.0
       }
     ],
     "summary": {
       "6": {
-        "n": 76,
-        "mean_return": -0.04193075,
-        "win_rate": 0.157895,
-        "profit_factor": 0.145041,
-        "ci95_lower": -0.05545337,
-        "ci95_upper": -0.02840814
+        "n": 78,
+        "mean_return": -0.04929509,
+        "win_rate": 0.153846,
+        "profit_factor": 0.123271,
+        "ci95_lower": -0.06914742,
+        "ci95_upper": -0.02944276
       },
       "24": {
         "n": 75,
@@ -16308,25 +16396,25 @@
       }
     },
     "verdict": "NO_EVIDENCE",
-    "updated_at": "2026-10-25T21:17:03+00:00",
+    "updated_at": "2026-10-25T22:35:43+00:00",
     "auto_promotion": false,
     "last_observation": {
-      "ts": "2026-10-25T21:17:03+00:00",
-      "candidates_seen": 5,
-      "deduplicated": 1,
-      "rejected_price": 2,
+      "ts": "2026-10-25T22:35:43+00:00",
+      "candidates_seen": 2,
+      "deduplicated": 0,
+      "rejected_price": 0,
       "rejected_spread": 0,
       "rejected_invalid_quote": 0,
       "added": 2
     },
     "observation_totals": {
-      "ticks": 212,
-      "candidates_seen": 279,
+      "ticks": 213,
+      "candidates_seen": 281,
       "deduplicated": 97,
       "rejected_price": 98,
       "rejected_spread": 3,
       "rejected_invalid_quote": 0,
-      "added": 80
+      "added": 82
     }
   },
   "capital_decision": "NO_TRADE",

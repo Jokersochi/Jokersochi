@@ -13,8 +13,8 @@
   "realized_pnl": -634.248613,
   "unrealized_pnl": 0.0,
   "fees_paid": 308.38584,
-  "ticks": 539,
-  "last_tick_at": "2026-10-25T22:35:43+00:00",
+  "ticks": 540,
+  "last_tick_at": "2026-10-25T23:19:38+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -12445,6 +12445,16 @@
       "fees_paid": 308.38584,
       "open_positions": 0,
       "closed_positions": 193
+    },
+    {
+      "ts": "2026-10-25T23:19:38+00:00",
+      "equity": 365.751387,
+      "cash": 365.751387,
+      "realized_pnl": -634.248613,
+      "unrealized_pnl": 0.0,
+      "fees_paid": 308.38584,
+      "open_positions": 0,
+      "closed_positions": 193
     }
   ],
   "shadow_challenger": {
@@ -16375,6 +16385,34 @@
         "status": "pending",
         "paper_only": true,
         "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:5340072:YES:1792970378",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "5340072",
+        "question": "Will Luiz Inácio Lula da Silva win the second round of the 2026 Brazilian presidential election by less than 4%?",
+        "category": "Other",
+        "outcome": "YES",
+        "token_id": "15937407026596714527642345105848761987135521179549657216149364717222565341610",
+        "observed_at": "2026-10-25T23:19:38+00:00",
+        "end_date": "2026-10-26",
+        "entry_mid": 0.84,
+        "entry_spread": 0.02,
+        "entry_price": 0.85,
+        "shares": 116.77127427,
+        "gross_trade": 99.255583,
+        "entry_fee": 0.74442,
+        "cash_outlay": 100.000003,
+        "fee_rate": 0.05,
+        "momentum_24h": 0.68,
+        "momentum_6h": 0.655,
+        "liquidity": 51528.93,
+        "volume_24h": 393268.67,
+        "score": 1.044621,
+        "horizon_results": {},
+        "status": "pending",
+        "paper_only": true,
+        "capital_impact": 0.0
       }
     ],
     "summary": {
@@ -16396,25 +16434,25 @@
       }
     },
     "verdict": "NO_EVIDENCE",
-    "updated_at": "2026-10-25T22:35:43+00:00",
+    "updated_at": "2026-10-25T23:19:38+00:00",
     "auto_promotion": false,
     "last_observation": {
-      "ts": "2026-10-25T22:35:43+00:00",
+      "ts": "2026-10-25T23:19:38+00:00",
       "candidates_seen": 2,
       "deduplicated": 0,
-      "rejected_price": 0,
+      "rejected_price": 1,
       "rejected_spread": 0,
       "rejected_invalid_quote": 0,
-      "added": 2
+      "added": 1
     },
     "observation_totals": {
-      "ticks": 213,
-      "candidates_seen": 281,
+      "ticks": 214,
+      "candidates_seen": 283,
       "deduplicated": 97,
-      "rejected_price": 98,
+      "rejected_price": 99,
       "rejected_spread": 3,
       "rejected_invalid_quote": 0,
-      "added": 82
+      "added": 83
     }
   },
   "capital_decision": "NO_TRADE",
@@ -17529,6 +17567,51 @@
         "next_resolution_check_at": "2026-10-31",
         "paper_only": true,
         "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:601826:NO:1792967743",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "601826",
+        "outcome": "NO",
+        "token_id": "38310927461258927563020508025396887688249787380193911540547071417200646834355",
+        "observed_at": "2026-10-25T22:35:43+00:00",
+        "end_date": "2026-10-26",
+        "forecast_probability": 0.665,
+        "archived_at": "2026-10-25T23:19:38+00:00",
+        "resolution_checks": 0,
+        "next_resolution_check_at": "2026-10-26",
+        "paper_only": true,
+        "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:601819:YES:1792967743",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "601819",
+        "outcome": "YES",
+        "token_id": "30630994248667897740988010928640156931882346081873066002335460180076741328029",
+        "observed_at": "2026-10-25T22:35:43+00:00",
+        "end_date": "2026-10-26",
+        "forecast_probability": 0.665,
+        "archived_at": "2026-10-25T23:19:38+00:00",
+        "resolution_checks": 0,
+        "next_resolution_check_at": "2026-10-26",
+        "paper_only": true,
+        "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:5340072:YES:1792970378",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "5340072",
+        "outcome": "YES",
+        "token_id": "15937407026596714527642345105848761987135521179549657216149364717222565341610",
+        "observed_at": "2026-10-25T23:19:38+00:00",
+        "end_date": "2026-10-26",
+        "forecast_probability": 0.84,
+        "archived_at": "2026-10-25T23:19:40+00:00",
+        "resolution_checks": 0,
+        "next_resolution_check_at": "2026-10-26",
+        "paper_only": true,
+        "capital_impact": 0.0
       }
     ],
     "calibration_records": [
@@ -17606,9 +17689,9 @@
       }
     ],
     "last_calibration_scan": {
-      "ts": "2026-10-25T21:17:03+00:00",
+      "ts": "2026-10-25T23:19:40+00:00",
       "model_version": "risk-filtered-momentum-v1-forward-20260925",
-      "archive_pending": 74,
+      "archive_pending": 77,
       "due": 0,
       "lookups": 0,
       "lookup_limit": 25,
@@ -17616,10 +17699,10 @@
       "records_total": 6
     },
     "contract_version": "trade-dossier-v1-20261008",
-    "updated_at": "2026-10-25T21:17:03+00:00",
+    "updated_at": "2026-10-25T23:19:40+00:00",
     "trade_dossier": {
       "contract_version": "trade-dossier-v1-20261008",
-      "generated_at": "2026-10-25T21:17:03+00:00",
+      "generated_at": "2026-10-25T23:19:40+00:00",
       "model_version": "risk-filtered-momentum-v1-forward-20260925",
       "capital_decision": "NO_TRADE",
       "review_status": "BLOCKED",
@@ -17692,9 +17775,9 @@
         "legacy_capital_execution": false
       },
       "calibration_scan": {
-        "ts": "2026-10-25T21:17:03+00:00",
+        "ts": "2026-10-25T23:19:40+00:00",
         "model_version": "risk-filtered-momentum-v1-forward-20260925",
-        "archive_pending": 74,
+        "archive_pending": 77,
         "due": 0,
         "lookups": 0,
         "lookup_limit": 25,

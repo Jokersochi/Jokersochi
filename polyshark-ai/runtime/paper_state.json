@@ -13,8 +13,8 @@
   "realized_pnl": -634.248613,
   "unrealized_pnl": 0.0,
   "fees_paid": 308.38584,
-  "ticks": 545,
-  "last_tick_at": "2026-10-26T09:25:02+00:00",
+  "ticks": 546,
+  "last_tick_at": "2026-10-26T13:24:48+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -12505,6 +12505,16 @@
       "fees_paid": 308.38584,
       "open_positions": 0,
       "closed_positions": 193
+    },
+    {
+      "ts": "2026-10-26T13:24:48+00:00",
+      "equity": 365.751387,
+      "cash": 365.751387,
+      "realized_pnl": -634.248613,
+      "unrealized_pnl": 0.0,
+      "fees_paid": 308.38584,
+      "open_positions": 0,
+      "closed_positions": 193
     }
   ],
   "shadow_challenger": {
@@ -16240,9 +16250,19 @@
             "after_cost_pnl": 0.041096,
             "after_cost_return": 0.00041096,
             "profitable": true
+          },
+          "24": {
+            "evaluated_at": "2026-10-26T13:24:48+00:00",
+            "source": "gamma_resolution",
+            "exit_mid": null,
+            "exit_spread": null,
+            "net_liquidation": 136.971291,
+            "after_cost_pnl": 36.971292,
+            "after_cost_return": 0.36971292,
+            "profitable": true
           }
         },
-        "status": "pending",
+        "status": "matured",
         "paper_only": true,
         "capital_impact": 0.0
       },
@@ -16558,31 +16578,31 @@
         "ci95_upper": -0.00905601
       },
       "24": {
-        "n": 75,
-        "mean_return": -0.02608444,
-        "win_rate": 0.226667,
-        "profit_factor": 0.656371,
-        "ci95_lower": -0.08266414,
-        "ci95_upper": 0.03049526
+        "n": 76,
+        "mean_return": -0.02087658,
+        "win_rate": 0.236842,
+        "profit_factor": 0.721311,
+        "ci95_lower": -0.07763228,
+        "ci95_upper": 0.03587913
       }
     },
     "verdict": "NO_EVIDENCE",
-    "updated_at": "2026-10-26T09:25:02+00:00",
+    "updated_at": "2026-10-26T13:24:48+00:00",
     "auto_promotion": false,
     "last_observation": {
-      "ts": "2026-10-26T09:25:02+00:00",
-      "candidates_seen": 3,
+      "ts": "2026-10-26T13:24:48+00:00",
+      "candidates_seen": 2,
       "deduplicated": 0,
       "rejected_price": 2,
       "rejected_spread": 0,
       "rejected_invalid_quote": 0,
-      "added": 1
+      "added": 0
     },
     "observation_totals": {
-      "ticks": 219,
-      "candidates_seen": 292,
+      "ticks": 220,
+      "candidates_seen": 294,
       "deduplicated": 97,
-      "rejected_price": 107,
+      "rejected_price": 109,
       "rejected_spread": 3,
       "rejected_invalid_quote": 0,
       "added": 84
@@ -16832,21 +16852,6 @@
         "capital_impact": 0.0
       },
       {
-        "signal_id": "risk-filtered-momentum-v1-forward-20260925:601826:YES:1790821716",
-        "model_version": "risk-filtered-momentum-v1-forward-20260925",
-        "market_id": "601826",
-        "outcome": "YES",
-        "token_id": "109876868437950584369987384406356259939519193117253465815665152916226511121427",
-        "observed_at": "2026-10-01T02:28:36+00:00",
-        "end_date": "2026-10-05",
-        "forecast_probability": 0.624,
-        "archived_at": "2026-10-07T23:23:44+00:00",
-        "resolution_checks": 20,
-        "next_resolution_check_at": "2026-10-26T06:45:11+00:00",
-        "paper_only": true,
-        "capital_impact": 0.0
-      },
-      {
         "signal_id": "risk-filtered-momentum-v1-forward-20260925:3128888:NO:1790846264",
         "model_version": "risk-filtered-momentum-v1-forward-20260925",
         "market_id": "3128888",
@@ -16858,21 +16863,6 @@
         "archived_at": "2026-10-07T23:23:44+00:00",
         "resolution_checks": 0,
         "next_resolution_check_at": "2026-11-01",
-        "paper_only": true,
-        "capital_impact": 0.0
-      },
-      {
-        "signal_id": "risk-filtered-momentum-v1-forward-20260925:601819:NO:1790846264",
-        "model_version": "risk-filtered-momentum-v1-forward-20260925",
-        "market_id": "601819",
-        "outcome": "NO",
-        "token_id": "79191939610100241429039499950443680906623179487184628479206155805558220344190",
-        "observed_at": "2026-10-01T09:17:44+00:00",
-        "end_date": "2026-10-05",
-        "forecast_probability": 0.635,
-        "archived_at": "2026-10-07T23:23:44+00:00",
-        "resolution_checks": 20,
-        "next_resolution_check_at": "2026-10-26T06:45:11+00:00",
         "paper_only": true,
         "capital_impact": 0.0
       },
@@ -16937,36 +16927,6 @@
         "capital_impact": 0.0
       },
       {
-        "signal_id": "risk-filtered-momentum-v1-forward-20260925:601819:YES:1790945362",
-        "model_version": "risk-filtered-momentum-v1-forward-20260925",
-        "market_id": "601819",
-        "outcome": "YES",
-        "token_id": "30630994248667897740988010928640156931882346081873066002335460180076741328029",
-        "observed_at": "2026-10-02T12:49:22+00:00",
-        "end_date": "2026-10-05",
-        "forecast_probability": 0.445,
-        "archived_at": "2026-10-07T23:23:44+00:00",
-        "resolution_checks": 20,
-        "next_resolution_check_at": "2026-10-26T06:45:11+00:00",
-        "paper_only": true,
-        "capital_impact": 0.0
-      },
-      {
-        "signal_id": "risk-filtered-momentum-v1-forward-20260925:601826:NO:1790945362",
-        "model_version": "risk-filtered-momentum-v1-forward-20260925",
-        "market_id": "601826",
-        "outcome": "NO",
-        "token_id": "38310927461258927563020508025396887688249787380193911540547071417200646834355",
-        "observed_at": "2026-10-02T12:49:22+00:00",
-        "end_date": "2026-10-05",
-        "forecast_probability": 0.4435,
-        "archived_at": "2026-10-07T23:23:44+00:00",
-        "resolution_checks": 20,
-        "next_resolution_check_at": "2026-10-26T06:45:11+00:00",
-        "paper_only": true,
-        "capital_impact": 0.0
-      },
-      {
         "signal_id": "risk-filtered-momentum-v1-forward-20260925:608545:NO:1790978839",
         "model_version": "risk-filtered-momentum-v1-forward-20260925",
         "market_id": "608545",
@@ -16997,36 +16957,6 @@
         "capital_impact": 0.0
       },
       {
-        "signal_id": "risk-filtered-momentum-v1-forward-20260925:601819:NO:1791040543",
-        "model_version": "risk-filtered-momentum-v1-forward-20260925",
-        "market_id": "601819",
-        "outcome": "NO",
-        "token_id": "79191939610100241429039499950443680906623179487184628479206155805558220344190",
-        "observed_at": "2026-10-03T15:15:43+00:00",
-        "end_date": "2026-10-05",
-        "forecast_probability": 0.585,
-        "archived_at": "2026-10-07T23:23:44+00:00",
-        "resolution_checks": 20,
-        "next_resolution_check_at": "2026-10-26T06:45:11+00:00",
-        "paper_only": true,
-        "capital_impact": 0.0
-      },
-      {
-        "signal_id": "risk-filtered-momentum-v1-forward-20260925:601826:YES:1791063986",
-        "model_version": "risk-filtered-momentum-v1-forward-20260925",
-        "market_id": "601826",
-        "outcome": "YES",
-        "token_id": "109876868437950584369987384406356259939519193117253465815665152916226511121427",
-        "observed_at": "2026-10-03T21:46:26+00:00",
-        "end_date": "2026-10-05",
-        "forecast_probability": 0.6145,
-        "archived_at": "2026-10-07T23:23:44+00:00",
-        "resolution_checks": 20,
-        "next_resolution_check_at": "2026-10-26T06:45:11+00:00",
-        "paper_only": true,
-        "capital_impact": 0.0
-      },
-      {
         "signal_id": "risk-filtered-momentum-v1-forward-20260925:5166375:NO:1791072406",
         "model_version": "risk-filtered-momentum-v1-forward-20260925",
         "market_id": "5166375",
@@ -17053,36 +16983,6 @@
         "archived_at": "2026-10-07T23:23:44+00:00",
         "resolution_checks": 0,
         "next_resolution_check_at": "2026-11-04",
-        "paper_only": true,
-        "capital_impact": 0.0
-      },
-      {
-        "signal_id": "risk-filtered-momentum-v1-forward-20260925:601819:NO:1791151157",
-        "model_version": "risk-filtered-momentum-v1-forward-20260925",
-        "market_id": "601819",
-        "outcome": "NO",
-        "token_id": "79191939610100241429039499950443680906623179487184628479206155805558220344190",
-        "observed_at": "2026-10-04T21:59:17+00:00",
-        "end_date": "2026-10-05",
-        "forecast_probability": 0.845,
-        "archived_at": "2026-10-07T23:23:44+00:00",
-        "resolution_checks": 20,
-        "next_resolution_check_at": "2026-10-26T06:45:11+00:00",
-        "paper_only": true,
-        "capital_impact": 0.0
-      },
-      {
-        "signal_id": "risk-filtered-momentum-v1-forward-20260925:601826:YES:1791151157",
-        "model_version": "risk-filtered-momentum-v1-forward-20260925",
-        "market_id": "601826",
-        "outcome": "YES",
-        "token_id": "109876868437950584369987384406356259939519193117253465815665152916226511121427",
-        "observed_at": "2026-10-04T21:59:17+00:00",
-        "end_date": "2026-10-05",
-        "forecast_probability": 0.8365,
-        "archived_at": "2026-10-07T23:23:44+00:00",
-        "resolution_checks": 20,
-        "next_resolution_check_at": "2026-10-26T06:45:11+00:00",
         "paper_only": true,
         "capital_impact": 0.0
       },
@@ -17642,17 +17542,17 @@
         "capital_impact": 0.0
       },
       {
-        "signal_id": "risk-filtered-momentum-v1-forward-20260925:5340072:YES:1792970378",
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:2100981:NO:1793006702",
         "model_version": "risk-filtered-momentum-v1-forward-20260925",
-        "market_id": "5340072",
-        "outcome": "YES",
-        "token_id": "15937407026596714527642345105848761987135521179549657216149364717222565341610",
-        "observed_at": "2026-10-25T23:19:38+00:00",
-        "end_date": "2026-10-26",
-        "forecast_probability": 0.84,
-        "archived_at": "2026-10-25T23:19:40+00:00",
-        "resolution_checks": 2,
-        "next_resolution_check_at": "2026-10-26T08:25:27+00:00",
+        "market_id": "2100981",
+        "outcome": "NO",
+        "token_id": "112833774316104951988690985316609270957261648365641646812446420693891587882096",
+        "observed_at": "2026-10-26T09:25:02+00:00",
+        "end_date": "2026-10-28",
+        "forecast_probability": 0.745,
+        "archived_at": "2026-10-26T13:24:48+00:00",
+        "resolution_checks": 0,
+        "next_resolution_check_at": "2026-10-28",
         "paper_only": true,
         "capital_impact": 0.0
       }
@@ -17801,23 +17701,131 @@
         "brier": 0.5929,
         "paper_only": true,
         "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:601826:YES:1790821716",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "601826",
+        "observed_at": "2026-10-01T02:28:36+00:00",
+        "resolved_at_observed": "2026-10-26T13:24:50+00:00",
+        "forecast_probability": 0.624,
+        "actual": 0,
+        "brier": 0.389376,
+        "paper_only": true,
+        "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:601819:NO:1790846264",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "601819",
+        "observed_at": "2026-10-01T09:17:44+00:00",
+        "resolved_at_observed": "2026-10-26T13:24:50+00:00",
+        "forecast_probability": 0.635,
+        "actual": 0,
+        "brier": 0.403225,
+        "paper_only": true,
+        "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:601819:YES:1790945362",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "601819",
+        "observed_at": "2026-10-02T12:49:22+00:00",
+        "resolved_at_observed": "2026-10-26T13:24:50+00:00",
+        "forecast_probability": 0.445,
+        "actual": 1,
+        "brier": 0.308025,
+        "paper_only": true,
+        "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:601826:NO:1790945362",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "601826",
+        "observed_at": "2026-10-02T12:49:22+00:00",
+        "resolved_at_observed": "2026-10-26T13:24:50+00:00",
+        "forecast_probability": 0.4435,
+        "actual": 1,
+        "brier": 0.30969225,
+        "paper_only": true,
+        "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:601819:NO:1791040543",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "601819",
+        "observed_at": "2026-10-03T15:15:43+00:00",
+        "resolved_at_observed": "2026-10-26T13:24:50+00:00",
+        "forecast_probability": 0.585,
+        "actual": 0,
+        "brier": 0.342225,
+        "paper_only": true,
+        "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:601826:YES:1791063986",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "601826",
+        "observed_at": "2026-10-03T21:46:26+00:00",
+        "resolved_at_observed": "2026-10-26T13:24:50+00:00",
+        "forecast_probability": 0.6145,
+        "actual": 0,
+        "brier": 0.37761025,
+        "paper_only": true,
+        "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:601819:NO:1791151157",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "601819",
+        "observed_at": "2026-10-04T21:59:17+00:00",
+        "resolved_at_observed": "2026-10-26T13:24:50+00:00",
+        "forecast_probability": 0.845,
+        "actual": 0,
+        "brier": 0.714025,
+        "paper_only": true,
+        "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:601826:YES:1791151157",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "601826",
+        "observed_at": "2026-10-04T21:59:17+00:00",
+        "resolved_at_observed": "2026-10-26T13:24:50+00:00",
+        "forecast_probability": 0.8365,
+        "actual": 0,
+        "brier": 0.69973225,
+        "paper_only": true,
+        "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:5340072:YES:1792970378",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "5340072",
+        "observed_at": "2026-10-25T23:19:38+00:00",
+        "resolved_at_observed": "2026-10-26T13:24:50+00:00",
+        "forecast_probability": 0.84,
+        "actual": 1,
+        "brier": 0.0256,
+        "paper_only": true,
+        "capital_impact": 0.0
       }
     ],
     "last_calibration_scan": {
-      "ts": "2026-10-26T06:25:27+00:00",
+      "ts": "2026-10-26T13:24:50+00:00",
       "model_version": "risk-filtered-momentum-v1-forward-20260925",
-      "archive_pending": 71,
-      "due": 8,
-      "lookups": 8,
+      "archive_pending": 63,
+      "due": 9,
+      "lookups": 9,
       "lookup_limit": 25,
-      "resolved_added": 6,
-      "records_total": 12
+      "resolved_added": 9,
+      "records_total": 21
     },
     "contract_version": "trade-dossier-v1-20261008",
-    "updated_at": "2026-10-26T06:25:27+00:00",
+    "updated_at": "2026-10-26T13:24:50+00:00",
     "trade_dossier": {
       "contract_version": "trade-dossier-v1-20261008",
-      "generated_at": "2026-10-26T06:25:27+00:00",
+      "generated_at": "2026-10-26T13:24:50+00:00",
       "model_version": "risk-filtered-momentum-v1-forward-20260925",
       "capital_decision": "NO_TRADE",
       "review_status": "BLOCKED",
@@ -17842,18 +17850,18 @@
       "forward_evidence": {
         "shadow_verdict": "NO_EVIDENCE",
         "stats_24h": {
-          "n": 75,
-          "mean_return": -0.02608444,
-          "win_rate": 0.226667,
-          "profit_factor": 0.656371,
-          "ci95_lower": -0.08266414,
-          "ci95_upper": 0.03049526
+          "n": 76,
+          "mean_return": -0.02087658,
+          "win_rate": 0.236842,
+          "profit_factor": 0.721311,
+          "ci95_lower": -0.07763228,
+          "ci95_upper": 0.03587913
         }
       },
       "calibration": {
-        "n_resolved": 12,
-        "brier_score": 0.33341042,
-        "ece_10bin": 0.34208333,
+        "n_resolved": 21,
+        "brier_score": 0.36049694,
+        "ece_10bin": 0.43792857,
         "max_brier": 0.25,
         "max_ece": 0.1,
         "min_resolved": 50,
@@ -17861,18 +17869,18 @@
       },
       "independence": {
         "forward_24h": {
-          "n": 75,
-          "unique_markets": 34,
-          "unique_market_ratio": 0.45333333,
+          "n": 76,
+          "unique_markets": 35,
+          "unique_market_ratio": 0.46052632,
           "min_unique_market_ratio": 0.8,
           "passed": false
         },
         "calibration_resolved": {
-          "n": 12,
-          "unique_markets": 11,
-          "unique_market_ratio": 0.91666667,
+          "n": 21,
+          "unique_markets": 12,
+          "unique_market_ratio": 0.57142857,
           "min_unique_market_ratio": 0.8,
-          "passed": true
+          "passed": false
         },
         "passed": false
       },
@@ -17890,14 +17898,14 @@
         "legacy_capital_execution": false
       },
       "calibration_scan": {
-        "ts": "2026-10-26T06:25:27+00:00",
+        "ts": "2026-10-26T13:24:50+00:00",
         "model_version": "risk-filtered-momentum-v1-forward-20260925",
-        "archive_pending": 71,
-        "due": 8,
-        "lookups": 8,
+        "archive_pending": 63,
+        "due": 9,
+        "lookups": 9,
         "lookup_limit": 25,
-        "resolved_added": 6,
-        "records_total": 12
+        "resolved_added": 9,
+        "records_total": 21
       },
       "warning": "REVIEW_ELIGIBLE is not permission to trade; capital_decision remains NO_TRADE until a separate reviewed paper-execution change."
     }

@@ -13,8 +13,8 @@
   "realized_pnl": -634.248613,
   "unrealized_pnl": 0.0,
   "fees_paid": 308.38584,
-  "ticks": 560,
-  "last_tick_at": "2026-10-27T22:48:03+00:00",
+  "ticks": 561,
+  "last_tick_at": "2026-10-27T22:58:32+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -12655,6 +12655,16 @@
       "fees_paid": 308.38584,
       "open_positions": 0,
       "closed_positions": 193
+    },
+    {
+      "ts": "2026-10-27T22:58:32+00:00",
+      "equity": 365.751387,
+      "cash": 365.751387,
+      "realized_pnl": -634.248613,
+      "unrealized_pnl": 0.0,
+      "fees_paid": 308.38584,
+      "open_positions": 0,
+      "closed_positions": 193
     }
   ],
   "shadow_challenger": {
@@ -17037,6 +17047,34 @@
         "status": "pending",
         "paper_only": true,
         "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:2110578:YES:1793141912",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "2110578",
+        "question": "Will Likud win 25-29 seats in the 2026 Israeli legislative election?",
+        "category": "Other",
+        "outcome": "YES",
+        "token_id": "35426463782545874068474526119520321582933339958366001423364580004443309941419",
+        "observed_at": "2026-10-27T22:58:32+00:00",
+        "end_date": "2026-10-28",
+        "entry_mid": 0.705,
+        "entry_spread": 0.01,
+        "entry_price": 0.71,
+        "shares": 138.83200633,
+        "gross_trade": 98.570724,
+        "entry_fee": 1.42928,
+        "cash_outlay": 100.000004,
+        "fee_rate": 0.05,
+        "momentum_24h": 0.475,
+        "momentum_6h": 0.56,
+        "liquidity": 40676.66,
+        "volume_24h": 539189.88,
+        "score": 0.796093,
+        "horizon_results": {},
+        "status": "pending",
+        "paper_only": true,
+        "capital_impact": 0.0
       }
     ],
     "summary": {
@@ -17058,25 +17096,25 @@
       }
     },
     "verdict": "NO_EVIDENCE",
-    "updated_at": "2026-10-27T22:48:03+00:00",
+    "updated_at": "2026-10-27T22:58:32+00:00",
     "auto_promotion": false,
     "last_observation": {
-      "ts": "2026-10-27T22:48:03+00:00",
+      "ts": "2026-10-27T22:58:32+00:00",
       "candidates_seen": 3,
-      "deduplicated": 0,
+      "deduplicated": 2,
       "rejected_price": 0,
-      "rejected_spread": 1,
+      "rejected_spread": 0,
       "rejected_invalid_quote": 0,
-      "added": 2
+      "added": 1
     },
     "observation_totals": {
-      "ticks": 234,
-      "candidates_seen": 316,
-      "deduplicated": 106,
+      "ticks": 235,
+      "candidates_seen": 319,
+      "deduplicated": 108,
       "rejected_price": 113,
       "rejected_spread": 4,
       "rejected_invalid_quote": 0,
-      "added": 91
+      "added": 92
     }
   },
   "capital_decision": "NO_TRADE",

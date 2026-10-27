@@ -13,8 +13,8 @@
   "realized_pnl": -634.248613,
   "unrealized_pnl": 0.0,
   "fees_paid": 308.38584,
-  "ticks": 559,
-  "last_tick_at": "2026-10-27T18:55:35+00:00",
+  "ticks": 560,
+  "last_tick_at": "2026-10-27T22:48:03+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -12645,6 +12645,16 @@
       "fees_paid": 308.38584,
       "open_positions": 0,
       "closed_positions": 193
+    },
+    {
+      "ts": "2026-10-27T22:48:03+00:00",
+      "equity": 365.751387,
+      "cash": 365.751387,
+      "realized_pnl": -634.248613,
+      "unrealized_pnl": 0.0,
+      "fees_paid": 308.38584,
+      "open_positions": 0,
+      "closed_positions": 193
     }
   ],
   "shadow_challenger": {
@@ -16811,7 +16821,18 @@
         "liquidity": 132512.61,
         "volume_24h": 318828.63,
         "score": 0.21775,
-        "horizon_results": {},
+        "horizon_results": {
+          "6": {
+            "evaluated_at": "2026-10-27T22:48:03+00:00",
+            "source": "clob_liquidation",
+            "exit_mid": 0.446,
+            "exit_spread": 0.02,
+            "net_liquidation": 61.855957,
+            "after_cost_pnl": -38.144046,
+            "after_cost_return": -0.38144045,
+            "profitable": false
+          }
+        },
         "status": "pending",
         "paper_only": true,
         "capital_impact": 0.0
@@ -16839,7 +16860,18 @@
         "liquidity": 598337.05,
         "volume_24h": 3143295.28,
         "score": 0.1525,
-        "horizon_results": {},
+        "horizon_results": {
+          "6": {
+            "evaluated_at": "2026-10-27T22:48:03+00:00",
+            "source": "clob_liquidation",
+            "exit_mid": 0.555,
+            "exit_spread": 0.01,
+            "net_liquidation": 65.748843,
+            "after_cost_pnl": -34.251157,
+            "after_cost_return": -0.34251157,
+            "profitable": false
+          }
+        },
         "status": "pending",
         "paper_only": true,
         "capital_impact": 0.0
@@ -16867,7 +16899,18 @@
         "liquidity": 357168.48,
         "volume_24h": 861852.75,
         "score": 0.15,
-        "horizon_results": {},
+        "horizon_results": {
+          "6": {
+            "evaluated_at": "2026-10-27T22:48:03+00:00",
+            "source": "clob_liquidation",
+            "exit_mid": 0.09,
+            "exit_spread": 0.02,
+            "net_liquidation": 9.678157,
+            "after_cost_pnl": -90.321841,
+            "after_cost_return": -0.90321843,
+            "profitable": false
+          }
+        },
         "status": "pending",
         "paper_only": true,
         "capital_impact": 0.0
@@ -16895,7 +16938,18 @@
         "liquidity": 202547.76,
         "volume_24h": 453779.81,
         "score": 0.15,
-        "horizon_results": {},
+        "horizon_results": {
+          "6": {
+            "evaluated_at": "2026-10-27T22:48:03+00:00",
+            "source": "clob_liquidation",
+            "exit_mid": 0.085,
+            "exit_spread": 0.01,
+            "net_liquidation": 9.678157,
+            "after_cost_pnl": -90.321841,
+            "after_cost_return": -0.90321843,
+            "profitable": false
+          }
+        },
         "status": "pending",
         "paper_only": true,
         "capital_impact": 0.0
@@ -16927,16 +16981,72 @@
         "status": "pending",
         "paper_only": true,
         "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:682705:YES:1793141283",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "682705",
+        "question": "Will Benjamin Netanyahu be the next Prime Minister of Israel?",
+        "category": "Other",
+        "outcome": "YES",
+        "token_id": "20006732765674855733524007935991362439352594042415161039767275461950712817548",
+        "observed_at": "2026-10-27T22:48:03+00:00",
+        "end_date": "2026-10-28",
+        "entry_mid": 0.445,
+        "entry_spread": 0.01,
+        "entry_price": 0.45,
+        "shares": 216.27466883,
+        "gross_trade": 97.323601,
+        "entry_fee": 2.6764,
+        "cash_outlay": 100.000001,
+        "fee_rate": 0.05,
+        "momentum_24h": 0.14,
+        "momentum_6h": 0.26,
+        "liquidity": 368925.85,
+        "volume_24h": 8371325.39,
+        "score": 0.315,
+        "horizon_results": {},
+        "status": "pending",
+        "paper_only": true,
+        "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:682708:NO:1793141283",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "682708",
+        "question": "Will Gadi Eizenkot be the next Prime Minister of Israel?",
+        "category": "Other",
+        "outcome": "NO",
+        "token_id": "1507744758511144558263623459899956467548763419522526462308518027912401299177",
+        "observed_at": "2026-10-27T22:48:03+00:00",
+        "end_date": "2026-10-28",
+        "entry_mid": 0.554,
+        "entry_spread": 0.02,
+        "entry_price": 0.564,
+        "shares": 173.52218099,
+        "gross_trade": 97.86651,
+        "entry_fee": 2.13349,
+        "cash_outlay": 100.0,
+        "fee_rate": 0.05,
+        "momentum_24h": -0.09,
+        "momentum_6h": -0.2075,
+        "liquidity": 126158.56,
+        "volume_24h": 890170.57,
+        "score": 0.23375,
+        "horizon_results": {},
+        "status": "pending",
+        "paper_only": true,
+        "capital_impact": 0.0
       }
     ],
     "summary": {
       "6": {
-        "n": 84,
-        "mean_return": -0.03561513,
-        "win_rate": 0.178571,
-        "profit_factor": 0.354,
-        "ci95_lower": -0.06121944,
-        "ci95_upper": -0.01001083
+        "n": 88,
+        "mean_return": -0.06275068,
+        "win_rate": 0.170455,
+        "profit_factor": 0.22892,
+        "ci95_lower": -0.10052866,
+        "ci95_upper": -0.0249727
       },
       "24": {
         "n": 84,
@@ -16948,25 +17058,25 @@
       }
     },
     "verdict": "NO_EVIDENCE",
-    "updated_at": "2026-10-27T18:55:35+00:00",
+    "updated_at": "2026-10-27T22:48:03+00:00",
     "auto_promotion": false,
     "last_observation": {
-      "ts": "2026-10-27T18:55:35+00:00",
-      "candidates_seen": 4,
-      "deduplicated": 2,
-      "rejected_price": 2,
-      "rejected_spread": 0,
+      "ts": "2026-10-27T22:48:03+00:00",
+      "candidates_seen": 3,
+      "deduplicated": 0,
+      "rejected_price": 0,
+      "rejected_spread": 1,
       "rejected_invalid_quote": 0,
-      "added": 0
+      "added": 2
     },
     "observation_totals": {
-      "ticks": 233,
-      "candidates_seen": 313,
+      "ticks": 234,
+      "candidates_seen": 316,
       "deduplicated": 106,
       "rejected_price": 113,
-      "rejected_spread": 3,
+      "rejected_spread": 4,
       "rejected_invalid_quote": 0,
-      "added": 89
+      "added": 91
     }
   },
   "capital_decision": "NO_TRADE",
@@ -17961,6 +18071,36 @@
         "next_resolution_check_at": "2026-11-04",
         "paper_only": true,
         "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:682705:YES:1793141283",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "682705",
+        "outcome": "YES",
+        "token_id": "20006732765674855733524007935991362439352594042415161039767275461950712817548",
+        "observed_at": "2026-10-27T22:48:03+00:00",
+        "end_date": "2026-10-28",
+        "forecast_probability": 0.445,
+        "archived_at": "2026-10-27T22:48:05+00:00",
+        "resolution_checks": 0,
+        "next_resolution_check_at": "2026-10-28",
+        "paper_only": true,
+        "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:682708:NO:1793141283",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "682708",
+        "outcome": "NO",
+        "token_id": "1507744758511144558263623459899956467548763419522526462308518027912401299177",
+        "observed_at": "2026-10-27T22:48:03+00:00",
+        "end_date": "2026-10-28",
+        "forecast_probability": 0.554,
+        "archived_at": "2026-10-27T22:48:05+00:00",
+        "resolution_checks": 0,
+        "next_resolution_check_at": "2026-10-28",
+        "paper_only": true,
+        "capital_impact": 0.0
       }
     ],
     "calibration_records": [
@@ -18242,9 +18382,9 @@
       }
     ],
     "last_calibration_scan": {
-      "ts": "2026-10-27T18:55:37+00:00",
+      "ts": "2026-10-27T22:48:05+00:00",
       "model_version": "risk-filtered-momentum-v1-forward-20260925",
-      "archive_pending": 66,
+      "archive_pending": 68,
       "due": 0,
       "lookups": 0,
       "lookup_limit": 25,
@@ -18252,10 +18392,10 @@
       "records_total": 23
     },
     "contract_version": "trade-dossier-v1-20261008",
-    "updated_at": "2026-10-27T18:55:37+00:00",
+    "updated_at": "2026-10-27T22:48:05+00:00",
     "trade_dossier": {
       "contract_version": "trade-dossier-v1-20261008",
-      "generated_at": "2026-10-27T18:55:37+00:00",
+      "generated_at": "2026-10-27T22:48:05+00:00",
       "model_version": "risk-filtered-momentum-v1-forward-20260925",
       "capital_decision": "NO_TRADE",
       "review_status": "BLOCKED",
@@ -18328,9 +18468,9 @@
         "legacy_capital_execution": false
       },
       "calibration_scan": {
-        "ts": "2026-10-27T18:55:37+00:00",
+        "ts": "2026-10-27T22:48:05+00:00",
         "model_version": "risk-filtered-momentum-v1-forward-20260925",
-        "archive_pending": 66,
+        "archive_pending": 68,
         "due": 0,
         "lookups": 0,
         "lookup_limit": 25,

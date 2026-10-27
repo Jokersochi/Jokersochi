@@ -13,8 +13,8 @@
   "realized_pnl": -634.248613,
   "unrealized_pnl": 0.0,
   "fees_paid": 308.38584,
-  "ticks": 556,
-  "last_tick_at": "2026-10-27T13:14:49+00:00",
+  "ticks": 557,
+  "last_tick_at": "2026-10-27T13:35:58+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -12615,6 +12615,16 @@
       "fees_paid": 308.38584,
       "open_positions": 0,
       "closed_positions": 193
+    },
+    {
+      "ts": "2026-10-27T13:35:58+00:00",
+      "equity": 365.751387,
+      "cash": 365.751387,
+      "realized_pnl": -634.248613,
+      "unrealized_pnl": 0.0,
+      "fees_paid": 308.38584,
+      "open_positions": 0,
+      "closed_positions": 193
     }
   ],
   "shadow_challenger": {
@@ -16841,6 +16851,34 @@
         "status": "pending",
         "paper_only": true,
         "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:2100984:YES:1793108158",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "2100984",
+        "question": "Will Yashar win the most seats in the 2026 Israeli legislative election?",
+        "category": "Other",
+        "outcome": "YES",
+        "token_id": "9025448570994866714151390167666974197623007132973626623412960268955048642964",
+        "observed_at": "2026-10-27T13:35:58+00:00",
+        "end_date": "2026-10-28",
+        "entry_mid": 0.775,
+        "entry_spread": 0.01,
+        "entry_price": 0.78,
+        "shares": 126.81021583,
+        "gross_trade": 98.911968,
+        "entry_fee": 1.08803,
+        "cash_outlay": 99.999998,
+        "fee_rate": 0.05,
+        "momentum_24h": 0.07,
+        "momentum_6h": 0.07,
+        "liquidity": 202547.76,
+        "volume_24h": 453779.81,
+        "score": 0.15,
+        "horizon_results": {},
+        "status": "pending",
+        "paper_only": true,
+        "capital_impact": 0.0
       }
     ],
     "summary": {
@@ -16862,25 +16900,25 @@
       }
     },
     "verdict": "NO_EVIDENCE",
-    "updated_at": "2026-10-27T13:14:49+00:00",
+    "updated_at": "2026-10-27T13:35:58+00:00",
     "auto_promotion": false,
     "last_observation": {
-      "ts": "2026-10-27T13:14:49+00:00",
+      "ts": "2026-10-27T13:35:58+00:00",
       "candidates_seen": 4,
-      "deduplicated": 0,
+      "deduplicated": 3,
       "rejected_price": 0,
       "rejected_spread": 0,
       "rejected_invalid_quote": 0,
-      "added": 3
+      "added": 1
     },
     "observation_totals": {
-      "ticks": 230,
-      "candidates_seen": 303,
-      "deduplicated": 100,
+      "ticks": 231,
+      "candidates_seen": 307,
+      "deduplicated": 103,
       "rejected_price": 111,
       "rejected_spread": 3,
       "rejected_invalid_quote": 0,
-      "added": 87
+      "added": 88
     }
   },
   "capital_decision": "NO_TRADE",
@@ -17800,6 +17838,66 @@
         "next_resolution_check_at": "2026-10-28",
         "paper_only": true,
         "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:682708:YES:1793106889",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "682708",
+        "outcome": "YES",
+        "token_id": "52487256270918227930942830546248720603566203568229607048093730748840489555808",
+        "observed_at": "2026-10-27T13:14:49+00:00",
+        "end_date": "2026-10-28",
+        "forecast_probability": 0.673,
+        "archived_at": "2026-10-27T13:35:58+00:00",
+        "resolution_checks": 0,
+        "next_resolution_check_at": "2026-10-28",
+        "paper_only": true,
+        "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:682705:NO:1793106889",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "682705",
+        "outcome": "NO",
+        "token_id": "54533569528927082430133047556849600511985191158927477533124630301934489498530",
+        "observed_at": "2026-10-27T13:14:49+00:00",
+        "end_date": "2026-10-28",
+        "forecast_probability": 0.805,
+        "archived_at": "2026-10-27T13:35:58+00:00",
+        "resolution_checks": 0,
+        "next_resolution_check_at": "2026-10-28",
+        "paper_only": true,
+        "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:2100981:NO:1793106889",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "2100981",
+        "outcome": "NO",
+        "token_id": "112833774316104951988690985316609270957261648365641646812446420693891587882096",
+        "observed_at": "2026-10-27T13:14:49+00:00",
+        "end_date": "2026-10-28",
+        "forecast_probability": 0.775,
+        "archived_at": "2026-10-27T13:35:58+00:00",
+        "resolution_checks": 0,
+        "next_resolution_check_at": "2026-10-28",
+        "paper_only": true,
+        "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:2100984:YES:1793108158",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "2100984",
+        "outcome": "YES",
+        "token_id": "9025448570994866714151390167666974197623007132973626623412960268955048642964",
+        "observed_at": "2026-10-27T13:35:58+00:00",
+        "end_date": "2026-10-28",
+        "forecast_probability": 0.775,
+        "archived_at": "2026-10-27T13:35:59+00:00",
+        "resolution_checks": 0,
+        "next_resolution_check_at": "2026-10-28",
+        "paper_only": true,
+        "capital_impact": 0.0
       }
     ],
     "calibration_records": [
@@ -18081,9 +18179,9 @@
       }
     ],
     "last_calibration_scan": {
-      "ts": "2026-10-27T07:43:20+00:00",
+      "ts": "2026-10-27T13:35:59+00:00",
       "model_version": "risk-filtered-momentum-v1-forward-20260925",
-      "archive_pending": 61,
+      "archive_pending": 65,
       "due": 0,
       "lookups": 0,
       "lookup_limit": 25,
@@ -18091,10 +18189,10 @@
       "records_total": 23
     },
     "contract_version": "trade-dossier-v1-20261008",
-    "updated_at": "2026-10-27T07:43:20+00:00",
+    "updated_at": "2026-10-27T13:35:59+00:00",
     "trade_dossier": {
       "contract_version": "trade-dossier-v1-20261008",
-      "generated_at": "2026-10-27T07:43:20+00:00",
+      "generated_at": "2026-10-27T13:35:59+00:00",
       "model_version": "risk-filtered-momentum-v1-forward-20260925",
       "capital_decision": "NO_TRADE",
       "review_status": "BLOCKED",
@@ -18119,12 +18217,12 @@
       "forward_evidence": {
         "shadow_verdict": "NO_EVIDENCE",
         "stats_24h": {
-          "n": 83,
-          "mean_return": -0.01327277,
-          "win_rate": 0.289157,
-          "profit_factor": 0.835408,
-          "ci95_lower": -0.07329049,
-          "ci95_upper": 0.04674495
+          "n": 84,
+          "mean_return": -0.01421019,
+          "win_rate": 0.285714,
+          "profit_factor": 0.824079,
+          "ci95_lower": -0.07353757,
+          "ci95_upper": 0.04511718
         }
       },
       "calibration": {
@@ -18138,9 +18236,9 @@
       },
       "independence": {
         "forward_24h": {
-          "n": 83,
-          "unique_markets": 38,
-          "unique_market_ratio": 0.45783133,
+          "n": 84,
+          "unique_markets": 39,
+          "unique_market_ratio": 0.46428571,
           "min_unique_market_ratio": 0.8,
           "passed": false
         },
@@ -18167,9 +18265,9 @@
         "legacy_capital_execution": false
       },
       "calibration_scan": {
-        "ts": "2026-10-27T07:43:20+00:00",
+        "ts": "2026-10-27T13:35:59+00:00",
         "model_version": "risk-filtered-momentum-v1-forward-20260925",
-        "archive_pending": 61,
+        "archive_pending": 65,
         "due": 0,
         "lookups": 0,
         "lookup_limit": 25,

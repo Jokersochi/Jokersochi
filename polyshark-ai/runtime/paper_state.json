@@ -13,8 +13,8 @@
   "realized_pnl": -634.248613,
   "unrealized_pnl": 0.0,
   "fees_paid": 308.38584,
-  "ticks": 567,
-  "last_tick_at": "2026-10-28T14:23:39+00:00",
+  "ticks": 568,
+  "last_tick_at": "2026-10-28T16:40:13+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -12725,6 +12725,16 @@
       "fees_paid": 308.38584,
       "open_positions": 0,
       "closed_positions": 193
+    },
+    {
+      "ts": "2026-10-28T16:40:13+00:00",
+      "equity": 365.751387,
+      "cash": 365.751387,
+      "realized_pnl": -634.248613,
+      "unrealized_pnl": 0.0,
+      "fees_paid": 308.38584,
+      "open_positions": 0,
+      "closed_positions": 193
     }
   ],
   "shadow_challenger": {
@@ -17219,6 +17229,34 @@
         "status": "pending",
         "paper_only": true,
         "capital_impact": 0.0
+      },
+      {
+        "signal_id": "risk-filtered-momentum-v1-forward-20260925:3215008:YES:1793205613",
+        "model_version": "risk-filtered-momentum-v1-forward-20260925",
+        "market_id": "3215008",
+        "question": "Will the Fed increase interest rates by 25 bps after the December 2026 meeting?",
+        "category": "Other",
+        "outcome": "YES",
+        "token_id": "111662129652828266889360374468657435151479595863413519836161861837506140152890",
+        "observed_at": "2026-10-28T16:40:13+00:00",
+        "end_date": "2026-12-09",
+        "entry_mid": 0.775,
+        "entry_spread": 0.01,
+        "entry_price": 0.78,
+        "shares": 126.81021583,
+        "gross_trade": 98.911968,
+        "entry_fee": 1.08803,
+        "cash_outlay": 99.999998,
+        "fee_rate": 0.05,
+        "momentum_24h": 0.03,
+        "momentum_6h": 0.01,
+        "liquidity": 321632.73,
+        "volume_24h": 183298.42,
+        "score": 0.08,
+        "horizon_results": {},
+        "status": "pending",
+        "paper_only": true,
+        "capital_impact": 0.0
       }
     ],
     "summary": {
@@ -17240,25 +17278,25 @@
       }
     },
     "verdict": "NO_EVIDENCE",
-    "updated_at": "2026-10-28T14:23:39+00:00",
+    "updated_at": "2026-10-28T16:40:13+00:00",
     "auto_promotion": false,
     "last_observation": {
-      "ts": "2026-10-28T14:23:39+00:00",
-      "candidates_seen": 0,
+      "ts": "2026-10-28T16:40:13+00:00",
+      "candidates_seen": 1,
       "deduplicated": 0,
       "rejected_price": 0,
       "rejected_spread": 0,
       "rejected_invalid_quote": 0,
-      "added": 0
+      "added": 1
     },
     "observation_totals": {
-      "ticks": 241,
-      "candidates_seen": 319,
+      "ticks": 242,
+      "candidates_seen": 320,
       "deduplicated": 108,
       "rejected_price": 113,
       "rejected_spread": 4,
       "rejected_invalid_quote": 0,
-      "added": 92
+      "added": 93
     }
   },
   "capital_decision": "NO_TRADE",

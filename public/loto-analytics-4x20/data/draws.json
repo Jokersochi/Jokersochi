@@ -1,11 +1,11 @@
 {
   "source": "official",
-  "retrievedAt": "2026-10-28T16:39:32.719Z",
-  "count": 16042,
+  "retrievedAt": "2026-10-28T21:40:13.297Z",
+  "count": 16048,
   "first": 1,
-  "last": 16042,
+  "last": 16048,
   "quality": {
-    "duplicates": 88,
+    "duplicates": 94,
     "gaps": [],
     "continuous": true
   },
@@ -288764,6 +288764,114 @@
         2
       ],
       "sourceUrl": "https://www.stoloto.ru/4x20/archive/16042",
+      "validationStatus": "verified"
+    },
+    {
+      "number": 16043,
+      "date": "2026-10-28T19:37:30+0300",
+      "fieldA": [
+        6,
+        12,
+        2,
+        13
+      ],
+      "fieldB": [
+        7,
+        10,
+        17,
+        20
+      ],
+      "sourceUrl": "https://www.stoloto.ru/4x20/archive/16043",
+      "validationStatus": "verified"
+    },
+    {
+      "number": 16044,
+      "date": "2026-10-28T20:37:30+0300",
+      "fieldA": [
+        1,
+        12,
+        5,
+        18
+      ],
+      "fieldB": [
+        6,
+        4,
+        8,
+        3
+      ],
+      "sourceUrl": "https://www.stoloto.ru/4x20/archive/16044",
+      "validationStatus": "verified"
+    },
+    {
+      "number": 16045,
+      "date": "2026-10-28T21:07:30+0300",
+      "fieldA": [
+        6,
+        14,
+        17,
+        20
+      ],
+      "fieldB": [
+        11,
+        6,
+        7,
+        13
+      ],
+      "sourceUrl": "https://www.stoloto.ru/4x20/archive/16045",
+      "validationStatus": "verified"
+    },
+    {
+      "number": 16046,
+      "date": "2026-10-28T21:37:30+0300",
+      "fieldA": [
+        11,
+        15,
+        16,
+        12
+      ],
+      "fieldB": [
+        10,
+        17,
+        16,
+        18
+      ],
+      "sourceUrl": "https://www.stoloto.ru/4x20/archive/16046",
+      "validationStatus": "verified"
+    },
+    {
+      "number": 16047,
+      "date": "2026-10-28T22:00:00+0300",
+      "fieldA": [
+        12,
+        20,
+        8,
+        15
+      ],
+      "fieldB": [
+        8,
+        18,
+        12,
+        9
+      ],
+      "sourceUrl": "https://www.stoloto.ru/4x20/archive/16047",
+      "validationStatus": "verified"
+    },
+    {
+      "number": 16048,
+      "date": "2026-10-28T23:37:30+0300",
+      "fieldA": [
+        17,
+        8,
+        3,
+        20
+      ],
+      "fieldB": [
+        16,
+        9,
+        11,
+        2
+      ],
+      "sourceUrl": "https://www.stoloto.ru/4x20/archive/16048",
       "validationStatus": "verified"
     }
   ]

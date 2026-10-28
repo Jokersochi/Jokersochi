@@ -1,11 +1,11 @@
 {
   "source": "official",
-  "retrievedAt": "2026-10-28T09:42:49.801Z",
+  "retrievedAt": "2026-10-28T10:03:33.840Z",
   "count": 16032,
   "first": 1,
   "last": 16032,
   "quality": {
-    "duplicates": 96,
+    "duplicates": 50,
     "gaps": [],
     "continuous": true
   },

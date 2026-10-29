@@ -76,6 +76,13 @@ class ChallengerV2Tests(unittest.TestCase):
         )
         self.assertFalse(edge["eligible"])
 
+    def test_nonfinite_weights_abstain(self):
+        for weight in ("nan", "inf", "-inf"):
+            evidence = self._evidence()
+            evidence[0]["weight"] = weight
+            result = cv2.price_blind_event_forecast(self.QUESTION, self.NOW, evidence)
+            self.assertEqual(result.status, "INSUFFICIENT_INDEPENDENT_EVIDENCE")
+
 
 if __name__ == "__main__":
     unittest.main()

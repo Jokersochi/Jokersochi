@@ -72,6 +72,7 @@ def price_blind_event_forecast(
             or item.get("question_hash") != expected_hash
             or item.get("independent_of_market_price") is not True
             or not 0.0 < probability < 1.0
+            or not math.isfinite(weight)
             or weight <= 0.0
         ):
             continue
@@ -92,9 +93,10 @@ def price_blind_event_forecast(
     by_source: dict[str, tuple[float, float, str]] = {}
     for source, probability, weight, fingerprint in valid:
         by_source[source] = (probability, weight, fingerprint)
-    total_weight = math.fsum(weight for _, weight, _ in by_source.values())
+    scale = max(weight for _, weight, _ in by_source.values())
+    total_weight = math.fsum(weight / scale for _, weight, _ in by_source.values())
     probability_yes = math.fsum(
-        probability * weight for probability, weight, _ in by_source.values()
+        probability * (weight / scale) for probability, weight, _ in by_source.values()
     ) / total_weight
     fingerprints = sorted(fingerprint for _, _, fingerprint in by_source.values())
     digest = hashlib.sha256("|".join(fingerprints).encode("utf-8")).hexdigest()

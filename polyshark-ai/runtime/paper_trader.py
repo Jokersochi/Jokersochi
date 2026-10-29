@@ -771,10 +771,6 @@ def observe_shadow_candidates(
     for candidate in candidates:
         if added >= SHADOW_TOP_PER_TICK:
             break
-        key = (candidate.market_id, candidate.outcome)
-        if key in recent_keys:
-            counters["deduplicated"] += 1
-            continue
         evidence = evidence_by_market.get(str(candidate.market_id), [])
         signal, reason = _shadow_entry(candidate, mids, spreads, now, evidence)
         if signal is None:
@@ -788,6 +784,10 @@ def observe_shadow_candidates(
                     "quote": "rejected_invalid_quote",
                 }.get(reason, "rejected_invalid_quote")
             ] += 1
+            continue
+        key = (candidate.market_id, signal["outcome"])
+        if key in recent_keys:
+            counters["deduplicated"] += 1
             continue
         signals.append(signal)
         recent_keys.add(key)
@@ -1075,6 +1075,7 @@ def stop_session(state: dict[str, Any], reason: str, now: str, mids: dict[str, f
 
 def tick(state: dict[str, Any]) -> dict[str, Any]:
     now = utc_now()
+    _shadow_root(state, now)
     if state.get("status") not in ("running", None):
         state["last_tick_at"] = now
         state["last_error"] = None

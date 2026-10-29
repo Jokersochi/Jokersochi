@@ -23,8 +23,11 @@ class EvidenceContractTests(unittest.TestCase):
                 "auto_promotion": False,
                 "strategy_spec": {
                     "forward_only": True,
+                    "market_price_input_to_model": False,
+                    "independent_evidence_required": True,
                     "max_spread": 0.02,
                     "min_entry_price": 0.40,
+                    "min_net_edge_per_share": 0.02,
                 },
                 "summary": {
                     "24": {
@@ -61,7 +64,12 @@ class EvidenceContractTests(unittest.TestCase):
                 "token_id": "yes1",
                 "observed_at": "2026-10-01T00:00:00+00:00",
                 "end_date": "2026-10-02T00:00:00+00:00",
-                "entry_mid": 0.70,
+                "p_model": 0.70,
+                "p_market": 0.50,
+                "model_status": "OK",
+                "model_source_ids": ["research-a", "research-b"],
+                "model_evidence_fingerprint": "fixture",
+                "cost_model": {"eligible": True, "net_edge_per_share": 0.10},
                 "horizon_results": {},
                 "paper_only": True,
                 "capital_impact": 0.0,
@@ -96,7 +104,12 @@ class EvidenceContractTests(unittest.TestCase):
             "token_id": "yes1",
             "observed_at": "2026-10-01T00:00:00+00:00",
             "end_date": "2026-10-02T00:00:00+00:00",
-            "entry_mid": 0.60,
+            "p_model": 0.60,
+            "p_market": 0.50,
+            "model_status": "OK",
+            "model_source_ids": ["research-a", "research-b"],
+            "model_evidence_fingerprint": "fixture",
+            "cost_model": {"eligible": True, "net_edge_per_share": 0.05},
             "horizon_results": {},
             "paper_only": True,
             "capital_impact": 0.0,
@@ -134,6 +147,11 @@ class EvidenceContractTests(unittest.TestCase):
                     "model_version": "fixture-v1",
                     "market_id": f"m{index}",
                     "horizon_results": {"24": {"after_cost_return": 0.02}},
+                    "p_model": 0.70,
+                    "p_market": 0.50,
+                    "model_status": "OK",
+                    "model_source_ids": ["research-a", "research-b"],
+                    "cost_model": {"eligible": True, "net_edge_per_share": 0.05},
                 }
             )
         state["evidence_contract"] = {

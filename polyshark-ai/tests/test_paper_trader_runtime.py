@@ -11,6 +11,28 @@ sys.modules[spec.name] = pt
 spec.loader.exec_module(pt)
 
 
+def independent_evidence(question: str, observed_at: str, probability_yes: float = 0.72):
+    digest = pt.challenger.question_hash(question)
+    return [
+        {
+            "source_id": "research-a",
+            "evidence_id": "fixture-a",
+            "observed_at": observed_at,
+            "question_hash": digest,
+            "probability_yes": probability_yes,
+            "independent_of_market_price": True,
+        },
+        {
+            "source_id": "research-b",
+            "evidence_id": "fixture-b",
+            "observed_at": observed_at,
+            "question_hash": digest,
+            "probability_yes": probability_yes,
+            "independent_of_market_price": True,
+        },
+    ]
+
+
 class PaperTraderRuntimeTests(unittest.TestCase):
     def test_fresh_state_is_paper_only_and_exact_targets(self):
         s = pt.fresh_state()
@@ -176,6 +198,9 @@ class PaperTraderRuntimeTests(unittest.TestCase):
             momentum_6h=0.05,
             end_date="2026-10-31T00:00:00+00:00",
         )
+        s["challenger_v2_evidence"] = {
+            "shadow1": independent_evidence(candidate.question, "2026-09-25T14:00:00+00:00")
+        }
         added = pt.observe_shadow_candidates(
             s,
             [candidate],
@@ -190,6 +215,33 @@ class PaperTraderRuntimeTests(unittest.TestCase):
         self.assertEqual(signal["capital_impact"], 0.0)
         self.assertTrue(signal["paper_only"])
         self.assertAlmostEqual(signal["cash_outlay"], pt.SHADOW_NOTIONAL, places=3)
+
+    def test_shadow_without_independent_evidence_abstains(self):
+        s = pt.fresh_state()
+        candidate = pt.Candidate(
+            market_id="no-evidence",
+            question="No independent evidence fixture?",
+            category="Other",
+            yes_token="yes-no-evidence",
+            no_token="no-no-evidence",
+            yes_price=0.50,
+            yes_spread=0.01,
+            liquidity=100000.0,
+            volume_24h=50000.0,
+            momentum_24h=0.10,
+            momentum_6h=0.05,
+            end_date="2026-10-31T00:00:00+00:00",
+        )
+        added = pt.observe_shadow_candidates(
+            s,
+            [candidate],
+            {"yes-no-evidence": 0.50, "no-no-evidence": 0.50},
+            {"yes-no-evidence": 0.01, "no-no-evidence": 0.01},
+            "2026-09-25T14:00:00+00:00",
+        )
+        self.assertEqual(added, 0)
+        self.assertEqual(s["shadow_challenger"]["signals"], [])
+        self.assertEqual(s["shadow_challenger"]["last_observation"]["rejected_model_evidence"], 1)
 
     def test_shadow_rejects_low_price_candidate_and_deduplicates(self):
         s = pt.fresh_state()
@@ -221,6 +273,10 @@ class PaperTraderRuntimeTests(unittest.TestCase):
             momentum_6h=0.05,
             end_date="2026-10-31T00:00:00+00:00",
         )
+        s["challenger_v2_evidence"] = {
+            "low": independent_evidence(low.question, "2026-09-25T14:00:00+00:00"),
+            "good": independent_evidence(good.question, "2026-09-25T14:00:00+00:00"),
+        }
         mids = {
             "yes-low": 0.30,
             "no-low": 0.70,
@@ -262,6 +318,9 @@ class PaperTraderRuntimeTests(unittest.TestCase):
             momentum_6h=0.05,
             end_date="2026-10-31T00:00:00+00:00",
         )
+        s["challenger_v2_evidence"] = {
+            "wide": independent_evidence(candidate.question, "2026-09-25T14:00:00+00:00")
+        }
         added = pt.observe_shadow_candidates(
             s,
             [candidate],
@@ -290,6 +349,9 @@ class PaperTraderRuntimeTests(unittest.TestCase):
             momentum_6h=0.05,
             end_date="2026-10-31T00:00:00+00:00",
         )
+        s["challenger_v2_evidence"] = {
+            "mature": independent_evidence(candidate.question, "2026-09-25T14:00:00+00:00")
+        }
         pt.observe_shadow_candidates(
             s,
             [candidate],
@@ -320,6 +382,22 @@ class PaperTraderRuntimeTests(unittest.TestCase):
         root["strategy_spec"]["min_entry_price"] = 0.39
         with self.assertRaises(AssertionError):
             pt.validate_state(s)
+
+    def test_v1_shadow_evidence_is_retired_at_v2_cutover(self):
+        s = pt.fresh_state()
+        s["shadow_challenger"] = {
+            "model_version": "risk-filtered-momentum-v1-forward-20260925",
+            "signals": [{"signal_id": "legacy"}],
+            "summary": {"24": {"n": 99}},
+        }
+        root = pt._shadow_root(s, "2026-10-29T10:00:00+00:00")
+        self.assertEqual(root["model_version"], pt.SHADOW_MODEL_VERSION)
+        self.assertEqual(root["signals"], [])
+        self.assertFalse(root["auto_promotion"])
+        pt.validate_state(s)
+        retired = s["retired_shadow_challengers"][-1]
+        self.assertEqual(retired["model_version"], "risk-filtered-momentum-v1-forward-20260925")
+        self.assertEqual(retired["signals_retired"], 1)
 
     def test_shadow_review_gate_never_auto_promotes(self):
         root = {

@@ -8,7 +8,6 @@
 from __future__ import annotations
 
 import argparse
-import fcntl
 import json
 import os
 import signal
@@ -16,6 +15,12 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+
+try:  # Linux runner: advisory process lock for the long-running daemon.
+    import fcntl
+except ModuleNotFoundError:  # Windows: tests and local one-shot diagnostics.
+    fcntl = None
+    import msvcrt
 
 import evidence_contract as evidence
 import paper_trader as trader
@@ -193,11 +198,22 @@ def main(argv: list[str] | None = None) -> int:
     lock_path = Path(args.lock)
     lock_path.parent.mkdir(parents=True, exist_ok=True)
     lock_file = lock_path.open("a+", encoding="utf-8")
-    try:
-        fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
-    except BlockingIOError:
-        print("Другой экземпляр PolyShark paper-раннера уже работает. Дублирование запрещено.")
-        return 2
+    if fcntl is not None:
+        try:
+            fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            print("Другой экземпляр PolyShark paper-раннера уже работает. Дублирование запрещено.")
+            return 2
+    else:
+        lock_file.seek(0)
+        lock_file.write("0")
+        lock_file.flush()
+        lock_file.seek(0)
+        try:
+            msvcrt.locking(lock_file.fileno(), msvcrt.LK_NBLCK, 1)
+        except OSError:
+            print("Другой экземпляр PolyShark paper-раннера уже работает. Дублирование запрещено.")
+            return 2
 
     signal.signal(signal.SIGTERM, _handle_signal)
     signal.signal(signal.SIGINT, _handle_signal)

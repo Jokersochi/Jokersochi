@@ -17,6 +17,7 @@ import argparse
 import json
 import math
 import os
+import sys
 import time
 import urllib.error
 import urllib.parse
@@ -25,6 +26,11 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable
+
+RUNTIME_DIR = str(Path(__file__).resolve().parent)
+if RUNTIME_DIR not in sys.path:
+    sys.path.insert(0, RUNTIME_DIR)
+import challenger_v2 as challenger
 
 GAMMA_MARKETS = "https://gamma-api.polymarket.com/markets"
 CLOB_BASE = "https://clob.polymarket.com"
@@ -57,7 +63,7 @@ SETTLEMENT_PRICE_EPSILON = float(os.getenv("PAPER_SETTLEMENT_PRICE_EPSILON", "0.
 EQUITY_HISTORY_LIMIT = int(os.getenv("PAPER_EQUITY_HISTORY_LIMIT", "2016"))
 
 SHADOW_ENABLED = os.getenv("PAPER_SHADOW_ENABLED", "true").strip().lower() in {"1", "true", "yes", "on"}
-SHADOW_MODEL_VERSION = "risk-filtered-momentum-v1-forward-20260925"
+SHADOW_MODEL_VERSION = challenger.MODEL_VERSION
 SHADOW_TOP_PER_TICK = int(os.getenv("PAPER_SHADOW_TOP_PER_TICK", "3"))
 SHADOW_NOTIONAL = float(os.getenv("PAPER_SHADOW_NOTIONAL", "100"))
 SHADOW_MIN_ENTRY_PRICE = float(os.getenv("PAPER_SHADOW_MIN_ENTRY_PRICE", "0.40"))
@@ -67,6 +73,7 @@ SHADOW_HORIZONS_HOURS = (6, 24)
 SHADOW_SIGNAL_LIMIT = int(os.getenv("PAPER_SHADOW_SIGNAL_LIMIT", "1500"))
 SHADOW_REVIEW_MIN_24H = int(os.getenv("PAPER_SHADOW_REVIEW_MIN_24H", "100"))
 SHADOW_REVIEW_MIN_PROFIT_FACTOR = float(os.getenv("PAPER_SHADOW_REVIEW_MIN_PROFIT_FACTOR", "1.20"))
+SHADOW_MIN_NET_EDGE = float(os.getenv("PAPER_SHADOW_MIN_NET_EDGE", "0.02"))
 
 FEE_RATE_BY_CATEGORY = {
     "crypto": 0.07,
@@ -594,17 +601,37 @@ def _shadow_root(state: dict[str, Any], now: str) -> dict[str, Any]:
     root = state.setdefault("shadow_challenger", {})
     if not isinstance(root, dict):
         raise RuntimeError("shadow_challenger must be an object")
+    if root and root.get("model_version") not in (None, SHADOW_MODEL_VERSION):
+        # Do not let V1 price/momentum observations leak into V2 evidence.
+        retired = state.setdefault("retired_shadow_challengers", [])
+        retired.append(
+            {
+                "model_version": root.get("model_version"),
+                "retired_at": now,
+                "signals_retired": len(root.get("signals", [])),
+                "summary": root.get("summary", {}),
+                "reason": "challenger_v2_price_blind_cutover",
+            }
+        )
+        state["retired_shadow_challengers"] = retired[-10:]
+        root = {}
+        state["shadow_challenger"] = root
     root.setdefault("model_version", SHADOW_MODEL_VERSION)
     root.setdefault("started_at", now)
     root.setdefault(
         "strategy_spec",
         {
-            "source": "existing dual-horizon momentum candidate stream",
+            "source": "price-blind exogenous event-evidence ensemble",
             "forward_only": True,
+            "market_price_input_to_model": False,
+            "independent_evidence_required": True,
+            "minimum_independent_sources": challenger.MIN_INDEPENDENT_SOURCES,
             "min_entry_price": SHADOW_MIN_ENTRY_PRICE,
             "max_spread": SHADOW_MAX_SPREAD,
+            "min_net_edge_per_share": SHADOW_MIN_NET_EDGE,
             "dedup_hours": SHADOW_DEDUP_HOURS,
             "notional": SHADOW_NOTIONAL,
+            "slippage_model": "sqrt_notional_over_liquidity_v1",
             "horizons_hours": list(SHADOW_HORIZONS_HOURS),
             "legacy_capital_execution": False,
         },
@@ -623,37 +650,72 @@ def _shadow_root(state: dict[str, Any], now: str) -> dict[str, Any]:
     root.setdefault("signals", [])
     root.setdefault("summary", {})
     root.setdefault("verdict", "NO_EVIDENCE")
+    root.setdefault("auto_promotion", False)
     return root
 
 
-def _shadow_entry(c: Candidate, mids: dict[str, float], spreads: dict[str, float], now: str) -> dict[str, Any] | None:
-    token_id = c.token_id
-    mid = mids.get(token_id, c.token_mid)
-    spread = spreads.get(token_id, c.yes_spread)
-    if not (SHADOW_MIN_ENTRY_PRICE <= mid <= MAX_PRICE):
-        return None
-    if not (0.0 <= spread <= SHADOW_MAX_SPREAD):
-        return None
-    entry_price = min(0.999, mid + spread / 2.0)
+def _shadow_entry(
+    c: Candidate,
+    mids: dict[str, float],
+    spreads: dict[str, float],
+    now: str,
+    evidence: list[dict[str, Any]] | None,
+) -> tuple[dict[str, Any] | None, str]:
+    forecast = challenger.price_blind_event_forecast(c.question, now, evidence)
+    if forecast.status != "OK":
+        return None, "model_evidence"
+    yes_mid = mids.get(c.yes_token, c.yes_price)
+    no_mid = mids.get(c.no_token, 1.0 - c.yes_price)
+    yes_spread = spreads.get(c.yes_token, c.yes_spread)
+    no_spread = spreads.get(c.no_token, c.yes_spread)
     fee_rate = market_fee_rate(c.category)
-    gross_trade = (
-        SHADOW_NOTIONAL / (1.0 + fee_rate * (1.0 - entry_price))
-        if fee_rate > 0
-        else SHADOW_NOTIONAL
+    choices: list[tuple[str, str, float, float, float, dict[str, Any]]] = []
+    for outcome, token_id, probability, market_probability, spread in (
+        ("YES", c.yes_token, forecast.probability_yes, yes_mid, yes_spread),
+        ("NO", c.no_token, 1.0 - forecast.probability_yes, no_mid, no_spread),
+    ):
+        costs = challenger.costed_edge(
+            probability=probability,
+            market_probability=market_probability,
+            spread=spread,
+            fee_rate=fee_rate,
+            liquidity=c.liquidity,
+            notional=SHADOW_NOTIONAL,
+        )
+        choices.append((outcome, token_id, probability, market_probability, spread, costs))
+    outcome, token_id, probability, mid, spread, costs = max(
+        choices, key=lambda item: float(item[5].get("net_edge_per_share", -1.0))
     )
-    shares = gross_trade / entry_price
-    entry_fee = taker_fee(shares, entry_price, fee_rate)
+    if not bool(costs.get("eligible")):
+        return None, "liquidity"
+    if not (SHADOW_MIN_ENTRY_PRICE <= mid <= MAX_PRICE):
+        return None, "price"
+    if not (0.0 <= spread <= SHADOW_MAX_SPREAD):
+        return None, "spread"
+    if float(costs.get("net_edge_per_share", -1.0)) < SHADOW_MIN_NET_EDGE:
+        return None, "net_edge"
+    entry_price = float(costs["entry_price"])
+    fee_rate = market_fee_rate(c.category)
+    all_in_cost = float(costs["all_in_cost_per_share"])
+    shares = SHADOW_NOTIONAL / all_in_cost
+    gross_trade = shares * entry_price
+    entry_fee = shares * float(costs["fee_per_share"])
     cash_outlay = gross_trade + entry_fee
     return {
-        "signal_id": f"{SHADOW_MODEL_VERSION}:{c.market_id}:{c.outcome}:{int(parse_ts(now))}",
+        "signal_id": f"{SHADOW_MODEL_VERSION}:{c.market_id}:{outcome}:{int(parse_ts(now))}",
         "model_version": SHADOW_MODEL_VERSION,
         "market_id": c.market_id,
         "question": c.question,
         "category": c.category,
-        "outcome": c.outcome,
+        "outcome": outcome,
         "token_id": token_id,
         "observed_at": now,
         "end_date": c.end_date,
+        "p_model": round(probability, 8),
+        "p_market": round(mid, 8),
+        "model_status": forecast.status,
+        "model_source_ids": list(forecast.source_ids),
+        "model_evidence_fingerprint": forecast.evidence_fingerprint,
         "entry_mid": round(mid, 6),
         "entry_spread": round(spread, 6),
         "entry_price": round(entry_price, 6),
@@ -662,16 +724,14 @@ def _shadow_entry(c: Candidate, mids: dict[str, float], spreads: dict[str, float
         "entry_fee": round(entry_fee, 6),
         "cash_outlay": round(cash_outlay, 6),
         "fee_rate": fee_rate,
-        "momentum_24h": round(c.momentum_24h, 6),
-        "momentum_6h": round(c.momentum_6h, 6),
         "liquidity": round(c.liquidity, 2),
         "volume_24h": round(c.volume_24h, 2),
-        "score": round(c.score, 6),
+        "cost_model": costs,
         "horizon_results": {},
         "status": "pending",
         "paper_only": True,
         "capital_impact": 0.0,
-    }
+    }, "ok"
 
 
 def observe_shadow_candidates(
@@ -699,8 +759,14 @@ def observe_shadow_candidates(
         "rejected_price": 0,
         "rejected_spread": 0,
         "rejected_invalid_quote": 0,
+        "rejected_model_evidence": 0,
+        "rejected_liquidity": 0,
+        "rejected_net_edge": 0,
         "added": 0,
     }
+    evidence_by_market = state.get("challenger_v2_evidence", {})
+    if not isinstance(evidence_by_market, dict):
+        evidence_by_market = {}
     added = 0
     for candidate in candidates:
         if added >= SHADOW_TOP_PER_TICK:
@@ -709,21 +775,19 @@ def observe_shadow_candidates(
         if key in recent_keys:
             counters["deduplicated"] += 1
             continue
-        token_id = candidate.token_id
-        mid = mids.get(token_id, candidate.token_mid)
-        spread = spreads.get(token_id, candidate.yes_spread)
-        if not (0 < mid < 1) or not (0 <= spread < 1):
-            counters["rejected_invalid_quote"] += 1
-            continue
-        if not (SHADOW_MIN_ENTRY_PRICE <= mid <= MAX_PRICE):
-            counters["rejected_price"] += 1
-            continue
-        if spread > SHADOW_MAX_SPREAD:
-            counters["rejected_spread"] += 1
-            continue
-        signal = _shadow_entry(candidate, mids, spreads, now)
+        evidence = evidence_by_market.get(str(candidate.market_id), [])
+        signal, reason = _shadow_entry(candidate, mids, spreads, now, evidence)
         if signal is None:
-            counters["rejected_invalid_quote"] += 1
+            counters[
+                {
+                    "model_evidence": "rejected_model_evidence",
+                    "liquidity": "rejected_liquidity",
+                    "net_edge": "rejected_net_edge",
+                    "price": "rejected_price",
+                    "spread": "rejected_spread",
+                    "quote": "rejected_invalid_quote",
+                }.get(reason, "rejected_invalid_quote")
+            ] += 1
             continue
         signals.append(signal)
         recent_keys.add(key)
@@ -740,6 +804,9 @@ def observe_shadow_candidates(
             "rejected_price": 0,
             "rejected_spread": 0,
             "rejected_invalid_quote": 0,
+            "rejected_model_evidence": 0,
+            "rejected_liquidity": 0,
+            "rejected_net_edge": 0,
             "added": 0,
         },
     )
@@ -750,6 +817,9 @@ def observe_shadow_candidates(
         "rejected_price",
         "rejected_spread",
         "rejected_invalid_quote",
+        "rejected_model_evidence",
+        "rejected_liquidity",
+        "rejected_net_edge",
         "added",
     ):
         totals[name] = int(totals.get(name, 0)) + int(counters[name])
@@ -1090,8 +1160,12 @@ def validate_state(state: dict[str, Any]) -> None:
         spec = root.get("strategy_spec")
         assert isinstance(spec, dict)
         assert spec.get("forward_only") is True
+        assert spec.get("market_price_input_to_model") is False
+        assert spec.get("independent_evidence_required") is True
+        assert int(spec.get("minimum_independent_sources", -1)) == challenger.MIN_INDEPENDENT_SOURCES
         assert _as_float(spec.get("min_entry_price")) == SHADOW_MIN_ENTRY_PRICE
         assert _as_float(spec.get("max_spread")) == SHADOW_MAX_SPREAD
+        assert _as_float(spec.get("min_net_edge_per_share")) == SHADOW_MIN_NET_EDGE
         assert _as_float(spec.get("dedup_hours")) == SHADOW_DEDUP_HOURS
         assert _as_float(spec.get("notional")) == SHADOW_NOTIONAL
         assert tuple(spec.get("horizons_hours", [])) == SHADOW_HORIZONS_HOURS
@@ -1104,6 +1178,13 @@ def validate_state(state: dict[str, Any]) -> None:
         for signal in root.get("signals", []):
             assert signal.get("paper_only") is True
             assert _as_float(signal.get("capital_impact")) == 0.0
+            assert signal.get("model_status") == "OK"
+            assert 0.0 < _as_float(signal.get("p_model")) < 1.0
+            assert 0.0 < _as_float(signal.get("p_market")) < 1.0
+            assert len(signal.get("model_source_ids", [])) >= challenger.MIN_INDEPENDENT_SOURCES
+            costs = signal.get("cost_model")
+            assert isinstance(costs, dict) and costs.get("eligible") is True
+            assert _as_float(costs.get("net_edge_per_share")) >= SHADOW_MIN_NET_EDGE
     if state.get("status") == "stopped_target":
         assert not state.get("open_positions")
         assert _as_float(state.get("equity")) >= TARGET_EQUITY - 2.0

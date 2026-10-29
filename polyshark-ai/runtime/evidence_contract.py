@@ -22,7 +22,7 @@ GAMMA_MARKETS = "https://gamma-api.polymarket.com/markets"
 USER_AGENT = "PolyShark-Evidence/1.0 (+https://github.com/Jokersochi/Jokersochi)"
 REQUEST_TIMEOUT = float(os.getenv("PAPER_REQUEST_TIMEOUT", "15"))
 
-CONTRACT_VERSION = "trade-dossier-v1-20261008"
+CONTRACT_VERSION = "trade-dossier-v2-challenger-20261029"
 CALIBRATION_MIN_RESOLVED = int(os.getenv("PAPER_CALIBRATION_MIN_RESOLVED", "50"))
 CALIBRATION_MAX_BRIER = float(os.getenv("PAPER_CALIBRATION_MAX_BRIER", "0.25"))
 CALIBRATION_MAX_ECE = float(os.getenv("PAPER_CALIBRATION_MAX_ECE", "0.10"))
@@ -158,8 +158,13 @@ def snapshot_calibration_candidates(state: dict[str, Any], now: str | None = Non
         if current_model and str(signal.get("model_version") or "") != current_model:
             continue
         end_date = signal.get("end_date")
-        probability = _as_float(signal.get("entry_mid"), -1.0)
-        if not end_date or not 0.0 < probability < 1.0:
+        probability = _as_float(signal.get("p_model"), -1.0)
+        if (
+            signal.get("model_status") != "OK"
+            or len(signal.get("model_source_ids", [])) < 2
+            or not end_date
+            or not 0.0 < probability < 1.0
+        ):
             continue
         archive.append(
             {
@@ -171,6 +176,8 @@ def snapshot_calibration_candidates(state: dict[str, Any], now: str | None = Non
                 "observed_at": signal.get("observed_at"),
                 "end_date": str(end_date),
                 "forecast_probability": round(probability, 8),
+                "market_probability_at_forecast": _as_float(signal.get("p_market"), -1.0),
+                "model_evidence_fingerprint": signal.get("model_evidence_fingerprint"),
                 "archived_at": now,
                 "resolution_checks": 0,
                 "next_resolution_check_at": str(end_date),
@@ -399,6 +406,36 @@ def independence_summary(
     }
 
 
+def challenger_cost_summary(shadow: dict[str, Any]) -> dict[str, Any]:
+    """Prove every retained V2 signal carried an all-in, liquid cost estimate."""
+    model_version = str(shadow.get("model_version") or "")
+    signals = [
+        item
+        for item in shadow.get("signals", [])
+        if isinstance(item, dict)
+        and (not model_version or str(item.get("model_version") or "") == model_version)
+    ]
+    if not signals:
+        return {"n_signals": 0, "passed": False, "min_net_edge_per_share": None}
+    edges: list[float] = []
+    for signal in signals:
+        costs = signal.get("cost_model")
+        if not isinstance(costs, dict) or costs.get("eligible") is not True:
+            return {"n_signals": len(signals), "passed": False, "min_net_edge_per_share": None}
+        edge = _as_float(costs.get("net_edge_per_share"), -1.0)
+        if edge < 0.0:
+            return {"n_signals": len(signals), "passed": False, "min_net_edge_per_share": None}
+        edges.append(edge)
+    required = _as_float(shadow.get("strategy_spec", {}).get("min_net_edge_per_share"), 0.0)
+    minimum = min(edges)
+    return {
+        "n_signals": len(signals),
+        "min_net_edge_per_share": round(minimum, 8),
+        "required_min_net_edge_per_share": round(required, 8),
+        "passed": minimum >= required,
+    }
+
+
 def build_trade_dossier(state: dict[str, Any], now: str) -> dict[str, Any]:
     shadow = state.get("shadow_challenger") if isinstance(state.get("shadow_challenger"), dict) else {}
     root = state.setdefault("evidence_contract", {})
@@ -411,10 +448,11 @@ def build_trade_dossier(state: dict[str, Any], now: str) -> dict[str, Any]:
     ]
     calibration = calibration_summary(calibration_records)
     independence = independence_summary(shadow, calibration_records)
+    costs = challenger_cost_summary(shadow)
     summary24 = shadow.get("summary", {}).get("24", {}) if isinstance(shadow.get("summary"), dict) else {}
     forward_passed = shadow.get("verdict") == "ELIGIBLE_FOR_REVIEW"
     cost_passed = (
-        _as_float(shadow.get("strategy_spec", {}).get("max_spread"), -1.0) >= 0.0
+        bool(costs.get("passed"))
         and summary24.get("mean_return") is not None
         and summary24.get("ci95_lower") is not None
         and _as_float(summary24.get("ci95_lower")) > 0.0
@@ -423,6 +461,10 @@ def build_trade_dossier(state: dict[str, Any], now: str) -> dict[str, Any]:
         "paper_only": state.get("paper_only") is True and state.get("real_orders_enabled") is False,
         "legacy_execution_blocked": state.get("legacy_momentum_entries_enabled") is False,
         "forward_oos": bool(shadow.get("strategy_spec", {}).get("forward_only")) and forward_passed,
+        "independent_price_blind_model": (
+            shadow.get("strategy_spec", {}).get("market_price_input_to_model") is False
+            and shadow.get("strategy_spec", {}).get("independent_evidence_required") is True
+        ),
         "after_cost_edge": bool(cost_passed),
         "calibration": bool(calibration.get("passed")),
         "sample_independence": bool(independence.get("passed")),
@@ -445,6 +487,7 @@ def build_trade_dossier(state: dict[str, Any], now: str) -> dict[str, Any]:
             "shadow_verdict": shadow.get("verdict", "NO_EVIDENCE"),
             "stats_24h": summary24,
         },
+        "costs": costs,
         "calibration": calibration,
         "independence": independence,
         "execution_assumptions": shadow.get("strategy_spec", {}),

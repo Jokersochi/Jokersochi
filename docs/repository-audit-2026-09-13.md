@@ -258,3 +258,7 @@ The connected GitHub integration currently exposes file/branch/PR/issue mutation
 4. Run final deployment/domain/dependency checks for the 25 deletion-ready repositories.
 5. Delete/archive those repositories when repository-level controls are available.
 6. Normalize `-`, `---`, and `Product-Visualizer-AI` names only after deployment checks.
+
+
+## Проверка 2026-10-29
+Ветка cleanup/server-consolidation, PR https://github.com/Jokersochi/monopoly-luxe/pull/3 переведён в draft. Исправлены принудительная покупка при пустом аукционе и принятие сделки с чужой недвижимостью. Добавлены 3 выполняемых regression-теста; всего 4 passed. npm ci восстановлен синхронизацией lock-файла; build проходит. Lint: 5 ошибок/8 предупреждений существующего кода. npm audit: 26 vulnerabilities, включая 2 critical. Миграция остаётся изолированной. Различия 36/40 клеток, валюты, аренды/отелей и карточек требуют дальнейшего согласования; оба legacy-источника сохраняются. Консолидация и archive gate НЕ завершены. Репозитории не удалялись/не архивировались.

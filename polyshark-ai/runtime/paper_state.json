@@ -13,8 +13,8 @@
   "realized_pnl": -634.248613,
   "unrealized_pnl": 0.0,
   "fees_paid": 308.38584,
-  "ticks": 573,
-  "last_tick_at": "2026-10-29T02:46:04+00:00",
+  "ticks": 574,
+  "last_tick_at": "2026-10-29T08:32:31+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -12785,6 +12785,16 @@
       "fees_paid": 308.38584,
       "open_positions": 0,
       "closed_positions": 193
+    },
+    {
+      "ts": "2026-10-29T08:32:31+00:00",
+      "equity": 365.751387,
+      "cash": 365.751387,
+      "realized_pnl": -634.248613,
+      "unrealized_pnl": 0.0,
+      "fees_paid": 308.38584,
+      "open_positions": 0,
+      "closed_positions": 193
     }
   ],
   "shadow_challenger": {
@@ -17421,7 +17431,18 @@
         "liquidity": 112202.03,
         "volume_24h": 264415.81,
         "score": 0.155,
-        "horizon_results": {},
+        "horizon_results": {
+          "6": {
+            "evaluated_at": "2026-10-29T08:32:31+00:00",
+            "source": "clob_liquidation",
+            "exit_mid": 0.815,
+            "exit_spread": 0.01,
+            "net_liquidation": 98.11788,
+            "after_cost_pnl": -1.88212,
+            "after_cost_return": -0.0188212,
+            "profitable": false
+          }
+        },
         "status": "pending",
         "paper_only": true,
         "capital_impact": 0.0
@@ -17429,12 +17450,12 @@
     ],
     "summary": {
       "6": {
-        "n": 94,
-        "mean_return": -0.05413695,
-        "win_rate": 0.191489,
-        "profit_factor": 0.300021,
-        "ci95_lower": -0.09081607,
-        "ci95_upper": -0.01745783
+        "n": 95,
+        "mean_return": -0.0537652,
+        "win_rate": 0.189474,
+        "profit_factor": 0.299246,
+        "ci95_lower": -0.09006349,
+        "ci95_upper": -0.01746692
       },
       "24": {
         "n": 92,
@@ -17446,10 +17467,10 @@
       }
     },
     "verdict": "NO_EVIDENCE",
-    "updated_at": "2026-10-29T02:46:04+00:00",
+    "updated_at": "2026-10-29T08:32:31+00:00",
     "auto_promotion": false,
     "last_observation": {
-      "ts": "2026-10-29T02:46:04+00:00",
+      "ts": "2026-10-29T08:32:31+00:00",
       "candidates_seen": 2,
       "deduplicated": 1,
       "rejected_price": 1,
@@ -17458,10 +17479,10 @@
       "added": 0
     },
     "observation_totals": {
-      "ticks": 247,
-      "candidates_seen": 333,
-      "deduplicated": 116,
-      "rejected_price": 116,
+      "ticks": 248,
+      "candidates_seen": 335,
+      "deduplicated": 117,
+      "rejected_price": 117,
       "rejected_spread": 4,
       "rejected_invalid_quote": 0,
       "added": 95

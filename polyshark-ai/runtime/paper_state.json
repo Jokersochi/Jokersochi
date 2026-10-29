@@ -13,8 +13,8 @@
   "realized_pnl": -634.248613,
   "unrealized_pnl": 0.0,
   "fees_paid": 308.38584,
-  "ticks": 574,
-  "last_tick_at": "2026-10-29T08:32:31+00:00",
+  "ticks": 575,
+  "last_tick_at": "2026-10-29T08:56:47+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -12795,6 +12795,16 @@
       "fees_paid": 308.38584,
       "open_positions": 0,
       "closed_positions": 193
+    },
+    {
+      "ts": "2026-10-29T08:56:47+00:00",
+      "equity": 365.751387,
+      "cash": 365.751387,
+      "realized_pnl": -634.248613,
+      "unrealized_pnl": 0.0,
+      "fees_paid": 308.38584,
+      "open_positions": 0,
+      "closed_positions": 193
     }
   ],
   "shadow_challenger": {
@@ -17467,10 +17477,10 @@
       }
     },
     "verdict": "NO_EVIDENCE",
-    "updated_at": "2026-10-29T08:32:31+00:00",
+    "updated_at": "2026-10-29T08:56:47+00:00",
     "auto_promotion": false,
     "last_observation": {
-      "ts": "2026-10-29T08:32:31+00:00",
+      "ts": "2026-10-29T08:56:47+00:00",
       "candidates_seen": 2,
       "deduplicated": 1,
       "rejected_price": 1,
@@ -17479,10 +17489,10 @@
       "added": 0
     },
     "observation_totals": {
-      "ticks": 248,
-      "candidates_seen": 335,
-      "deduplicated": 117,
-      "rejected_price": 117,
+      "ticks": 249,
+      "candidates_seen": 337,
+      "deduplicated": 118,
+      "rejected_price": 118,
       "rejected_spread": 4,
       "rejected_invalid_quote": 0,
       "added": 95
@@ -17846,8 +17856,8 @@
         "end_date": "2026-10-28",
         "forecast_probability": 0.685,
         "archived_at": "2026-10-12T01:02:08+00:00",
-        "resolution_checks": 4,
-        "next_resolution_check_at": "2026-10-29T03:41:36+00:00",
+        "resolution_checks": 5,
+        "next_resolution_check_at": "2026-10-30T00:56:48+00:00",
         "paper_only": true,
         "capital_impact": 0.0
       },
@@ -17876,8 +17886,8 @@
         "end_date": "2026-10-28",
         "forecast_probability": 0.735,
         "archived_at": "2026-10-14T23:19:03+00:00",
-        "resolution_checks": 4,
-        "next_resolution_check_at": "2026-10-29T03:41:36+00:00",
+        "resolution_checks": 5,
+        "next_resolution_check_at": "2026-10-30T00:56:48+00:00",
         "paper_only": true,
         "capital_impact": 0.0
       },
@@ -17921,8 +17931,8 @@
         "end_date": "2026-10-28",
         "forecast_probability": 0.735,
         "archived_at": "2026-10-17T05:40:28+00:00",
-        "resolution_checks": 4,
-        "next_resolution_check_at": "2026-10-29T03:41:36+00:00",
+        "resolution_checks": 5,
+        "next_resolution_check_at": "2026-10-30T00:56:48+00:00",
         "paper_only": true,
         "capital_impact": 0.0
       },
@@ -18221,8 +18231,8 @@
         "end_date": "2026-10-28",
         "forecast_probability": 0.745,
         "archived_at": "2026-10-26T13:24:48+00:00",
-        "resolution_checks": 4,
-        "next_resolution_check_at": "2026-10-29T03:41:36+00:00",
+        "resolution_checks": 5,
+        "next_resolution_check_at": "2026-10-30T00:56:48+00:00",
         "paper_only": true,
         "capital_impact": 0.0
       },
@@ -18236,8 +18246,8 @@
         "end_date": "2026-10-28",
         "forecast_probability": 0.673,
         "archived_at": "2026-10-27T13:35:58+00:00",
-        "resolution_checks": 4,
-        "next_resolution_check_at": "2026-10-29T03:41:36+00:00",
+        "resolution_checks": 5,
+        "next_resolution_check_at": "2026-10-30T00:56:48+00:00",
         "paper_only": true,
         "capital_impact": 0.0
       },
@@ -18251,8 +18261,8 @@
         "end_date": "2026-10-28",
         "forecast_probability": 0.805,
         "archived_at": "2026-10-27T13:35:58+00:00",
-        "resolution_checks": 4,
-        "next_resolution_check_at": "2026-10-29T03:41:36+00:00",
+        "resolution_checks": 5,
+        "next_resolution_check_at": "2026-10-30T00:56:48+00:00",
         "paper_only": true,
         "capital_impact": 0.0
       },
@@ -18266,8 +18276,8 @@
         "end_date": "2026-10-28",
         "forecast_probability": 0.775,
         "archived_at": "2026-10-27T13:35:58+00:00",
-        "resolution_checks": 4,
-        "next_resolution_check_at": "2026-10-29T03:41:36+00:00",
+        "resolution_checks": 5,
+        "next_resolution_check_at": "2026-10-30T00:56:48+00:00",
         "paper_only": true,
         "capital_impact": 0.0
       },
@@ -18281,8 +18291,8 @@
         "end_date": "2026-10-28",
         "forecast_probability": 0.775,
         "archived_at": "2026-10-27T13:35:59+00:00",
-        "resolution_checks": 4,
-        "next_resolution_check_at": "2026-10-29T03:41:36+00:00",
+        "resolution_checks": 5,
+        "next_resolution_check_at": "2026-10-30T00:56:48+00:00",
         "paper_only": true,
         "capital_impact": 0.0
       },
@@ -18311,8 +18321,8 @@
         "end_date": "2026-10-28",
         "forecast_probability": 0.445,
         "archived_at": "2026-10-27T22:48:05+00:00",
-        "resolution_checks": 4,
-        "next_resolution_check_at": "2026-10-29T03:41:36+00:00",
+        "resolution_checks": 5,
+        "next_resolution_check_at": "2026-10-30T00:56:48+00:00",
         "paper_only": true,
         "capital_impact": 0.0
       },
@@ -18326,8 +18336,8 @@
         "end_date": "2026-10-28",
         "forecast_probability": 0.554,
         "archived_at": "2026-10-27T22:48:05+00:00",
-        "resolution_checks": 4,
-        "next_resolution_check_at": "2026-10-29T03:41:36+00:00",
+        "resolution_checks": 5,
+        "next_resolution_check_at": "2026-10-30T00:56:48+00:00",
         "paper_only": true,
         "capital_impact": 0.0
       },
@@ -18341,8 +18351,8 @@
         "end_date": "2026-10-28",
         "forecast_probability": 0.705,
         "archived_at": "2026-10-28T01:48:47+00:00",
-        "resolution_checks": 4,
-        "next_resolution_check_at": "2026-10-29T03:41:36+00:00",
+        "resolution_checks": 5,
+        "next_resolution_check_at": "2026-10-30T00:56:48+00:00",
         "paper_only": true,
         "capital_impact": 0.0
       },
@@ -18815,20 +18825,20 @@
       }
     ],
     "last_calibration_scan": {
-      "ts": "2026-10-29T02:46:05+00:00",
+      "ts": "2026-10-29T08:56:48+00:00",
       "model_version": "risk-filtered-momentum-v1-forward-20260925",
       "archive_pending": 60,
-      "due": 13,
-      "lookups": 13,
+      "due": 11,
+      "lookups": 11,
       "lookup_limit": 25,
-      "resolved_added": 12,
+      "resolved_added": 0,
       "records_total": 35
     },
     "contract_version": "trade-dossier-v1-20261008",
-    "updated_at": "2026-10-29T02:46:05+00:00",
+    "updated_at": "2026-10-29T08:56:48+00:00",
     "trade_dossier": {
       "contract_version": "trade-dossier-v1-20261008",
-      "generated_at": "2026-10-29T02:46:05+00:00",
+      "generated_at": "2026-10-29T08:56:48+00:00",
       "model_version": "risk-filtered-momentum-v1-forward-20260925",
       "capital_decision": "NO_TRADE",
       "review_status": "BLOCKED",
@@ -18901,13 +18911,13 @@
         "legacy_capital_execution": false
       },
       "calibration_scan": {
-        "ts": "2026-10-29T02:46:05+00:00",
+        "ts": "2026-10-29T08:56:48+00:00",
         "model_version": "risk-filtered-momentum-v1-forward-20260925",
         "archive_pending": 60,
-        "due": 13,
-        "lookups": 13,
+        "due": 11,
+        "lookups": 11,
         "lookup_limit": 25,
-        "resolved_added": 12,
+        "resolved_added": 0,
         "records_total": 35
       },
       "warning": "REVIEW_ELIGIBLE is not permission to trade; capital_decision remains NO_TRADE until a separate reviewed paper-execution change."

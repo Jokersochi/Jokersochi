@@ -308,7 +308,13 @@ def build_candidates(markets: list[dict[str, Any]]) -> tuple[list[Candidate], di
         outcome = "YES" if mom24 > 0 else "NO"
         token_mid = yes_mid if outcome == "YES" else no_mid
         token_spread = yes_spread if outcome == "YES" else no_spread
-        if not (MIN_PRICE <= token_mid <= MAX_PRICE) or token_spread <= 0 or token_spread > MAX_SPREAD:
+        eligible_sides = any(
+            MIN_PRICE <= mid <= MAX_PRICE and 0 <= spread <= MAX_SPREAD
+            for mid, spread in ((yes_mid, yes_spread), (no_mid, no_spread))
+        )
+        if ALLOW_LEGACY_MOMENTUM_ENTRIES and (not (MIN_PRICE <= token_mid <= MAX_PRICE) or token_spread <= 0 or token_spread > MAX_SPREAD):
+            continue
+        if not ALLOW_LEGACY_MOMENTUM_ENTRIES and not eligible_sides:
             continue
         candidates.append(Candidate(
             market_id=str(m.get("id") or m.get("conditionId") or yes_token),

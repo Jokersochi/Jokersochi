@@ -44,7 +44,7 @@ class PaperTraderRuntimeTests(unittest.TestCase):
         with patch.object(pt, "ALLOW_LEGACY_MOMENTUM_ENTRIES", False), \
              patch.object(pt, "eligible_markets", return_value=[market]), \
              patch.object(pt, "batch_midpoints", return_value={"yes": 0.5, "no": 0.5}), \
-             patch.object(pt, "batch_spreads", return_value={"yes": 0.01, "no": 0.01}), \
+             patch.object(pt, "batch_spreads", return_value={"yes": 0.01, "no": 0.04}), \
              patch.object(pt, "batch_history", side_effect=AssertionError("history requested")), \
              patch.object(pt, "momentum", side_effect=AssertionError("momentum requested")):
             candidates, _, _ = pt.build_candidates([market])

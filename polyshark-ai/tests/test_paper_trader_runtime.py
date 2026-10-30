@@ -2,6 +2,7 @@ import importlib.util
 import sys
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 MODULE = Path(__file__).resolve().parents[1] / "runtime" / "paper_trader.py"
 spec = importlib.util.spec_from_file_location("paper_trader", MODULE)
@@ -34,6 +35,22 @@ def independent_evidence(question: str, observed_at: str, probability_yes: float
 
 
 class PaperTraderRuntimeTests(unittest.TestCase):
+    def test_v2_candidates_do_not_require_price_history_or_momentum(self):
+        market = {
+            "id": "event", "question": "Independent event?", "category": "Other",
+            "_yes_token": "yes", "_no_token": "no",
+            "_liquidity": 100000.0, "_volume24": 50000.0,
+        }
+        with patch.object(pt, "ALLOW_LEGACY_MOMENTUM_ENTRIES", False), \
+             patch.object(pt, "eligible_markets", return_value=[market]), \
+             patch.object(pt, "batch_midpoints", return_value={"yes": 0.5, "no": 0.5}), \
+             patch.object(pt, "batch_spreads", return_value={"yes": 0.01, "no": 0.01}), \
+             patch.object(pt, "batch_history", side_effect=AssertionError("history requested")), \
+             patch.object(pt, "momentum", side_effect=AssertionError("momentum requested")):
+            candidates, _, _ = pt.build_candidates([market])
+        self.assertEqual(len(candidates), 1)
+        self.assertEqual(candidates[0].market_id, "event")
+
     def test_fresh_state_is_paper_only_and_exact_targets(self):
         s = pt.fresh_state()
         self.assertIs(s["paper_only"], True)

@@ -286,7 +286,7 @@ def build_candidates(markets: list[dict[str, Any]]) -> tuple[list[Candidate], di
     all_tokens = [str(m["_yes_token"]) for m in eligible] + [str(m["_no_token"]) for m in eligible]
     mids = batch_midpoints(all_tokens)
     spreads = batch_spreads(all_tokens)
-    histories = batch_history(yes_tokens)
+    histories = batch_history(yes_tokens) if ALLOW_LEGACY_MOMENTUM_ENTRIES else {}
     candidates: list[Candidate] = []
     for m in eligible:
         yes_token = str(m["_yes_token"])
@@ -299,11 +299,11 @@ def build_candidates(markets: list[dict[str, Any]]) -> tuple[list[Candidate], di
             continue
         if abs((yes_mid + no_mid) - 1.0) > 0.08:
             continue
-        mom = momentum(histories.get(yes_token, []), yes_mid)
+        mom = momentum(histories.get(yes_token, []), yes_mid) if ALLOW_LEGACY_MOMENTUM_ENTRIES else (0.0, 0.0)
         if mom is None:
             continue
         mom24, mom6 = mom
-        if abs(mom24) < MIN_MOMENTUM_24H or abs(mom6) < MIN_MOMENTUM_6H or mom24 * mom6 <= 0:
+        if ALLOW_LEGACY_MOMENTUM_ENTRIES and (abs(mom24) < MIN_MOMENTUM_24H or abs(mom6) < MIN_MOMENTUM_6H or mom24 * mom6 <= 0):
             continue
         outcome = "YES" if mom24 > 0 else "NO"
         token_mid = yes_mid if outcome == "YES" else no_mid

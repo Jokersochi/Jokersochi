@@ -13,8 +13,8 @@
   "realized_pnl": -634.248613,
   "unrealized_pnl": 0.0,
   "fees_paid": 308.38584,
-  "ticks": 594,
-  "last_tick_at": "2026-10-31T05:46:54+00:00",
+  "ticks": 595,
+  "last_tick_at": "2026-10-31T07:29:36+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -12995,6 +12995,16 @@
       "fees_paid": 308.38584,
       "open_positions": 0,
       "closed_positions": 193
+    },
+    {
+      "ts": "2026-10-31T07:29:36+00:00",
+      "equity": 365.751387,
+      "cash": 365.751387,
+      "realized_pnl": -634.248613,
+      "unrealized_pnl": 0.0,
+      "fees_paid": 308.38584,
+      "open_positions": 0,
+      "closed_positions": 193
     }
   ],
   "shadow_challenger": {
@@ -13047,27 +13057,27 @@
     },
     "verdict": "NO_EVIDENCE",
     "auto_promotion": false,
-    "updated_at": "2026-10-31T05:46:54+00:00",
+    "updated_at": "2026-10-31T07:29:36+00:00",
     "last_observation": {
-      "ts": "2026-10-31T05:46:54+00:00",
-      "candidates_seen": 1,
+      "ts": "2026-10-31T07:29:36+00:00",
+      "candidates_seen": 2,
       "deduplicated": 0,
       "rejected_price": 0,
       "rejected_spread": 0,
       "rejected_invalid_quote": 0,
-      "rejected_model_evidence": 1,
+      "rejected_model_evidence": 2,
       "rejected_liquidity": 0,
       "rejected_net_edge": 0,
       "added": 0
     },
     "observation_totals": {
-      "ticks": 14,
-      "candidates_seen": 50,
+      "ticks": 15,
+      "candidates_seen": 52,
       "deduplicated": 0,
       "rejected_price": 0,
       "rejected_spread": 0,
       "rejected_invalid_quote": 0,
-      "rejected_model_evidence": 50,
+      "rejected_model_evidence": 52,
       "rejected_liquidity": 0,
       "rejected_net_edge": 0,
       "added": 0
@@ -14415,7 +14425,7 @@
       }
     ],
     "last_calibration_scan": {
-      "ts": "2026-10-31T01:40:04+00:00",
+      "ts": "2026-10-31T07:29:37+00:00",
       "model_version": "event-evidence-v2-price-blind-20261029",
       "archive_pending": 0,
       "due": 0,
@@ -14425,10 +14435,10 @@
       "records_total": 35
     },
     "contract_version": "trade-dossier-v2-challenger-20261029",
-    "updated_at": "2026-10-31T01:40:04+00:00",
+    "updated_at": "2026-10-31T07:29:37+00:00",
     "trade_dossier": {
       "contract_version": "trade-dossier-v2-challenger-20261029",
-      "generated_at": "2026-10-31T01:40:04+00:00",
+      "generated_at": "2026-10-31T07:29:37+00:00",
       "model_version": "event-evidence-v2-price-blind-20261029",
       "capital_decision": "NO_TRADE",
       "review_status": "BLOCKED",
@@ -14512,7 +14522,7 @@
         "legacy_capital_execution": false
       },
       "calibration_scan": {
-        "ts": "2026-10-31T01:40:04+00:00",
+        "ts": "2026-10-31T07:29:37+00:00",
         "model_version": "event-evidence-v2-price-blind-20261029",
         "archive_pending": 0,
         "due": 0,

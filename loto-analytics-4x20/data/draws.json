@@ -1,11 +1,11 @@
 {
   "source": "official",
-  "retrievedAt": "2026-11-01T07:36:14.846Z",
-  "count": 16109,
+  "retrievedAt": "2026-11-01T10:50:45.529Z",
+  "count": 16114,
   "first": 1,
-  "last": 16109,
+  "last": 16114,
   "quality": {
-    "duplicates": 99,
+    "duplicates": 50,
     "gaps": [],
     "continuous": true
   },
@@ -289970,6 +289970,96 @@
         3
       ],
       "sourceUrl": "https://www.stoloto.ru/4x20/archive/16109",
+      "validationStatus": "verified"
+    },
+    {
+      "number": 16110,
+      "date": "2026-11-01T11:07:30+0300",
+      "fieldA": [
+        12,
+        13,
+        15,
+        4
+      ],
+      "fieldB": [
+        17,
+        11,
+        10,
+        1
+      ],
+      "sourceUrl": "https://www.stoloto.ru/4x20/archive/16110",
+      "validationStatus": "verified"
+    },
+    {
+      "number": 16111,
+      "date": "2026-11-01T11:37:30+0300",
+      "fieldA": [
+        17,
+        5,
+        16,
+        11
+      ],
+      "fieldB": [
+        2,
+        12,
+        7,
+        18
+      ],
+      "sourceUrl": "https://www.stoloto.ru/4x20/archive/16111",
+      "validationStatus": "verified"
+    },
+    {
+      "number": 16112,
+      "date": "2026-11-01T12:00:00+0300",
+      "fieldA": [
+        1,
+        13,
+        15,
+        6
+      ],
+      "fieldB": [
+        3,
+        16,
+        17,
+        7
+      ],
+      "sourceUrl": "https://www.stoloto.ru/4x20/archive/16112",
+      "validationStatus": "verified"
+    },
+    {
+      "number": 16113,
+      "date": "2026-11-01T13:07:30+0300",
+      "fieldA": [
+        14,
+        3,
+        5,
+        4
+      ],
+      "fieldB": [
+        16,
+        5,
+        20,
+        11
+      ],
+      "sourceUrl": "https://www.stoloto.ru/4x20/archive/16113",
+      "validationStatus": "verified"
+    },
+    {
+      "number": 16114,
+      "date": "2026-11-01T13:37:30+0300",
+      "fieldA": [
+        14,
+        6,
+        18,
+        12
+      ],
+      "fieldB": [
+        19,
+        13,
+        11,
+        8
+      ],
+      "sourceUrl": "https://www.stoloto.ru/4x20/archive/16114",
       "validationStatus": "verified"
     }
   ]

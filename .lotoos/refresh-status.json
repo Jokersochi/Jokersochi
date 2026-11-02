@@ -1,11 +1,11 @@
 {
   "ok": true,
   "source": "official",
-  "mode": "full-audit",
-  "count": 16135,
+  "mode": "incremental",
+  "count": 16141,
   "first": 1,
-  "last": 16135,
-  "previousLast": 16128,
+  "last": 16141,
+  "previousLast": 16135,
   "continuous": true,
   "passes": 1,
   "recoveredTransientGap": false

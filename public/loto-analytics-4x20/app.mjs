@@ -83,6 +83,9 @@ function renderForward(overview, targetDraw) {
   if (portfolios.length !== 3) {
     forwardStatus.className = "status danger";
     forwardStatus.textContent = `BLOCKED · canonical locks ${portfolios.length}/3`;
+  } else if (overview.status?.stale) {
+    forwardStatus.className = "status warn";
+    forwardStatus.textContent = `LOCKED · №${targetDraw} · evidence устарел`;
   } else {
     forwardStatus.className = "status ok";
     forwardStatus.textContent = `LOCKED · тираж №${targetDraw} · 3/3`;
@@ -111,9 +114,11 @@ function renderEvidence(statusRow, evidenceRuns) {
     return;
   }
   const gate = statusRow.gate_status || "insufficient_forward";
-  const promoted = statusRow.promoted === true;
-  evidenceStatus.className = promoted ? "status ok" : gate === "blocked" ? "status danger" : "status warn";
-  evidenceStatus.textContent = promoted ? "PROMOTED" : gate.toUpperCase().replaceAll("_"," ");
+  const promoted = statusRow.promoted === true && statusRow.stale !== true;
+  evidenceStatus.className = statusRow.stale || gate === "blocked" ? "status danger" : promoted ? "status ok" : "status warn";
+  evidenceStatus.textContent = statusRow.stale
+    ? "STALE · EVIDENCE NOT VERIFIED"
+    : promoted ? "PROMOTED" : gate.toUpperCase().replaceAll("_"," ");
   const ci = Array.isArray(statusRow.bootstrap_ci95) ? `[${signed(statusRow.bootstrap_ci95[0])}; ${signed(statusRow.bootstrap_ci95[1])}]` : "ещё не рассчитывается";
   const cards = [
     ["Forward draws", `${Number(statusRow.forward_draws || 0)} / ${Number(statusRow.min_forward_draws || 1000)}`],
@@ -125,7 +130,7 @@ function renderEvidence(statusRow, evidenceRuns) {
   ];
   evidenceGrid.innerHTML = cards.map(([label,value]) => `<div class="quality-item evidence-item"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div>`).join("");
   const latest = evidenceRuns?.[0];
-  evidenceNote.textContent = `Preregistered: ${statusRow.experiment_key || "adaptive20 forward primary"}. Исторические тесты не добавляют ни одного draw к этому счётчику. ${latest ? `Последний immutable evidence snapshot: №${latest.evaluation_start_draw}–${latest.evaluation_end_draw}, n=${latest.forward_draws}.` : "До min-forward threshold evidence snapshot с inferential gate не создаётся."}`;
+  evidenceNote.textContent = `${statusRow.stale ? "ПРЕДУПРЕЖДЕНИЕ: evidence-процесс не подтверждал данные более 45 минут; значения могут быть устаревшими. " : ""}Preregistered: ${statusRow.experiment_key || "adaptive20 forward primary"}. Исторические тесты не добавляют ни одного draw к этому счётчику. ${latest ? `Последний immutable evidence snapshot: №${latest.evaluation_start_draw}–${latest.evaluation_end_draw}, n=${latest.forward_draws}.` : "До min-forward threshold evidence snapshot с inferential gate не создаётся."}`;
 }
 
 async function ensureResearchPayouts() {

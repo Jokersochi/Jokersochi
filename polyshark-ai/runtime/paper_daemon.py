@@ -23,6 +23,7 @@ except ModuleNotFoundError:  # Windows: tests and local one-shot diagnostics.
     import msvcrt
 
 import evidence_contract as evidence
+import evidence_feed as research_feed
 import paper_trader as trader
 
 DEFAULT_INTERVAL_SECONDS = max(30, int(os.getenv("PAPER_TICK_INTERVAL_SECONDS", "300")))
@@ -84,10 +85,31 @@ def prepare_continuous_state(state: dict[str, Any], target_equity: float) -> dic
     return state
 
 
+def _refresh_challenger_research(state: dict[str, Any], *, now: str | None = None) -> None:
+    """Never replay stale feed observations from serialized paper state."""
+    state["challenger_v2_evidence"] = {}
+    configured = os.getenv("PAPER_CHALLENGER_EVIDENCE_FILE", "").strip()
+    if not configured:
+        state["challenger_evidence_feed"] = {
+            "status": "DISABLED", "markets": 0, "observations": 0
+        }
+        return
+    state["challenger_evidence_feed"] = {"status": "INVALID"}
+    try:
+        records, report = research_feed.load_research_feed(Path(configured), now=now or utc_now())
+    except (OSError, ValueError, UnicodeError) as exc:
+        state["challenger_evidence_feed"]["error"] = f"{type(exc).__name__}: {exc}"
+        raise
+    state["challenger_v2_evidence"] = records
+    state["challenger_evidence_feed"] = report
+
+
 def _apply_evidence_fail_closed(state: dict[str, Any]) -> dict[str, Any]:
     """Всегда оставляет capital_decision=NO_TRADE при любой ошибке evidence-слоя."""
     state["capital_decision"] = "NO_TRADE"
     try:
+        if state.get("challenger_evidence_feed", {}).get("status") == "INVALID":
+            raise RuntimeError("Research evidence feed invalid")
         evidence.apply_contract(state)
         evidence.validate_contract(state)
     except Exception as exc:
@@ -122,6 +144,7 @@ def run_tick(state_path: Path, target_equity: float = CONTINUOUS_TARGET_EQUITY) 
         # Снимок делается ДО trader.tick(), потому что shadow retention может удалить
         # старые matured-сигналы; их forward probability должна сохраниться до resolution.
         evidence.snapshot_calibration_candidates(state)
+        _refresh_challenger_research(state)
         state = trader.tick(state)
     except Exception as exc:  # fail-closed: торговых действий после ошибки нет
         state["last_tick_at"] = utc_now()

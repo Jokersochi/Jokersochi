@@ -6,15 +6,15 @@
   "stopped_at": null,
   "stop_reason": null,
   "starting_equity": 1000,
-  "target_equity": 1000000000,
+  "target_equity": 1000000000.0,
   "bankrupt_equity": 0,
   "cash": 1000,
-  "equity": 1000,
+  "equity": 1000.0,
   "realized_pnl": 0,
-  "unrealized_pnl": 0,
+  "unrealized_pnl": 0.0,
   "fees_paid": 0,
-  "ticks": 0,
-  "last_tick_at": null,
+  "ticks": 1,
+  "last_tick_at": "2026-11-03T00:23:50+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -26,7 +26,7 @@
   "open_positions": [],
   "closed_positions": [],
   "capital_decision": "NO_TRADE",
-  "capital_decision_reason": "New paper session; capital orders blocked unless a separately validated strategy is promoted",
+  "capital_decision_reason": "Evidence gate not satisfied: forward_oos, after_cost_edge, calibration, sample_independence",
   "audit": [
     {
       "ts": "2026-11-03T00:23:27.123Z",
@@ -38,6 +38,213 @@
       "previous_session_id": "paper-20260827-restart-1000",
       "previous_equity": 365.751387,
       "previous_state_backup": "polyshark-ai/runtime/archive/paper-20260827-restart-1000-final-tick-622.json"
+    }
+  ],
+  "evidence_contract": {
+    "forecast_archive": [],
+    "calibration_records": [],
+    "last_calibration_scan": {
+      "ts": "2026-11-03T00:23:51+00:00",
+      "model_version": "event-evidence-v2-price-blind-20261029",
+      "archive_pending": 0,
+      "due": 0,
+      "lookups": 0,
+      "lookup_limit": 25,
+      "resolved_added": 0,
+      "records_total": 0
+    },
+    "contract_version": "trade-dossier-v2-challenger-20261029",
+    "updated_at": "2026-11-03T00:23:51+00:00",
+    "trade_dossier": {
+      "contract_version": "trade-dossier-v2-challenger-20261029",
+      "generated_at": "2026-11-03T00:23:51+00:00",
+      "model_version": "event-evidence-v2-price-blind-20261029",
+      "capital_decision": "NO_TRADE",
+      "review_status": "BLOCKED",
+      "auto_promotion": false,
+      "paper_only": true,
+      "real_orders_enabled": false,
+      "gates": {
+        "paper_only": true,
+        "legacy_execution_blocked": true,
+        "forward_oos": false,
+        "independent_price_blind_model": true,
+        "after_cost_edge": false,
+        "calibration": false,
+        "sample_independence": false,
+        "manual_promotion_required": true
+      },
+      "blocked_by": [
+        "forward_oos",
+        "after_cost_edge",
+        "calibration",
+        "sample_independence"
+      ],
+      "forward_evidence": {
+        "shadow_verdict": "NO_EVIDENCE",
+        "stats_24h": {
+          "n": 0,
+          "mean_return": null,
+          "win_rate": null,
+          "profit_factor": null,
+          "ci95_lower": null,
+          "ci95_upper": null
+        }
+      },
+      "costs": {
+        "n_signals": 0,
+        "passed": false,
+        "min_net_edge_per_share": null
+      },
+      "calibration": {
+        "n_resolved": 0,
+        "brier_score": null,
+        "ece_10bin": null,
+        "max_brier": 0.25,
+        "max_ece": 0.1,
+        "min_resolved": 50,
+        "passed": false
+      },
+      "independence": {
+        "forward_24h": {
+          "n": 0,
+          "unique_markets": 0,
+          "unique_market_ratio": null,
+          "min_unique_market_ratio": 0.8,
+          "passed": false
+        },
+        "calibration_resolved": {
+          "n": 0,
+          "unique_markets": 0,
+          "unique_market_ratio": null,
+          "min_unique_market_ratio": 0.8,
+          "passed": false
+        },
+        "passed": false
+      },
+      "execution_assumptions": {
+        "source": "price-blind exogenous event-evidence ensemble",
+        "forward_only": true,
+        "market_price_input_to_model": false,
+        "independent_evidence_required": true,
+        "minimum_independent_sources": 2,
+        "min_entry_price": 0.4,
+        "max_spread": 0.02,
+        "min_net_edge_per_share": 0.02,
+        "dedup_hours": 24.0,
+        "notional": 100.0,
+        "slippage_model": "sqrt_notional_over_liquidity_v1",
+        "horizons_hours": [
+          6,
+          24
+        ],
+        "legacy_capital_execution": false
+      },
+      "calibration_scan": {
+        "ts": "2026-11-03T00:23:51+00:00",
+        "model_version": "event-evidence-v2-price-blind-20261029",
+        "archive_pending": 0,
+        "due": 0,
+        "lookups": 0,
+        "lookup_limit": 25,
+        "resolved_added": 0,
+        "records_total": 0
+      },
+      "warning": "REVIEW_ELIGIBLE is not permission to trade; capital_decision remains NO_TRADE until a separate reviewed paper-execution change."
+    }
+  },
+  "challenger_v2_evidence": {},
+  "challenger_evidence_feed": {
+    "status": "DISABLED",
+    "markets": 0,
+    "observations": 0
+  },
+  "shadow_challenger": {
+    "model_version": "event-evidence-v2-price-blind-20261029",
+    "started_at": "2026-11-03T00:23:50+00:00",
+    "strategy_spec": {
+      "source": "price-blind exogenous event-evidence ensemble",
+      "forward_only": true,
+      "market_price_input_to_model": false,
+      "independent_evidence_required": true,
+      "minimum_independent_sources": 2,
+      "min_entry_price": 0.4,
+      "max_spread": 0.02,
+      "min_net_edge_per_share": 0.02,
+      "dedup_hours": 24.0,
+      "notional": 100.0,
+      "slippage_model": "sqrt_notional_over_liquidity_v1",
+      "horizons_hours": [
+        6,
+        24
+      ],
+      "legacy_capital_execution": false
+    },
+    "review_gate": {
+      "horizon_hours": 24,
+      "min_matured_signals": 100,
+      "mean_return_ci95_lower_gt": 0.0,
+      "min_profit_factor": 1.2,
+      "auto_promotion": false,
+      "warning": "Diagnostic gate only; correlated markets reduce effective sample size."
+    },
+    "signals": [],
+    "summary": {
+      "6": {
+        "n": 0,
+        "mean_return": null,
+        "win_rate": null,
+        "profit_factor": null,
+        "ci95_lower": null,
+        "ci95_upper": null
+      },
+      "24": {
+        "n": 0,
+        "mean_return": null,
+        "win_rate": null,
+        "profit_factor": null,
+        "ci95_lower": null,
+        "ci95_upper": null
+      }
+    },
+    "verdict": "NO_EVIDENCE",
+    "auto_promotion": false,
+    "updated_at": "2026-11-03T00:23:50+00:00",
+    "last_observation": {
+      "ts": "2026-11-03T00:23:50+00:00",
+      "candidates_seen": 5,
+      "deduplicated": 0,
+      "rejected_price": 0,
+      "rejected_spread": 0,
+      "rejected_invalid_quote": 0,
+      "rejected_model_evidence": 5,
+      "rejected_liquidity": 0,
+      "rejected_net_edge": 0,
+      "added": 0
+    },
+    "observation_totals": {
+      "ticks": 1,
+      "candidates_seen": 5,
+      "deduplicated": 0,
+      "rejected_price": 0,
+      "rejected_spread": 0,
+      "rejected_invalid_quote": 0,
+      "rejected_model_evidence": 5,
+      "rejected_liquidity": 0,
+      "rejected_net_edge": 0,
+      "added": 0
+    }
+  },
+  "equity_history": [
+    {
+      "ts": "2026-11-03T00:23:50+00:00",
+      "equity": 1000.0,
+      "cash": 1000.0,
+      "realized_pnl": 0.0,
+      "unrealized_pnl": 0.0,
+      "fees_paid": 0.0,
+      "open_positions": 0,
+      "closed_positions": 0
     }
   ]
 }

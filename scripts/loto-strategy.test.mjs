@@ -21,6 +21,7 @@ import {
   normalizeLiveRows,
   normalizePayoutRows,
   validateLiveStatus,
+  validateForwardEvidenceFreshness,
 } from "../public/loto-analytics-4x20/lib/live-data.mjs";
 
 function history(n = 1000) {
@@ -284,4 +285,18 @@ test("match counter treats fields independently", () => {
   const draw = { fieldA:[1,2,3,4], fieldB:[10,11,12,13] };
   const ticket = { fieldA:[1,2,8,9], fieldB:[10,12,19,20] };
   assert.deepEqual(countMatches(ticket, draw), { fieldA:2, fieldB:2 });
+});
+
+test("forward evidence freshness blocks stale or missing updates", () => {
+  const now = Date.parse("2026-11-03T00:30:00.000Z");
+  const fresh = validateForwardEvidenceFreshness({
+    checked_at:"2026-11-03T00:25:00.000Z",forward_draws:716,
+  },now);
+  assert.equal(fresh.stale,false);
+  assert.equal(fresh.forward_draws,716);
+  const stale=validateForwardEvidenceFreshness({
+    checked_at:"2026-10-07T12:12:13.591Z",forward_draws:166,
+  },now);
+  assert.equal(stale.stale,true);
+  assert.equal(validateForwardEvidenceFreshness({forward_draws:0},now).stale,true);
 });

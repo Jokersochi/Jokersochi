@@ -1,5 +1,9 @@
 import assert from "node:assert/strict";
-import { loadLiveArchive, loadOfficialPayouts } from "../public/loto-analytics-4x20/lib/live-data.mjs";
+import {
+  loadLiveArchive,
+  loadOfficialPayouts,
+  loadForwardOverview,
+} from "../public/loto-analytics-4x20/lib/live-data.mjs";
 
 const archive = await loadLiveArchive();
 assert.equal(archive.quality.productionReady, true);
@@ -23,6 +27,20 @@ assert.deepEqual(
 const payoutTotal = payouts.reduce((sum, row) => sum + row.totalPayoutRub, 0);
 assert.ok(Math.abs(payoutTotal - latest.sumPaidRub) < 0.01, `payout total ${payoutTotal} != draw sumPaid ${latest.sumPaidRub}`);
 
+const targetDraw = archive.last + 1;
+const forward = await loadForwardOverview(targetDraw);
+assert.ok(forward.status, "forward_evidence_status missing");
+assert.equal(forward.status.promoted, false, "new preregistered experiment must not start promoted");
+assert.ok(Number(forward.status.min_forward_draws) >= 1000);
+assert.equal(forward.portfolios.length, 3, `expected 3 canonical forward portfolios for #${targetDraw}`);
+for (const portfolio of forward.portfolios) {
+  assert.equal(portfolio.targetDraw, targetDraw);
+  assert.equal(portfolio.trainingCutoff, archive.last);
+  assert.equal(portfolio.sourceVerifiedThrough, archive.last);
+  assert.equal(portfolio.provenanceVerified, true);
+  assert.equal(portfolio.tickets.length, 5);
+}
+
 console.log(JSON.stringify({
   ok: true,
   last: archive.last,
@@ -31,4 +49,8 @@ console.log(JSON.stringify({
   payoutCategories: payouts.length,
   ticketPriceRub: latest.ticketPriceRub,
   sumPaidRub: latest.sumPaidRub,
+  forwardTarget: targetDraw,
+  forwardPortfolios: forward.portfolios.length,
+  forwardDraws: Number(forward.status.forward_draws || 0),
+  promotionMinimum: Number(forward.status.min_forward_draws || 1000),
 }));

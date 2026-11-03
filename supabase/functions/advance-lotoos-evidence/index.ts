@@ -266,87 +266,12 @@ async function lockNextRuns(s:any, history:Draw[], versions:Map<string,StrategyV
   return {targetDraw,locked};
 }
 
-async function settleReadyRuns(s:any, history:Draw[]) {
-  const last=history.at(-1)!.draw_number;
-  const byDraw=new Map(history.map((d)=>[d.draw_number,d]));
-  const { data:runs, error:runsError } = await s.from("forward_runs")
-    .select("id,target_draw,strategy_version_id,tickets_hash")
-    .lte("target_draw",last)
-    .order("target_draw",{ascending:true})
-    .limit(500);
-  if (runsError) throw new Error(`forward runs read failed: ${runsError.message}`);
-  let settled=0;
-  for (const run of runs||[]) {
-    const { data:existing, error:existingError } = await s.from("forward_settlements")
-      .select("id").eq("run_id",run.id).order("settlement_version",{ascending:false}).limit(1).maybeSingle();
-    if (existingError) throw new Error(`settlement lookup failed: ${existingError.message}`);
-    if (existing) continue;
-    const draw=byDraw.get(Number(run.target_draw));
-    if (!draw) continue;
-    const [{data:tickets,error:ticketError},{data:payoutRows,error:payoutError}] = await Promise.all([
-      s.from("forward_tickets").select("ticket_index,field1,field2").eq("run_id",run.id).order("ticket_index",{ascending:true}),
-      s.from("draw_payouts").select("category,winners_count,payout_per_winner_rub").eq("draw_number",draw.draw_number),
-    ]);
-    if (ticketError) throw new Error(`tickets read failed: ${ticketError.message}`);
-    if (payoutError) throw new Error(`payout read failed: ${payoutError.message}`);
-    const payouts=new Map<number,{winners:number;amount:number}>((payoutRows||[]).map((p:any)=>[
-      Number(p.category),{winners:Number(p.winners_count),amount:Number(p.payout_per_winner_rub)}
-    ]));
-    const results=(tickets||[]).map((t:any)=>{
-      const ticket:Ticket={field1:t.field1.map(Number),field2:t.field2.map(Number)};
-      const m=countMatches(ticket,draw);
-      return {...m,category:categoryForMatches(m.field1,m.field2)};
-    });
-    const bestTotal=Math.max(...results.map((r:any)=>r.total));
-    let gross=0, unresolved=0, winningTickets=0;
-    for (const result of results) {
-      if (result.category==null) continue;
-      winningTickets++;
-      const p=payouts.get(result.category);
-      if (!p || p.winners<=0 || p.amount<=0) { unresolved++; continue; }
-      gross+=p.amount;
-    }
-    const stake=Number(draw.ticket_price_rub)>0 ? Number(draw.ticket_price_rub)*results.length : null;
-    const payoutCoverage = stake==null || payouts.size===0 ? "unavailable"
-      : unresolved>0 ? "counterfactual_unresolved"
-      : payouts.size<12 ? "partial" : "complete";
-    const net=payoutCoverage==="complete" && stake!=null ? gross-stake : null;
-    const roi=payoutCoverage==="complete" && stake && stake>0 ? net!/stake : null;
-    const resultHash=await sha256([draw.draw_number,draw.field1,draw.field2,results]);
-    const row={
-      run_id:run.id,
-      settlement_version:1,
-      settled_at:new Date().toISOString(),
-      result_draw_number:draw.draw_number,
-      result_hash:resultHash,
-      match_summary:{
-        tickets:results,
-        best_total:bestTotal,
-        balanced22_tickets:results.filter((r:any)=>r.field1>=2&&r.field2>=2).length,
-        winning_pattern_tickets:winningTickets,
-        unresolved_counterfactual_tickets:unresolved,
-      },
-      any_prize:winningTickets>0,
-      ticket_cost_rub:stake,
-      gross_payout_rub:gross,
-      net_result_rub:net,
-      roi,
-      payout_coverage:payoutCoverage,
-      payout_notes:payoutCoverage==="complete"
-        ? "Realized historical payout benchmark uses the published per-winner payout for the exact draw."
-        : payoutCoverage==="counterfactual_unresolved"
-          ? "At least one hypothetical winning category had zero historical winners; exact counterfactual payout is not inferred."
-          : "Official payout coverage is incomplete for this settlement.",
-      metadata:{ payout_rows:payouts.size, observed_gross_lower_bound_rub:gross },
-    };
-    const { error:settleError } = await s.from("forward_settlements").insert(row);
-    if (settleError) {
-      if (String(settleError.code)==="23505") continue;
-      throw new Error(`settlement insert failed: ${settleError.message}`);
-    }
-    settled++;
-  }
-  return settled;
+async function settleReadyRuns(s:any) {
+  // SQL anti-join selects only unsettled runs and appends results transactionally.
+  // The legacy query repeatedly selected the oldest 500 runs and stalled permanently.
+  const { data, error } = await s.rpc("lotoos_settle_pending_batch", { p_limit: 400 });
+  if (error) throw new Error(`SQL settlement batch failed: ${error.message}`);
+  return Number(data ?? 0);
 }
 
 function mean(values:number[]) { return values.reduce((a,b)=>a+b,0)/Math.max(1,values.length); }
@@ -384,41 +309,26 @@ async function evaluatePreregistered(s:any, versions:Map<string,StrategyVersion>
   const random=versions.get("random")!;
   const manifest=await loadManifestForStrategy(s,adaptive.id);
   if (!manifest) return {status:"no_preregistered_manifest"};
-  const [{data:aRuns,error:aErr},{data:rRuns,error:rErr}] = await Promise.all([
-    s.from("forward_runs").select("id,target_draw").eq("strategy_version_id",adaptive.id).eq("provenance_verified",true).order("target_draw",{ascending:true}).limit(5000),
-    s.from("forward_runs").select("id,target_draw").eq("strategy_version_id",random.id).eq("provenance_verified",true).order("target_draw",{ascending:true}).limit(5000),
-  ]);
-  if (aErr||rErr) throw new Error(`evidence run read failed: ${aErr?.message||rErr?.message}`);
-  const randomByDraw=new Map((rRuns||[]).map((r:any)=>[Number(r.target_draw),r.id]));
-  const pairs:{draw:number;a:string;r:string}[]=[];
-  for (const row of aRuns||[]) {
-    const rid=randomByDraw.get(Number(row.target_draw));
-    if (rid) pairs.push({draw:Number(row.target_draw),a:row.id,r:rid});
-  }
-  if (!pairs.length) {
-    await updateEvidenceState(s,manifest,0,null,null,null,null,"insufficient_forward",false);
-    return {status:"insufficient_forward",forwardDraws:0};
-  }
-  const runIds=pairs.flatMap((p)=>[p.a,p.r]);
-  const settlements:any[]=[];
-  for (let i=0;i<runIds.length;i+=500) {
-    const {data,error}=await s.from("forward_settlements")
-      .select("run_id,settlement_version,match_summary")
-      .in("run_id",runIds.slice(i,i+500))
-      .order("settlement_version",{ascending:false});
-    if (error) throw new Error(`evidence settlements read failed: ${error.message}`);
-    settlements.push(...(data||[]));
-  }
-  const latest=new Map<string,any>();
-  for (const row of settlements) if (!latest.has(row.run_id)) latest.set(row.run_id,row);
+
+  // Read only verified pre-draw pairs from PostgreSQL. Post-draw locks and
+  // reconstructed/backfilled portfolio records never count toward promotion.
   const deltas:number[]=[];
   const usedDraws:number[]=[];
-  for (const pair of pairs) {
-    const a=latest.get(pair.a), r=latest.get(pair.r);
-    if (!a||!r) continue;
-    const av=Number(a.match_summary?.best_total), rv=Number(r.match_summary?.best_total);
-    if (!Number.isFinite(av)||!Number.isFinite(rv)) continue;
-    deltas.push(av-rv); usedDraws.push(pair.draw);
+  const pageSize=500;
+  for (let offset=0; offset<25000; offset+=pageSize) {
+    const {data, error}=await s.rpc("lotoos_forward_paired_samples", {
+      p_experiment_key:manifest.experiment_key,
+    }).range(offset,offset+pageSize-1);
+    if (error) throw new Error(`paired forward evidence read failed: ${error.message}`);
+    const rows=Array.isArray(data)?data:[];
+    for (const row of rows) {
+      const av=Number(row.candidate_best),rv=Number(row.baseline_best);
+      if (!Number.isInteger(av)||!Number.isInteger(rv)) continue;
+      deltas.push(av-rv);
+      usedDraws.push(Number(row.target_draw));
+    }
+    if (rows.length<pageSize) break;
+    if (offset+pageSize>=25000) throw new Error("Forward evidence exceeds 25k rows; explicit pagination extension required");
   }
   const n=deltas.length;
   const min=Number(manifest.min_forward_draws);
@@ -501,7 +411,7 @@ Deno.serve(async (req:Request)=>{
   try {
     const history=await loadCanonicalHistory(s);
     const versions=await loadStrategyVersions(s);
-    const settled=await settleReadyRuns(s,history);
+    const settled=await settleReadyRuns(s);
     const lock=await lockNextRuns(s,history,versions);
     const evidence=await evaluatePreregistered(s,versions);
     return Response.json({ok:true,engine:ENGINE_RELEASE,canonicalThrough:history.at(-1)!.draw_number,settled,...lock,evidence});

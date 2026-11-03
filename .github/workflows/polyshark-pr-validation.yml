@@ -33,6 +33,7 @@ jobs:
               Path("polyshark-ai/runtime/paper_daemon.py"),
               Path("polyshark-ai/runtime/evidence_contract.py"),
               Path("polyshark-ai/runtime/challenger_v2.py"),
+              Path("polyshark-ai/runtime/evidence_feed.py"),
           ]
           forbidden = [
               "create_order(",
@@ -59,6 +60,7 @@ jobs:
           python polyshark-ai/tests/test_evidence_contract_limits.py -q
           python polyshark-ai/tests/test_evidence_daemon_integration.py -q
           python polyshark-ai/tests/test_challenger_v2.py -q
+          python polyshark-ai/tests/test_evidence_feed.py -q
 
       - name: Python syntax check
         run: |
@@ -66,7 +68,8 @@ jobs:
             polyshark-ai/runtime/paper_trader.py \
             polyshark-ai/runtime/paper_daemon.py \
             polyshark-ai/runtime/evidence_contract.py \
-            polyshark-ai/runtime/challenger_v2.py
+            polyshark-ai/runtime/challenger_v2.py \
+            polyshark-ai/runtime/evidence_feed.py
 
       - name: Verify committed state remains paper-only
         run: |

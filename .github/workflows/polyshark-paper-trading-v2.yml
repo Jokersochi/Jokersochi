@@ -1,4 +1,5 @@
 name: PolyShark Paper Trading 24x7
+# Session reset 2026-11-03T00:23:27.123Z: archived paper-20260827-restart-1000; trigger one immediate safe paper tick.
 
 on:
   workflow_dispatch:

@@ -156,10 +156,17 @@ export async function loadOfficialPayouts(firstDraw, lastDraw) {
 }
 
 
+export function validateForwardEvidenceFreshness(payload, now = Date.now(), maxAgeMinutes = 45) {
+  const checked = Date.parse(payload?.checked_at || payload?.updatedAt || "");
+  const ageMinutes = Number.isFinite(checked) ? (now - checked) / 60000 : Infinity;
+  const stale = !Number.isFinite(ageMinutes) || ageMinutes < -5 || ageMinutes > maxAgeMinutes;
+  return { ...payload, stale, ageMinutes };
+}
+
 export async function loadForwardEvidenceStatus() {
   const states = await fetchJson("/rest/v1/system_state?key=eq.forward_evidence_status&select=payload,updated_at&limit=1");
   const row = Array.isArray(states) ? states[0] : null;
-  return row ? { ...row.payload, updatedAt: row.updated_at } : null;
+  return row ? validateForwardEvidenceFreshness({ ...row.payload, updatedAt: row.updated_at }) : null;
 }
 
 async function loadLatestStrategyVersion(strategyKey) {

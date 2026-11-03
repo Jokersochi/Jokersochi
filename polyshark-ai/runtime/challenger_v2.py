@@ -59,7 +59,7 @@ def price_blind_event_forecast(
     """Combine valid exogenous probabilities; this function is price-blind."""
     now_ts = parse_ts(now)
     expected_hash = question_hash(question)
-    valid: list[tuple[str, float, float, str]] = []
+    valid: list[tuple[str, float, float, str, float]] = []
     for item in evidence or []:
         if not isinstance(item, dict):
             continue
@@ -71,6 +71,7 @@ def price_blind_event_forecast(
             not source_id
             or item.get("question_hash") != expected_hash
             or item.get("independent_of_market_price") is not True
+            or not math.isfinite(probability)
             or not 0.0 < probability < 1.0
             or not math.isfinite(weight)
             or weight <= 0.0
@@ -83,22 +84,24 @@ def price_blind_event_forecast(
         if age < 0.0 or age > MAX_EVIDENCE_AGE_SECONDS:
             continue
         fingerprint = str(item.get("evidence_id") or f"{source_id}:{observed_at}")
-        valid.append((source_id, probability, weight, fingerprint))
+        valid.append((source_id, probability, weight, fingerprint, now_ts - age))
 
-    unique_sources = sorted({source for source, _, _, _ in valid})
+    unique_sources = sorted({source for source, _, _, _, _ in valid})
     if len(unique_sources) < MIN_INDEPENDENT_SOURCES:
         return EventForecast(NEUTRAL_PRIOR, "INSUFFICIENT_INDEPENDENT_EVIDENCE", (), None)
-    # At most one observation from each source prevents duplicated feeds from
-    # manufacturing confidence.  The newest valid item is supplied by callers.
-    by_source: dict[str, tuple[float, float, str]] = {}
-    for source, probability, weight, fingerprint in valid:
-        by_source[source] = (probability, weight, fingerprint)
-    scale = max(weight for _, weight, _ in by_source.values())
-    total_weight = math.fsum(weight / scale for _, weight, _ in by_source.values())
+    # Deterministically select the newest valid snapshot per source, regardless
+    # of input order; the source count cannot be inflated by repeated entries.
+    by_source: dict[str, tuple[float, float, str, float]] = {}
+    for source, probability, weight, fingerprint, stamp in valid:
+        previous = by_source.get(source)
+        if previous is None or (stamp, fingerprint) > (previous[3], previous[2]):
+            by_source[source] = (probability, weight, fingerprint, stamp)
+    scale = max(weight for _, weight, _, _ in by_source.values())
+    total_weight = math.fsum(weight / scale for _, weight, _, _ in by_source.values())
     probability_yes = math.fsum(
-        probability * (weight / scale) for probability, weight, _ in by_source.values()
+        probability * (weight / scale) for probability, weight, _, _ in by_source.values()
     ) / total_weight
-    fingerprints = sorted(fingerprint for _, _, fingerprint in by_source.values())
+    fingerprints = sorted(fingerprint for _, _, fingerprint, _ in by_source.values())
     digest = hashlib.sha256("|".join(fingerprints).encode("utf-8")).hexdigest()
     return EventForecast(
         round(min(0.999, max(0.001, probability_yes)), 8),
@@ -135,10 +138,14 @@ def costed_edge(
     """Return expected resolution edge after ask, fee, impact and liquidity gate."""
     if not all(math.isfinite(value) for value in (probability, market_probability, spread, fee_rate, liquidity, notional)):
         return {"eligible": False, "net_edge_per_share": -1.0}
-    if not (0.0 < probability < 1.0 and 0.0 < market_probability < 1.0 and 0.0 <= spread < 1.0):
+    if not (0.0 < probability < 1.0 and 0.0 < market_probability < 1.0
+            and 0.0 <= spread < 1.0 and 0.0 <= fee_rate <= 1.0
+            and liquidity > 0.0 and notional > 0.0):
         return {"eligible": False, "net_edge_per_share": -1.0}
     slippage = liquidity_slippage(notional, liquidity)
-    entry_price = min(0.999, market_probability + spread / 2.0 + slippage)
+    entry_price = market_probability + spread / 2.0 + slippage
+    if entry_price >= 1.0:
+        return {"eligible": False, "net_edge_per_share": -1.0}
     fee_per_share = taker_fee_per_share(entry_price, fee_rate)
     all_in_cost = entry_price + fee_per_share
     net_edge = probability - all_in_cost

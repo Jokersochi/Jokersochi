@@ -13,13 +13,13 @@
     "axios": "^1.18.0",
     "expo": "^57.0.13",
     "expo-camera": "~14.1.0",
-    "expo-constants": "^15.4.5",
+    "expo-constants": "^57.0.19",
     "expo-file-system": "^16.0.6",
     "expo-image-manipulator": "^11.1.6",
     "expo-image-picker": "^14.7.1",
     "expo-status-bar": "~1.11.1",
     "react": "18.2.0",
-    "react-native": "0.73.0",
+    "react-native": "0.87.1",
     "zod": "^3.22.4"
   },
   "devDependencies": {

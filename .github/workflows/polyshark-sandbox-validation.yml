@@ -65,7 +65,7 @@ jobs:
               --dir "$(dirname "$SANDBOX_STATE")"
             test -s "$SANDBOX_STATE"
           else
-            echo "No previous main-branch sandbox run; beginning an isolated $1000 virtual session."
+            echo "No previous main-branch sandbox run; beginning an isolated USD 1000 virtual session."
           fi
 
       - name: Process public quotes and simulate virtual fills only

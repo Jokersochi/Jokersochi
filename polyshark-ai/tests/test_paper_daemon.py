@@ -55,5 +55,44 @@ class PaperDaemonTests(unittest.TestCase):
             pd.prepare_continuous_state({"status": "running"}, 0)
 
 
+    def test_operational_health_detects_delayed_tick_and_disabled_feed(self):
+        state = {
+            "last_tick_at": "2026-11-11T02:00:00+00:00",
+            "paper_only": True,
+            "real_orders_enabled": False,
+            "last_error": None,
+            "capital_decision": "NO_TRADE",
+            "challenger_evidence_feed": {"status": "DISABLED"},
+            "evidence_contract": {"trade_dossier": {
+                "review_status": "BLOCKED", "blocked_by": ["forward_oos"]
+            }},
+        }
+        out = pd.operational_health_snapshot(state, "2026-11-10T23:00:00+00:00")
+        self.assertEqual(out["cadence"], "DELAYED")
+        self.assertEqual(out["tick_gap_seconds"], 10800)
+        self.assertEqual(out["research_feed_status"], "DISABLED")
+        self.assertEqual(out["evidence_review_status"], "BLOCKED")
+        self.assertEqual(out["capital_decision"], "NO_TRADE")
+        self.assertIs(out["paper_only"], True)
+        self.assertIs(out["real_orders_enabled"], False)
+
+    def test_operational_health_first_and_ontime(self):
+        state = {"last_tick_at": "2026-11-11T02:05:00Z"}
+        ontime = pd.operational_health_snapshot(state, "2026-11-11T02:00:00Z")
+        self.assertEqual(ontime["cadence"], "ON_CADENCE")
+        self.assertEqual(ontime["tick_gap_seconds"], 300)
+        fresh = pd.operational_health_snapshot(state, None)
+        self.assertEqual(fresh["cadence"], "FIRST_TICK")
+        self.assertIsNone(fresh["tick_gap_seconds"])
+
+    def test_operational_health_invalid_and_clock_skew(self):
+        state = {"last_tick_at": "2026-11-11T02:05:00Z"}
+        invalid = pd.operational_health_snapshot(state, "not-a-time")
+        self.assertEqual(invalid["cadence"], "INVALID_TIMESTAMP")
+        self.assertIsNone(invalid["tick_gap_seconds"])
+        skew = pd.operational_health_snapshot(state, "2026-11-11T02:10:00Z")
+        self.assertEqual(skew["cadence"], "CLOCK_SKEW")
+
+
 if __name__ == "__main__":
     unittest.main()

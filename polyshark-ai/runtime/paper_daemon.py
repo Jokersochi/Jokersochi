@@ -134,10 +134,61 @@ def _apply_evidence_fail_closed(state: dict[str, Any]) -> dict[str, Any]:
     return state
 
 
+def _parse_utc_timestamp(value: Any) -> datetime | None:
+    if not isinstance(value, str) or not value:
+        return None
+    try:
+        stamp = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    if stamp.tzinfo is None:
+        return None
+    return stamp.astimezone(timezone.utc)
+
+
+def operational_health_snapshot(
+    state: dict[str, Any],
+    previous_tick_at: Any,
+    expected_interval_seconds: int = DEFAULT_INTERVAL_SECONDS,
+) -> dict[str, Any]:
+    """Observe scheduler gaps and research blockers; never authorize capital."""
+    current_tick_at = state.get("last_tick_at")
+    old = _parse_utc_timestamp(previous_tick_at)
+    current = _parse_utc_timestamp(current_tick_at)
+    interval = max(30, int(expected_interval_seconds))
+    delayed_after = max(900, 3 * interval)
+    gap: int | None = None
+    if previous_tick_at is None:
+        cadence = "FIRST_TICK"
+    elif old is None or current is None:
+        cadence = "INVALID_TIMESTAMP"
+    else:
+        gap = int((current - old).total_seconds())
+        cadence = "CLOCK_SKEW" if gap < 0 else "DELAYED" if gap > delayed_after else "ON_CADENCE"
+    feed = state.get("challenger_evidence_feed") or {}
+    dossier = (state.get("evidence_contract") or {}).get("trade_dossier") or {}
+    return {
+        "observed_at": current_tick_at,
+        "previous_tick_at": previous_tick_at,
+        "tick_gap_seconds": gap,
+        "expected_interval_seconds": interval,
+        "delayed_after_seconds": delayed_after,
+        "cadence": cadence,
+        "research_feed_status": feed.get("status", "UNKNOWN"),
+        "evidence_review_status": dossier.get("review_status", "UNKNOWN"),
+        "evidence_blocked_by": dossier.get("blocked_by", []),
+        "capital_decision": state.get("capital_decision", "NO_TRADE"),
+        "last_error": state.get("last_error"),
+        "paper_only": state.get("paper_only") is True,
+        "real_orders_enabled": state.get("real_orders_enabled") is True,
+    }
+
+
 def run_tick(state_path: Path, target_equity: float = CONTINUOUS_TARGET_EQUITY) -> dict[str, Any]:
     """Выполняет один paper-only тик, evidence gate и возвращает сохранённое состояние."""
     trader.TARGET_EQUITY = target_equity
     state = trader.load_state(state_path)
+    previous_tick_at = state.get("last_tick_at")
     state = prepare_continuous_state(state, target_equity)
     state["capital_decision"] = "NO_TRADE"
     try:
@@ -153,6 +204,7 @@ def run_tick(state_path: Path, target_equity: float = CONTINUOUS_TARGET_EQUITY) 
             {"ts": state["last_tick_at"], "event": "TICK_ERROR", "error": state["last_error"]}
         )
     state = _apply_evidence_fail_closed(state)
+    state["operational_health"] = operational_health_snapshot(state, previous_tick_at)
     trader.validate_state(state)
     trader.save_state(state_path, state)
     return state
@@ -176,6 +228,7 @@ def heartbeat_payload(state: dict[str, Any], *, status: str, consecutive_errors:
         "real_orders_enabled": state.get("real_orders_enabled") is True,
         "capital_decision": state.get("capital_decision", "NO_TRADE"),
         "evidence_review_status": dossier.get("review_status", "BLOCKED"),
+        "operational_health": state.get("operational_health"),
     }
 
 

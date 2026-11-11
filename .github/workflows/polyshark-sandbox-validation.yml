@@ -30,3 +30,17 @@ jobs:
           PY
           python -m unittest discover -s polyshark-ai/tests -p test_sandbox_paper_execution.py -v
           python -m py_compile polyshark-ai/runtime/sandbox_paper_execution.py
+
+      - name: Live public quotes smoke test (virtual cash only)
+        run: |
+          python polyshark-ai/runtime/sandbox_paper_execution.py --state /tmp/polyshark-sandbox-paper-state.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          s = json.loads(Path('/tmp/polyshark-sandbox-paper-state.json').read_text())
+          assert s['paper_only'] is True
+          assert s['real_orders_enabled'] is False
+          assert s['cash'] >= 0
+          assert s['equity'] > 0
+          print({'quotes_observed': len(s['observations']), 'virtual_trades': len(s['trades']), 'equity': s['equity']})
+          PY

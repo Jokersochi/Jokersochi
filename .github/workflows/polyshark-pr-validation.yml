@@ -8,6 +8,8 @@ on:
       - "polyshark-ai/tests/**"
       - ".github/workflows/polyshark-pr-validation.yml"
       - ".github/workflows/polyshark-paper-trading-v2.yml"
+      - ".github/workflows/polyshark-primary-weather-research.yml"
+      - "polyshark-ai/research/weather_watchlist.json"
 
 permissions:
   contents: read
@@ -34,6 +36,7 @@ jobs:
               Path("polyshark-ai/runtime/evidence_contract.py"),
               Path("polyshark-ai/runtime/challenger_v2.py"),
               Path("polyshark-ai/runtime/evidence_feed.py"),
+              Path("polyshark-ai/runtime/primary_weather_research.py"),
           ]
           forbidden = [
               "create_order(",
@@ -61,6 +64,7 @@ jobs:
           python polyshark-ai/tests/test_evidence_daemon_integration.py -q
           python polyshark-ai/tests/test_challenger_v2.py -q
           python polyshark-ai/tests/test_evidence_feed.py -q
+          python polyshark-ai/tests/test_primary_weather_research.py -q
 
       - name: Python syntax check
         run: |
@@ -69,7 +73,8 @@ jobs:
             polyshark-ai/runtime/paper_daemon.py \
             polyshark-ai/runtime/evidence_contract.py \
             polyshark-ai/runtime/challenger_v2.py \
-            polyshark-ai/runtime/evidence_feed.py
+            polyshark-ai/runtime/evidence_feed.py \
+            polyshark-ai/runtime/primary_weather_research.py
 
       - name: Verify committed state remains paper-only
         run: |

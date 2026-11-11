@@ -1,0 +1,60 @@
+name: PolyShark Primary Weather Research
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Best effort. Does not run or change paper trading.
+    - cron: "19 2,8,14,20 * * *"
+  push:
+    branches: [main]
+    paths:
+      - "polyshark-ai/runtime/primary_weather_research.py"
+      - "polyshark-ai/research/weather_watchlist.json"
+      - "polyshark-ai/tests/test_primary_weather_research.py"
+      - ".github/workflows/polyshark-primary-weather-research.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: polyshark-primary-weather-research
+  cancel-in-progress: false
+
+jobs:
+  weather-research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Offline tests
+        run: |
+          python polyshark-ai/tests/test_primary_weather_research.py -q
+          python -m py_compile polyshark-ai/runtime/primary_weather_research.py
+      - name: Fetch read-only NOAA NWS hourly research
+        run: |
+          python polyshark-ai/runtime/primary_weather_research.py \
+            --watchlist polyshark-ai/research/weather_watchlist.json \
+            --output primary-weather-research.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          data = json.loads(Path("primary-weather-research.json").read_text())
+          assert data["status"] == "RESEARCH_ONLY"
+          assert data["source_count"] == 1
+          assert data["paper_only"] is True
+          assert data["real_orders_enabled"] is False
+          assert data["capital_decision"] == "NO_TRADE"
+          assert data["event_probability"] is None
+          assert data["market_question_matching"] == "NOT_PERFORMED"
+          assert data["locations"] and data["locations"][0]["periods"]
+          print("NOAA source read verified, never a trading instruction.")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: polyshark-primary-weather-research
+          path: primary-weather-research.json
+          retention-days: 7
+          if-no-files-found: error

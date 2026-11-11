@@ -158,6 +158,7 @@ def main():
         "schema_version": 1, "paper_only": True, "real_orders_enabled": False,
         "cash": START_CASH, "equity": START_CASH, "positions": {}, "trades": [], "observations": {}
     }
+    previous_tick_at = state.get("last_tick_at")
     if state.get("paper_only") is not True or state.get("real_orders_enabled") is not False:
         parser.error("Unsafe state")
     quotes = {}
@@ -182,7 +183,10 @@ def main():
             os.unlink(temp)
     print(json.dumps({"equity": updated["equity"], "cash": updated["cash"],
                       "positions": len(updated["positions"]), "trades": len(updated["trades"]),
-                      "quotes": len(quotes), "paper_only": True}))
+                      "quotes": len(quotes), "paper_only": True,
+                      "previous_tick_at": previous_tick_at,
+                      "last_tick_at": updated["last_tick_at"],
+                      "virtual_roi_pct": round((updated["equity"] / START_CASH - 1) * 100, 4)}))
 
 
 if __name__ == "__main__":

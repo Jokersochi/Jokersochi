@@ -1,0 +1,10 @@
+{
+  "schema_version": "polyshark-weather-watchlist-v1",
+  "locations": [
+    {
+      "label": "New York research pilot",
+      "latitude": 40.7812,
+      "longitude": -73.9665
+    }
+  ]
+}

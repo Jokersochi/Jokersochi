@@ -5,8 +5,9 @@ on:
   workflow_dispatch:
   schedule:
     # GitHub Actions: минимальный поддерживаемый интервал расписания — 5 минут.
-    # Постоянный серверный режим реализован runtime/paper_daemon.py.
-    - cron: "*/5 * * * *"
+    # Здесь используется одноразовый --once. 24/7 требует отдельного постоянного runner.
+    # Offset from :00; GitHub schedule is best-effort and may skip ticks.
+    - cron: "3-58/5 * * * *"
   push:
     branches: [main]
     paths:
@@ -169,6 +170,36 @@ jobs:
               'calibration': dossier.get('calibration'),
               'calibration_scan': scan,
           })
+          PY
+
+      - name: Проверить периодичность и причины NO_TRADE
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          state = json.loads(Path("polyshark-ai/runtime/paper_state.json").read_text(encoding="utf-8"))
+          health = state.get("operational_health", {})
+          rows = [
+              "## PolyShark paper-only runtime",
+              "- Session: " + str(state.get("session_id")),
+              "- Equity USD: " + str(state.get("equity")) + "; ticks: " + str(state.get("ticks")),
+              "- Cadence: " + str(health.get("cadence", "UNKNOWN")) + "; gap s: " + str(health.get("tick_gap_seconds")),
+              "- Research feed: " + str(health.get("research_feed_status", "UNKNOWN")),
+              "- Evidence gate: " + str(health.get("evidence_review_status", "UNKNOWN")),
+              "- Capital decision: " + str(state.get("capital_decision")),
+              "- GitHub scheduled ticks are best-effort, not a continuously running worker.",
+          ]
+          report = "\n".join(rows) + "\n"
+          print(report)
+          summary_path = os.getenv("GITHUB_STEP_SUMMARY")
+          if summary_path:
+              with open(summary_path, "a", encoding="utf-8") as fp:
+                  fp.write(report)
+          if health.get("cadence") == "DELAYED":
+              print("::warning::Interval between successful paper ticks exceeded 15 minutes")
+          if health.get("research_feed_status") == "DISABLED":
+              print("::notice::Independent research feed disabled; NO_TRADE is expected")
           PY
 
       - name: Сохранить состояние paper-сессии

@@ -1,0 +1,99 @@
+name: PolyShark Sandbox Paper Validation
+# PAPER ONLY: public quotes, hypothetical fills, no order submission.
+on:
+  push:
+    branches:
+      - main
+      - feature/polyshark-paper-execution-sandbox-20261111
+    paths:
+      - "polyshark-ai/runtime/sandbox_paper_execution.py"
+      - "polyshark-ai/tests/test_sandbox_paper_execution.py"
+      - ".github/workflows/polyshark-sandbox-validation.yml"
+  workflow_dispatch:
+  schedule:
+    # GitHub-hosted cron is best effort; not a guaranteed continuous worker.
+    - cron: "7,22,37,52 * * * *"
+
+permissions:
+  actions: read
+  contents: read
+
+concurrency:
+  group: polyshark-isolated-sandbox-paper
+  cancel-in-progress: false
+
+jobs:
+  sandbox-validation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      SANDBOX_STATE: /tmp/polyshark-sandbox-runtime/sandbox_paper_state.json
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Verify no live execution primitives and offline sandbox tests
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          source = Path("polyshark-ai/runtime/sandbox_paper_execution.py").read_text()
+          forbidden = ["create_order(", "post_order(", "PRIVATE_KEY", "api_key"]
+          assert not any(token in source for token in forbidden)
+          assert "real_orders_enabled" in source and "paper_only" in source
+          PY
+          python -m unittest discover -s polyshark-ai/tests -p test_sandbox_paper_execution.py -v
+          python -m py_compile polyshark-ai/runtime/sandbox_paper_execution.py
+
+      - name: Restore last successful main-branch sandbox ledger
+        if: github.ref == 'refs/heads/main'
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$(dirname "$SANDBOX_STATE")"
+          prior_id=$(gh run list --repo "$GITHUB_REPOSITORY" \
+            --workflow polyshark-sandbox-validation.yml \
+            --branch main --limit 50 \
+            --json databaseId,conclusion,status \
+            --jq '[.[] | select(.status == "completed" and .conclusion == "success") | .databaseId][0] // empty')
+          if [[ -n "$prior_id" ]]; then
+            echo "Restoring sandbox from completed run $prior_id"
+            gh run download "$prior_id" --repo "$GITHUB_REPOSITORY" \
+              --name polyshark-sandbox-paper-state \
+              --dir "$(dirname "$SANDBOX_STATE")"
+            test -s "$SANDBOX_STATE"
+          else
+            echo "No previous main-branch sandbox run; beginning an isolated $1000 virtual session."
+          fi
+
+      - name: Process public quotes and simulate virtual fills only
+        run: |
+          set -euo pipefail
+          mkdir -p "$(dirname "$SANDBOX_STATE")"
+          python polyshark-ai/runtime/sandbox_paper_execution.py --state "$SANDBOX_STATE"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          s = json.loads(Path(os.environ["SANDBOX_STATE"]).read_text())
+          assert s["paper_only"] is True
+          assert s["real_orders_enabled"] is False
+          assert s["cash"] >= 0
+          assert s["equity"] > 0
+          assert all(t["side"] in {"BUY", "SELL"} for t in s["trades"])
+          print({"markets_observed_total": len(s["observations"]),
+                 "virtual_trades_total": len(s["trades"]),
+                 "open_positions": len(s["positions"]),
+                 "cash": s["cash"], "equity": s["equity"],
+                 "virtual_roi_pct": round((s["equity"] / 1000 - 1) * 100, 4)})
+          PY
+
+      - name: Persist isolated virtual ledger for the next scheduled run
+        if: github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v4
+        with:
+          name: polyshark-sandbox-paper-state
+          path: ${{ env.SANDBOX_STATE }}
+          retention-days: 30
+          if-no-files-found: error

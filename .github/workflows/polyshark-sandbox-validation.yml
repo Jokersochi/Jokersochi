@@ -1,0 +1,32 @@
+name: PolyShark Sandbox Paper Validation
+on:
+  push:
+    branches:
+      - feature/polyshark-paper-execution-sandbox-20261111
+    paths:
+      - "polyshark-ai/runtime/sandbox_paper_execution.py"
+      - "polyshark-ai/tests/test_sandbox_paper_execution.py"
+      - ".github/workflows/polyshark-sandbox-validation.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  sandbox-validation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Check sandbox safety and run offline tests
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          source = Path("polyshark-ai/runtime/sandbox_paper_execution.py").read_text()
+          forbidden = ["create_order(", "post_order(", "PRIVATE_KEY", "api_key", "paper_state.json\""]
+          assert not any(token in source for token in forbidden[:4])
+          assert "real_orders_enabled" in source and "paper_only" in source
+          PY
+          python -m unittest discover -s polyshark-ai/tests -p test_sandbox_paper_execution.py -v
+          python -m py_compile polyshark-ai/runtime/sandbox_paper_execution.py

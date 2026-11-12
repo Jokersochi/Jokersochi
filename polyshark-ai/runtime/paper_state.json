@@ -13,8 +13,8 @@
   "realized_pnl": 0,
   "unrealized_pnl": 0.0,
   "fees_paid": 0,
-  "ticks": 143,
-  "last_tick_at": "2026-11-12T12:46:35+00:00",
+  "ticks": 144,
+  "last_tick_at": "2026-11-12T12:56:32+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -44,7 +44,7 @@
     "forecast_archive": [],
     "calibration_records": [],
     "last_calibration_scan": {
-      "ts": "2026-11-12T12:46:36+00:00",
+      "ts": "2026-11-12T12:56:34+00:00",
       "model_version": "event-evidence-v2-price-blind-20261029",
       "archive_pending": 0,
       "due": 0,
@@ -54,10 +54,10 @@
       "records_total": 0
     },
     "contract_version": "trade-dossier-v2-challenger-20261029",
-    "updated_at": "2026-11-12T12:46:36+00:00",
+    "updated_at": "2026-11-12T12:56:34+00:00",
     "trade_dossier": {
       "contract_version": "trade-dossier-v2-challenger-20261029",
-      "generated_at": "2026-11-12T12:46:36+00:00",
+      "generated_at": "2026-11-12T12:56:34+00:00",
       "model_version": "event-evidence-v2-price-blind-20261029",
       "capital_decision": "NO_TRADE",
       "review_status": "BLOCKED",
@@ -141,7 +141,7 @@
         "legacy_capital_execution": false
       },
       "calibration_scan": {
-        "ts": "2026-11-12T12:46:36+00:00",
+        "ts": "2026-11-12T12:56:34+00:00",
         "model_version": "event-evidence-v2-price-blind-20261029",
         "archive_pending": 0,
         "due": 0,
@@ -209,9 +209,9 @@
     },
     "verdict": "NO_EVIDENCE",
     "auto_promotion": false,
-    "updated_at": "2026-11-12T12:46:35+00:00",
+    "updated_at": "2026-11-12T12:56:32+00:00",
     "last_observation": {
-      "ts": "2026-11-12T12:46:35+00:00",
+      "ts": "2026-11-12T12:56:32+00:00",
       "candidates_seen": 1,
       "deduplicated": 0,
       "rejected_price": 0,
@@ -223,13 +223,13 @@
       "added": 0
     },
     "observation_totals": {
-      "ticks": 143,
-      "candidates_seen": 194,
+      "ticks": 144,
+      "candidates_seen": 195,
       "deduplicated": 0,
       "rejected_price": 0,
       "rejected_spread": 0,
       "rejected_invalid_quote": 0,
-      "rejected_model_evidence": 194,
+      "rejected_model_evidence": 195,
       "rejected_liquidity": 0,
       "rejected_net_edge": 0,
       "added": 0
@@ -1665,12 +1665,22 @@
       "fees_paid": 0.0,
       "open_positions": 0,
       "closed_positions": 0
+    },
+    {
+      "ts": "2026-11-12T12:56:32+00:00",
+      "equity": 1000.0,
+      "cash": 1000.0,
+      "realized_pnl": 0.0,
+      "unrealized_pnl": 0.0,
+      "fees_paid": 0.0,
+      "open_positions": 0,
+      "closed_positions": 0
     }
   ],
   "operational_health": {
-    "observed_at": "2026-11-12T12:46:35+00:00",
-    "previous_tick_at": "2026-11-12T12:34:37+00:00",
-    "tick_gap_seconds": 718,
+    "observed_at": "2026-11-12T12:56:32+00:00",
+    "previous_tick_at": "2026-11-12T12:46:35+00:00",
+    "tick_gap_seconds": 597,
     "expected_interval_seconds": 300,
     "delayed_after_seconds": 900,
     "cadence": "ON_CADENCE",

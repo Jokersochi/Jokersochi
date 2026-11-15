@@ -10,10 +10,12 @@ on:
     paths:
       - "polyshark-ai/runtime/spot_research.py"
       - "polyshark-ai/tests/test_spot_research.py"
+      - "polyshark-ai/runtime/btc_forward_evaluation.py"
+      - "polyshark-ai/tests/test_btc_forward_evaluation.py"
       - ".github/workflows/polyshark-btc-research.yml"
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: polyshark-btc-research
@@ -25,6 +27,13 @@ jobs:
     timeout-minutes: 6
     steps:
       - uses: actions/checkout@v4
+
+      - name: Checkout independent forward-research data branch
+        uses: actions/checkout@v4
+        with:
+          ref: polyshark-btc-forward-data
+          path: btc-forward-data
+          fetch-depth: 0
 
       - uses: actions/setup-python@v5
         with:
@@ -43,12 +52,51 @@ jobs:
           print("No authenticated CLOB or order paths")
           PY
           python polyshark-ai/tests/test_spot_research.py -q
-          python -m py_compile polyshark-ai/runtime/spot_research.py
+          python polyshark-ai/tests/test_btc_forward_evaluation.py -q
+          python -m py_compile polyshark-ai/runtime/spot_research.py polyshark-ai/runtime/btc_forward_evaluation.py
 
       - name: Generate independent spot research snapshot (NO_TRADE)
         run: |
           python polyshark-ai/runtime/spot_research.py \
             --output /tmp/polyshark-btc-research.json || echo "::warning::Research blocked: no trade or shadow signal authorized"
+
+      - name: Append new forward-only snapshot and verify settled outcomes
+        run: |
+          python polyshark-ai/runtime/btc_forward_evaluation.py \
+            --report /tmp/polyshark-btc-research.json \
+            --ledger btc-forward-data/polyshark-ai/research/btc_forward_ledger.json \
+            --output /tmp/polyshark-btc-forward-summary.json
+
+      - name: Enforce research-only forward-evaluation contract
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          s = json.loads(Path('/tmp/polyshark-btc-forward-summary.json').read_text(encoding='utf-8'))
+          assert s['paper_only'] is True
+          assert s['real_orders_enabled'] is False
+          assert s['capital_decision'] == 'NO_TRADE'
+          assert s['research_only'] is True
+          assert s['metrics']['calibration_review_eligible'] is False
+          print('Forward-only:', {
+              'snapshots': s['snapshot_count'],
+              'pending_days': s['pending_event_days'],
+              'new_resolutions': s['new_resolutions'],
+              'resolved_unique_days': s['metrics']['resolved_unique_event_days'],
+          })
+          PY
+
+      - name: Persist forward ledger on separate data branch only
+        run: |
+          git -C btc-forward-data config user.name "polyshark-research-bot"
+          git -C btc-forward-data config user.email "polyshark-research-bot@users.noreply.github.com"
+          git -C btc-forward-data add -- polyshark-ai/research/btc_forward_ledger.json
+          if git -C btc-forward-data diff --cached --quiet; then
+            echo "No new independent forward sample or verified settlement"
+          else
+            git -C btc-forward-data commit -m "data(polyshark): append immutable forward snapshot / verified BTC outcome [skip ci]"
+            git -C btc-forward-data push origin HEAD:polyshark-btc-forward-data
+          fi
 
       - name: Show research status and enforce NO_TRADE
         run: |
@@ -68,6 +116,7 @@ jobs:
               "- Model: " + str(r.get("model_version")),
               "- Evaluated markets: " + str(r.get("markets_evaluated", 0)),
               "- Capital decision: **NO_TRADE**",
+              "- Forward snapshots and verified resolutions are stored on data branch: polyshark-btc-forward-data.",
               "- Correlated Coinbase/Kraken data, uncalibrated forecast, Binance settlement basis risk.",
               "- No automatic Challenger evidence feed, live/paper orders, or strategy promotion.",
           ]
@@ -85,6 +134,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: btc-spot-research-snapshot
-          path: /tmp/polyshark-btc-research.json
+          path: |
+            /tmp/polyshark-btc-research.json
+            /tmp/polyshark-btc-forward-summary.json
           if-no-files-found: error
           retention-days: 14

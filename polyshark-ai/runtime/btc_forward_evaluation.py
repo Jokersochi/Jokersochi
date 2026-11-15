@@ -194,13 +194,16 @@ def snapshot_from_report(report: dict[str, Any], now: datetime) -> dict[str, Any
             c = m.get("illustrative_cost_model") or {}
             record["yes_bid"] = finite(m["public_yes_bid"], low=0, high=1)
             record["yes_ask"] = finite(m["public_yes_ask"], low=0, high=1)
-            record["all_in_cost_per_share"] = finite(
-                c["all_in_cost_per_share"], low=0, high=2
-            )
-            record["illustrative_net_edge"] = finite(
-                c["net_edge_per_share"], low=-2, high=1
-            )
-            record["liquidity_gate"] = c.get("eligible") is True
+            if "all_in_cost_per_share" in c and "net_edge_per_share" in c:
+                record["all_in_cost_per_share"] = finite(
+                    c["all_in_cost_per_share"], low=0, high=2
+                )
+                record["illustrative_net_edge"] = finite(
+                    c["net_edge_per_share"], low=-2, high=1
+                )
+                record["liquidity_gate"] = c.get("eligible") is True
+            else:
+                record["liquidity_gate"] = False
         else:
             record["liquidity_gate"] = False
         prepared.append(record)
@@ -315,12 +318,14 @@ def resolve_pending(ledger: dict[str, Any], now: datetime,
             grouped[snap["event_slug"]].append(snap)
     errors: list[dict[str, str]] = []
     added = 0
-    for slug, snapshots in sorted(grouped.items())[:MAX_RESOLUTIONS_PER_RUN]:
+    due = [
+        (slug, rows) for slug, rows in sorted(grouped.items())
+        if now >= timestamp(rows[0]["settlement_at"]) + SETTLEMENT_WAIT
+    ]
+    for slug, snapshots in due[:MAX_RESOLUTIONS_PER_RUN]:
         end = timestamp(snapshots[0]["settlement_at"])
         if any(timestamp(s["settlement_at"]) != end for s in snapshots):
             raise ValueError("Conflicting event settlement timestamps")
-        if now < end + SETTLEMENT_WAIT:
-            continue
         markets: dict[str, dict[str, Any]] = {}
         for snap in snapshots:
             for m in snap["markets"]:

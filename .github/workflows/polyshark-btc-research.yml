@@ -1,0 +1,90 @@
+name: PolyShark BTC Independent-Price Research
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Best effort; schedule delay is expected on shared GitHub Actions runners.
+    - cron: "17 * * * *"
+  push:
+    branches: [main]
+    paths:
+      - "polyshark-ai/runtime/spot_research.py"
+      - "polyshark-ai/tests/test_spot_research.py"
+      - ".github/workflows/polyshark-btc-research.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: polyshark-btc-research
+  cancel-in-progress: false
+
+jobs:
+  read-only-market-research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Verify strict read-only semantics and unit tests
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          script = Path("polyshark-ai/runtime/spot_research.py").read_text(encoding="utf-8")
+          forbidden = (
+              "create_order(", "post_order(", "cancel_all(",
+              "POLYMARKET_PRIVATE_KEY", "requests.post(", "urlopen(req, data=",
+          )
+          assert not any(item in script for item in forbidden)
+          print("No authenticated CLOB or order paths")
+          PY
+          python polyshark-ai/tests/test_spot_research.py -q
+          python -m py_compile polyshark-ai/runtime/spot_research.py
+
+      - name: Generate independent spot research snapshot (NO_TRADE)
+        run: |
+          python polyshark-ai/runtime/spot_research.py \
+            --output /tmp/polyshark-btc-research.json || echo "::warning::Research blocked: no trade or shadow signal authorized"
+
+      - name: Show research status and enforce NO_TRADE
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          r = json.loads(Path("/tmp/polyshark-btc-research.json").read_text(encoding="utf-8"))
+          assert r.get("capital_decision") == "NO_TRADE"
+          assert r.get("research_only") is True
+          if r.get("markets"):
+              assert all(m.get("shadow_eligible") is False for m in r["markets"])
+          lines = [
+              "## PolyShark BTC baseline — research only",
+              "- Status: " + str(r.get("fit_status")),
+              "- Event: " + str(r.get("event_slug")),
+              "- Model: " + str(r.get("model_version")),
+              "- Evaluated markets: " + str(r.get("markets_evaluated", 0)),
+              "- Capital decision: **NO_TRADE**",
+              "- Correlated Coinbase/Kraken data, uncalibrated forecast, Binance settlement basis risk.",
+              "- No automatic Challenger evidence feed, live/paper orders, or strategy promotion.",
+          ]
+          if r.get("error_type"):
+              lines.append("- Blocker: " + str(r.get("error_type")))
+          summary = "\n".join(lines) + "\n"
+          print(summary)
+          path = os.environ.get("GITHUB_STEP_SUMMARY")
+          if path:
+              with open(path, "a", encoding="utf-8") as f:
+                  f.write(summary)
+          PY
+
+      - name: Upload inspectable diagnostics (not canonical paper state)
+        uses: actions/upload-artifact@v4
+        with:
+          name: btc-spot-research-snapshot
+          path: /tmp/polyshark-btc-research.json
+          if-no-files-found: error
+          retention-days: 14

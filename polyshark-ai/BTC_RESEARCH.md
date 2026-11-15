@@ -44,6 +44,10 @@ python polyshark-ai/runtime/spot_research.py \
 No new dependencies beyond Python 3.11 and existing
 \`polyshark-ai/runtime/challenger_v2.py\`.
 
+Forward-only sampling and post-resolution evaluation are documented in
+[BTC_FORWARD_EVALUATION.md](BTC_FORWARD_EVALUATION.md). This is a separate
+research data branch and never touches the canonical paper ledger.
+
 The scheduled workflow \`PolyShark BTC Independent-Price Research\` runs
 hourly on a best-effort GitHub Actions schedule. It stores only a
 14-day diagnostic artifact and adds a summary to its workflow run. A

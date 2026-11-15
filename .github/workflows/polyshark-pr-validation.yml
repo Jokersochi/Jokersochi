@@ -6,6 +6,7 @@ on:
     paths:
       - "polyshark-ai/runtime/**"
       - "polyshark-ai/tests/**"
+      - ".github/workflows/polyshark-btc-research.yml"
       - ".github/workflows/polyshark-pr-validation.yml"
       - ".github/workflows/polyshark-paper-trading-v2.yml"
       - ".github/workflows/polyshark-primary-weather-research.yml"
@@ -36,6 +37,7 @@ jobs:
               Path("polyshark-ai/runtime/evidence_contract.py"),
               Path("polyshark-ai/runtime/challenger_v2.py"),
               Path("polyshark-ai/runtime/evidence_feed.py"),
+              Path("polyshark-ai/runtime/spot_research.py"),
               Path("polyshark-ai/runtime/primary_weather_research.py"),
           ]
           forbidden = [
@@ -64,6 +66,7 @@ jobs:
           python polyshark-ai/tests/test_evidence_daemon_integration.py -q
           python polyshark-ai/tests/test_challenger_v2.py -q
           python polyshark-ai/tests/test_evidence_feed.py -q
+          python polyshark-ai/tests/test_spot_research.py -q
           python polyshark-ai/tests/test_primary_weather_research.py -q
 
       - name: Python syntax check
@@ -74,6 +77,7 @@ jobs:
             polyshark-ai/runtime/evidence_contract.py \
             polyshark-ai/runtime/challenger_v2.py \
             polyshark-ai/runtime/evidence_feed.py \
+            polyshark-ai/runtime/spot_research.py \
             polyshark-ai/runtime/primary_weather_research.py
 
       - name: Verify committed state remains paper-only

@@ -91,6 +91,11 @@ jobs:
           lines = [
               "## Forward BTC forecast verification (RESEARCH-ONLY)",
               "- Resolved independent **event days**: " + str(metrics["resolved_unique_event_days"]),
+              "- Event-weighted model ECE (**descriptive only**): "
+                + str(metrics["calibration_model"]["ece_event_weighted_descriptive"]),
+              "- Event-weighted market ECE (**descriptive only**): "
+                + str(metrics["calibration_market"]["ece_event_weighted_descriptive"]),
+              "- Review blockers: " + ", ".join(metrics["calibration_review_blockers"]),
               "- Brier model (lower better): " + str(metrics["brier_model_event_weighted"]),
               "- Brier market baseline: " + str(metrics["brier_market_event_weighted"]),
               "- Hypothetical one-share total P&L (NOT paper fills): "

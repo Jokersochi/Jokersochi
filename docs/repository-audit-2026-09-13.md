@@ -273,3 +273,11 @@ The connected GitHub integration currently exposes file/branch/PR/issue mutation
 - Valuable 40-space Russian economy, content, localizations and micro-events from `russian-monopoly-local` remain UNMIGRATED pending an explicitly versioned optional ruleset. Mortgage has no canonical server intent yet.
 - `monopolylux` and `russian-monopoly-local` remain excluded from deletion-ready status until unique content and deployment dependencies are reconciled. The 25-repository cleanup queue in issue #78 is unchanged.
 - Do not infer hosted multiplayer deployment or Supabase reachability from GitHub CI success alone.
+
+## Update 2026-11-18 — Mortgage rules candidate
+
+- Draft PR `Jokersochi/monopoly-luxe#7` implements server-authoritative mortgage/redeem on the **existing 42-cell** engine; schema flag is optional for old saved rooms. No new backend or alternate board is introduced.
+- Added active-turn and ownership validation, rent suppression while mortgaged, restrictions on building/trading, bankruptcy cleanup, UI controls, and ten Vitest scenarios.
+- GitHub CI run `44200594824` at PR head `9de3095b4ac98de242647b4d32f25224f554383b` passed npm ci, lint, `tsc --noEmit`, Vitest, Vite build, production dependency audit.
+- **Do not mark merged or deployed.** Coordinated Supabase Edge Function + frontend rollout and hosted two-session smoke test remain mandatory. The canonical `main` runtime has not been changed by PR #7.
+- Legacy `russian-monopoly-local` and `monopolylux` remain preserved. The 40-cell Russia ruleset, RUB economics, localized UI and events have not been migrated. Cleanup/deletion readiness count remains 25.

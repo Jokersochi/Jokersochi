@@ -26,6 +26,9 @@ MAX_TAKER_FEE_RATE = 0.07
 SLIPPAGE_RESERVE_PCT = 0.01  # stress assumption on each buy/sell notional
 MAX_BOOK_WALK = 0.02  # maximum absolute price deterioration across levels
 MIN_ENTRY_COST = 5.0  # reject tiny partially filled entries
+MAX_QUOTE_AGE_SECONDS = 60  # refuse stale books; no assumed executable liquidity
+MAX_FUTURE_QUOTE_SKEW_SECONDS = 5
+DRAWDOWN_STOP_PCT = 10.0  # research-only risk gate; never enables live trading
 
 
 def taker_fee(shares, price):
@@ -86,7 +89,9 @@ def orderbook(token):
     ask_depth = sum(size for price, size in asks if price == ask)
     # Preserve best-price fields and attach the full ladder. Five-field fixtures
     # in earlier offline tests remain supported by step().
-    return bid, ask, bid_depth, ask_depth, bids, asks
+    # Polymarket CLOB /book supplies epoch-millisecond timestamp (may be absent).
+    # An absent or unparseable timestamp is not proof of a fresh order book.
+    return bid, ask, bid_depth, ask_depth, bids, asks, data.get("timestamp")
 
 
 def simulated_buy(asks, budget):
@@ -158,16 +163,34 @@ def step(state, quotes, timestamp):
     """Deterministic PAPER snapshot simulator; no real orders or midpoint fills.
 
     Entry signal is exploratory momentum, not an independently proven edge.
-    A quote is a legacy five-tuple or a seven-tuple including executable levels.
+    Legacy five/seven tuples are supported for offline fixtures; public books use
+    eight fields including a timestamp. Undated or stale public quotes are rejected.
     Cash and marks are based on available depth with a conservative fee reserve.
     """
     if state.get("paper_only") is not True or state.get("real_orders_enabled") is not False:
         raise ValueError("Unsafe sandbox state: PAPER-only is mandatory")
+    tick = datetime.fromisoformat(str(timestamp).replace("Z", "+00:00"))
+    if tick.tzinfo is None:
+        raise ValueError("Tick timestamp must include timezone")
+    old_tick = state.get("last_tick_at")
+    if old_tick is not None:
+        previous = datetime.fromisoformat(str(old_tick).replace("Z", "+00:00"))
+        if previous.tzinfo is None or tick <= previous:
+            raise ValueError("Duplicate or backwards PAPER tick rejected")
     state = json.loads(json.dumps(state))
     state.setdefault("observations", {})
     state.setdefault("positions", {})
     state.setdefault("trades", [])
     state["capital_decision"] = "NO_TRADE"
+    peak_equity = max(START_CASH, float(state.get("peak_equity", START_CASH)),
+                      float(state.get("equity", START_CASH)))
+    state["peak_equity"] = peak_equity
+    state["risk_stop"] = bool(state.get("risk_stop", False) or
+                              float(state.get("max_drawdown_pct", 0)) >= DRAWDOWN_STOP_PCT or
+                              float(state.get("equity", START_CASH)) <=
+                              peak_equity * (1 - DRAWDOWN_STOP_PCT / 100))
+    state["rejected_quote_counts"] = {"undated": 0, "stale": 0, "future": 0,
+                                       "invalid_book": 0}
 
     # Never carry forward a stale or favorable liquidation mark when a quote
     # disappears or fails validity/spread checks.
@@ -177,12 +200,34 @@ def step(state, quotes, timestamp):
         position["last_liquidation_value"] = 0.0
 
     for market_id, quote in quotes.items():
+        book_timestamp = None
         if len(quote) == 5:
             bid, ask, bid_depth, ask_depth, question = quote
             bid_levels, ask_levels = [(bid, bid_depth)], [(ask, ask_depth)]
         elif len(quote) == 7:
             bid, ask, bid_depth, ask_depth, bid_levels, ask_levels, question = quote
+        elif len(quote) == 8:
+            bid, ask, bid_depth, ask_depth, bid_levels, ask_levels, book_timestamp, question = quote
+            if book_timestamp is None or isinstance(book_timestamp, bool):
+                state["rejected_quote_counts"]["undated"] += 1
+                continue
+            try:
+                book_epoch_ms = int(book_timestamp)
+                quote_age_seconds = tick.timestamp() - book_epoch_ms / 1000
+            except (TypeError, ValueError, OverflowError):
+                state["rejected_quote_counts"]["undated"] += 1
+                continue
+            if not math.isfinite(quote_age_seconds):
+                state["rejected_quote_counts"]["undated"] += 1
+                continue
+            if quote_age_seconds > MAX_QUOTE_AGE_SECONDS:
+                state["rejected_quote_counts"]["stale"] += 1
+                continue
+            if quote_age_seconds < -MAX_FUTURE_QUOTE_SKEW_SECONDS:
+                state["rejected_quote_counts"]["future"] += 1
+                continue
         else:
+            state["rejected_quote_counts"]["invalid_book"] += 1
             continue
         bid, ask = float(bid), float(ask)
         bids = clean_levels(bid_levels, reverse=True)
@@ -190,6 +235,7 @@ def step(state, quotes, timestamp):
         if (not bids or not asks or not (math.isfinite(bid) and math.isfinite(ask))
                 or not (0 < bid <= ask < 1) or ask - bid > MAX_SPREAD
                 or abs(bids[0][0] - bid) > 1e-9 or abs(asks[0][0] - ask) > 1e-9):
+            state["rejected_quote_counts"]["invalid_book"] += 1
             continue
         midpoint = (bid + ask) / 2
         prior = state["observations"].get(market_id)
@@ -228,8 +274,8 @@ def step(state, quotes, timestamp):
                     pos["last_liquidation_value"] = simulated_sell(
                         bids, pos["shares"])["proceeds"]
 
-        elif (prior is not None and midpoint >= prior * 1.03
-              and len(state["positions"]) < 4):
+        elif (not state["risk_stop"] and prior is not None and
+              midpoint >= prior * 1.03 and len(state["positions"]) < 4):
             budget = min(MAX_POSITION_USD, state["cash"])
             if budget >= MIN_ENTRY_COST:
                 fill = simulated_buy(asks, budget)
@@ -256,6 +302,12 @@ def step(state, quotes, timestamp):
     state["equity"] = round(state["cash"] + sum(
         position.get("last_liquidation_value", 0.0)
         for position in state["positions"].values()), 6)
+    state["peak_equity"] = max(peak_equity, state["equity"])
+    drawdown_pct = max(0.0, (state["peak_equity"] - state["equity"]) /
+                       state["peak_equity"] * 100)
+    state["max_drawdown_pct"] = max(float(state.get("max_drawdown_pct", 0)), drawdown_pct)
+    if state["max_drawdown_pct"] >= DRAWDOWN_STOP_PCT:
+        state["risk_stop"] = True
     state["last_tick_at"] = timestamp
     assert state["cash"] >= -1e-7 and math.isfinite(state["equity"])
     assert state["paper_only"] is True and state["real_orders_enabled"] is False

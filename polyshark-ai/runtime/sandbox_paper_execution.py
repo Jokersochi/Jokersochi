@@ -354,6 +354,13 @@ def main():
     print(json.dumps({"equity": updated["equity"], "cash": updated["cash"],
                       "positions": len(updated["positions"]), "trades": len(updated["trades"]),
                       "quotes": len(quotes), "paper_only": True,
+                      "risk_stop": updated.get("risk_stop", False),
+                      "peak_equity": updated.get("peak_equity"),
+                      "max_drawdown_pct": updated.get("max_drawdown_pct"),
+                      "unpriced_positions": sum(
+                          p.get("last_liquidation_value", 0.0) == 0.0
+                          for p in updated["positions"].values()),
+                      "rejected_quote_counts": updated.get("rejected_quote_counts", {}),
                       "previous_tick_at": previous_tick_at,
                       "last_tick_at": updated["last_tick_at"],
                       "virtual_roi_pct": round((updated["equity"] / START_CASH - 1) * 100, 4)}))

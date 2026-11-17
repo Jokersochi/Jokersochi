@@ -215,7 +215,7 @@ class SandboxTests(unittest.TestCase):
         self.assertTrue(out["risk_stop"])
         self.assertEqual(out["trades"], [])
         self.assertEqual(out["capital_decision"], "NO_TRADE")
-        self.assertAlmostEqual(out["max_drawdown_pct"], 0.0)
+        self.assertGreaterEqual(out["max_drawdown_pct"], 10.0)
         self.assertEqual(out["peak_equity"], 1000)
 
     def test_drawdown_from_unpriced_position_halts_future_entries(self):

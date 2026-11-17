@@ -96,6 +96,29 @@ def source(price=67000, *, open_offset=0, gamma_data=None):
 
 
 class ForwardLedgerTests(unittest.TestCase):
+    def test_event_weighted_ece_is_descriptive_and_day_balanced(self):
+        one = mod.event_weighted_ece([[(.1, 0)]])
+        duplicated = mod.event_weighted_ece([[(.1, 0)] * 15])
+        self.assertAlmostEqual(one["ece_event_weighted_descriptive"], .1)
+        self.assertEqual(one["ece_event_weighted_descriptive"],
+                         duplicated["ece_event_weighted_descriptive"])
+        self.assertEqual(duplicated["resolved_event_days"], 1)
+        self.assertEqual(duplicated["bins"][0]["correlated_market_observations"], 15)
+        self.assertEqual(duplicated["bins"][0]["event_weight"], 1)
+        mixed = mod.event_weighted_ece([[(.1, 0), (.3, 1)], [(.7, 1)]])
+        self.assertAlmostEqual(mixed["ece_event_weighted_descriptive"], .35)
+        self.assertEqual(mixed["resolved_event_days"], 2)
+        self.assertEqual(mixed["statistical_validity"],
+                         "DESCRIPTIVE_ONLY_CORRELATED_MARKETS_AND_ADJACENT_DAYS")
+        self.assertIsNone(mod.event_weighted_ece([])["ece_event_weighted_descriptive"])
+
+    def test_event_weighted_ece_rejects_nonfinite_and_invalid_labels(self):
+        for data in ([[(float("nan"), 1)]], [[(.2, 2)]], [[(.2, True)]], [[]]):
+            with self.subTest(data=data), self.assertRaises(ValueError):
+                mod.event_weighted_ece(data)
+        with self.assertRaises(ValueError):
+            mod.event_weighted_ece([[(.1, 1)]], bins=1)
+
     def test_empty(self):
         with tempfile.TemporaryDirectory() as d:
             self.assertEqual(mod.load_ledger(Path(d) / "missing.json"), mod.blank_ledger())
@@ -214,6 +237,12 @@ class ForwardLedgerTests(unittest.TestCase):
         self.assertEqual(metrics["illustrative_records"][0]["fee_source"],
                          "LEGACY_OR_UNKNOWN_FEE_ASSUMPTION")
         self.assertFalse(metrics["calibration_review_eligible"])
+        self.assertEqual(metrics["calibration_model"]["resolved_event_days"], 1)
+        self.assertEqual(metrics["calibration_market"]["resolved_event_days"], 1)
+        self.assertIn("INSUFFICIENT_UNIQUE_RESOLVED_EVENT_DAYS",
+                      metrics["calibration_review_blockers"])
+        self.assertTrue(all(m["event_weight"] <= 1
+                            for m in metrics["calibration_model"]["bins"]))
 
     def test_full_cycle_never_writes_paper_state(self):
         with tempfile.TemporaryDirectory() as d:

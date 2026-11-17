@@ -152,6 +152,98 @@ class SandboxTests(unittest.TestCase):
         self.assertEqual(result[5][0], (0.50, 1.0))
 
 
+    def test_fresh_public_book_timestamp_allows_virtual_entry(self):
+        from datetime import datetime
+        state = self.state()
+        state["observations"]["m"] = 0.45
+        ts = "2026-11-11T00:00:00+00:00"
+        stamp = int(datetime.fromisoformat(ts).timestamp() * 1000)
+        quote = (0.49, 0.50, 100, 100,
+                 [(0.49, 100)], [(0.50, 100)], stamp, "Fresh")
+        out = sandbox.step(state, {"m": quote}, ts)
+        self.assertEqual(len(out["trades"]), 1)
+        self.assertEqual(out["rejected_quote_counts"]["stale"], 0)
+        self.assertEqual(out["capital_decision"], "NO_TRADE")
+
+    def test_stale_public_book_rejects_virtual_fill(self):
+        from datetime import datetime
+        state = self.state()
+        state["observations"]["m"] = 0.45
+        ts = "2026-11-11T00:00:00+00:00"
+        stamp = int(datetime.fromisoformat(ts).timestamp() * 1000) - 120000
+        quote = (0.49, 0.50, 100, 100,
+                 [(0.49, 100)], [(0.50, 100)], stamp, "Stale")
+        out = sandbox.step(state, {"m": quote}, ts)
+        self.assertEqual(out["trades"], [])
+        self.assertEqual(out["rejected_quote_counts"]["stale"], 1)
+        self.assertEqual(out["equity"], 1000)
+
+    def test_future_book_rejects_virtual_fill(self):
+        from datetime import datetime
+        state = self.state()
+        state["observations"]["m"] = 0.45
+        ts = "2026-11-11T00:00:00+00:00"
+        stamp = int(datetime.fromisoformat(ts).timestamp() * 1000) + 6000
+        quote = (0.49, 0.50, 100, 100,
+                 [(0.49, 100)], [(0.50, 100)], stamp, "Future")
+        out = sandbox.step(state, {"m": quote}, ts)
+        self.assertEqual(out["trades"], [])
+        self.assertEqual(out["rejected_quote_counts"]["future"], 1)
+
+    def test_undated_public_book_fails_closed(self):
+        state = self.state()
+        state["observations"]["m"] = 0.45
+        quote = (0.49, 0.50, 100, 100,
+                 [(0.49, 100)], [(0.50, 100)], None, "Undated")
+        out = sandbox.step(state, {"m": quote}, "2026-11-11T00:00:00+00:00")
+        self.assertEqual(out["trades"], [])
+        self.assertEqual(out["rejected_quote_counts"]["undated"], 1)
+
+    def test_replayed_or_backwards_tick_rejected(self):
+        first = sandbox.step(self.state(), {}, "2026-11-11T00:00:00+00:00")
+        with self.assertRaises(ValueError):
+            sandbox.step(first, {}, "2026-11-11T00:00:00+00:00")
+        with self.assertRaises(ValueError):
+            sandbox.step(first, {}, "2026-11-10T23:59:59+00:00")
+
+    def test_drawdown_risk_stop_blocks_entries(self):
+        state = self.state()
+        state["equity"] = 899
+        state["observations"]["m"] = 0.45
+        out = sandbox.step(state, {"m": (0.49, 0.50, 100, 100, "Test")},
+                           "2026-11-11T00:00:00+00:00")
+        self.assertTrue(out["risk_stop"])
+        self.assertEqual(out["trades"], [])
+        self.assertEqual(out["capital_decision"], "NO_TRADE")
+        self.assertAlmostEqual(out["max_drawdown_pct"], 0.0)
+        self.assertEqual(out["peak_equity"], 1000)
+
+    def test_drawdown_from_unpriced_position_halts_future_entries(self):
+        state = self.state()
+        state["cash"] = 900
+        state["positions"]["m"] = {
+            "shares": 20, "entry_ask": 0.5,
+            "opened_at": "2026-11-10T00:00:00+00:00"}
+        tick = sandbox.step(state, {}, "2026-11-11T00:00:00+00:00")
+        self.assertTrue(tick["risk_stop"])
+        self.assertAlmostEqual(tick["max_drawdown_pct"], 10)
+        tick["observations"]["m2"] = 0.45
+        next_tick = sandbox.step(tick, {"m2": (0.49, 0.50, 100, 100, "Test")},
+                                 "2026-11-11T00:01:00+00:00")
+        self.assertEqual(next_tick["trades"], [])
+
+    def test_risk_stop_does_not_block_virtual_exit(self):
+        state = self.state()
+        state["risk_stop"] = True
+        state["positions"]["m"] = {
+            "shares": 20, "entry_ask": 0.5,
+            "opened_at": "2026-11-10T00:00:00+00:00"}
+        out = sandbox.step(state, {"m": (0.46, 0.47, 100, 100, "Test")},
+                           "2026-11-11T01:00:00+00:00")
+        self.assertEqual(out["trades"][0]["side"], "SELL")
+        self.assertTrue(out["risk_stop"])
+
+
 
 if __name__ == "__main__":
     unittest.main()

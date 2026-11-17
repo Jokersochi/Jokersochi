@@ -32,15 +32,22 @@ audit their accuracy when both independent *resolution checks* agree.
    blocked and retried on future runs; no outcome is invented.
 6. Append resolution as another hashed record. Historical predictions are
    never edited. Dataset commits remain in the separate data branch.
-7. Report event-day-weighted Brier score of the forecast vs. market-price
-   baseline. Repeated snapshots, correlated strikes and quote observations
-   from one event do NOT inflate the independent sample count.
+7. Report event-day-weighted Brier score of the earliest precommitted
+   forecast vs. the market-price baseline. Include per-event diagnostics,
+   and separate horizon-bucket diagnostics clearly labeled non-independent.
+   Repeated snapshots, correlated strikes and quote observations from one
+   event do NOT inflate the primary independent sample count.
 
 ## Illustrative performance versus real returns
 
 The diagnostics may show a hypothetical **one YES share per event day**
-selected at a positive modeled after-cost edge. The cost coefficient,
-liquidity and impact assumptions are unverified; no actual fill took place.
+selected by a fixed pre-outcome rule: first market in the recorded forecast
+order with estimated YES edge of at least $0.01/share and modeled liquidity
+eligibility. The cost / liquidity / price impact model does not prove an
+execution fill. New research snapshots record the per-market Gamma fee
+schedule when supported. Forecasts saved November 16–17 used the older
+**5% hypothetical fee coefficient**, not the currently observed 7% crypto
+market fee. Their historical hashes are retained without modification.
 Such numbers are labeled *illustrative* and should **not** be presented as
 paper-trading ROI or real returns.
 

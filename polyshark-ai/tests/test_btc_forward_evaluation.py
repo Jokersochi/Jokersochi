@@ -212,7 +212,7 @@ class ForwardLedgerTests(unittest.TestCase):
         self.assertEqual(metrics["per_event_diagnostics"][0]["horizon_bucket"],
                          "12h-24h")
         self.assertEqual(metrics["illustrative_records"][0]["fee_source"],
-                         "LEGACY_5PCT_UNVERIFIED")
+                         "LEGACY_OR_UNKNOWN_FEE_ASSUMPTION")
         self.assertFalse(metrics["calibration_review_eligible"])
 
     def test_full_cycle_never_writes_paper_state(self):

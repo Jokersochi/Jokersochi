@@ -81,7 +81,7 @@ Rules:
 5. Ambiguous repository names are normalized only after deployment/dependency checks.
 
 See:
-- [Current repository audit](./docs/repository-audit-2026-09-13.md)
+- [Current repository audit (2026-11-18)](./docs/repository-audit-2026-11-18.md)
 - [Naming and cleanup standard](./docs/naming-and-cleanup-standard.md)
 - [Repository architecture](./REPO-ARCHITECTURE.md)
 

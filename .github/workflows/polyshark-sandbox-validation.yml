@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - feature/polyshark-paper-execution-sandbox-20261111
+      - 'feature/polyshark-sandbox-*'
     paths:
       - "polyshark-ai/runtime/sandbox_paper_execution.py"
       - "polyshark-ai/tests/test_sandbox_paper_execution.py"

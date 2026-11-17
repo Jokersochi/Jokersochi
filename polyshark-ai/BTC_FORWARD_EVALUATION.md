@@ -51,6 +51,18 @@ market fee. Their historical hashes are retained without modification.
 Such numbers are labeled *illustrative* and should **not** be presented as
 paper-trading ROI or real returns.
 
+The read-only report also calculates **event-weighted expected calibration
+error (ECE)** for the model and indicative market-price baseline using five
+probability bins. Each event day contributes total weight one across all
+correlated strike markets. Reported bin counts of contracts are not
+independent evidence, and ECE is explicitly **descriptive only** because
+adjacent Bitcoin days also have serial dependence. Neither model ECE nor
+market ECE alone proves a trading edge.
+
+The report includes `calibration_review_blockers` and deliberately retains
+`calibration_review_eligible=false` even if sample thresholds are eventually
+met. It cannot auto-authorize paper capital or live trading.
+
 At least 50 separate, resolved event days are required before a sample-size
 review is meaningful. That alone is not sufficient: we additionally require
 out-of-sample calibration, Brier/ECE, robustness by lead time, realistic

@@ -262,3 +262,12 @@ The connected GitHub integration currently exposes file/branch/PR/issue mutation
 
 ## Проверка 2026-10-29
 Ветка cleanup/server-consolidation, PR https://github.com/Jokersochi/monopoly-luxe/pull/3 переведён в draft. Исправлены принудительная покупка при пустом аукционе и принятие сделки с чужой недвижимостью. Добавлены 3 выполняемых regression-теста; всего 4 passed. npm ci восстановлен синхронизацией lock-файла; build проходит. Lint: 5 ошибок/8 предупреждений существующего кода. npm audit: 26 vulnerabilities, включая 2 critical. Миграция остаётся изолированной. Различия 36/40 клеток, валюты, аренды/отелей и карточек требуют дальнейшего согласования; оба legacy-источника сохраняются. Консолидация и archive gate НЕ завершены. Репозитории не удалялись/не архивировались.
+
+## Update 2026-11-18 — Monopoly canonical architecture
+
+- Rechecked `Jokersochi/monopoly-luxe` current `main` at `b681542c41e3ade54ac97f810b15d6d12c085295`: production architecture is now a 42-space Supabase Edge/Postgres authoritative room engine, with canonical rules and regression tests. The prior 36-space `monopolylux` server is NOT the canonical production backend.
+- Obsolete/conflicting draft `monopoly-luxe` PR #3 closed **without merge**. Its source branch and legacy repositories are preserved.
+- New draft PR #5, branch `audit/legacy-rules-2026-11-18`, adds five canonical board-integrity tests plus `docs/legacy-consolidation-decision-2026-11-18.md`; existing production runtime remains untouched. CI must pass before any merge.
+- Valuable 40-space Russian economy, content, localizations and micro-events from `russian-monopoly-local` remain UNMIGRATED pending an explicitly versioned optional ruleset. Mortgage has no canonical server intent yet.
+- `monopolylux` and `russian-monopoly-local` remain excluded from deletion-ready status until unique content and deployment dependencies are reconciled. The 25-repository cleanup queue in issue #78 is unchanged.
+- Do not infer hosted multiplayer deployment or Supabase reachability from GitHub CI success alone.

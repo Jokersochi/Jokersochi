@@ -1,3 +1,5 @@
+> **Historical audit, not a current deletion authorization.** This document records September findings and October follow-up. The latest re-check is [2026-11-18](./repository-audit-2026-11-18.md): 39 repos; 0 archived; `-` and `---` are real products; `TradingAgents` has unique feature branches; `Wan2.2` now has 17 ahead commits. The older 25-repo "deletion-ready" queue must **not** be acted on without fresh branch/deployment/credential checks.
+
 # GitHub Repository Audit — 2026-09-13
 
 Evidence-backed cleanup decisions for the `Jokersochi` account. Goal: one canonical repository per real product; third-party forks/imports leave the active portfolio only after first-party value is migrated or explicitly rejected.

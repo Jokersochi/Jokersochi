@@ -54,6 +54,9 @@ def market(**kwargs):
         "clobTokenIds": '["YES_TEST","NO_TEST"]',
         "outcomePrices": '["0.42","0.58"]',
         "liquidityNum": 110_000,
+        "feesEnabled": True,
+        "feeSchedule": {"rate": 0.07, "exponent": 1, "takerOnly": True,
+                        "rebateRate": 0.2},
     }
     row.update(kwargs)
     return row
@@ -122,6 +125,14 @@ class SpotResearchTests(unittest.TestCase):
         self.assertFalse(m["shadow_eligible"])
         self.assertEqual(m["diagnostic_status"], "NO_TRADE")
         self.assertTrue(m["execution_quote_available"])
+        self.assertEqual(m["cost_fee_source"], research.FEE_SOURCE)
+        self.assertEqual(m["cost_fee_rate"], .07)
+        self.assertAlmostEqual(
+            m["illustrative_cost_model"]["fee_per_share"],
+            .07 * m["illustrative_cost_model"]["entry_price"]
+            * (1 - m["illustrative_cost_model"]["entry_price"]),
+            places=8,
+        )
         self.assertTrue(0 <= m["p_model_uncalibrated"] <= 1)
         self.assertIn("illustrative_cost_model", m)
 
@@ -135,6 +146,25 @@ class SpotResearchTests(unittest.TestCase):
         self.assertFalse(m["execution_quote_available"])
         self.assertNotIn("illustrative_cost_model", m)
         self.assertFalse(m["shadow_eligible"])
+
+    def test_missing_or_unsupported_fee_schedule_blocks_cost_and_quote(self):
+        event = {"markets": [market(feesEnabled=True, feeSchedule=None)]}
+        m = research.build_report(
+            NOW, event, candles(), candles(venue="kraken"),
+            book_fetcher=lambda _: {"bids": [{"price": "0.40"}],
+                                     "asks": [{"price": "0.42"}]},
+        )["markets"][0]
+        self.assertEqual(m["fee_source"], "UNKNOWN")
+        self.assertIsNone(m["fee_rate"])
+        self.assertFalse(m["execution_quote_available"])
+        self.assertNotIn("illustrative_cost_model", m)
+        self.assertFalse(m["shadow_eligible"])
+        invalid = market(feesEnabled=True, feeSchedule={
+            "rate": 0.07, "exponent": 2, "takerOnly": True,
+        })
+        self.assertEqual(research.market_fee_parameters(invalid), ("UNSUPPORTED", None))
+        self.assertEqual(research.market_fee_parameters(market(feesEnabled=False)),
+                         (research.FEE_SOURCE, 0.0))
 
     def test_bad_venue_data_produce_no_model(self):
         kr = candles(venue="kraken")

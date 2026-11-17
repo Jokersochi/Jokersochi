@@ -107,3 +107,24 @@ Detailed execution checklist: [GitHub cleanup issue #77](https://github.com/Joke
 ## Coverage limits
 
 The audit verifies GitHub metadata, selected repository trees and fork comparisons. It does **not** establish that every branch, deployment, token, local checkout or consumer has been checked. Accordingly, the number of repos approved for irreversible deletion is **zero**.
+
+## Branch-level follow-up — 2026-11-18
+
+A fresh repository-branch listing changes the **risk classification** of the ten `ahead_by=0` default-branch forks:
+
+| Fork | Branches observed | Current status |
+| --- | ---: | --- |
+| `anthropic-quickstarts` | 12 | Unique non-default `manus-improvements-anthropic-quickstarts` branch: **1 commit ahead** of upstream `main`; other branch deltas pending |
+| `openai-agents-python` | 2 | Secondary Dependabot branch not checked for unique changes |
+| `chrome-devtools-mcp` | 2 | Secondary Dependabot branch not checked for unique changes |
+| `ComfyUI-Manager` | 26 | Unique `manus-improvements-comfyui-manager` branch: **1 commit ahead**; other branches not yet reviewed |
+| `ComfyUI-VideoCompressor` | 2 | Unique `manus-improvements-video-compressor` branch: **1 commit ahead** |
+| `omi` | 40 | Mostly Dependabot branches; each needs assessment before archive |
+| `lobehub` | 3 | Two Dependabot branches require review |
+| `flux` | 1 | Default branch identical to upstream; deployment check still required |
+| `opensre` | 1 | Default branch 0 ahead; deployment check still required |
+| `shellcheck.net` | 1 | Default branch identical to upstream; deployment check still required |
+
+Thus **7 of 10 default-branch-clean forks are NOT branch-verified**. Some non-default branches contain user-specific commits. No repo has passed the *full* archive/delete gate, and the earlier phrase “confirmed pure fork” must be interpreted narrowly as **default-branch comparison only**.
+
+Also, `https-github.com-hiddify-hiddify-app` currently has at least six branches, so the old snapshot observation is insufficient for archive.

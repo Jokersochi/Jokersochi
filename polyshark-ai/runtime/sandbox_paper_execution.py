@@ -185,10 +185,13 @@ def step(state, quotes, timestamp):
     peak_equity = max(START_CASH, float(state.get("peak_equity", START_CASH)),
                       float(state.get("equity", START_CASH)))
     state["peak_equity"] = peak_equity
+    incoming_drawdown_pct = max(0.0, (peak_equity -
+                                   float(state.get("equity", START_CASH))) /
+                                   peak_equity * 100)
+    state["max_drawdown_pct"] = max(float(state.get("max_drawdown_pct", 0)),
+                                     incoming_drawdown_pct)
     state["risk_stop"] = bool(state.get("risk_stop", False) or
-                              float(state.get("max_drawdown_pct", 0)) >= DRAWDOWN_STOP_PCT or
-                              float(state.get("equity", START_CASH)) <=
-                              peak_equity * (1 - DRAWDOWN_STOP_PCT / 100))
+                              state["max_drawdown_pct"] >= DRAWDOWN_STOP_PCT)
     state["rejected_quote_counts"] = {"undated": 0, "stale": 0, "future": 0,
                                        "invalid_book": 0}
 

@@ -359,6 +359,63 @@ def resolve_pending(ledger: dict[str, Any], now: datetime,
     return {"new_resolutions": added, "settlement_blockers": errors}
 
 
+def event_weighted_ece(
+    event_forecasts: list[list[tuple[float, int]]], *, bins: int = 5
+) -> dict[str, Any]:
+    """Descriptive reliability diagnostic, with total unit weight PER event day.
+
+    Markets in the same daily BTC threshold ladder are correlated. A day
+    receives total weight 1, divided equally among its included markets.
+    This does not make market outcomes or adjacent days independent, and
+    the result alone never establishes model calibration.
+    """
+    if not isinstance(bins, int) or isinstance(bins, bool) or not 2 <= bins <= 20:
+        raise ValueError("Calibration bins out of range")
+    slots = [
+        {"weight": 0.0, "p_weighted": 0.0, "y_weighted": 0.0,
+         "observations": 0, "event_days": set()}
+        for _ in range(bins)
+    ]
+    for day, forecasts in enumerate(event_forecasts):
+        if not forecasts:
+            raise ValueError("Empty independent event forecast group")
+        weight = 1.0 / len(forecasts)
+        for p, outcome in forecasts:
+            probability = finite(p, low=0.0, high=1.0)
+            if type(outcome) is not int or outcome not in (0, 1):
+                raise ValueError("Calibration outcome must be 0 or 1")
+            slot = slots[min(bins - 1, int(probability * bins))]
+            slot["weight"] += weight
+            slot["p_weighted"] += weight * probability
+            slot["y_weighted"] += weight * outcome
+            slot["observations"] += 1
+            slot["event_days"].add(day)
+    n = len(event_forecasts)
+    ece = 0.0
+    report_bins = []
+    for index, slot in enumerate(slots):
+        w = slot["weight"]
+        mean_p = slot["p_weighted"] / w if w else None
+        observed_y = slot["y_weighted"] / w if w else None
+        if w:
+            ece += (w / n) * abs(mean_p - observed_y)
+        report_bins.append({
+            "lower_inclusive": round(index / bins, 6),
+            "upper_exclusive_except_final": round((index + 1) / bins, 6),
+            "event_weight": round(w, 8),
+            "event_days_contributing_not_independent_markets": len(slot["event_days"]),
+            "correlated_market_observations": slot["observations"],
+            "mean_probability": round(mean_p, 8) if w else None,
+            "observed_yes_frequency": round(observed_y, 8) if w else None,
+        })
+    return {
+        "ece_event_weighted_descriptive": round(ece, 8) if n else None,
+        "resolved_event_days": n,
+        "bins": report_bins,
+        "statistical_validity": "DESCRIPTIVE_ONLY_CORRELATED_MARKETS_AND_ADJACENT_DAYS",
+    }
+
+
 def evaluate(ledger: dict[str, Any]) -> dict[str, Any]:
     """Score pre-recorded forecasts without trading or inflating event N."""
     outcomes = {r["event_slug"]: r["outcomes"] for r in ledger["resolutions"]}
@@ -369,6 +426,8 @@ def evaluate(ledger: dict[str, Any]) -> dict[str, Any]:
     per_event: list[dict[str, Any]] = []
     by_horizon: dict[str, list[tuple[float, float]]] = defaultdict(list)
     completed_events: set[str] = set()
+    calibration_model: list[list[tuple[float, int]]] = []
+    calibration_market: list[list[tuple[float, int]]] = []
     for snap in sorted(ledger["snapshots"], key=lambda row: row["observed_at"]):
         slug = snap["event_slug"]
         if slug not in outcomes:
@@ -395,6 +454,10 @@ def evaluate(ledger: dict[str, Any]) -> dict[str, Any]:
         completed_events.add(slug)
         primary_model.append(model_score)
         primary_market.append(market_score)
+        calibration_model.append([(v[2]["p_model"], outcomes[slug][v[2]["market_id"]])
+                                  for v in evaluation])
+        calibration_market.append([(v[2]["p_market"], outcomes[slug][v[2]["market_id"]])
+                                   for v in evaluation])
         detail: dict[str, Any] = {
             "event_slug": slug,
             "snapshot_at": snap["observed_at"],
@@ -440,6 +503,17 @@ def evaluate(ledger: dict[str, Any]) -> dict[str, Any]:
         "brier_model_event_weighted": round(brier, 8) if n else None,
         "brier_market_event_weighted": round(reference, 8) if n else None,
         "brier_advantage_vs_market": round(reference - brier, 8) if n else None,
+        "calibration_model": event_weighted_ece(calibration_model),
+        "calibration_market": event_weighted_ece(calibration_market),
+        "calibration_review_blockers": (
+            (["INSUFFICIENT_UNIQUE_RESOLVED_EVENT_DAYS"]
+             if n < MIN_INDEPENDENT_EVENTS_FOR_REVIEW else []) + [
+                "NO_OUT_OF_SAMPLE_CALIBRATION_VALIDATION",
+                "UNVERIFIED_HYPOTHETICAL_EXECUTION_COSTS",
+                "CORRELATED_SPOT_SOURCES_AND_DAILY_MARKETS",
+                "BINANCE_SETTLEMENT_BASIS_RISK",
+            ]
+        ),
         "illustrative_yes_choices": len(illustrated_pnl),
         "illustrative_one_share_pnl_usd": round(sum(illustrated_pnl), 8),
         "illustrative_records": illustrative_records[-12:],

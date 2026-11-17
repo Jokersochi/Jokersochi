@@ -65,12 +65,12 @@ This is **not** part of AI Realtor and should remain a separate product boundary
 ## P2 — Preserve, harden, rename
 
 ### RoomGenius — repository `-`
-Real AI interior-design product currently hidden behind an invalid repository name.
+Real AI interior-design product currently using a valid but non-descriptive repository name.
 
 Target repository name: `room-genius` after deployment/dependency checks and when repository rename controls are available.
 
 ### Virtual Food Photographer — repository `---`
-Real Gemini/Imagen food-photography product currently hidden behind an invalid repository name.
+Real Gemini/Imagen food-photography product currently using a valid but non-descriptive repository name.
 
 Before public/product promotion:
 - move model calls behind a server-side API;

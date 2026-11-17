@@ -84,6 +84,7 @@ See:
 - [Current repository audit (2026-11-18)](./docs/repository-audit-2026-11-18.md)
 - [Naming and cleanup standard](./docs/naming-and-cleanup-standard.md)
 - [Repository architecture](./REPO-ARCHITECTURE.md)
+- [Read-only repository auditor](./scripts/github_repo_audit.py) (Python stdlib, no auto-delete)
 
 ## Contact
 

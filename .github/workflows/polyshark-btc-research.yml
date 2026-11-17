@@ -11,7 +11,9 @@ on:
       - "polyshark-ai/runtime/spot_research.py"
       - "polyshark-ai/tests/test_spot_research.py"
       - "polyshark-ai/runtime/btc_forward_evaluation.py"
+      - "polyshark-ai/runtime/btc_robustness.py"
       - "polyshark-ai/tests/test_btc_forward_evaluation.py"
+      - "polyshark-ai/tests/test_btc_robustness.py"
       - ".github/workflows/polyshark-btc-research.yml"
 
 permissions:
@@ -53,7 +55,8 @@ jobs:
           PY
           python polyshark-ai/tests/test_spot_research.py -q
           python polyshark-ai/tests/test_btc_forward_evaluation.py -q
-          python -m py_compile polyshark-ai/runtime/spot_research.py polyshark-ai/runtime/btc_forward_evaluation.py
+          python polyshark-ai/tests/test_btc_robustness.py -q
+          python -m py_compile polyshark-ai/runtime/spot_research.py polyshark-ai/runtime/btc_forward_evaluation.py polyshark-ai/runtime/btc_robustness.py
 
       - name: Generate independent spot research snapshot (NO_TRADE)
         run: |
@@ -78,6 +81,8 @@ jobs:
           assert s['capital_decision'] == 'NO_TRADE'
           assert s['research_only'] is True
           assert s['metrics']['calibration_review_eligible'] is False
+          assert s['metrics']['forward_uncertainty']['strategy_promotion'] == 'BLOCKED'
+          assert s['metrics']['forward_uncertainty']['can_claim_positive_edge'] is False
           metrics = s['metrics']
           print('Forward-only:', {
               'snapshots': s['snapshot_count'],
@@ -96,6 +101,13 @@ jobs:
               "- Event-weighted market ECE (**descriptive only**): "
                 + str(metrics["calibration_market"]["ece_event_weighted_descriptive"]),
               "- Review blockers: " + ", ".join(metrics["calibration_review_blockers"]),
+              "- Serial-dependence uncertainty: " + metrics["forward_uncertainty"]["status"],
+              "- Brier advantage 95% descriptive block interval: "
+                + str(metrics["forward_uncertainty"]["brier_advantage_ci95"]),
+              "- Hypothetical one-share/day P&L 95% block interval (NOT fills): "
+                + str(metrics["forward_uncertainty"]["hypothetical_one_share_daily_pnl_ci95"]),
+              "- Bootstrap resampling requires 50 consecutive event days; "
+                "never grants strategy promotion.",
               "- Brier model (lower better): " + str(metrics["brier_model_event_weighted"]),
               "- Brier market baseline: " + str(metrics["brier_market_event_weighted"]),
               "- Hypothetical one-share total P&L (NOT paper fills): "

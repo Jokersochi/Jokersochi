@@ -19,6 +19,7 @@ from pathlib import Path
 from typing import Any, Callable
 
 from spot_research import request_json, timestamp
+from btc_robustness import assess_forward_uncertainty
 
 SCHEMA = "btc-forward-evaluation-v1"
 MODEL_VERSION = "btc-terminal-spot-baseline-v1-20261116"
@@ -424,6 +425,7 @@ def evaluate(ledger: dict[str, Any]) -> dict[str, Any]:
     illustrated_pnl: list[float] = []
     illustrative_records: list[dict[str, Any]] = []
     per_event: list[dict[str, Any]] = []
+    robustness_days: list[dict[str, Any]] = []
     by_horizon: dict[str, list[tuple[float, float]]] = defaultdict(list)
     completed_events: set[str] = set()
     calibration_model: list[list[tuple[float, int]]] = []
@@ -469,6 +471,7 @@ def evaluate(ledger: dict[str, Any]) -> dict[str, Any]:
         }
         # Choose ONE market using forecast-time data ONLY, before looking up
         # its outcome. The rule is frozen and identical for every event.
+        day_hypothetical_pnl = None
         choice = next((market for market in snap["markets"]
                        if market.get("liquidity_gate") is True
                        and market.get("illustrative_net_edge", -1) >= MIN_ILLUSTRATIVE_EDGE
@@ -477,6 +480,7 @@ def evaluate(ledger: dict[str, Any]) -> dict[str, Any]:
             y = outcomes[slug].get(choice["market_id"])
             if y in (0, 1):
                 pnl = y - choice["all_in_cost_per_share"]
+                day_hypothetical_pnl = pnl
                 illustrated_pnl.append(pnl)
                 record = {
                     "event_slug": slug,
@@ -491,6 +495,11 @@ def evaluate(ledger: dict[str, Any]) -> dict[str, Any]:
                 illustrative_records.append(record)
                 detail["hypothetical_choice"] = record
         per_event.append(detail)
+        robustness_days.append({
+            "date": timestamp(snap["settlement_at"]).date().isoformat(),
+            "brier_advantage": market_score - model_score,
+            "illustrative_pnl": day_hypothetical_pnl,
+        })
     n = len(primary_model)
     brier = sum(primary_model) / n if n else None
     reference = sum(primary_market) / n if n else None
@@ -505,6 +514,7 @@ def evaluate(ledger: dict[str, Any]) -> dict[str, Any]:
         "brier_advantage_vs_market": round(reference - brier, 8) if n else None,
         "calibration_model": event_weighted_ece(calibration_model),
         "calibration_market": event_weighted_ece(calibration_market),
+        "forward_uncertainty": assess_forward_uncertainty(robustness_days),
         "calibration_review_blockers": (
             (["INSUFFICIENT_UNIQUE_RESOLVED_EVENT_DAYS"]
              if n < MIN_INDEPENDENT_EVENTS_FOR_REVIEW else []) + [

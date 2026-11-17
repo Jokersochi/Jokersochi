@@ -243,6 +243,11 @@ class ForwardLedgerTests(unittest.TestCase):
                       metrics["calibration_review_blockers"])
         self.assertTrue(all(m["event_weight"] <= 1
                             for m in metrics["calibration_model"]["bins"]))
+        uncertainty = metrics["forward_uncertainty"]
+        self.assertEqual(uncertainty["event_days"], 1)
+        self.assertEqual(uncertainty["status"], "INSUFFICIENT_UNIQUE_EVENT_DAYS")
+        self.assertIsNone(uncertainty["brier_advantage_ci95"])
+        self.assertEqual(uncertainty["strategy_promotion"], "BLOCKED")
 
     def test_full_cycle_never_writes_paper_state(self):
         with tempfile.TemporaryDirectory() as d:

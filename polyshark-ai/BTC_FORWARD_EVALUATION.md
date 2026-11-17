@@ -63,6 +63,32 @@ The report includes `calibration_review_blockers` and deliberately retains
 `calibration_review_eligible=false` even if sample thresholds are eventually
 met. It cannot auto-authorize paper capital or live trading.
 
+## Conservative serial-dependence uncertainty
+
+`btc_robustness.py` adds a reproducible, **descriptive** paired
+moving-block bootstrap for the earliest precommitted forecast per BTC
+event date. Both the model-vs-market Brier advantage and hypothetical
+one-YES-share **daily** P&L use the same resampled 7-day blocks (2,000
+resamples, fixed seed), so the resampling unit is the calendar day,
+not individual correlated strike-market outcomes or hourly snapshots.
+Days on which the fixed entry rule selected no hypothetical position
+count as **$0**, never disappear from the P&L denominator.
+
+A 95% percentile interval is omitted until at least **50 distinct,
+consecutive, resolved event days** exist. If there is a date gap, the
+resampling result is withheld. The hypothetical P&L interval also
+requires **30 days with modeled YES choices**. It cannot be equated
+with fill-based paper ROI because order-book depth, actual transaction
+fees, queue execution and impact remain unverified. The 7-day block
+assumption does not guarantee all serial dependence is captured.
+
+A positive lower interval bound is **not** authorization: the module
+always returns `strategy_promotion=BLOCKED` and
+`can_claim_positive_edge=false`. Out-of-sample calibration and
+independent execution economics still require a separate evidence
+review. Earlier event-dated records and their hashes are never
+rewritten.
+
 At least 50 separate, resolved event days are required before a sample-size
 review is meaningful. That alone is not sufficient: we additionally require
 out-of-sample calibration, Brier/ECE, robustness by lead time, realistic

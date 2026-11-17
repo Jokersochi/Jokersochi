@@ -35,8 +35,10 @@ MIN_HORIZON_HOURS = 0.25
 MAX_QUOTE_LOOKUPS = 6
 MAX_VENUE_SPOT_DIVERGENCE = 0.01
 MAX_VENUE_PROB_DIVERGENCE = 0.15
-ASSUMED_FEE_RATE = 0.05
 ASSUMED_NOTIONAL = 100.0
+# Fees must come from the individual Gamma market fee schedule. A missing,
+# malformed or unsupported schedule makes after-cost analysis ineligible.
+FEE_SOURCE = "GAMMA_MARKET_FEE_SCHEDULE"
 QUESTION = re.compile(
     r"^Will the price of Bitcoin be above \$([0-9][0-9,]*) on "
     r"(January|February|March|April|May|June|July|August|September|October|November|December) "
@@ -186,6 +188,41 @@ def _as_list(value: Any) -> list[str]:
     return [str(x) for x in value]
 
 
+def market_fee_parameters(market: dict[str, Any]) -> tuple[str, float | None]:
+    """Require a market-level fee schedule before modeling execution costs.
+
+    Gamma documents fee = shares * rate * p * (1-p) for exponent=1.
+    Unsupported/missing exponent, rate or taker side fails closed rather than
+    quietly assuming a globally fixed 5% or 7% rate.
+    """
+    enabled = market.get("feesEnabled")
+    if enabled is False:
+        return ("GAMMA_MARKET_FEE_SCHEDULE", 0.0)
+    if enabled is not True:
+        return ("UNKNOWN", None)
+    schedule = market.get("feeSchedule")
+    if isinstance(schedule, str):
+        try:
+            schedule = json.loads(schedule)
+        except (ValueError, TypeError):
+            return ("UNKNOWN", None)
+    if not isinstance(schedule, dict):
+        return ("UNKNOWN", None)
+    rate = schedule.get("rate")
+    exponent = schedule.get("exponent")
+    if (isinstance(rate, bool) or not isinstance(rate, (int, float, str))
+            or isinstance(exponent, bool) or not isinstance(exponent, (int, float))
+            or exponent != 1 or schedule.get("takerOnly") is not True):
+        return ("UNSUPPORTED", None)
+    try:
+        fee_rate = float(rate)
+    except (TypeError, ValueError):
+        return ("UNKNOWN", None)
+    if not math.isfinite(fee_rate) or not 0 <= fee_rate <= 1:
+        return ("UNKNOWN", None)
+    return ("GAMMA_MARKET_FEE_SCHEDULE", fee_rate)
+
+
 def validated_market(market: Any, now: datetime) -> dict[str, Any] | None:
     """Never guess market rules: require exact question, source, and ET noon close."""
     if not isinstance(market, dict) or market.get("closed") is True:
@@ -219,7 +256,10 @@ def validated_market(market: Any, now: datetime) -> dict[str, Any] | None:
     liq = float(market.get("liquidityNum") or 0)
     if not math.isfinite(liq) or liq <= 0:
         return None
+    fee_source, fee_rate = market_fee_parameters(market)
     return {
+        "fee_source": fee_source,
+        "fee_rate": fee_rate,
         "market_id": str(market["id"]),
         "question": str(market["question"]),
         "threshold_usd": threshold,
@@ -276,6 +316,7 @@ def build_report(now: datetime, event: dict[str, Any], coinbase: Any, kraken: An
         market["reason"] = "uncalibrated correlated-venue model; no verified settlement-basis model"
         market["execution_quote_available"] = False
         if (book_fetcher is not None and
+                market["fee_rate"] is not None and
                 spot_divergence <= MAX_VENUE_SPOT_DIVERGENCE and
                 abs(a - b) <= MAX_VENUE_PROB_DIVERGENCE):
             try:
@@ -287,11 +328,13 @@ def build_report(now: datetime, event: dict[str, Any], coinbase: Any, kraken: An
                     probability=market["p_model_uncalibrated"],
                     market_probability=(bid + ask) / 2.0,
                     spread=ask - bid,
-                    fee_rate=ASSUMED_FEE_RATE,
+                    fee_rate=market["fee_rate"],
                     liquidity=market["liquidity_usd_indicative"],
                     notional=ASSUMED_NOTIONAL,
                 )
                 market["execution_quote_available"] = True
+                market["cost_fee_source"] = market["fee_source"]
+                market["cost_fee_rate"] = market["fee_rate"]
                 market["public_yes_bid"] = bid
                 market["public_yes_ask"] = ask
                 market["illustrative_cost_model"] = costs
@@ -310,7 +353,7 @@ def build_report(now: datetime, event: dict[str, Any], coinbase: Any, kraken: An
         "independent_probability_evidence": False,
         "source_independence_note": "Coinbase/Kraken prices track one BTC market and are correlated",
         "settlement_basis_risk": "Binance BTC/USDT close, not Coinbase or Kraken BTC/USD",
-        "fee_assumption_note": "5% fee coefficient and sqrt impact are illustrative, not verified trading costs",
+        "fee_assumption_note": "Per-market Gamma feeSchedule rate used when supported; modeled price impact and assumed $100 notional remain illustrative, not actual fills",
         "fit_status": "UNCALIBRATED_NOT_ELIGIBLE",
         "markets_found": len(valid),
         "markets_evaluated": len(markets),

@@ -78,12 +78,36 @@ jobs:
           assert s['capital_decision'] == 'NO_TRADE'
           assert s['research_only'] is True
           assert s['metrics']['calibration_review_eligible'] is False
+          metrics = s['metrics']
           print('Forward-only:', {
               'snapshots': s['snapshot_count'],
               'pending_days': s['pending_event_days'],
               'new_resolutions': s['new_resolutions'],
-              'resolved_unique_days': s['metrics']['resolved_unique_event_days'],
+              'resolved_unique_days': metrics['resolved_unique_event_days'],
+              'brier_model': metrics['brier_model_event_weighted'],
+              'brier_market': metrics['brier_market_event_weighted'],
+              'hypothetical_pnl_1_share': metrics['illustrative_one_share_pnl_usd'],
           })
+          lines = [
+              "## Forward BTC forecast verification (RESEARCH-ONLY)",
+              "- Resolved independent **event days**: " + str(metrics["resolved_unique_event_days"]),
+              "- Brier model (lower better): " + str(metrics["brier_model_event_weighted"]),
+              "- Brier market baseline: " + str(metrics["brier_market_event_weighted"]),
+              "- Hypothetical one-share total P&L (NOT paper fills): "
+                + str(metrics["illustrative_one_share_pnl_usd"]),
+              "- Forecasts: " + str(s["snapshot_count"])
+                + "; pending days: " + str(s["pending_event_days"]),
+              "- NO_TRADE, no calibration approval; market fills and impact NOT verified.",
+              "- Previously saved Nov 16-17 fee coefficient 5% was a historical unverified scenario.",
+              "- New samples use Gamma per-market feeSchedule when supported.",
+              "- Horizon-bucket diagnostics are correlated and excluded from independent N.",
+          ]
+          summary = "\n".join(lines) + "\n"
+          print(summary)
+          import os
+          if os.getenv("GITHUB_STEP_SUMMARY"):
+              with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as fh:
+                  fh.write(summary)
           PY
 
       - name: Persist forward ledger on separate data branch only

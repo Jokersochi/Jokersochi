@@ -179,6 +179,42 @@ class ForwardLedgerTests(unittest.TestCase):
         self.assertAlmostEqual(m["illustrative_one_share_pnl_usd"], .67)
         self.assertFalse(m["calibration_review_eligible"])
 
+    def test_model_fee_provenance_is_stored_without_rewriting_old_snapshots(self):
+        candidate = report()
+        m = candidate["markets"][0]
+        m["cost_fee_source"] = "GAMMA_MARKET_FEE_SCHEDULE"
+        m["cost_fee_rate"] = .07
+        snap = mod.snapshot_from_report(candidate, OBSERVED)
+        self.assertEqual(
+            snap["markets"][0]["cost_fee_source"], "GAMMA_MARKET_FEE_SCHEDULE"
+        )
+        self.assertEqual(snap["markets"][0]["cost_fee_rate"], .07)
+        historical = mod.snapshot_from_report(report(), OBSERVED)
+        self.assertEqual(
+            historical["markets"][0]["cost_fee_source"],
+            "LEGACY_OR_UNKNOWN_FEE_ASSUMPTION"
+        )
+        self.assertNotIn("cost_fee_rate", historical["markets"][0])
+
+    def test_per_horizon_scores_do_not_inflate_independent_n(self):
+        ledger = mod.blank_ledger()
+        mod.append_snapshot(ledger, report(), OBSERVED)
+        later = OBSERVED + timedelta(hours=10)
+        mod.append_snapshot(ledger, report(later), later)
+        self.assertEqual(mod.resolve_pending(ledger, LATER, source())["new_resolutions"], 1)
+        metrics = mod.evaluate(ledger)
+        self.assertEqual(metrics["resolved_unique_event_days"], 1)
+        self.assertEqual(len(metrics["per_event_diagnostics"]), 1)
+        self.assertEqual(
+            set(metrics["horizon_diagnostics_not_independent"]),
+            {"12h-24h", "6h-12h"},
+        )
+        self.assertEqual(metrics["per_event_diagnostics"][0]["horizon_bucket"],
+                         "12h-24h")
+        self.assertEqual(metrics["illustrative_records"][0]["fee_source"],
+                         "LEGACY_OR_UNKNOWN_FEE_ASSUMPTION")
+        self.assertFalse(metrics["calibration_review_eligible"])
+
     def test_full_cycle_never_writes_paper_state(self):
         with tempfile.TemporaryDirectory() as d:
             root = Path(d)

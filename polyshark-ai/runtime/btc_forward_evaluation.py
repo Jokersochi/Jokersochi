@@ -206,6 +206,14 @@ def snapshot_from_report(report: dict[str, Any], now: datetime) -> dict[str, Any
                 record["liquidity_gate"] = False
         else:
             record["liquidity_gate"] = False
+        if "all_in_cost_per_share" in record:
+            # Never silently attribute legacy 5% scenario costs to a
+            # verified market fee. Keep historical ledger hashes unchanged.
+            if m.get("cost_fee_source") == "GAMMA_MARKET_FEE_SCHEDULE":
+                record["cost_fee_source"] = "GAMMA_MARKET_FEE_SCHEDULE"
+                record["cost_fee_rate"] = finite(m["cost_fee_rate"], low=0, high=1)
+            else:
+                record["cost_fee_source"] = "LEGACY_OR_UNKNOWN_FEE_ASSUMPTION"
         prepared.append(record)
     if len({m["market_id"] for m in prepared}) != len(prepared):
         raise ValueError("Duplicate markets")
@@ -352,51 +360,77 @@ def resolve_pending(ledger: dict[str, Any], now: datetime,
 
 
 def evaluate(ledger: dict[str, Any]) -> dict[str, Any]:
+    """Score pre-recorded forecasts without trading or inflating event N."""
     outcomes = {r["event_slug"]: r["outcomes"] for r in ledger["resolutions"]}
-    model_brier: list[float] = []
-    market_brier: list[float] = []
-    simulated_pnl: list[float] = []
-    selected_rows = []
+    primary_model: list[float] = []
+    primary_market: list[float] = []
+    illustrated_pnl: list[float] = []
+    illustrative_records: list[dict[str, Any]] = []
+    per_event: list[dict[str, Any]] = []
+    by_horizon: dict[str, list[tuple[float, float]]] = defaultdict(list)
     completed_events: set[str] = set()
-    # Primary OOS unit is unique event DAY, not repeated hourly snapshots
-    # or highly correlated strike markets.
-    for snap in sorted(ledger["snapshots"], key=lambda s: s["observed_at"]):
+    for snap in sorted(ledger["snapshots"], key=lambda row: row["observed_at"]):
         slug = snap["event_slug"]
-        if slug not in outcomes or slug in completed_events:
+        if slug not in outcomes:
             continue
-        completed_events.add(slug)
-        evaluations = []
+        evaluation = []
         for market in snap["markets"]:
             y = outcomes[slug].get(market["market_id"])
             if y not in (0, 1):
                 continue
-            p = market["p_model"]
-            m = market["p_market"]
-            evaluations.append(((p - y) ** 2, (m - y) ** 2, market, y))
-        if not evaluations:
-            completed_events.remove(slug)
+            evaluation.append((
+                (market["p_model"] - y) ** 2,
+                (market["p_market"] - y) ** 2,
+                market,
+            ))
+        if not evaluation:
             continue
-        model_brier.append(sum(v[0] for v in evaluations) / len(evaluations))
-        market_brier.append(sum(v[1] for v in evaluations) / len(evaluations))
-        # One illustrative 1-share YES choice per independent event, not per
-        # strike, to avoid counting a correlated basket as separate trades.
-        candidate = next((v for v in evaluations
-                          if v[2].get("liquidity_gate") and
-                          v[2].get("illustrative_net_edge", -1) >= MIN_ILLUSTRATIVE_EDGE
-                          and "all_in_cost_per_share" in v[2]), None)
-        if candidate is not None:
-            market = candidate[2]
-            pnl = candidate[3] - market["all_in_cost_per_share"]
-            simulated_pnl.append(pnl)
-            selected_rows.append({
-                "event_slug": slug,
-                "market_id": market["market_id"],
-                "outcome_yes": candidate[3],
-                "hypothetical_pnl_usd_1_share": round(pnl, 8),
-            })
-    n = len(model_brier)
-    brier = sum(model_brier) / n if n else None
-    reference_brier = sum(market_brier) / n if n else None
+        model_score = sum(v[0] for v in evaluation) / len(evaluation)
+        market_score = sum(v[1] for v in evaluation) / len(evaluation)
+        # A resolved event can have many precommitted horizon snapshots:
+        # their scores are diagnostic, NOT independent observations.
+        by_horizon[snap["horizon_bucket"]].append((model_score, market_score))
+        if slug in completed_events:
+            continue
+        completed_events.add(slug)
+        primary_model.append(model_score)
+        primary_market.append(market_score)
+        detail: dict[str, Any] = {
+            "event_slug": slug,
+            "snapshot_at": snap["observed_at"],
+            "horizon_bucket": snap["horizon_bucket"],
+            "market_count_correlated": len(evaluation),
+            "brier_model": round(model_score, 8),
+            "brier_market": round(market_score, 8),
+            "brier_advantage": round(market_score - model_score, 8),
+        }
+        # Choose ONE market using forecast-time data ONLY, before looking up
+        # its outcome. The rule is frozen and identical for every event.
+        choice = next((market for market in snap["markets"]
+                       if market.get("liquidity_gate") is True
+                       and market.get("illustrative_net_edge", -1) >= MIN_ILLUSTRATIVE_EDGE
+                       and "all_in_cost_per_share" in market), None)
+        if choice is not None:
+            y = outcomes[slug].get(choice["market_id"])
+            if y in (0, 1):
+                pnl = y - choice["all_in_cost_per_share"]
+                illustrated_pnl.append(pnl)
+                record = {
+                    "event_slug": slug,
+                    "market_id": choice["market_id"],
+                    "outcome_yes": y,
+                    "assumed_all_in_cost_per_share": choice["all_in_cost_per_share"],
+                    "fee_source": choice.get(
+                        "cost_fee_source", "LEGACY_5PCT_UNVERIFIED"
+                    ),
+                    "hypothetical_pnl_usd_1_share": round(pnl, 8),
+                }
+                illustrative_records.append(record)
+                detail["hypothetical_choice"] = record
+        per_event.append(detail)
+    n = len(primary_model)
+    brier = sum(primary_model) / n if n else None
+    reference = sum(primary_market) / n if n else None
     return {
         "resolved_unique_event_days": n,
         "resolved_market_observations_not_independent": sum(
@@ -404,14 +438,31 @@ def evaluate(ledger: dict[str, Any]) -> dict[str, Any]:
             if s["event_slug"] in outcomes
         ),
         "brier_model_event_weighted": round(brier, 8) if n else None,
-        "brier_market_event_weighted": round(reference_brier, 8) if n else None,
-        "brier_advantage_vs_market": round(reference_brier - brier, 8) if n else None,
-        "illustrative_yes_choices": len(simulated_pnl),
-        "illustrative_one_share_pnl_usd": round(sum(simulated_pnl), 8),
-        "illustrative_records": selected_rows[-12:],
-        "calibration_review_eligible": False,  # requires actual calibration and OOS
+        "brier_market_event_weighted": round(reference, 8) if n else None,
+        "brier_advantage_vs_market": round(reference - brier, 8) if n else None,
+        "illustrative_yes_choices": len(illustrated_pnl),
+        "illustrative_one_share_pnl_usd": round(sum(illustrated_pnl), 8),
+        "illustrative_records": illustrative_records[-12:],
+        "per_event_diagnostics": per_event[-50:],
+        "horizon_diagnostics_not_independent": {
+            bucket: {
+                "observed_event_days": len(values),
+                "brier_model": round(sum(x[0] for x in values) / len(values), 8),
+                "brier_market": round(sum(x[1] for x in values) / len(values), 8),
+            }
+            for bucket, values in sorted(by_horizon.items())
+        },
+        "hypothetical_selection_policy": (
+            "First market in precommitted forecast order with YES model net "
+            "edge >= 0.01, modeled liquidity gate, and cost estimate; "
+            "max one illustrative share per resolved event day"
+        ),
+        "calibration_review_eligible": False,
         "sample_count_adequate_for_review": n >= MIN_INDEPENDENT_EVENTS_FOR_REVIEW,
-        "interpretation": "Research only; correlated strike markets, unverified fees, no executed positions",
+        "interpretation": (
+            "Research only; correlated strike markets, hypothetical fills, "
+            "historical unverified 5% fees, later Gamma feeSchedule used where recorded"
+        ),
     }
 
 

@@ -20,9 +20,13 @@ It is NOT an automated strategy, approved source for Challenger v2's
   event-probability forecasts; this result cannot pass the current
   independent research evidence requirement.
 - After estimating probability, compares it with Gamma's *indicative* YES
-  price and, if available, the public CLOB best bid and ask. Cost estimates
-  use an assumed 5% fee coefficient, $100 test notional, and the existing
-  liquidity/slippage heuristic; they are **not** verified executable economics.
+  price and, if available, the public CLOB best bid and ask. Fee estimates now
+  read the **specific market's** Gamma `feesEnabled` and `feeSchedule`
+  (`rate`, `exponent=1`, `takerOnly=true`). If fee configuration is missing or
+  unsupported, no after-fee edge calculation is accepted. Current BTC crypto
+  contracts report `rate=0.07`; rates may change by market and date. The
+  $100 test notional and liquidity/slippage heuristic are still assumptions,
+  **not** verified executable fills.
 - Logs Binance BTC/USDT vs. Coinbase/Kraken BTC/USD **settlement-basis risk**.
   Close, liquidity, calendars and fee assumptions must be independently
   verified against market rules before any trade research promotion.
@@ -63,8 +67,10 @@ It **never writes** the canonical paper ledger or activates Challenger v2.
   evidence currently establishes a positive net edge.
 - Prices from Coinbase and Kraken are the same underlying risk factor;
   neither is the exact Binance settlement venue.
-- Missing CLOB quote, stale/missing bars, incompatible rules and unavailable
-  APIs produce an explicit blocked/abstention result.
+- Missing CLOB quote, missing/unsupported fee schedule, stale/missing bars,
+  incompatible rules and unavailable APIs produce blocked cost analysis or
+  a full research abstention. Historical November 16–17 snapshots used a
+  **legacy 5% fee assumption**; their SHA-256 records are not rewritten.
 - Before integrating output into Challenger's evidence contract, independently
   verify data provenance, source licensing, settlement outcomes, basis risk,
   historic calibration (Brier/ECE), OOS period, independent event count, and

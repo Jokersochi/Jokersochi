@@ -75,3 +75,16 @@ Before archive/delete, verify:
 Current GitHub connector exposes repository content, PR and issue updates but **not** repository-level archival, deletion or renaming. Document pending admin work; do not mark it completed without confirmation.
 
 **Status:** Audit/documentation current as of 2026-11-18; *0 repositories actually archived/deleted*.
+
+## Read-only repeatable audit
+
+The replacement [auditor](./scripts/github_repo_audit.py) uses **Python 3.10+ standard library only** (no `PyGithub`, `requests` or embedded tokens) and sends only GitHub API `GET` requests. It protects known first-party repos, checks every branch name, and never archives/deletes anything.
+
+```bash
+python scripts/github_repo_audit.py --owner Jokersochi --output github_repo_report.json
+python -m unittest discover -s scripts -p 'test_github_repo_audit.py'
+```
+
+Without `GITHUB_TOKEN`/`GH_TOKEN`, the report covers **public repositories only**, and labels that scope explicitly. With a properly scoped read-only token in the environment, it can report accessible private repositories. Never commit its JSON report if it contains private names.
+
+**Note:** Repository review classifications in its output are advice only, not authorization to delete or archive.

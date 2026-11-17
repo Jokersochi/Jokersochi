@@ -45,7 +45,7 @@ Do not add boilerplate files blindly to third-party forks or archived references
 
 ## Line endings
 
-All maintained repositories use LF-only normalization:
+Target policy for maintained repositories: normalize text files to LF where compatible with each project's tooling (not a statement that every repository is already normalized):
 
 ```gitattributes
 * text=auto eol=lf

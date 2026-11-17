@@ -1,67 +1,77 @@
-# Repository Architecture & Cleanup Registry
+# GitHub Repository Architecture & Cleanup Policy
 
-This file is the source of truth for organizing the `Jokersochi` GitHub account.
+**Current source of truth:** [Repository audit — 2026-11-18](./docs/repository-audit-2026-11-18.md). Historical audit: [2026-09-13](./docs/repository-audit-2026-09-13.md). Tracking checklist: [Issue #77](https://github.com/Jokersochi/Jokersochi/issues/77).
 
-## Classification
+## Latest verified state
+- **39 owned repositories** listed on 2026-11-18; **none archived** at the time of the audit.
+- Repositories can contain distinct work in non-default branches. `ahead_by=0` for `main` is not permission to archive the repository.
+- No repository-level rename/archive/delete operation has been executed by this cleanup.
 
-### CORE — original products
+## Groups
 
-- `primerochnaya` — public, original repository
-- `Product-Visualizer-AI` — public, original repository
-- `ai-realtor` — private, active product
-- `sentinel-markets-ai` — private, active product
-- `Jokersochi` — public profile/control repository
+### CORE — canonical first-party products
+- `ai-realtor` (private), `sentinel-markets-ai` (private), `monopoly-luxe` (private).
+- `primerochnaya`, `Product-Visualizer-AI` (public).
+- `SochiHouseApp` (private, independent product).
+- `-` — **RoomGenius** (public Next.js product with working branches; preserve).
+- `---` — **Virtual Food Photographer** (private product; preserve, **P0 Gemini API-key exposure risk**).
+- `Jokersochi` — active profile/control repository; it also contains application content, so never treat it as a disposable README-only scaffold.
 
-### FORKS — confirmed upstream copies
+### PRODUCT MIGRATION / ACTIVE WORK — preserve
+- `russian-monopoly-local` — original game rules and content; active November pushes.
+- `monopolylux` — original server-authoritative multiplayer source.
+- `TradingAgents` — fork with `feature/read-only-run-dashboard` and `setup/paper-preview-20261108`; source work may exist outside default `main`.
 
-These repositories are confirmed forks and currently have **0 commits ahead of upstream** on their default branch. They should not be presented as original projects.
+### UPSTREAM FORKS — verified 0 commits ahead on default branch
+- `anthropic-quickstarts`, `openai-agents-python`, `chrome-devtools-mcp`
+- `ComfyUI-Manager`, `ComfyUI-VideoCompressor`, `flux`
+- `omi`, `opensre`, `lobehub`, `shellcheck.net`
 
-- `anthropic-quickstarts` → upstream `anthropics/claude-quickstarts`; ahead: 0
-- `openai-agents-python` → upstream `openai/openai-agents-python`; ahead: 0
+These **10 are archive-review candidates only**. Verify all branches, deployments and required history before any action.
 
-Recommended admin action: archive or delete after final review. Prefer archive first when uncertain.
+### UPSTREAM FORKS WITH UNIQUE COMMITS — no automatic cleanup
+- `andrej-karpathy-skills` (ahead 4)
+- `codex` (ahead 1)
+- `cursor-plugin` (ahead 2)
+- `compose-for-agents` (ahead 4)
+- `DeepSeek-R1` (ahead 5)
+- `Wan2.2` (**ahead 17**; updated after the prior audit)
 
-### AUDIT QUEUE — verify before archive/delete
+Use [fork delta decisions](./docs/upstream-fork-delta-decisions.md) for past reasoning; recheck November changes in `Wan2.2`.
 
-Likely external/upstream repositories that require the same fork-vs-upstream comparison before any destructive action:
+### LEGACY / IMPORT / EMPTY — needs dependency checks
+- `12345`, `Monopolize-` — older Monopoly experiments.
+- `ai-core` — empty.
+- `codesandbox-template-nuxt` — template-derived.
+- `https-github.com-hiddify-hiddify-app` — imported copy, not marked as fork; push activity in November.
+- `sochi-realtor-ai`, `Sentinel-Markets-AI-` — legacy source trees.
 
-- `chrome-devtools-mcp`
-- `codex`
-- `ComfyUI-Manager`
-- `ComfyUI-VideoCompressor`
-- `DeepSeek-R1`
-- `flux`
-- `lobehub`
-- `omi`
-- `opensre`
-- `compose-for-agents`
-- `cursor-plugin`
-- `andrej-karpathy-skills`
+### UNCLASSIFIED PRODUCT VARIANTS — audit before consolidation
+- `Ai-studio-`
+- `aistudio.sentinel.ai`
+- `Sentinel-Lab-by-Argon`
+- `sentinel-honest-insight`
 
-### NOISE / NAMING REVIEW
+They may contain unique UI, data models or code; the word `sentinel` is not sufficient proof of equivalence.
 
-Repositories with weak or accidental names should be checked for unique content before archive/delete:
+## Naming policy
+- New original products: descriptive lowercase kebab-case; prefixes `ai-`, `lab-`, `infra-` only where helpful.
+- Preserve upstream fork names for traceability.
+- Never automatically archive a repo matching `^-+$`, `^\d+$`, `^https-.*`, or other name patterns.
+- Do not rename mature active repos until deployment URLs, package dependencies and CI references are checked.
 
-- `-`
-- `---`
-- `12345`
-- `https-github.com-hiddify-hiddify-app`
+## Security blockers
+- `---` / issue #2: build-time substitution of `GEMINI_API_KEY` into browser code is unsafe. Move model calls to a server-side API; don't deploy a real key to the client.
+- `monopoly-luxe` / issue #2: historical `.env` exposure; rotating/revoking affected credentials is not yet verified.
 
-## Rules
+## Cleanup execution gate
+Before archive/delete, verify:
+1. Every branch / tag / unique change and pending PR / issue.
+2. Deployment, automation, package, domain and local usage.
+3. Extracted/declined unique work with a verified canonical destination.
+4. Credential containment and history requirements.
+5. Repository-level action was authorized and **GitHub state re-read** after execution.
 
-1. Never delete a repository until unique commits/files have been checked against upstream.
-2. Pure forks with `ahead_by = 0` should be archived or deleted unless they serve a documented dependency/workflow purpose.
-3. Private repositories should not be linked from the public profile README unless intentionally exposed.
-4. Public portfolio should feature only original, accessible repositories.
-5. Prefer descriptive repository names. Avoid placeholder or imported-URL names.
-6. New experimental work should use `lab-*` when appropriate; infrastructure may use `infra-*`; AI-first products may use `ai-*` when the name benefits from it.
-7. Do not rename mature repositories solely to satisfy a prefix convention; clarity and stable URLs are more important.
+Current GitHub connector exposes repository content, PR and issue updates but **not** repository-level archival, deletion or renaming. Document pending admin work; do not mark it completed without confirmation.
 
-## Cleanup Order
-
-1. Confirm pure forks (`ahead_by = 0`).
-2. Remove them from the public showcase immediately.
-3. Archive/delete confirmed pure forks through GitHub admin controls.
-4. Verify noisy repositories for unique code.
-5. Audit remaining repositories and classify CORE / FORK / LAB / INFRA / ARCHIVE.
-6. Standardize README, description, topics, license, and CI only for repositories that remain active.
+**Status:** Audit/documentation current as of 2026-11-18; *0 repositories actually archived/deleted*.

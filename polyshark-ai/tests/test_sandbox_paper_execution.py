@@ -49,20 +49,200 @@ class SandboxTests(unittest.TestCase):
         self.assertEqual(out["trades"], [])
         self.assertEqual(out["cash"], 1000)
 
-    def test_insufficient_bid_depth_blocks_virtual_exit(self):
+    def test_insufficient_bid_depth_executes_partial_virtual_exit(self):
         state = self.state()
         state["positions"]["m"] = {"shares": 40, "entry_ask": 0.5,
             "opened_at": "2026-11-10T00:00:00+00:00", "last_bid": 0.49}
         out = sandbox.step(state, {"m": (0.46, 0.47, 1, 100, "Test")},
                            "2026-11-11T01:00:00+00:00")
-        self.assertIn("m", out["positions"])
-        self.assertEqual(out["trades"], [])
-        self.assertEqual(out["equity"], 1000.0)
+        self.assertAlmostEqual(out["positions"]["m"]["shares"], 39)
+        self.assertEqual(len(out["trades"]), 1)
+        self.assertEqual(out["trades"][0]["side"], "SELL")
+        self.assertAlmostEqual(out["trades"][0]["shares"], 1)
+        self.assertAlmostEqual(out["cash"], 1000 + sandbox.liquidation_proceeds(1, 0.46), places=4)
+        # The exhausted best bid may not also mark the remaining 39 shares.
+        self.assertAlmostEqual(out["equity"], out["cash"], places=5)
 
     def test_no_quote_no_fake_trade(self):
         out = sandbox.step(self.state(), {}, "2026-11-11T00:00:00+00:00")
         self.assertEqual(out["equity"], 1000)
         self.assertEqual(out["trades"], [])
+
+    def test_buy_walks_multiple_ask_levels(self):
+        state = self.state()
+        state["observations"]["m"] = 0.45
+        quote = (0.49, 0.50, 100, 1,
+                 [(0.49, 100)], [(0.50, 1), (0.51, 100)], "Test")
+        out = sandbox.step(state, {"m": quote}, "2026-11-11T00:00:00+00:00")
+        self.assertEqual(len(out["trades"]), 1)
+        trade = out["trades"][0]
+        self.assertGreater(trade["shares"], 1)
+        self.assertGreater(trade["price"], 0.50)
+        self.assertEqual(trade["filled_levels"], 2)
+        self.assertGreater(trade["fee"], 0)
+        self.assertGreater(trade["slippage_reserve"], 0)
+        self.assertAlmostEqual(out["cash"] - 1000, trade["cash_flow"], places=5)
+        self.assertLessEqual(-trade["cash_flow"], sandbox.MAX_POSITION_USD + 1e-7)
+
+    def test_sell_walks_multiple_bids_but_retains_unfilled_shares(self):
+        state = self.state()
+        state["positions"]["m"] = {"shares": 40, "entry_ask": 0.5,
+            "opened_at": "2026-11-10T00:00:00+00:00", "last_bid": 0.49}
+        quote = (0.46, 0.47, 5, 100,
+                 [(0.46, 5), (0.45, 10), (0.43, 100)],
+                 [(0.47, 100)], "Test")
+        out = sandbox.step(state, {"m": quote}, "2026-11-11T01:00:00+00:00")
+        self.assertEqual(out["trades"][0]["filled_levels"], 2)
+        self.assertAlmostEqual(out["trades"][0]["shares"], 15)
+        self.assertAlmostEqual(out["positions"]["m"]["shares"], 25)
+        self.assertAlmostEqual(out["equity"], out["cash"], places=5)
+
+    def test_wide_spread_never_reuses_stale_favorable_mark(self):
+        state = self.state()
+        state["positions"]["m"] = {"shares": 40, "entry_ask": 0.5,
+            "opened_at": "2026-11-10T00:00:00+00:00", "last_bid": 0.9,
+            "last_bid_depth": 100, "last_liquidation_value": 36}
+        state["equity"] = 1036
+        out = sandbox.step(state, {"m": (0.40, 0.50, 100, 100, "Invalid spread")},
+                           "2026-11-11T01:00:00+00:00")
+        self.assertEqual(out["equity"], 1000)
+        self.assertEqual(out["positions"]["m"]["last_liquidation_value"], 0)
+        self.assertEqual(state["positions"]["m"]["last_liquidation_value"], 36)
+
+    def test_missing_quote_never_reuses_stale_mark(self):
+        state = self.state()
+        state["positions"]["m"] = {"shares": 40, "entry_ask": 0.5,
+            "opened_at": "2026-11-10T00:00:00+00:00",
+            "last_bid": 0.9, "last_liquidation_value": 36}
+        out = sandbox.step(state, {}, "2026-11-11T00:00:00+00:00")
+        self.assertEqual(out["equity"], 1000)
+        self.assertEqual(out["positions"]["m"]["last_liquidation_value"], 0)
+
+    def test_partial_sell_then_next_tick_fully_exits_without_phantom_shares(self):
+        state = self.state()
+        state["positions"]["m"] = {"shares": 40, "entry_ask": 0.5,
+            "opened_at": "2026-11-10T00:00:00+00:00"}
+        partial = sandbox.step(state, {"m": (0.46, 0.47, 1, 100, "Test")},
+                               "2026-11-11T01:00:00+00:00")
+        final = sandbox.step(partial, {"m": (0.46, 0.47, 100, 100, "Test")},
+                             "2026-11-11T01:01:00+00:00")
+        self.assertNotIn("m", final["positions"])
+        self.assertAlmostEqual(sum(t["shares"] for t in final["trades"]), 40)
+        self.assertAlmostEqual(final["cash"] - 1000,
+                               sum(t["cash_flow"] for t in final["trades"]), places=5)
+        self.assertAlmostEqual(final["equity"], final["cash"], places=5)
+
+    def test_unsafe_live_state_fails_closed(self):
+        state = self.state()
+        state["real_orders_enabled"] = True
+        with self.assertRaises(ValueError):
+            sandbox.step(state, {}, "2026-11-11T00:00:00+00:00")
+
+    def test_orderbook_normalizes_and_sorts_levels(self):
+        from unittest.mock import patch
+        book = {"bids": [{"price": "0.45", "size": "1"},
+                         {"price": "0.49", "size": "2"}],
+                "asks": [{"price": "0.52", "size": "10"},
+                         {"price": "0.50", "size": "1"}]}
+        with patch.object(sandbox, "get_json", return_value=book):
+            result = sandbox.orderbook("dummy")
+        self.assertEqual(result[0], 0.49)
+        self.assertEqual(result[1], 0.50)
+        self.assertEqual(result[4][0], (0.49, 2.0))
+        self.assertEqual(result[5][0], (0.50, 1.0))
+
+
+    def test_fresh_public_book_timestamp_allows_virtual_entry(self):
+        from datetime import datetime
+        state = self.state()
+        state["observations"]["m"] = 0.45
+        ts = "2026-11-11T00:00:00+00:00"
+        stamp = int(datetime.fromisoformat(ts).timestamp() * 1000)
+        quote = (0.49, 0.50, 100, 100,
+                 [(0.49, 100)], [(0.50, 100)], stamp, "Fresh")
+        out = sandbox.step(state, {"m": quote}, ts)
+        self.assertEqual(len(out["trades"]), 1)
+        self.assertEqual(out["rejected_quote_counts"]["stale"], 0)
+        self.assertEqual(out["capital_decision"], "NO_TRADE")
+
+    def test_stale_public_book_rejects_virtual_fill(self):
+        from datetime import datetime
+        state = self.state()
+        state["observations"]["m"] = 0.45
+        ts = "2026-11-11T00:00:00+00:00"
+        stamp = int(datetime.fromisoformat(ts).timestamp() * 1000) - 120000
+        quote = (0.49, 0.50, 100, 100,
+                 [(0.49, 100)], [(0.50, 100)], stamp, "Stale")
+        out = sandbox.step(state, {"m": quote}, ts)
+        self.assertEqual(out["trades"], [])
+        self.assertEqual(out["rejected_quote_counts"]["stale"], 1)
+        self.assertEqual(out["equity"], 1000)
+
+    def test_future_book_rejects_virtual_fill(self):
+        from datetime import datetime
+        state = self.state()
+        state["observations"]["m"] = 0.45
+        ts = "2026-11-11T00:00:00+00:00"
+        stamp = int(datetime.fromisoformat(ts).timestamp() * 1000) + 6000
+        quote = (0.49, 0.50, 100, 100,
+                 [(0.49, 100)], [(0.50, 100)], stamp, "Future")
+        out = sandbox.step(state, {"m": quote}, ts)
+        self.assertEqual(out["trades"], [])
+        self.assertEqual(out["rejected_quote_counts"]["future"], 1)
+
+    def test_undated_public_book_fails_closed(self):
+        state = self.state()
+        state["observations"]["m"] = 0.45
+        quote = (0.49, 0.50, 100, 100,
+                 [(0.49, 100)], [(0.50, 100)], None, "Undated")
+        out = sandbox.step(state, {"m": quote}, "2026-11-11T00:00:00+00:00")
+        self.assertEqual(out["trades"], [])
+        self.assertEqual(out["rejected_quote_counts"]["undated"], 1)
+
+    def test_replayed_or_backwards_tick_rejected(self):
+        first = sandbox.step(self.state(), {}, "2026-11-11T00:00:00+00:00")
+        with self.assertRaises(ValueError):
+            sandbox.step(first, {}, "2026-11-11T00:00:00+00:00")
+        with self.assertRaises(ValueError):
+            sandbox.step(first, {}, "2026-11-10T23:59:59+00:00")
+
+    def test_drawdown_risk_stop_blocks_entries(self):
+        state = self.state()
+        state["equity"] = 899
+        state["observations"]["m"] = 0.45
+        out = sandbox.step(state, {"m": (0.49, 0.50, 100, 100, "Test")},
+                           "2026-11-11T00:00:00+00:00")
+        self.assertTrue(out["risk_stop"])
+        self.assertEqual(out["trades"], [])
+        self.assertEqual(out["capital_decision"], "NO_TRADE")
+        self.assertGreaterEqual(out["max_drawdown_pct"], 10.0)
+        self.assertEqual(out["peak_equity"], 1000)
+
+    def test_drawdown_from_unpriced_position_halts_future_entries(self):
+        state = self.state()
+        state["cash"] = 900
+        state["positions"]["m"] = {
+            "shares": 20, "entry_ask": 0.5,
+            "opened_at": "2026-11-10T00:00:00+00:00"}
+        tick = sandbox.step(state, {}, "2026-11-11T00:00:00+00:00")
+        self.assertTrue(tick["risk_stop"])
+        self.assertAlmostEqual(tick["max_drawdown_pct"], 10)
+        tick["observations"]["m2"] = 0.45
+        next_tick = sandbox.step(tick, {"m2": (0.49, 0.50, 100, 100, "Test")},
+                                 "2026-11-11T00:01:00+00:00")
+        self.assertEqual(next_tick["trades"], [])
+
+    def test_risk_stop_does_not_block_virtual_exit(self):
+        state = self.state()
+        state["risk_stop"] = True
+        state["positions"]["m"] = {
+            "shares": 20, "entry_ask": 0.5,
+            "opened_at": "2026-11-10T00:00:00+00:00"}
+        out = sandbox.step(state, {"m": (0.46, 0.47, 100, 100, "Test")},
+                           "2026-11-11T01:00:00+00:00")
+        self.assertEqual(out["trades"][0]["side"], "SELL")
+        self.assertTrue(out["risk_stop"])
+
 
 
 if __name__ == "__main__":

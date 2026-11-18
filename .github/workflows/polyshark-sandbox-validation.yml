@@ -12,6 +12,8 @@ on:
       - "polyshark-ai/runtime/sandbox_audit.py"
       - "polyshark-ai/runtime/sandbox_replay.py"
       - "polyshark-ai/tests/test_sandbox_audit_replay.py"
+      - "polyshark-ai/runtime/sandbox_economics.py"
+      - "polyshark-ai/tests/test_sandbox_economics.py"
       - ".github/workflows/polyshark-sandbox-validation.yml"
   workflow_dispatch:
   schedule:
@@ -35,6 +37,7 @@ jobs:
       SANDBOX_SNAPSHOT: /tmp/polyshark-sandbox-runtime/one_tick_quote_snapshot.jsonl
       SANDBOX_SEED: /tmp/polyshark-sandbox-runtime/pre_tick_seed.json
       SANDBOX_REPLAYED: /tmp/polyshark-sandbox-runtime/replayed_state.json
+      SANDBOX_ECONOMICS: /tmp/polyshark-sandbox-runtime/economic_evidence_report.json
       GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v4
@@ -53,7 +56,8 @@ jobs:
           PY
           python -m unittest discover -s polyshark-ai/tests -p test_sandbox_paper_execution.py -v
           python -m unittest discover -s polyshark-ai/tests -p test_sandbox_audit_replay.py -v
-          python -m py_compile polyshark-ai/runtime/sandbox_paper_execution.py polyshark-ai/runtime/sandbox_audit.py polyshark-ai/runtime/sandbox_replay.py
+          python -m unittest discover -s polyshark-ai/tests -p test_sandbox_economics.py -v
+          python -m py_compile polyshark-ai/runtime/sandbox_paper_execution.py polyshark-ai/runtime/sandbox_audit.py polyshark-ai/runtime/sandbox_replay.py polyshark-ai/runtime/sandbox_economics.py
 
       - name: Read-only audit of the latest persisted main-branch PAPER ledger
         if: github.ref != 'refs/heads/main'
@@ -71,6 +75,8 @@ jobs:
               --name polyshark-sandbox-paper-state --dir "$audit_dir"
             python polyshark-ai/runtime/sandbox_audit.py \
               --state "$audit_dir/sandbox_paper_state.json"
+            python polyshark-ai/runtime/sandbox_economics.py \
+              --state "$audit_dir/sandbox_paper_state.json" >/tmp/polyshark-pr-economic-readonly.json
             # Copy only into this ephemeral feature-run workspace. Never write
             # the main ledger back from a PR run.
             mkdir -p "$(dirname "$SANDBOX_STATE")"
@@ -97,6 +103,8 @@ jobs:
               --dir "$(dirname "$SANDBOX_STATE")"
             test -s "$SANDBOX_STATE"
             python polyshark-ai/runtime/sandbox_audit.py --state "$SANDBOX_STATE"
+            python polyshark-ai/runtime/sandbox_economics.py \
+              --state "$SANDBOX_STATE" >/tmp/polyshark-pre-tick-economics.json
           else
             echo "No previous main-branch sandbox run; beginning an isolated USD 1000 virtual session."
           fi
@@ -110,6 +118,21 @@ jobs:
             --snapshot-file "$SANDBOX_SNAPSHOT" \
             --seed-state-file "$SANDBOX_SEED"
           python polyshark-ai/runtime/sandbox_audit.py --state "$SANDBOX_STATE"
+          python polyshark-ai/runtime/sandbox_economics.py --state "$SANDBOX_STATE" >"$SANDBOX_ECONOMICS"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          report = json.loads(Path(os.environ["SANDBOX_ECONOMICS"]).read_text())
+          assert report["capital_decision"] == "NO_TRADE"
+          assert report["economic_verdict"] == "UNVERIFIED_NO_TRADE"
+          assert report["fee_evidence"]["historically_verified_actual_fees"] == 0
+          assert report["settlement_evidence"]["status"] == "NO_AUTOMATIC_SETTLEMENT"
+          print({"economic_gate": report["economic_verdict"],
+                 "open_cost_basis_locked": report["open_cost_basis_locked"],
+                 "fee_unknown": report["fee_evidence"]["unknown_market_fee_records"],
+                 "settlement_unverified": report["settlement_evidence"]["unverified_finality"],
+                 "capital_cost_scenarios": report["opportunity_cost_scenarios"]})
+          PY
           python polyshark-ai/runtime/sandbox_replay.py \
             --input "$SANDBOX_SNAPSHOT" \
             --initial-state "$SANDBOX_SEED" \
@@ -152,5 +175,6 @@ jobs:
             ${{ env.SANDBOX_STATE }}
             ${{ env.SANDBOX_SNAPSHOT }}
             ${{ env.SANDBOX_SEED }}
+            ${{ env.SANDBOX_ECONOMICS }}
           retention-days: 30
           if-no-files-found: error

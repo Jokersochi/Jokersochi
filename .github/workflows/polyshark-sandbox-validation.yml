@@ -52,6 +52,26 @@ jobs:
           python -m unittest discover -s polyshark-ai/tests -p test_sandbox_audit_replay.py -v
           python -m py_compile polyshark-ai/runtime/sandbox_paper_execution.py polyshark-ai/runtime/sandbox_audit.py polyshark-ai/runtime/sandbox_replay.py
 
+      - name: Read-only audit of the latest persisted main-branch PAPER ledger
+        if: github.ref != 'refs/heads/main'
+        shell: bash
+        run: |
+          set -euo pipefail
+          audit_dir="$(mktemp -d)"
+          prior_id=$(gh run list --repo "$GITHUB_REPOSITORY" \
+            --workflow polyshark-sandbox-validation.yml \
+            --branch main --limit 50 \
+            --json databaseId,conclusion,status \
+            --jq '[.[] | select(.status == "completed" and .conclusion == "success") | .databaseId][0] // empty')
+          if [[ -n "$prior_id" ]]; then
+            gh run download "$prior_id" --repo "$GITHUB_REPOSITORY" \
+              --name polyshark-sandbox-paper-state --dir "$audit_dir"
+            python polyshark-ai/runtime/sandbox_audit.py \
+              --state "$audit_dir/sandbox_paper_state.json"
+          else
+            echo "::notice::No completed main-branch ledger available for audit."
+          fi
+
       - name: Restore last successful main-branch sandbox ledger
         if: github.ref == 'refs/heads/main'
         shell: bash
@@ -69,6 +89,7 @@ jobs:
               --name polyshark-sandbox-paper-state \
               --dir "$(dirname "$SANDBOX_STATE")"
             test -s "$SANDBOX_STATE"
+            python polyshark-ai/runtime/sandbox_audit.py --state "$SANDBOX_STATE"
           else
             echo "No previous main-branch sandbox run; beginning an isolated USD 1000 virtual session."
           fi
@@ -78,6 +99,7 @@ jobs:
           set -euo pipefail
           mkdir -p "$(dirname "$SANDBOX_STATE")"
           python polyshark-ai/runtime/sandbox_paper_execution.py --state "$SANDBOX_STATE"
+          python polyshark-ai/runtime/sandbox_audit.py --state "$SANDBOX_STATE"
           python - <<'PY'
           import json, os
           from pathlib import Path

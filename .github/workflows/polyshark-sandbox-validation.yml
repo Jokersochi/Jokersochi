@@ -73,6 +73,7 @@ jobs:
               --state "$audit_dir/sandbox_paper_state.json"
             # Copy only into this ephemeral feature-run workspace. Never write
             # the main ledger back from a PR run.
+            mkdir -p "$(dirname "$SANDBOX_STATE")"
             cp "$audit_dir/sandbox_paper_state.json" "$SANDBOX_STATE"
           else
             echo "::notice::No completed main-branch ledger available for audit."

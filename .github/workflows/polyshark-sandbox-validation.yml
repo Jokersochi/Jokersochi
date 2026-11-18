@@ -32,6 +32,9 @@ jobs:
     timeout-minutes: 5
     env:
       SANDBOX_STATE: /tmp/polyshark-sandbox-runtime/sandbox_paper_state.json
+      SANDBOX_SNAPSHOT: /tmp/polyshark-sandbox-runtime/one_tick_quote_snapshot.jsonl
+      SANDBOX_SEED: /tmp/polyshark-sandbox-runtime/pre_tick_seed.json
+      SANDBOX_REPLAYED: /tmp/polyshark-sandbox-runtime/replayed_state.json
       GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v4
@@ -98,8 +101,23 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p "$(dirname "$SANDBOX_STATE")"
-          python polyshark-ai/runtime/sandbox_paper_execution.py --state "$SANDBOX_STATE"
+          python polyshark-ai/runtime/sandbox_paper_execution.py \
+            --state "$SANDBOX_STATE" \
+            --snapshot-file "$SANDBOX_SNAPSHOT" \
+            --seed-state-file "$SANDBOX_SEED"
           python polyshark-ai/runtime/sandbox_audit.py --state "$SANDBOX_STATE"
+          python polyshark-ai/runtime/sandbox_replay.py \
+            --input "$SANDBOX_SNAPSHOT" \
+            --initial-state "$SANDBOX_SEED" \
+            --output "$SANDBOX_REPLAYED"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          actual = json.loads(Path(os.environ["SANDBOX_STATE"]).read_text())
+          replayed = json.loads(Path(os.environ["SANDBOX_REPLAYED"]).read_text())
+          assert actual == replayed, "Live PAPER tick diverged from causal offline replay"
+          print("causal live-vs-replay consistency: PASS")
+          PY
           python - <<'PY'
           import json, os
           from pathlib import Path

@@ -320,8 +320,20 @@ def step(state, quotes, timestamp):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--state", default="polyshark-ai/runtime/sandbox_paper_state.json")
+    parser.add_argument("--snapshot-file", type=Path,
+                        help="Optional one-tick public CLOB snapshot for deterministic offline replay")
+    parser.add_argument("--seed-state-file", type=Path,
+                        help="Optional pre-tick state for replay; requires --snapshot-file")
     args = parser.parse_args()
+    if bool(args.snapshot_file) != bool(args.seed_state_file):
+        parser.error("--snapshot-file and --seed-state-file must be used together")
     path = Path(args.state)
+    if args.snapshot_file:
+        forbidden_paths = {path.resolve(), args.snapshot_file.resolve(),
+                           args.seed_state_file.resolve()}
+        if (len(forbidden_paths) != 3 or
+                any(p.name == "paper_state.json" for p in forbidden_paths)):
+            parser.error("Replay snapshot/seed and state paths must differ and exclude production")
     if path.name == "paper_state.json":
         parser.error("Production paper_state.json is forbidden")
     state = json.loads(path.read_text()) if path.exists() else {
@@ -332,16 +344,41 @@ def main():
     if state.get("paper_only") is not True or state.get("real_orders_enabled") is not False:
         parser.error("Unsafe state")
     quotes = {}
+    capture_quotes = {}
     for market_id, token, question in candidates():
         try:
             book = orderbook(token)
             if book:
+                received = datetime.now(timezone.utc)
+                if args.snapshot_file:
+                    # Only captured books which were available to our process before
+                    # a decision are eligible for execution or subsequent replay.
+                    stamp = book[6]
+                    if isinstance(stamp, bool):
+                        continue
+                    try:
+                        stamp_ms = int(stamp)
+                    except (TypeError, ValueError, OverflowError):
+                        continue
+                    if stamp_ms < 0 or stamp_ms / 1000 > received.timestamp():
+                        continue
+                    capture_quotes[market_id] = {
+                        "received_at": received.isoformat(timespec="microseconds"),
+                        "book_timestamp_ms": stamp_ms,
+                        "bids": book[4], "asks": book[5], "question": question,
+                    }
                 quotes[market_id] = (*book, question)
         except (OSError, ValueError, KeyError):
             continue
     if not quotes:
         raise SystemExit("No valid public order books; state unchanged")
-    updated = step(state, quotes, now())
+    tick_at = (datetime.now(timezone.utc).isoformat(timespec="microseconds")
+               if args.snapshot_file else now())
+    updated = step(state, quotes, tick_at)
+    if args.snapshot_file:
+        from sandbox_audit import audit_state
+        audit_state(state)
+        audit_state(updated)
     path.parent.mkdir(parents=True, exist_ok=True)
     fd, temp = tempfile.mkstemp(dir=path.parent, prefix=".sandbox-", suffix=".json")
     try:
@@ -351,6 +388,24 @@ def main():
     finally:
         if os.path.exists(temp):
             os.unlink(temp)
+    if args.snapshot_file:
+        # GitHub Actions uploads the seed, one-tick snapshot and state together
+        # only if the independent replay/ledger gate subsequently succeeds.
+        for output, content in (
+            (args.seed_state_file, json.dumps(state, ensure_ascii=False, sort_keys=True) + "\n"),
+            (args.snapshot_file, json.dumps(
+                {"tick_at": tick_at, "quotes": capture_quotes},
+                ensure_ascii=False, sort_keys=True) + "\n"),
+        ):
+            output.parent.mkdir(parents=True, exist_ok=True)
+            fd, tmp = tempfile.mkstemp(dir=output.parent, prefix=".paper-replay-")
+            try:
+                with os.fdopen(fd, "w", encoding="utf-8") as stream:
+                    stream.write(content)
+                os.replace(tmp, output)
+            finally:
+                if os.path.exists(tmp):
+                    os.unlink(tmp)
     print(json.dumps({"equity": updated["equity"], "cash": updated["cash"],
                       "positions": len(updated["positions"]), "trades": len(updated["trades"]),
                       "quotes": len(quotes), "paper_only": True,

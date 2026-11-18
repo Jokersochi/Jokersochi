@@ -71,6 +71,9 @@ jobs:
               --name polyshark-sandbox-paper-state --dir "$audit_dir"
             python polyshark-ai/runtime/sandbox_audit.py \
               --state "$audit_dir/sandbox_paper_state.json"
+            # Copy only into this ephemeral feature-run workspace. Never write
+            # the main ledger back from a PR run.
+            cp "$audit_dir/sandbox_paper_state.json" "$SANDBOX_STATE"
           else
             echo "::notice::No completed main-branch ledger available for audit."
           fi

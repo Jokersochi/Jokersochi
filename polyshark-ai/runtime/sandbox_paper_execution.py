@@ -374,6 +374,8 @@ def main():
         raise SystemExit("No valid public order books; state unchanged")
     tick_at = (datetime.now(timezone.utc).isoformat(timespec="microseconds")
                if args.snapshot_file else now())
+    if args.snapshot_file:
+        quotes = dict(sorted(quotes.items()))
     updated = step(state, quotes, tick_at)
     if args.snapshot_file:
         from sandbox_audit import audit_state

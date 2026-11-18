@@ -144,6 +144,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: polyshark-sandbox-paper-state
-          path: ${{ env.SANDBOX_STATE }}
+          path: |
+            ${{ env.SANDBOX_STATE }}
+            ${{ env.SANDBOX_SNAPSHOT }}
+            ${{ env.SANDBOX_SEED }}
           retention-days: 30
           if-no-files-found: error

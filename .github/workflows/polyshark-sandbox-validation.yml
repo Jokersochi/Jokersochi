@@ -9,6 +9,9 @@ on:
     paths:
       - "polyshark-ai/runtime/sandbox_paper_execution.py"
       - "polyshark-ai/tests/test_sandbox_paper_execution.py"
+      - "polyshark-ai/runtime/sandbox_audit.py"
+      - "polyshark-ai/runtime/sandbox_replay.py"
+      - "polyshark-ai/tests/test_sandbox_audit_replay.py"
       - ".github/workflows/polyshark-sandbox-validation.yml"
   workflow_dispatch:
   schedule:
@@ -46,7 +49,8 @@ jobs:
           assert "real_orders_enabled" in source and "paper_only" in source
           PY
           python -m unittest discover -s polyshark-ai/tests -p test_sandbox_paper_execution.py -v
-          python -m py_compile polyshark-ai/runtime/sandbox_paper_execution.py
+          python -m unittest discover -s polyshark-ai/tests -p test_sandbox_audit_replay.py -v
+          python -m py_compile polyshark-ai/runtime/sandbox_paper_execution.py polyshark-ai/runtime/sandbox_audit.py polyshark-ai/runtime/sandbox_replay.py
 
       - name: Restore last successful main-branch sandbox ledger
         if: github.ref == 'refs/heads/main'

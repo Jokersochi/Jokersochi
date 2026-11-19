@@ -13,8 +13,8 @@
   "realized_pnl": 0,
   "unrealized_pnl": 0.0,
   "fees_paid": 0,
-  "ticks": 433,
-  "last_tick_at": "2026-11-19T17:46:38+00:00",
+  "ticks": 434,
+  "last_tick_at": "2026-11-19T17:57:10+00:00",
   "last_error": null,
   "quote_source": "Polymarket Gamma + public CLOB midpoint/spread/history",
   "real_orders_enabled": false,
@@ -38,13 +38,18 @@
       "previous_session_id": "paper-20260827-restart-1000",
       "previous_equity": 365.751387,
       "previous_state_backup": "polyshark-ai/runtime/archive/paper-20260827-restart-1000-final-tick-622.json"
+    },
+    {
+      "ts": "2026-11-19T17:56:55+00:00",
+      "event": "TICK_ERROR",
+      "error": "TimeoutError: The read operation timed out"
     }
   ],
   "evidence_contract": {
     "forecast_archive": [],
     "calibration_records": [],
     "last_calibration_scan": {
-      "ts": "2026-11-19T17:46:39+00:00",
+      "ts": "2026-11-19T17:57:11+00:00",
       "model_version": "event-evidence-v2-price-blind-20261029",
       "archive_pending": 0,
       "due": 0,
@@ -54,10 +59,10 @@
       "records_total": 0
     },
     "contract_version": "trade-dossier-v2-challenger-20261029",
-    "updated_at": "2026-11-19T17:46:39+00:00",
+    "updated_at": "2026-11-19T17:57:11+00:00",
     "trade_dossier": {
       "contract_version": "trade-dossier-v2-challenger-20261029",
-      "generated_at": "2026-11-19T17:46:39+00:00",
+      "generated_at": "2026-11-19T17:57:11+00:00",
       "model_version": "event-evidence-v2-price-blind-20261029",
       "capital_decision": "NO_TRADE",
       "review_status": "BLOCKED",
@@ -141,7 +146,7 @@
         "legacy_capital_execution": false
       },
       "calibration_scan": {
-        "ts": "2026-11-19T17:46:39+00:00",
+        "ts": "2026-11-19T17:57:11+00:00",
         "model_version": "event-evidence-v2-price-blind-20261029",
         "archive_pending": 0,
         "due": 0,
@@ -209,9 +214,9 @@
     },
     "verdict": "NO_EVIDENCE",
     "auto_promotion": false,
-    "updated_at": "2026-11-19T17:46:38+00:00",
+    "updated_at": "2026-11-19T17:57:10+00:00",
     "last_observation": {
-      "ts": "2026-11-19T17:46:38+00:00",
+      "ts": "2026-11-19T17:57:10+00:00",
       "candidates_seen": 2,
       "deduplicated": 0,
       "rejected_price": 0,
@@ -223,13 +228,13 @@
       "added": 0
     },
     "observation_totals": {
-      "ticks": 433,
-      "candidates_seen": 705,
+      "ticks": 434,
+      "candidates_seen": 707,
       "deduplicated": 0,
       "rejected_price": 0,
       "rejected_spread": 0,
       "rejected_invalid_quote": 0,
-      "rejected_model_evidence": 705,
+      "rejected_model_evidence": 707,
       "rejected_liquidity": 0,
       "rejected_net_edge": 0,
       "added": 0
@@ -4565,12 +4570,22 @@
       "fees_paid": 0.0,
       "open_positions": 0,
       "closed_positions": 0
+    },
+    {
+      "ts": "2026-11-19T17:57:10+00:00",
+      "equity": 1000.0,
+      "cash": 1000.0,
+      "realized_pnl": 0.0,
+      "unrealized_pnl": 0.0,
+      "fees_paid": 0.0,
+      "open_positions": 0,
+      "closed_positions": 0
     }
   ],
   "operational_health": {
-    "observed_at": "2026-11-19T17:46:38+00:00",
-    "previous_tick_at": "2026-11-19T17:36:30+00:00",
-    "tick_gap_seconds": 608,
+    "observed_at": "2026-11-19T17:57:10+00:00",
+    "previous_tick_at": "2026-11-19T17:56:55+00:00",
+    "tick_gap_seconds": 15,
     "expected_interval_seconds": 300,
     "delayed_after_seconds": 900,
     "cadence": "ON_CADENCE",

@@ -1,0 +1,30 @@
+name: PolyShark paper UI contract
+
+on:
+  pull_request:
+    paths:
+      - 'polyshark-ai/ui/**'
+      - 'polyshark-ai/tests/test_terminal_ui_contract.py'
+      - '.github/workflows/polyshark-paper-ui.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'polyshark-ai/ui/**'
+      - 'polyshark-ai/tests/test_terminal_ui_contract.py'
+
+permissions:
+  contents: read
+
+jobs:
+  paper-ui-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install test runner
+        run: python -m pip install pytest==8.4.2
+      - name: Enforce read-only terminal contract
+        run: python -m pytest -q polyshark-ai/tests/test_terminal_ui_contract.py

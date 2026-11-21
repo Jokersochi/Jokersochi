@@ -30,8 +30,27 @@ assert.ok(Math.abs(payoutTotal - latest.sumPaidRub) < 0.01, `payout total ${payo
 const targetDraw = archive.last + 1;
 const forward = await loadForwardOverview(targetDraw);
 assert.ok(forward.status, "forward_evidence_status missing");
-assert.equal(forward.status.promoted, false, "new preregistered experiment must not start promoted");
+assert.equal(forward.status.stale, false, "forward evidence must be fresh");
 assert.ok(Number(forward.status.min_forward_draws) >= 1000);
+if (forward.status.promoted === true) {
+  assert.equal(forward.status.gate_status, "promoted", "promotion gate must agree with promoted flag");
+  assert.ok(
+    Number(forward.status.forward_draws) >= Number(forward.status.min_forward_draws),
+    "promoted experiment must meet the preregistered forward sample minimum",
+  );
+  assert.ok(
+    Number(forward.status.bootstrap_ci95?.[0]) > 0,
+    "promoted experiment must have positive lower confidence bound",
+  );
+  assert.ok(
+    Number.isFinite(Number(forward.status.q_value))
+      && Number(forward.status.q_value) <= Number(forward.status.alpha),
+    "promoted experiment must pass the multiple-testing threshold",
+  );
+} else {
+  assert.equal(forward.status.promoted, false, "promotion flag must be boolean");
+  assert.notEqual(forward.status.gate_status, "promoted", "unpromoted experiment cannot pass promotion gate");
+}
 assert.equal(forward.portfolios.length, 3, `expected 3 canonical forward portfolios for #${targetDraw}`);
 for (const portfolio of forward.portfolios) {
   assert.equal(portfolio.targetDraw, targetDraw);

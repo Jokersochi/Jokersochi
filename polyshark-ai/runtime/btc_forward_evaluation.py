@@ -202,7 +202,8 @@ def snapshot_from_report(report: dict[str, Any], now: datetime) -> dict[str, Any
             c = m.get("illustrative_cost_model") or {}
             record["yes_bid"] = finite(m["public_yes_bid"], low=0, high=1)
             record["yes_ask"] = finite(m["public_yes_ask"], low=0, high=1)
-            if "all_in_cost_per_share" in c and "net_edge_per_share" in c:
+            if (c.get("all_in_cost_per_share") is not None
+                    and c.get("net_edge_per_share") is not None):
                 record["all_in_cost_per_share"] = finite(
                     c["all_in_cost_per_share"], low=0, high=2
                 )
@@ -211,6 +212,8 @@ def snapshot_from_report(report: dict[str, Any], now: datetime) -> dict[str, Any
                 )
                 record["liquidity_gate"] = c.get("eligible") is True
             else:
+                # A valid but shallow book is preserved as depth evidence;
+                # partial $100 fills never become an eligible cost estimate.
                 record["liquidity_gate"] = False
         else:
             record["liquidity_gate"] = False

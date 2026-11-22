@@ -200,6 +200,8 @@ def snapshot_from_report(report: dict[str, Any], now: datetime) -> dict[str, Any
         }
         if m.get("execution_quote_available") is True:
             c = m.get("illustrative_cost_model") or {}
+            if c.get("model_version") not in (None, "CLOB_VISIBLE_ASK_DEPTH_V1"):
+                raise ValueError("Unsupported execution-cost model")
             record["yes_bid"] = finite(m["public_yes_bid"], low=0, high=1)
             record["yes_ask"] = finite(m["public_yes_ask"], low=0, high=1)
             if (c.get("all_in_cost_per_share") is not None
@@ -224,10 +226,10 @@ def snapshot_from_report(report: dict[str, Any], now: datetime) -> dict[str, Any
                 record["cost_fee_rate"] = finite(m["cost_fee_rate"], low=0, high=1)
             else:
                 record["cost_fee_source"] = "LEGACY_OR_UNKNOWN_FEE_ASSUMPTION"
-        if m.get("execution_quote_available") is True:
+        if (m.get("execution_quote_available") is True
+                and (m.get("illustrative_cost_model") or {}).get("model_version")
+                    == "CLOB_VISIBLE_ASK_DEPTH_V1"):
             c = m.get("illustrative_cost_model") or {}
-            if c.get("model_version") != "CLOB_VISIBLE_ASK_DEPTH_V1":
-                raise ValueError("Unsupported execution-cost model")
             if str(c.get("book_asset_id")) != str(m.get("yes_token_id")):
                 raise ValueError("Order-book token provenance mismatch")
             book_time = timestamp(str(c["book_timestamp"]))

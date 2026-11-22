@@ -196,6 +196,27 @@ class ForwardLedgerTests(unittest.TestCase):
         self.assertEqual(mod.digest({k: v for k, v in snap.items() if k != "sha256"}),
                          snap["sha256"])
 
+    def test_partial_depth_snapshot_is_kept_but_never_cost_eligible(self):
+        candidate = report(with_depth=True)
+        market = candidate["markets"][0]
+        cost = market["illustrative_cost_model"]
+        cost["fill_complete"] = False
+        cost["filled_notional_usd"] = 50.0
+        cost["shares_filled"] = 100.0
+        cost["fee_total_usd"] = 1.75
+        cost["fee_per_share"] = .0175
+        cost["all_in_cost_per_share"] = None
+        cost["net_edge_per_share"] = None
+        cost["eligible"] = False
+        ledger = mod.blank_ledger()
+        self.assertTrue(mod.append_snapshot(ledger, candidate, OBSERVED))
+        snap = ledger["snapshots"][0]
+        self.assertTrue(snap["depth_coverage_complete"])
+        self.assertFalse(snap["markets"][0]["depth_execution"]["fill_complete"])
+        self.assertFalse(snap["markets"][0]["depth_execution"]["eligible"])
+        self.assertNotIn("all_in_cost_per_share", snap["markets"][0])
+        self.assertFalse(snap["markets"][0]["liquidity_gate"])
+
     def test_legacy_quote_is_not_depth_coverage(self):
         ledger = mod.blank_ledger()
         self.assertTrue(mod.append_snapshot(ledger, report(), OBSERVED))

@@ -29,7 +29,7 @@ SLUG = "bitcoin-above-on-november-16-2026"
 QUESTION = "Will the price of Bitcoin be above $66,000 on November 16?"
 
 
-def report(observed=OBSERVED):
+def report(observed=OBSERVED, *, with_depth=False):
     return {
         "fit_status": "UNCALIBRATED_NOT_ELIGIBLE",
         "model_version": mod.MODEL_VERSION,
@@ -52,15 +52,60 @@ def report(observed=OBSERVED):
         },
         "markets": [{
             "market_id": "6909217",
+            "yes_token_id": "YES_TEST",
+            "fee_type": "crypto_fees_v2" if with_depth else "unknown",
+            "fee_source": "GAMMA_MARKET_FEE_SCHEDULE" if with_depth else "UNKNOWN",
+            "fee_rate": .07 if with_depth else None,
+            "fee_exponent": 1,
             "question": QUESTION,
             "threshold_usd": 66000, "end_at": mod.utc(SETTLED),
-            "p_model_uncalibrated": .34, "p_market_indicative": .3,
-            "execution_quote_available": True,
+            "p_model_uncalibrated": .70 if with_depth else .34,
+            "p_market_indicative": .3,
+            "execution_quote_available": with_depth,
             "public_yes_bid": .29, "public_yes_ask": .31,
-            "illustrative_cost_model": {
+            "illustrative_cost_model": ({
+                "all_in_cost_per_share": .5175,
+                "net_edge_per_share": .1825, "eligible": True,
+                "model_version": "CLOB_VISIBLE_ASK_DEPTH_V1",
+                "book_timestamp": mod.utc(observed + timedelta(seconds=1)),
+                "book_server_time": mod.utc(observed + timedelta(seconds=1)),
+                "book_age_seconds": 0.0,
+                "book_clock_skew_seconds": 0.0,
+                "book_hash": "a" * 40,
+                "book_asset_id": "YES_TEST",
+                "book_min_order_size": 5.0,
+                "book_tick_size": .001,
+                "book_best_bid": .49,
+                "book_best_ask": .50,
+                "book_worst_ask_used": .50,
+                "book_vwap": .50,
+                "book_depth_slippage_vs_best_ask": 0.0,
+                "book_visible_ask_depth_usd": 500.0,
+                "book_visible_bid_depth_usd": 500.0,
+                "target_notional_usd": 100.0,
+                "filled_notional_usd": 100.0,
+                "shares_filled": 200.0,
+                "fill_complete": True,
+                "levels_consumed": [{
+                    "price": .50, "shares": 200.0,
+                    "quote_usd": 100.0, "fee_usd": 3.5,
+                }],
+                "fee_rate": .07, "fee_exponent": 1,
+                "fee_total_usd": 3.5, "fee_per_share": .0175,
+                "fee_rounding_method": "ROUND_HALF_UP_5DP_PER_AGGREGATED_PRICE_LEVEL",
+                "entry_price": .50, "spread_cost": .005,
+                "slippage_cost": 0.0,
+                "market_liquidity_gate": True,
+                "minimum_order_size_gate": True,
+                "depth_slippage_gate": True,
+                "liquidity_required_usd": 25000.0,
+                "execution_semantics": "READ_ONLY_VISIBLE_ASK_DEPTH_SIMULATION_NOT_A_FILL",
+            } if with_depth else {
                 "all_in_cost_per_share": .33,
                 "net_edge_per_share": .01, "eligible": True,
-            },
+            }),
+            "cost_fee_source": "GAMMA_MARKET_FEE_SCHEDULE" if with_depth else "LEGACY_OR_UNKNOWN_FEE_ASSUMPTION",
+            "cost_fee_rate": .07 if with_depth else None,
             "diagnostic_status": "NO_TRADE", "shadow_eligible": False,
         }],
     }
@@ -132,6 +177,59 @@ class ForwardLedgerTests(unittest.TestCase):
         self.assertTrue(s["research_only"])
         self.assertEqual(s["markets"][0]["p_model"], .34)
         self.assertEqual(mod.digest({k: v for k, v in s.items() if k != "sha256"}), s["sha256"])
+
+    def test_depth_snapshot_is_persisted_with_hash_and_coverage(self):
+        ledger = mod.blank_ledger()
+        self.assertTrue(mod.append_snapshot(
+            ledger, report(with_depth=True), OBSERVED + timedelta(minutes=1)
+        ))
+        snap = ledger["snapshots"][0]
+        self.assertTrue(snap["depth_coverage_complete"])
+        depth = snap["markets"][0]["depth_execution"]
+        self.assertEqual(depth["model_version"], "CLOB_VISIBLE_ASK_DEPTH_V1")
+        self.assertEqual(depth["book_hash"], "a" * 40)
+        self.assertEqual(depth["book_asset_id"], "YES_TEST")
+        self.assertTrue(depth["fill_complete"])
+        self.assertTrue(depth["eligible"])
+        self.assertEqual(depth["levels_consumed"][0]["quote_usd"], 100.0)
+        self.assertEqual(snap["markets"][0]["fee_rate"], .07)
+        self.assertEqual(mod.digest({k: v for k, v in snap.items() if k != "sha256"}),
+                         snap["sha256"])
+
+    def test_legacy_quote_is_not_depth_coverage(self):
+        ledger = mod.blank_ledger()
+        self.assertTrue(mod.append_snapshot(ledger, report(), OBSERVED))
+        self.assertFalse(ledger["snapshots"][0]["depth_coverage_complete"])
+        self.assertNotIn("depth_execution", ledger["snapshots"][0]["markets"][0])
+
+    def test_depth_snapshot_rejects_bad_hash_or_stale_provenance(self):
+        candidate = report(with_depth=True)
+        candidate["markets"][0]["illustrative_cost_model"]["book_hash"] = "bad"
+        with self.assertRaisesRegex(ValueError, "order-book hash"):
+            mod.snapshot_from_report(candidate, OBSERVED)
+        candidate = report(with_depth=True)
+        candidate["markets"][0]["illustrative_cost_model"]["book_timestamp"] = mod.utc(
+            OBSERVED - timedelta(minutes=5)
+        )
+        with self.assertRaisesRegex(ValueError, "not contemporaneous"):
+            mod.snapshot_from_report(candidate, OBSERVED)
+
+    def test_depth_aware_evaluation_is_separate_from_legacy_costs(self):
+        ledger = mod.blank_ledger()
+        mod.append_snapshot(ledger, report(with_depth=True), OBSERVED)
+        mod.resolve_pending(ledger, LATER, source())
+        metrics = mod.evaluate(ledger)
+        self.assertEqual(metrics["depth_aware_execution_coverage_days"], 1)
+        self.assertEqual(metrics["depth_aware_illustrative_yes_choices"], 1)
+        self.assertAlmostEqual(metrics["depth_aware_unit_pnl_per_share_total"], .4825)
+        self.assertAlmostEqual(metrics["depth_aware_100_usd_notional_pnl_total_usd"], 96.5)
+        self.assertEqual(
+            metrics["depth_aware_forward_uncertainty"]["status"],
+            "INSUFFICIENT_UNIQUE_EVENT_DAYS",
+        )
+        self.assertFalse(
+            metrics["depth_aware_forward_uncertainty"]["can_claim_positive_edge"]
+        )
 
     def test_refuses_historical_replay_and_future_report(self):
         for now in (OBSERVED + timedelta(hours=2), OBSERVED - timedelta(seconds=10)):
@@ -276,6 +374,8 @@ class ForwardLedgerTests(unittest.TestCase):
         m = mod.evaluate(ledger)
         self.assertEqual(m["resolved_unique_event_days"], 1)
         self.assertFalse(m["sample_count_adequate_for_review"])
+        self.assertEqual(m["depth_aware_execution_coverage_days"], 0)
+        self.assertEqual(m["depth_aware_forward_uncertainty"]["event_days"], 0)
 
     def test_blocked_report_never_creates_prediction(self):
         candidate = report()

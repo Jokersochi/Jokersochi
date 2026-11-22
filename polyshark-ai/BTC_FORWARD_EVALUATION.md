@@ -63,6 +63,47 @@ The report includes `calibration_review_blockers` and deliberately retains
 `calibration_review_eligible=false` even if sample thresholds are eventually
 met. It cannot auto-authorize paper capital or live trading.
 
+## Visible CLOB depth and $100 taker-buy replay
+
+New snapshots separately record a **read-only visible-book execution estimate**.
+The research runner reads the public CLOB `/time` endpoint and each YES token's
+`/book` response. It requires the returned `asset_id` to match the expected
+YES token, a valid order-book hash, a contemporaneous server timestamp,
+`min_order_size`, and `tick_size`. A book older than 30 seconds, future-dated
+by more than 2 seconds, or from a server clock more than 120 seconds away
+from the runner clock is rejected.
+
+For the fixed $100 gross quote notional, the estimator sorts ask levels from
+lowest to highest and consumes their published share sizes until the budget is
+filled. It records the levels consumed, filled shares, worst consumed ask,
+visible depth, VWAP, and VWAP slippage versus the best ask. A partial $100
+fill is **not eligible**. The separate market-liquidity gate still applies.
+The historical aggregate `liquidityNum` is not treated as executable depth.
+
+Taker fees use the exact market's Gamma `feeSchedule.rate` and
+`feeSchedule.exponent`; the formula is
+`shares × rate × (price × (1 − price)) ^ exponent`. The estimate rounds to
+five decimal places per aggregated price level. Polymarket's published fee
+formula and precision are documented in its
+[Trading Fees help page](https://help.polymarket.com/en/articles/13364478-trading-fees).
+The order book aggregates resting orders at a price level, so this is not an
+exact per-match fee receipt. The market's own schedule is retained; no generic
+category rate is substituted.
+
+The new `depth_aware_*` diagnostics are **separate from legacy historical
+cost estimates**. Only event days with fresh, valid books for every market in
+the recorded shortlist enter the depth-coverage series. A fully covered day
+with no eligible signal contributes $0; an incomplete book day is omitted,
+not mislabeled as no signal. The report shows both a unitized per-share
+outcome mark and the hypothetical P&L of the $100-notional replay.
+
+A public book is a point-in-time snapshot, **not a fill guarantee**. It cannot
+prove queue priority, persistence of displayed orders, latency, hidden
+liquidity, cancellation races, partial-match sequence, or actual fee receipts.
+No authenticated order endpoint is called, no order is submitted, and
+`capital_decision` remains `NO_TRADE`. Depth coverage and its bootstrap
+interval are diagnostics only; they cannot authorize promotion.
+
 ## Conservative serial-dependence uncertainty
 
 `btc_robustness.py` adds a reproducible, **descriptive** paired

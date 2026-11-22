@@ -16,17 +16,18 @@ import re
 import statistics
 import urllib.parse
 import urllib.request
+from decimal import Decimal, ROUND_HALF_UP
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
-from challenger_v2 import costed_edge
 
 VERSION = "btc-terminal-spot-baseline-v1-20261116"
 GAMMA_EVENTS = "https://gamma-api.polymarket.com/events"
 COINBASE_CANDLES = "https://api.exchange.coinbase.com/products/BTC-USD/candles?granularity=3600"
 KRAKEN_CANDLES = "https://api.kraken.com/0/public/OHLC?pair=XBTUSD&interval=60"
 CLOB_BOOK = "https://clob.polymarket.com/book"
+CLOB_TIME = "https://clob.polymarket.com/time"
 USER_AGENT = "PolyShark-Research-PaperOnly/1.0"
 SAMPLE_HOURS = 72
 MAX_CANDLE_AGE_HOURS = 3
@@ -36,6 +37,12 @@ MAX_QUOTE_LOOKUPS = 6
 MAX_VENUE_SPOT_DIVERGENCE = 0.01
 MAX_VENUE_PROB_DIVERGENCE = 0.15
 ASSUMED_NOTIONAL = 100.0
+MAX_BOOK_LEVELS = 2000
+MAX_BOOK_AGE_SECONDS = 30.0
+MAX_BOOK_FUTURE_SECONDS = 2.0
+MAX_CLOB_CLOCK_SKEW_SECONDS = 120.0
+MAX_BOOK_DEPTH_SLIPPAGE = 0.05
+MIN_MARKET_LIQUIDITY_MULTIPLE = 250.0
 # Fees must come from the individual Gamma market fee schedule. A missing,
 # malformed or unsupported schedule makes after-cost analysis ineligible.
 FEE_SOURCE = "GAMMA_MARKET_FEE_SCHEDULE"
@@ -260,6 +267,8 @@ def validated_market(market: Any, now: datetime) -> dict[str, Any] | None:
     return {
         "fee_source": fee_source,
         "fee_rate": fee_rate,
+        "fee_exponent": 1,
+        "fee_type": str(market.get("feeType") or "unknown"),
         "market_id": str(market["id"]),
         "question": str(market["question"]),
         "threshold_usd": threshold,
@@ -271,16 +280,189 @@ def validated_market(market: Any, now: datetime) -> dict[str, Any] | None:
     }
 
 
+def _epoch_seconds(value: Any) -> float:
+    if isinstance(value, bool) or value is None:
+        raise ValueError("Invalid CLOB timestamp")
+    if isinstance(value, str):
+        raw = value.strip()
+        if not raw:
+            raise ValueError("Empty CLOB timestamp")
+        try:
+            value = float(raw)
+        except ValueError:
+            return timestamp(raw).timestamp()
+    if not isinstance(value, (float, int)):
+        raise ValueError("Invalid CLOB timestamp type")
+    seconds = float(value)
+    if not math.isfinite(seconds) or seconds <= 0:
+        raise ValueError("Invalid CLOB timestamp value")
+    if seconds > 1_000_000_000_000:
+        seconds /= 1000.0
+    return seconds
+
+
+def clob_server_time(data: Any) -> datetime:
+    if isinstance(data, dict):
+        data = data.get("time", data.get("timestamp"))
+    return datetime.fromtimestamp(_epoch_seconds(data), timezone.utc)
+
+
+def _book_levels(raw: Any, *, side: str) -> list[tuple[float, float]]:
+    if not isinstance(raw, list) or not raw or len(raw) > MAX_BOOK_LEVELS:
+        raise ValueError("Missing or excessive CLOB book levels")
+    levels: list[tuple[float, float]] = []
+    seen_prices: set[float] = set()
+    for row in raw:
+        if not isinstance(row, dict) or "price" not in row or "size" not in row:
+            raise ValueError("Malformed CLOB book level")
+        price = finite(float(row["price"]), low=0.000001, high=0.999999)
+        size = finite(float(row["size"]), low=0.00000001)
+        if price in seen_prices:
+            raise ValueError("Duplicate CLOB price level")
+        seen_prices.add(price)
+        levels.append((price, size))
+    levels.sort(key=lambda x: x[0], reverse=(side == "bids"))
+    return levels
+
+
+def depth_aware_buy_cost(
+    book: Any, *, expected_token_id: str, now: datetime,
+    server_time: datetime, probability: float, fee_rate: float,
+    fee_exponent: float, market_liquidity: float,
+    notional: float = ASSUMED_NOTIONAL,
+) -> dict[str, Any]:
+    """Replay a fixed-USD taker BUY against visible YES asks; never submits orders."""
+    if not isinstance(book, dict):
+        raise ValueError("Invalid public CLOB book")
+    if str(book.get("asset_id") or "") != str(expected_token_id):
+        raise ValueError("CLOB book asset_id mismatch")
+    book_hash = str(book.get("hash") or "").lower()
+    if re.fullmatch(r"[a-f0-9]{40}", book_hash) is None:
+        raise ValueError("Missing or invalid CLOB book hash")
+    book_time = datetime.fromtimestamp(_epoch_seconds(book.get("timestamp")), timezone.utc)
+    skew = (server_time - now.astimezone(timezone.utc)).total_seconds()
+    if abs(skew) > MAX_CLOB_CLOCK_SKEW_SECONDS:
+        raise ValueError("CLOB server clock differs from research clock")
+    age = (server_time - book_time).total_seconds()
+    if age < -MAX_BOOK_FUTURE_SECONDS or age > MAX_BOOK_AGE_SECONDS:
+        raise ValueError("CLOB book timestamp is stale or future-dated")
+    bids = _book_levels(book.get("bids"), side="bids")
+    asks = _book_levels(book.get("asks"), side="asks")
+    best_bid, best_ask = bids[0][0], asks[0][0]
+    if best_bid > best_ask:
+        raise ValueError("Crossed CLOB book")
+    min_order_size = finite(float(book.get("min_order_size")), low=0.00000001)
+    tick_size = finite(float(book.get("tick_size")), low=0.00000001, high=1.0)
+    probability = finite(probability, low=0.0, high=1.0)
+    fee_rate = finite(fee_rate, low=0.0, high=1.0)
+    fee_exponent = finite(fee_exponent, low=0.0, high=4.0)
+    market_liquidity = finite(market_liquidity, low=0.0)
+    notional = finite(notional, low=0.00000001)
+
+    visible_ask_depth = sum(price * size for price, size in asks)
+    visible_bid_depth = sum(price * size for price, size in bids)
+    remaining = notional
+    gross_cost = 0.0
+    shares_filled = 0.0
+    fee_total = Decimal("0")
+    consumed: list[dict[str, float]] = []
+    for price, available_shares in asks:
+        if remaining <= 1e-8:
+            break
+        available_quote = price * available_shares
+        quote_take = min(remaining, available_quote)
+        shares_take = quote_take / price
+        raw_fee = shares_take * fee_rate * (price * (1.0 - price)) ** fee_exponent
+        # The public fee schedule is rounded to 5 decimals. We round each
+        # aggregated price level, not each hidden maker fill; this is a
+        # conservative replay estimate, not an exact exchange fee receipt.
+        fee_level = Decimal(str(raw_fee)).quantize(
+            Decimal("0.00001"), rounding=ROUND_HALF_UP
+        )
+        fee_total += fee_level
+        gross_cost += quote_take
+        shares_filled += shares_take
+        consumed.append({
+            "price": round(price, 8),
+            "shares": round(shares_take, 8),
+            "quote_usd": round(quote_take, 8),
+            "fee_usd": float(fee_level),
+        })
+        remaining -= quote_take
+
+    filled_notional = notional - max(0.0, remaining)
+    fill_complete = remaining <= 1e-6
+    vwap = gross_cost / shares_filled if shares_filled else None
+    depth_slippage = vwap - best_ask if vwap is not None else None
+    fee_usd = float(fee_total)
+    fee_per_share = fee_usd / shares_filled if shares_filled else None
+    all_in = ((gross_cost + fee_usd) / shares_filled
+              if fill_complete and shares_filled else None)
+    net_edge = probability - all_in if all_in is not None else None
+    market_liquidity_gate = market_liquidity >= notional * MIN_MARKET_LIQUIDITY_MULTIPLE
+    depth_slippage_gate = (
+        depth_slippage is not None and depth_slippage <= MAX_BOOK_DEPTH_SLIPPAGE
+    )
+    minimum_size_gate = shares_filled >= min_order_size
+    eligible = bool(
+        fill_complete and minimum_size_gate
+        and market_liquidity_gate and depth_slippage_gate
+    )
+    return {
+        "model_version": "CLOB_VISIBLE_ASK_DEPTH_V1",
+        "book_timestamp": iso(book_time),
+        "book_server_time": iso(server_time),
+        "book_age_seconds": round(age, 3),
+        "book_clock_skew_seconds": round(skew, 3),
+        "book_hash": book_hash,
+        "book_asset_id": str(expected_token_id),
+        "book_min_order_size": min_order_size,
+        "book_tick_size": tick_size,
+        "book_best_bid": best_bid,
+        "book_best_ask": best_ask,
+        "book_worst_ask_used": consumed[-1]["price"] if consumed else None,
+        "book_vwap": round(vwap, 8) if vwap is not None else None,
+        "book_depth_slippage_vs_best_ask": (
+            round(depth_slippage, 8) if depth_slippage is not None else None
+        ),
+        "book_visible_ask_depth_usd": round(visible_ask_depth, 4),
+        "book_visible_bid_depth_usd": round(visible_bid_depth, 4),
+        "target_notional_usd": round(notional, 4),
+        "filled_notional_usd": round(filled_notional, 8),
+        "shares_filled": round(shares_filled, 8),
+        "fill_complete": fill_complete,
+        "levels_consumed": consumed,
+        "fee_rate": fee_rate,
+        "fee_exponent": fee_exponent,
+        "fee_total_usd": round(fee_usd, 5),
+        "fee_per_share": round(fee_per_share, 8) if fee_per_share is not None else None,
+        "fee_rounding_method": "ROUND_HALF_UP_5DP_PER_AGGREGATED_PRICE_LEVEL",
+        "entry_price": round(vwap, 8) if vwap is not None else None,
+        "spread_cost": round((best_ask - best_bid) / 2.0, 8),
+        "slippage_cost": round(depth_slippage, 8) if depth_slippage is not None else None,
+        "all_in_cost_per_share": round(all_in, 8) if all_in is not None else None,
+        "net_edge_per_share": round(net_edge, 8) if net_edge is not None else None,
+        "market_liquidity_gate": market_liquidity_gate,
+        "minimum_order_size_gate": minimum_size_gate,
+        "depth_slippage_gate": depth_slippage_gate,
+        "liquidity_required_usd": round(notional * MIN_MARKET_LIQUIDITY_MULTIPLE, 4),
+        "eligible": eligible,
+        "execution_semantics": (
+            "READ_ONLY_VISIBLE_ASK_DEPTH_SIMULATION_NOT_A_FILL; "
+            "no queue, latency, hidden liquidity, cancellation or market impact guarantee"
+        ),
+    }
+
+
 def executable_quote(data: Any) -> tuple[float, float]:
+    """Compatibility helper: best bid/ask from a public book."""
     if not isinstance(data, dict):
         raise ValueError("Invalid public CLOB book")
-    bids = [float(x["price"]) for x in data.get("bids", []) if "price" in x]
-    asks = [float(x["price"]) for x in data.get("asks", []) if "price" in x]
-    if not bids or not asks:
-        raise ValueError("Missing executable bid/ask")
-    bid, ask = max(bids), min(asks)
-    if not (0 < bid <= ask < 1):
-        raise ValueError("Invalid executable bid/ask")
+    bids = _book_levels(data.get("bids"), side="bids")
+    asks = _book_levels(data.get("asks"), side="asks")
+    bid, ask = bids[0][0], asks[0][0]
+    if bid > ask:
+        raise ValueError("Crossed CLOB book")
     return bid, ask
 
 
@@ -298,6 +480,15 @@ def build_report(now: datetime, event: dict[str, Any], coinbase: Any, kraken: An
     midspot = (cb["spot_usd"] + kr["spot_usd"]) / 2.0
     valid.sort(key=lambda m: abs(math.log(m["threshold_usd"] / midspot)))
     markets = []
+    clob_clock = None
+    clob_clock_error = None
+    if book_fetcher is not None and any(m["fee_rate"] is not None for m in valid[:MAX_QUOTE_LOOKUPS]):
+        try:
+            clob_clock = clob_server_time(book_fetcher(CLOB_TIME))
+            if abs((clob_clock - now.astimezone(timezone.utc)).total_seconds()) > MAX_CLOB_CLOCK_SKEW_SECONDS:
+                raise ValueError("CLOB server clock differs from research clock")
+        except (ValueError, TypeError, OSError, KeyError) as exc:
+            clob_clock_error = type(exc).__name__
     for market in valid[:MAX_QUOTE_LOOKUPS]:
         a = terminal_above_probability(
             cb["spot_usd"], market["threshold_usd"], cb["hourly_volatility"],
@@ -317,29 +508,35 @@ def build_report(now: datetime, event: dict[str, Any], coinbase: Any, kraken: An
         market["execution_quote_available"] = False
         if (book_fetcher is not None and
                 market["fee_rate"] is not None and
+                clob_clock is not None and
                 spot_divergence <= MAX_VENUE_SPOT_DIVERGENCE and
                 abs(a - b) <= MAX_VENUE_PROB_DIVERGENCE):
             try:
                 url = CLOB_BOOK + "?" + urllib.parse.urlencode(
                     {"token_id": market["yes_token_id"]}
                 )
-                bid, ask = executable_quote(book_fetcher(url))
-                costs = costed_edge(
+                book = book_fetcher(url)
+                costs = depth_aware_buy_cost(
+                    book,
+                    expected_token_id=market["yes_token_id"],
+                    now=now,
+                    server_time=clob_clock,
                     probability=market["p_model_uncalibrated"],
-                    market_probability=(bid + ask) / 2.0,
-                    spread=ask - bid,
                     fee_rate=market["fee_rate"],
-                    liquidity=market["liquidity_usd_indicative"],
+                    fee_exponent=market["fee_exponent"],
+                    market_liquidity=market["liquidity_usd_indicative"],
                     notional=ASSUMED_NOTIONAL,
                 )
                 market["execution_quote_available"] = True
                 market["cost_fee_source"] = market["fee_source"]
                 market["cost_fee_rate"] = market["fee_rate"]
-                market["public_yes_bid"] = bid
-                market["public_yes_ask"] = ask
+                market["public_yes_bid"] = costs["book_best_bid"]
+                market["public_yes_ask"] = costs["book_best_ask"]
                 market["illustrative_cost_model"] = costs
             except (ValueError, KeyError, TypeError, OSError) as exc:
                 market["book_error_type"] = type(exc).__name__
+        elif clob_clock_error is not None:
+            market["book_error_type"] = clob_clock_error
         markets.append(market)
     return {
         "model_version": VERSION,
@@ -353,7 +550,8 @@ def build_report(now: datetime, event: dict[str, Any], coinbase: Any, kraken: An
         "independent_probability_evidence": False,
         "source_independence_note": "Coinbase/Kraken prices track one BTC market and are correlated",
         "settlement_basis_risk": "Binance BTC/USDT close, not Coinbase or Kraken BTC/USD",
-        "fee_assumption_note": "Per-market Gamma feeSchedule rate used when supported; modeled price impact and assumed $100 notional remain illustrative, not actual fills",
+        "fee_assumption_note": "Per-market Gamma feeSchedule rate used when supported; taker fee formula is applied to simulated fills and rounded per aggregated price level, not actual match receipts",
+        "execution_assumption_note": "Fresh public CLOB order-book asks are replayed for a fixed $100 quote notional; visible depth is not a guaranteed fill and no authenticated order path exists",
         "fit_status": "UNCALIBRATED_NOT_ELIGIBLE",
         "markets_found": len(valid),
         "markets_evaluated": len(markets),

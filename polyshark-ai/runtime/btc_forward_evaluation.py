@@ -517,6 +517,10 @@ def evaluate(ledger: dict[str, Any]) -> dict[str, Any]:
     illustrative_records: list[dict[str, Any]] = []
     per_event: list[dict[str, Any]] = []
     robustness_days: list[dict[str, Any]] = []
+    depth_robustness_days: list[dict[str, Any]] = []
+    depth_aware_unit_pnl: list[float] = []
+    depth_aware_notional_pnl: list[float] = []
+    depth_aware_records: list[dict[str, Any]] = []
     by_horizon: dict[str, list[tuple[float, float]]] = defaultdict(list)
     completed_events: set[str] = set()
     calibration_model: list[list[tuple[float, int]]] = []
@@ -585,6 +589,53 @@ def evaluate(ledger: dict[str, Any]) -> dict[str, Any]:
                 }
                 illustrative_records.append(record)
                 detail["hypothetical_choice"] = record
+        depth_day_pnl = None
+        depth_coverage_complete = snap.get("depth_coverage_complete") is True
+        detail["depth_coverage_complete"] = depth_coverage_complete
+        if depth_coverage_complete:
+            depth_choice = next((
+                market for market in snap["markets"]
+                if isinstance(market.get("depth_execution"), dict)
+                and market["depth_execution"].get("eligible") is True
+                and market["depth_execution"].get("net_edge_per_share", -1)
+                    >= MIN_ILLUSTRATIVE_EDGE
+                and market["depth_execution"].get("fill_complete") is True
+            ), None)
+            if depth_choice is not None:
+                y = outcomes[slug].get(depth_choice["market_id"])
+                depth = depth_choice["depth_execution"]
+                if y in (0, 1):
+                    all_in = depth["all_in_cost_per_share"]
+                    shares = depth["shares_filled"]
+                    depth_day_pnl = y - all_in
+                    notional_pnl = shares * depth_day_pnl
+                    depth_aware_unit_pnl.append(depth_day_pnl)
+                    depth_aware_notional_pnl.append(notional_pnl)
+                    depth_record = {
+                        "event_slug": slug,
+                        "market_id": depth_choice["market_id"],
+                        "outcome_yes": y,
+                        "simulated_gross_notional_usd": depth["target_notional_usd"],
+                        "simulated_shares_at_visible_book_vwap": shares,
+                        "book_vwap": depth["vwap"],
+                        "all_in_cost_per_share": all_in,
+                        "fee_total_usd": depth["fee_total_usd"],
+                        "fee_rate": depth["fee_rate"],
+                        "fee_source": depth_choice.get("fee_source"),
+                        "book_timestamp": depth["book_timestamp"],
+                        "book_hash": depth["book_hash"],
+                        "hypothetical_unit_pnl_per_share": round(depth_day_pnl, 8),
+                        "hypothetical_100_usd_notional_pnl_usd": round(notional_pnl, 8),
+                        "execution_status": "VISIBLE_BOOK_SIMULATION_NOT_A_FILL",
+                    }
+                    depth_aware_records.append(depth_record)
+                    detail["depth_aware_choice"] = depth_record
+        if depth_coverage_complete:
+            depth_robustness_days.append({
+                "date": timestamp(snap["settlement_at"]).date().isoformat(),
+                "brier_advantage": market_score - model_score,
+                "illustrative_pnl": depth_day_pnl,
+            })
         per_event.append(detail)
         robustness_days.append({
             "date": timestamp(snap["settlement_at"]).date().isoformat(),
@@ -606,6 +657,16 @@ def evaluate(ledger: dict[str, Any]) -> dict[str, Any]:
         "calibration_model": event_weighted_ece(calibration_model),
         "calibration_market": event_weighted_ece(calibration_market),
         "forward_uncertainty": assess_forward_uncertainty(robustness_days),
+        "depth_aware_forward_uncertainty": assess_forward_uncertainty(depth_robustness_days),
+        "depth_aware_execution_coverage_days": len(depth_robustness_days),
+        "depth_aware_illustrative_yes_choices": len(depth_aware_unit_pnl),
+        "depth_aware_unit_pnl_per_share_total": (
+            round(sum(depth_aware_unit_pnl), 8) if depth_robustness_days else None
+        ),
+        "depth_aware_100_usd_notional_pnl_total_usd": (
+            round(sum(depth_aware_notional_pnl), 8) if depth_robustness_days else None
+        ),
+        "depth_aware_records": depth_aware_records[-12:],
         "calibration_review_blockers": (
             (["INSUFFICIENT_UNIQUE_RESOLVED_EVENT_DAYS"]
              if n < MIN_INDEPENDENT_EVENTS_FOR_REVIEW else []) + [
@@ -628,15 +689,19 @@ def evaluate(ledger: dict[str, Any]) -> dict[str, Any]:
             for bucket, values in sorted(by_horizon.items())
         },
         "hypothetical_selection_policy": (
-            "First market in precommitted forecast order with YES model net "
-            "edge >= 0.01, modeled liquidity gate, and cost estimate; "
-            "max one illustrative share per resolved event day"
+            "Legacy snapshots: first YES market with old modeled liquidity gate and "
+            "net edge >= 0.01; historical costs remain unverified. "
+            "Depth-aware snapshots: first market with a fresh complete public CLOB "
+            "ask-book replay for $100 gross notional, aggregate liquidity gate, "
+            "VWAP slippage <= $0.05 and net edge >= 0.01; max one market per event day. "
+            "No order is submitted and visible depth is not a guaranteed fill."
         ),
         "calibration_review_eligible": False,
         "sample_count_adequate_for_review": n >= MIN_INDEPENDENT_EVENTS_FOR_REVIEW,
         "interpretation": (
             "Research only; correlated strike markets, hypothetical fills, "
-            "historical unverified 5% fees, later Gamma feeSchedule used where recorded"
+            "historical unverified 5% fees, per-market Gamma feeSchedule and "
+            "fresh visible-book depth simulation on newer snapshots; no fills verified"
         ),
     }
 

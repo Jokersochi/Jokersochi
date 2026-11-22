@@ -189,7 +189,14 @@ def snapshot_from_report(report: dict[str, Any], now: datetime) -> dict[str, Any
             "question": str(m["question"]),
             "threshold_usd": threshold, "end_at": utc(end),
             "p_model": predicted, "p_market": market_p,
-            "quote_at": utc(observed),  # snapshot time, not exchange execution timestamp
+            "quote_at": utc(observed),  # research run time, not an execution timestamp
+            "fee_type": str(m.get("fee_type") or "unknown"),
+            "fee_source": str(m.get("fee_source") or "UNKNOWN"),
+            "fee_rate": (
+                finite(m["fee_rate"], low=0, high=1)
+                if m.get("fee_rate") is not None else None
+            ),
+            "fee_exponent": finite(m.get("fee_exponent", 1), low=0, high=4),
         }
         if m.get("execution_quote_available") is True:
             c = m.get("illustrative_cost_model") or {}
@@ -208,13 +215,94 @@ def snapshot_from_report(report: dict[str, Any], now: datetime) -> dict[str, Any
         else:
             record["liquidity_gate"] = False
         if "all_in_cost_per_share" in record:
-            # Never silently attribute legacy 5% scenario costs to a
-            # verified market fee. Keep historical ledger hashes unchanged.
+            # Never silently attribute legacy assumptions to a verified fee.
             if m.get("cost_fee_source") == "GAMMA_MARKET_FEE_SCHEDULE":
                 record["cost_fee_source"] = "GAMMA_MARKET_FEE_SCHEDULE"
                 record["cost_fee_rate"] = finite(m["cost_fee_rate"], low=0, high=1)
             else:
                 record["cost_fee_source"] = "LEGACY_OR_UNKNOWN_FEE_ASSUMPTION"
+        if m.get("execution_quote_available") is True:
+            c = m.get("illustrative_cost_model") or {}
+            if c.get("model_version") != "CLOB_VISIBLE_ASK_DEPTH_V1":
+                raise ValueError("Unsupported execution-cost model")
+            if str(c.get("book_asset_id")) != str(m.get("yes_token_id")):
+                raise ValueError("Order-book token provenance mismatch")
+            book_time = timestamp(str(c["book_timestamp"]))
+            server_time = timestamp(str(c["book_server_time"]))
+            if abs((book_time - observed).total_seconds()) > 180:
+                raise ValueError("Order-book snapshot is not contemporaneous")
+            if abs((server_time - observed).total_seconds()) > 180:
+                raise ValueError("CLOB server clock is not contemporaneous")
+            if re.fullmatch(r"[a-f0-9]{40}", str(c.get("book_hash") or "")) is None:
+                raise ValueError("Invalid order-book hash")
+            levels = c.get("levels_consumed")
+            if not isinstance(levels, list) or len(levels) > 2000:
+                raise ValueError("Invalid consumed order-book levels")
+            normalized_levels = []
+            for level in levels:
+                if not isinstance(level, dict) or set(level) != {
+                    "price", "shares", "quote_usd", "fee_usd"
+                }:
+                    raise ValueError("Invalid consumed order-book level schema")
+                normalized_levels.append({
+                    "price": finite(level["price"], low=0, high=1),
+                    "shares": finite(level["shares"], low=0),
+                    "quote_usd": finite(level["quote_usd"], low=0),
+                    "fee_usd": finite(level["fee_usd"], low=0),
+                })
+            depth = {
+                "model_version": c["model_version"],
+                "book_timestamp": utc(book_time),
+                "book_server_time": utc(server_time),
+                "book_age_seconds": finite(c["book_age_seconds"], low=-2, high=30),
+                "book_hash": str(c["book_hash"]),
+                "book_asset_id": str(c["book_asset_id"]),
+                "book_min_order_size": finite(c["book_min_order_size"], low=0),
+                "book_tick_size": finite(c["book_tick_size"], low=0, high=1),
+                "best_bid": finite(c["book_best_bid"], low=0, high=1),
+                "best_ask": finite(c["book_best_ask"], low=0, high=1),
+                "worst_ask_used": (
+                    finite(c["book_worst_ask_used"], low=0, high=1)
+                    if c.get("book_worst_ask_used") is not None else None
+                ),
+                "vwap": finite(c["book_vwap"], low=0, high=1)
+                    if c.get("book_vwap") is not None else None,
+                "depth_slippage_vs_best_ask": (
+                    finite(c["book_depth_slippage_vs_best_ask"], low=0, high=1)
+                    if c.get("book_depth_slippage_vs_best_ask") is not None else None
+                ),
+                "visible_ask_depth_usd": finite(c["book_visible_ask_depth_usd"], low=0),
+                "visible_bid_depth_usd": finite(c["book_visible_bid_depth_usd"], low=0),
+                "target_notional_usd": finite(c["target_notional_usd"], low=0),
+                "filled_notional_usd": finite(c["filled_notional_usd"], low=0),
+                "shares_filled": finite(c["shares_filled"], low=0),
+                "fill_complete": c.get("fill_complete") is True,
+                "levels_consumed": normalized_levels,
+                "fee_rate": finite(c["fee_rate"], low=0, high=1),
+                "fee_exponent": finite(c["fee_exponent"], low=0, high=4),
+                "fee_total_usd": finite(c["fee_total_usd"], low=0),
+                "fee_per_share": (
+                    finite(c["fee_per_share"], low=0)
+                    if c.get("fee_per_share") is not None else None
+                ),
+                "fee_rounding_method": str(c["fee_rounding_method"]),
+                "all_in_cost_per_share": (
+                    finite(c["all_in_cost_per_share"], low=0, high=2)
+                    if c.get("all_in_cost_per_share") is not None else None
+                ),
+                "net_edge_per_share": (
+                    finite(c["net_edge_per_share"], low=-2, high=1)
+                    if c.get("net_edge_per_share") is not None else None
+                ),
+                "market_liquidity_gate": c.get("market_liquidity_gate") is True,
+                "minimum_order_size_gate": c.get("minimum_order_size_gate") is True,
+                "depth_slippage_gate": c.get("depth_slippage_gate") is True,
+                "eligible": c.get("eligible") is True,
+                "execution_semantics": str(c["execution_semantics"]),
+            }
+            if depth["fill_complete"] != (depth["filled_notional_usd"] >= depth["target_notional_usd"] - 1e-6):
+                raise ValueError("Order-book fill completeness mismatch")
+            record["depth_execution"] = depth
         prepared.append(record)
     if len({m["market_id"] for m in prepared}) != len(prepared):
         raise ValueError("Duplicate markets")
@@ -237,6 +325,9 @@ def snapshot_from_report(report: dict[str, Any], now: datetime) -> dict[str, Any
         "observed_at": utc(observed), "settlement_at": utc(event_end),
         "model_version": MODEL_VERSION, "github_run_id": str(run_id),
         "data_sources": provenance, "markets": prepared,
+        "depth_coverage_complete": bool(prepared) and all(
+            isinstance(m.get("depth_execution"), dict) for m in prepared
+        ),
         "research_only": True, "capital_decision": "NO_TRADE",
     }
     return dict(core, sha256=digest(core))

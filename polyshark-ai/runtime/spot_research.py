@@ -307,6 +307,19 @@ def clob_server_time(data: Any) -> datetime:
     return datetime.fromtimestamp(_epoch_seconds(data), timezone.utc)
 
 
+def _finite_range(value: Any, *, low: float = -math.inf,
+                  high: float = math.inf) -> float:
+    if isinstance(value, bool):
+        raise ValueError("Boolean is not a market number")
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        raise ValueError("Invalid market number") from None
+    if not math.isfinite(number) or not low <= number <= high:
+        raise ValueError("Nonfinite or out-of-range market number")
+    return number
+
+
 def _book_levels(raw: Any, *, side: str) -> list[tuple[float, float]]:
     if not isinstance(raw, list) or not raw or len(raw) > MAX_BOOK_LEVELS:
         raise ValueError("Missing or excessive CLOB book levels")
@@ -315,8 +328,8 @@ def _book_levels(raw: Any, *, side: str) -> list[tuple[float, float]]:
     for row in raw:
         if not isinstance(row, dict) or "price" not in row or "size" not in row:
             raise ValueError("Malformed CLOB book level")
-        price = finite(float(row["price"]), low=0.000001, high=0.999999)
-        size = finite(float(row["size"]), low=0.00000001)
+        price = _finite_range(float(row["price"]), low=0.000001, high=0.999999)
+        size = _finite_range(float(row["size"]), low=0.00000001)
         if price in seen_prices:
             raise ValueError("Duplicate CLOB price level")
         seen_prices.add(price)
@@ -351,13 +364,13 @@ def depth_aware_buy_cost(
     best_bid, best_ask = bids[0][0], asks[0][0]
     if best_bid > best_ask:
         raise ValueError("Crossed CLOB book")
-    min_order_size = finite(float(book.get("min_order_size")), low=0.00000001)
-    tick_size = finite(float(book.get("tick_size")), low=0.00000001, high=1.0)
-    probability = finite(probability, low=0.0, high=1.0)
-    fee_rate = finite(fee_rate, low=0.0, high=1.0)
-    fee_exponent = finite(fee_exponent, low=0.0, high=4.0)
-    market_liquidity = finite(market_liquidity, low=0.0)
-    notional = finite(notional, low=0.00000001)
+    min_order_size = _finite_range(float(book.get("min_order_size")), low=0.00000001)
+    tick_size = _finite_range(float(book.get("tick_size")), low=0.00000001, high=1.0)
+    probability = _finite_range(probability, low=0.0, high=1.0)
+    fee_rate = _finite_range(fee_rate, low=0.0, high=1.0)
+    fee_exponent = _finite_range(fee_exponent, low=0.0, high=4.0)
+    market_liquidity = _finite_range(market_liquidity, low=0.0)
+    notional = _finite_range(notional, low=0.00000001)
 
     visible_ask_depth = sum(price * size for price, size in asks)
     visible_bid_depth = sum(price * size for price, size in bids)

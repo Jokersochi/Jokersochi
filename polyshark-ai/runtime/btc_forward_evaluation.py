@@ -189,13 +189,23 @@ def snapshot_from_report(report: dict[str, Any], now: datetime) -> dict[str, Any
             "question": str(m["question"]),
             "threshold_usd": threshold, "end_at": utc(end),
             "p_model": predicted, "p_market": market_p,
-            "quote_at": utc(observed),  # snapshot time, not exchange execution timestamp
+            "quote_at": utc(observed),  # research run time, not an execution timestamp
+            "fee_type": str(m.get("fee_type") or "unknown"),
+            "fee_source": str(m.get("fee_source") or "UNKNOWN"),
+            "fee_rate": (
+                finite(m["fee_rate"], low=0, high=1)
+                if m.get("fee_rate") is not None else None
+            ),
+            "fee_exponent": finite(m.get("fee_exponent", 1), low=0, high=4),
         }
         if m.get("execution_quote_available") is True:
             c = m.get("illustrative_cost_model") or {}
+            if c.get("model_version") not in (None, "CLOB_VISIBLE_ASK_DEPTH_V1"):
+                raise ValueError("Unsupported execution-cost model")
             record["yes_bid"] = finite(m["public_yes_bid"], low=0, high=1)
             record["yes_ask"] = finite(m["public_yes_ask"], low=0, high=1)
-            if "all_in_cost_per_share" in c and "net_edge_per_share" in c:
+            if (c.get("all_in_cost_per_share") is not None
+                    and c.get("net_edge_per_share") is not None):
                 record["all_in_cost_per_share"] = finite(
                     c["all_in_cost_per_share"], low=0, high=2
                 )
@@ -204,17 +214,100 @@ def snapshot_from_report(report: dict[str, Any], now: datetime) -> dict[str, Any
                 )
                 record["liquidity_gate"] = c.get("eligible") is True
             else:
+                # A valid but shallow book is preserved as depth evidence;
+                # partial $100 fills never become an eligible cost estimate.
                 record["liquidity_gate"] = False
         else:
             record["liquidity_gate"] = False
         if "all_in_cost_per_share" in record:
-            # Never silently attribute legacy 5% scenario costs to a
-            # verified market fee. Keep historical ledger hashes unchanged.
+            # Never silently attribute legacy assumptions to a verified fee.
             if m.get("cost_fee_source") == "GAMMA_MARKET_FEE_SCHEDULE":
                 record["cost_fee_source"] = "GAMMA_MARKET_FEE_SCHEDULE"
                 record["cost_fee_rate"] = finite(m["cost_fee_rate"], low=0, high=1)
             else:
                 record["cost_fee_source"] = "LEGACY_OR_UNKNOWN_FEE_ASSUMPTION"
+        if (m.get("execution_quote_available") is True
+                and (m.get("illustrative_cost_model") or {}).get("model_version")
+                    == "CLOB_VISIBLE_ASK_DEPTH_V1"):
+            c = m.get("illustrative_cost_model") or {}
+            if str(c.get("book_asset_id")) != str(m.get("yes_token_id")):
+                raise ValueError("Order-book token provenance mismatch")
+            book_time = timestamp(str(c["book_timestamp"]))
+            server_time = timestamp(str(c["book_server_time"]))
+            if abs((book_time - observed).total_seconds()) > 180:
+                raise ValueError("Order-book snapshot is not contemporaneous")
+            if abs((server_time - observed).total_seconds()) > 180:
+                raise ValueError("CLOB server clock is not contemporaneous")
+            if re.fullmatch(r"[a-f0-9]{40}", str(c.get("book_hash") or "")) is None:
+                raise ValueError("Invalid order-book hash")
+            levels = c.get("levels_consumed")
+            if not isinstance(levels, list) or len(levels) > 2000:
+                raise ValueError("Invalid consumed order-book levels")
+            normalized_levels = []
+            for level in levels:
+                if not isinstance(level, dict) or set(level) != {
+                    "price", "shares", "quote_usd", "fee_usd"
+                }:
+                    raise ValueError("Invalid consumed order-book level schema")
+                normalized_levels.append({
+                    "price": finite(level["price"], low=0, high=1),
+                    "shares": finite(level["shares"], low=0),
+                    "quote_usd": finite(level["quote_usd"], low=0),
+                    "fee_usd": finite(level["fee_usd"], low=0),
+                })
+            depth = {
+                "model_version": c["model_version"],
+                "book_timestamp": utc(book_time),
+                "book_server_time": utc(server_time),
+                "book_age_seconds": finite(c["book_age_seconds"], low=-2, high=30),
+                "book_hash": str(c["book_hash"]),
+                "book_asset_id": str(c["book_asset_id"]),
+                "book_min_order_size": finite(c["book_min_order_size"], low=0),
+                "book_tick_size": finite(c["book_tick_size"], low=0, high=1),
+                "best_bid": finite(c["book_best_bid"], low=0, high=1),
+                "best_ask": finite(c["book_best_ask"], low=0, high=1),
+                "worst_ask_used": (
+                    finite(c["book_worst_ask_used"], low=0, high=1)
+                    if c.get("book_worst_ask_used") is not None else None
+                ),
+                "vwap": finite(c["book_vwap"], low=0, high=1)
+                    if c.get("book_vwap") is not None else None,
+                "depth_slippage_vs_best_ask": (
+                    finite(c["book_depth_slippage_vs_best_ask"], low=0, high=1)
+                    if c.get("book_depth_slippage_vs_best_ask") is not None else None
+                ),
+                "visible_ask_depth_usd": finite(c["book_visible_ask_depth_usd"], low=0),
+                "visible_bid_depth_usd": finite(c["book_visible_bid_depth_usd"], low=0),
+                "target_notional_usd": finite(c["target_notional_usd"], low=0),
+                "filled_notional_usd": finite(c["filled_notional_usd"], low=0),
+                "shares_filled": finite(c["shares_filled"], low=0),
+                "fill_complete": c.get("fill_complete") is True,
+                "levels_consumed": normalized_levels,
+                "fee_rate": finite(c["fee_rate"], low=0, high=1),
+                "fee_exponent": finite(c["fee_exponent"], low=0, high=4),
+                "fee_total_usd": finite(c["fee_total_usd"], low=0),
+                "fee_per_share": (
+                    finite(c["fee_per_share"], low=0)
+                    if c.get("fee_per_share") is not None else None
+                ),
+                "fee_rounding_method": str(c["fee_rounding_method"]),
+                "all_in_cost_per_share": (
+                    finite(c["all_in_cost_per_share"], low=0, high=2)
+                    if c.get("all_in_cost_per_share") is not None else None
+                ),
+                "net_edge_per_share": (
+                    finite(c["net_edge_per_share"], low=-2, high=1)
+                    if c.get("net_edge_per_share") is not None else None
+                ),
+                "market_liquidity_gate": c.get("market_liquidity_gate") is True,
+                "minimum_order_size_gate": c.get("minimum_order_size_gate") is True,
+                "depth_slippage_gate": c.get("depth_slippage_gate") is True,
+                "eligible": c.get("eligible") is True,
+                "execution_semantics": str(c["execution_semantics"]),
+            }
+            if depth["fill_complete"] != (depth["filled_notional_usd"] >= depth["target_notional_usd"] - 1e-6):
+                raise ValueError("Order-book fill completeness mismatch")
+            record["depth_execution"] = depth
         prepared.append(record)
     if len({m["market_id"] for m in prepared}) != len(prepared):
         raise ValueError("Duplicate markets")
@@ -237,6 +330,9 @@ def snapshot_from_report(report: dict[str, Any], now: datetime) -> dict[str, Any
         "observed_at": utc(observed), "settlement_at": utc(event_end),
         "model_version": MODEL_VERSION, "github_run_id": str(run_id),
         "data_sources": provenance, "markets": prepared,
+        "depth_coverage_complete": bool(prepared) and all(
+            isinstance(m.get("depth_execution"), dict) for m in prepared
+        ),
         "research_only": True, "capital_decision": "NO_TRADE",
     }
     return dict(core, sha256=digest(core))
@@ -426,6 +522,10 @@ def evaluate(ledger: dict[str, Any]) -> dict[str, Any]:
     illustrative_records: list[dict[str, Any]] = []
     per_event: list[dict[str, Any]] = []
     robustness_days: list[dict[str, Any]] = []
+    depth_robustness_days: list[dict[str, Any]] = []
+    depth_aware_unit_pnl: list[float] = []
+    depth_aware_notional_pnl: list[float] = []
+    depth_aware_records: list[dict[str, Any]] = []
     by_horizon: dict[str, list[tuple[float, float]]] = defaultdict(list)
     completed_events: set[str] = set()
     calibration_model: list[list[tuple[float, int]]] = []
@@ -494,6 +594,53 @@ def evaluate(ledger: dict[str, Any]) -> dict[str, Any]:
                 }
                 illustrative_records.append(record)
                 detail["hypothetical_choice"] = record
+        depth_day_pnl = None
+        depth_coverage_complete = snap.get("depth_coverage_complete") is True
+        detail["depth_coverage_complete"] = depth_coverage_complete
+        if depth_coverage_complete:
+            depth_choice = next((
+                market for market in snap["markets"]
+                if isinstance(market.get("depth_execution"), dict)
+                and market["depth_execution"].get("eligible") is True
+                and market["depth_execution"].get("net_edge_per_share", -1)
+                    >= MIN_ILLUSTRATIVE_EDGE
+                and market["depth_execution"].get("fill_complete") is True
+            ), None)
+            if depth_choice is not None:
+                y = outcomes[slug].get(depth_choice["market_id"])
+                depth = depth_choice["depth_execution"]
+                if y in (0, 1):
+                    all_in = depth["all_in_cost_per_share"]
+                    shares = depth["shares_filled"]
+                    depth_day_pnl = y - all_in
+                    notional_pnl = shares * depth_day_pnl
+                    depth_aware_unit_pnl.append(depth_day_pnl)
+                    depth_aware_notional_pnl.append(notional_pnl)
+                    depth_record = {
+                        "event_slug": slug,
+                        "market_id": depth_choice["market_id"],
+                        "outcome_yes": y,
+                        "simulated_gross_notional_usd": depth["target_notional_usd"],
+                        "simulated_shares_at_visible_book_vwap": shares,
+                        "book_vwap": depth["vwap"],
+                        "all_in_cost_per_share": all_in,
+                        "fee_total_usd": depth["fee_total_usd"],
+                        "fee_rate": depth["fee_rate"],
+                        "fee_source": depth_choice.get("fee_source"),
+                        "book_timestamp": depth["book_timestamp"],
+                        "book_hash": depth["book_hash"],
+                        "hypothetical_unit_pnl_per_share": round(depth_day_pnl, 8),
+                        "hypothetical_100_usd_notional_pnl_usd": round(notional_pnl, 8),
+                        "execution_status": "VISIBLE_BOOK_SIMULATION_NOT_A_FILL",
+                    }
+                    depth_aware_records.append(depth_record)
+                    detail["depth_aware_choice"] = depth_record
+        if depth_coverage_complete:
+            depth_robustness_days.append({
+                "date": timestamp(snap["settlement_at"]).date().isoformat(),
+                "brier_advantage": market_score - model_score,
+                "illustrative_pnl": depth_day_pnl,
+            })
         per_event.append(detail)
         robustness_days.append({
             "date": timestamp(snap["settlement_at"]).date().isoformat(),
@@ -515,6 +662,16 @@ def evaluate(ledger: dict[str, Any]) -> dict[str, Any]:
         "calibration_model": event_weighted_ece(calibration_model),
         "calibration_market": event_weighted_ece(calibration_market),
         "forward_uncertainty": assess_forward_uncertainty(robustness_days),
+        "depth_aware_forward_uncertainty": assess_forward_uncertainty(depth_robustness_days),
+        "depth_aware_execution_coverage_days": len(depth_robustness_days),
+        "depth_aware_illustrative_yes_choices": len(depth_aware_unit_pnl),
+        "depth_aware_unit_pnl_per_share_total": (
+            round(sum(depth_aware_unit_pnl), 8) if depth_robustness_days else None
+        ),
+        "depth_aware_100_usd_notional_pnl_total_usd": (
+            round(sum(depth_aware_notional_pnl), 8) if depth_robustness_days else None
+        ),
+        "depth_aware_records": depth_aware_records[-12:],
         "calibration_review_blockers": (
             (["INSUFFICIENT_UNIQUE_RESOLVED_EVENT_DAYS"]
              if n < MIN_INDEPENDENT_EVENTS_FOR_REVIEW else []) + [
@@ -537,15 +694,19 @@ def evaluate(ledger: dict[str, Any]) -> dict[str, Any]:
             for bucket, values in sorted(by_horizon.items())
         },
         "hypothetical_selection_policy": (
-            "First market in precommitted forecast order with YES model net "
-            "edge >= 0.01, modeled liquidity gate, and cost estimate; "
-            "max one illustrative share per resolved event day"
+            "Legacy snapshots: first YES market with old modeled liquidity gate and "
+            "net edge >= 0.01; historical costs remain unverified. "
+            "Depth-aware snapshots: first market with a fresh complete public CLOB "
+            "ask-book replay for $100 gross notional, aggregate liquidity gate, "
+            "VWAP slippage <= $0.05 and net edge >= 0.01; max one market per event day. "
+            "No order is submitted and visible depth is not a guaranteed fill."
         ),
         "calibration_review_eligible": False,
         "sample_count_adequate_for_review": n >= MIN_INDEPENDENT_EVENTS_FOR_REVIEW,
         "interpretation": (
             "Research only; correlated strike markets, hypothetical fills, "
-            "historical unverified 5% fees, later Gamma feeSchedule used where recorded"
+            "historical unverified 5% fees, per-market Gamma feeSchedule and "
+            "fresh visible-book depth simulation on newer snapshots; no fills verified"
         ),
     }
 

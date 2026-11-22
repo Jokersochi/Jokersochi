@@ -62,6 +62,30 @@ def market(**kwargs):
     return row
 
 
+def clob_book(*, now=NOW, token_id="YES_TEST", bids=None, asks=None):
+    return {
+        "market": "0x" + "1" * 64,
+        "asset_id": token_id,
+        "timestamp": str(int(now.timestamp() * 1000)),
+        "hash": "a" * 40,
+        "bids": bids if bids is not None else [{"price": "0.40", "size": "1000"}],
+        "asks": asks if asks is not None else [{"price": "0.42", "size": "1000"}],
+        "min_order_size": "5",
+        "tick_size": "0.001",
+        "neg_risk": False,
+    }
+
+
+def clob_fetcher(book, *, server_time=NOW):
+    def fetch(url):
+        if url == research.CLOB_TIME:
+            return int(server_time.timestamp())
+        if url.startswith(research.CLOB_BOOK):
+            return book
+        raise AssertionError("Unexpected CLOB request: " + url)
+    return fetch
+
+
 class SpotResearchTests(unittest.TestCase):
     def test_noon_et_dst_and_standard_time(self):
         self.assertEqual(research.resolution_utc(date(2026, 11, 16)).hour, 17)
@@ -114,8 +138,7 @@ class SpotResearchTests(unittest.TestCase):
                  "markets": [market()]}
         report = research.build_report(
             NOW, event, candles(), candles(venue="kraken"),
-            book_fetcher=lambda _url: {"bids": [{"price": "0.40"}],
-                                      "asks": [{"price": "0.42"}]},
+            book_fetcher=clob_fetcher(clob_book()),
         )
         self.assertEqual(report["fit_status"], "UNCALIBRATED_NOT_ELIGIBLE")
         self.assertEqual(report["capital_decision"], "NO_TRADE")
@@ -133,8 +156,103 @@ class SpotResearchTests(unittest.TestCase):
             * (1 - m["illustrative_cost_model"]["entry_price"]),
             places=8,
         )
+        depth = m["illustrative_cost_model"]
+        self.assertEqual(depth["model_version"], "CLOB_VISIBLE_ASK_DEPTH_V1")
+        self.assertTrue(depth["fill_complete"])
+        self.assertTrue(depth["eligible"])
+        self.assertAlmostEqual(depth["filled_notional_usd"], 100.0, places=5)
+        self.assertEqual(depth["book_hash"], "a" * 40)
+        self.assertEqual(depth["book_asset_id"], "YES_TEST")
+        self.assertEqual(depth["book_min_order_size"], 5.0)
+        self.assertGreater(depth["shares_filled"], 5)
+        self.assertEqual(len(depth["levels_consumed"]), 1)
         self.assertTrue(0 <= m["p_model_uncalibrated"] <= 1)
         self.assertIn("illustrative_cost_model", m)
+
+    def test_depth_replay_sorts_asks_and_calculates_vwap_across_levels(self):
+        book = clob_book(
+            bids=[{"price": "0.40", "size": "100"},
+                  {"price": "0.39", "size": "100"}],
+            asks=[{"price": "0.45", "size": "200"},
+                  {"price": "0.42", "size": "100"}],
+        )
+        result = research.depth_aware_buy_cost(
+            book, expected_token_id="YES_TEST", now=NOW, server_time=NOW,
+            probability=.60, fee_rate=.07, fee_exponent=1,
+            market_liquidity=110_000, notional=100,
+        )
+        self.assertTrue(result["fill_complete"])
+        self.assertTrue(result["eligible"])
+        self.assertEqual(result["book_best_ask"], .42)
+        self.assertEqual(result["book_best_bid"], .40)
+        self.assertEqual(result["book_worst_ask_used"], .45)
+        self.assertEqual(len(result["levels_consumed"]), 2)
+        self.assertAlmostEqual(result["filled_notional_usd"], 100, places=7)
+        self.assertGreater(result["book_vwap"], .42)
+        self.assertGreater(result["book_depth_slippage_vs_best_ask"], 0)
+        self.assertGreater(result["fee_total_usd"], 0)
+        self.assertAlmostEqual(
+            result["all_in_cost_per_share"],
+            result["book_vwap"] + result["fee_per_share"], places=7,
+        )
+
+    def test_partial_depth_never_produces_eligible_cost(self):
+        book = clob_book(asks=[{"price": "0.42", "size": "10"}])
+        result = research.depth_aware_buy_cost(
+            book, expected_token_id="YES_TEST", now=NOW, server_time=NOW,
+            probability=.95, fee_rate=.07, fee_exponent=1,
+            market_liquidity=110_000, notional=100,
+        )
+        self.assertFalse(result["fill_complete"])
+        self.assertFalse(result["eligible"])
+        self.assertIsNone(result["all_in_cost_per_share"])
+        self.assertLess(result["filled_notional_usd"], 100)
+
+    def test_depth_book_rejects_wrong_token_stale_time_and_bad_hash(self):
+        valid = clob_book()
+        with self.assertRaisesRegex(ValueError, "asset_id mismatch"):
+            research.depth_aware_buy_cost(
+                valid, expected_token_id="OTHER", now=NOW, server_time=NOW,
+                probability=.6, fee_rate=.07, fee_exponent=1,
+                market_liquidity=110_000,
+            )
+        stale = clob_book(now=NOW - timedelta(seconds=31))
+        with self.assertRaisesRegex(ValueError, "stale or future"):
+            research.depth_aware_buy_cost(
+                stale, expected_token_id="YES_TEST", now=NOW, server_time=NOW,
+                probability=.6, fee_rate=.07, fee_exponent=1,
+                market_liquidity=110_000,
+            )
+        bad_hash = clob_book()
+        bad_hash["hash"] = "bad"
+        with self.assertRaisesRegex(ValueError, "book hash"):
+            research.depth_aware_buy_cost(
+                bad_hash, expected_token_id="YES_TEST", now=NOW, server_time=NOW,
+                probability=.6, fee_rate=.07, fee_exponent=1,
+                market_liquidity=110_000,
+            )
+
+    def test_depth_book_rejects_crossed_or_duplicate_levels(self):
+        crossed = clob_book(
+            bids=[{"price": "0.45", "size": "100"}],
+            asks=[{"price": "0.42", "size": "1000"}],
+        )
+        with self.assertRaisesRegex(ValueError, "Crossed"):
+            research.depth_aware_buy_cost(
+                crossed, expected_token_id="YES_TEST", now=NOW, server_time=NOW,
+                probability=.6, fee_rate=.07, fee_exponent=1,
+                market_liquidity=110_000,
+            )
+        duplicate = clob_book(asks=[
+            {"price": "0.42", "size": "100"},
+            {"price": "0.42", "size": "100"},
+        ])
+        with self.assertRaisesRegex(ValueError, "Duplicate"):
+            research.depth_aware_buy_cost(
+                duplicate, expected_token_id="YES_TEST", now=NOW, server_time=NOW,
+                probability=.6, fee_rate=.07, fee_exponent=1,
+                market_liquidity=110_000,
+            )
 
     def test_missing_book_is_not_an_edge(self):
         event = {"markets": [market()]}

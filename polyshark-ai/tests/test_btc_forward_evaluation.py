@@ -61,7 +61,7 @@ def report(observed=OBSERVED, *, with_depth=False):
             "threshold_usd": 66000, "end_at": mod.utc(SETTLED),
             "p_model_uncalibrated": .70 if with_depth else .34,
             "p_market_indicative": .3,
-            "execution_quote_available": with_depth,
+            "execution_quote_available": True,
             "public_yes_bid": .29, "public_yes_ask": .31,
             "illustrative_cost_model": ({
                 "all_in_cost_per_share": .5175,

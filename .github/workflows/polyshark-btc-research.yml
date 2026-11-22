@@ -83,6 +83,8 @@ jobs:
           assert s['metrics']['calibration_review_eligible'] is False
           assert s['metrics']['forward_uncertainty']['strategy_promotion'] == 'BLOCKED'
           assert s['metrics']['forward_uncertainty']['can_claim_positive_edge'] is False
+          assert s['metrics']['depth_aware_forward_uncertainty']['strategy_promotion'] == 'BLOCKED'
+          assert s['metrics']['depth_aware_forward_uncertainty']['can_claim_positive_edge'] is False
           metrics = s['metrics']
           print('Forward-only:', {
               'snapshots': s['snapshot_count'],
@@ -91,7 +93,9 @@ jobs:
               'resolved_unique_days': metrics['resolved_unique_event_days'],
               'brier_model': metrics['brier_model_event_weighted'],
               'brier_market': metrics['brier_market_event_weighted'],
-              'hypothetical_pnl_1_share': metrics['illustrative_one_share_pnl_usd'],
+              'hypothetical_pnl_1_share_legacy': metrics['illustrative_one_share_pnl_usd'],
+              'depth_coverage_days': metrics['depth_aware_execution_coverage_days'],
+              'depth_aware_pnl_100_usd_notional': metrics['depth_aware_100_usd_notional_pnl_total_usd'],
           })
           lines = [
               "## Forward BTC forecast verification (RESEARCH-ONLY)",
@@ -108,13 +112,24 @@ jobs:
                 + str(metrics["forward_uncertainty"]["hypothetical_one_share_daily_pnl_ci95"]),
               "- Bootstrap resampling requires 50 consecutive event days; "
                 "never grants strategy promotion.",
+              "- Depth-aware execution coverage days (fresh, complete books): "
+                + str(metrics["depth_aware_execution_coverage_days"]),
+              "- Depth-aware simulated $100-notional P&L (NOT fills): "
+                + str(metrics["depth_aware_100_usd_notional_pnl_total_usd"]),
+              "- Depth-aware unit P&L per share (NOT executed): "
+                + str(metrics["depth_aware_unit_pnl_per_share_total"]),
+              "- Depth-aware bootstrap status: "
+                + metrics["depth_aware_forward_uncertainty"]["status"],
+              "- Depth-aware unit P&L 95% block interval (NOT fills): "
+                + str(metrics["depth_aware_forward_uncertainty"]["hypothetical_one_share_daily_pnl_ci95"]),
+              "- Depth-aware strategy promotion: BLOCKED, PAPER-only remains NO_TRADE.",
               "- Brier model (lower better): " + str(metrics["brier_model_event_weighted"]),
               "- Brier market baseline: " + str(metrics["brier_market_event_weighted"]),
               "- Hypothetical one-share total P&L (NOT paper fills): "
                 + str(metrics["illustrative_one_share_pnl_usd"]),
               "- Forecasts: " + str(s["snapshot_count"])
                 + "; pending days: " + str(s["pending_event_days"]),
-              "- NO_TRADE, no calibration approval; market fills and impact NOT verified.",
+              "- NO_TRADE, no calibration approval; visible order-book depth is not a guaranteed fill.",
               "- Previously saved Nov 16-17 fee coefficient 5% was a historical unverified scenario.",
               "- New samples use Gamma per-market feeSchedule when supported.",
               "- Horizon-bucket diagnostics are correlated and excluded from independent N.",
